@@ -14,7 +14,6 @@ class LoginController extends Controller
 {
     public function login(Request $request)
     {
-        ray($request->all());
         // Validation rules
         $rules = [
             'email' => 'required|email',
@@ -70,7 +69,8 @@ class LoginController extends Controller
 
         // Adding token to user array
         $userArr = Arr::add($user, 'token', $token);
-        ray($userArr);
+
+        // Return response
         return response([
             'success' => true,
             'user' => $userArr,
