@@ -32,40 +32,18 @@ class LoginController extends Controller
             ], 422);
         }
 
-        /**
-         * For some reason Laravel's built-in current_password rule for Validator is not working.
-         * So for sake of consistency in the responses I am opting to use custom validaion to check if the user
-         * exists in the database and if the provided password is correct.
-         */
-
-        //TODO: In future switch to Laravel's built-in validation after checking current_password rule is working as expected.
-
         // Checking if the user exists in the database
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
+        if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
                 'success' => false,
-                'message' => 'User does not exists',
-            ]);
-        }
-
-        // Check if the provided password is correct
-        if (!Hash::check($request->password, $user->password)) {
-            return response([
-                'success' => false,
-                'message' => 'Incorrect Password',
+                'message' => 'Invalid Credentials',
             ]);
         }
 
         // Generating JWT token from provided creds
         $token = JWTAuth::attempt($request->only('email', 'password'));
-        if (!$token) {
-            return response([
-                'success' => false,
-                'message' => 'Invalid Credentials',
-            ], 401);
-        }
 
         // Adding token to user array
         $userArr = Arr::add($user, 'token', $token);
