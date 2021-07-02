@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use Illuminate\Support\Facades\Route;
@@ -16,6 +17,8 @@ use Illuminate\Support\Facades\Route;
  */
 
 Route::post('login', [LoginController::class, 'login']);
+Route::post('forgot-password', [ForgotPasswordController::class, 'generatePasswordToken']);
+Route::put('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
 
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout', [LogoutController::class, 'logout']);
