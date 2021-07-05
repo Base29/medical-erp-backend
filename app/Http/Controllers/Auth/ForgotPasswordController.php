@@ -54,7 +54,7 @@ class ForgotPasswordController extends Controller
 
         return $status === Password::INVALID_TOKEN ?
         response(['success' => false, 'message' => 'Invalid Token']) :
-        response(['success' => true, 'message' => 'Password changed successfully']);
+        response(['success' => true, 'message' => 'Password reset successfully']);
 
     }
 }
