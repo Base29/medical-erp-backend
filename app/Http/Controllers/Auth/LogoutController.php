@@ -8,6 +8,14 @@ class LogoutController extends Controller
 {
     public function logout()
     {
+
+        $isTokenValid = auth()->check();
+        if (!$isTokenValid) {
+            return response([
+                'success' => false,
+                'message' => 'Invalid Bearer Token',
+            ], 401);
+        }
         auth()->logout();
         return response([
             'success' => true,
