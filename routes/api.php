@@ -16,10 +16,10 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-Route::post('login', [LoginController::class, 'login']);
-Route::post('forgot-password', [ForgotPasswordController::class, 'generateResetLink']);
-Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('password.reset');
+Route::post('login', [LoginController::class, 'login'])->name('login');
+Route::post('forgot-password', [ForgotPasswordController::class, 'generateResetLink'])->name('forgot.password');
+Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.password');
 
 Route::middleware(['auth:api'])->group(function () {
-    Route::post('logout', [LogoutController::class, 'logout']);
+    Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
 });

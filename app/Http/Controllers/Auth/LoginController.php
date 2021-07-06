@@ -39,7 +39,7 @@ class LoginController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Invalid Credentials',
-            ]);
+            ], 401);
         }
 
         // Generating JWT token from provided creds
@@ -52,6 +52,6 @@ class LoginController extends Controller
         return response([
             'success' => true,
             'user' => $userArr,
-        ]);
+        ], 200);
     }
 }
