@@ -44,7 +44,7 @@ class Handler extends ExceptionHandler
             if ($request->expectsJson()) {
                 return response([
                     'success' => false,
-                    'message' => 'Endpoint not found',
+                    'message' => 'Invalid endpoint',
                 ], 404);
             }
         });
