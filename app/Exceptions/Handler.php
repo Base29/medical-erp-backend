@@ -2,7 +2,9 @@
 
 namespace App\Exceptions;
 
+use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
 class Handler extends ExceptionHandler
@@ -37,5 +39,35 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+
+        $this->renderable(function (NotFoundHttpException $e, $request) {
+            if ($request->expectsJson()) {
+                return response([
+                    'success' => false,
+                    'message' => 'Endpoint not found',
+                ], 404);
+            }
+        });
+
+        $this->renderable(function (AuthenticationException $exception, $request) {
+            if ($request->expectsJson()) {
+                return response([
+                    'success' => false,
+                    'message' => 'Unauthenticated',
+                ], 401);
+            }
+        });
+    }
+
+    public function render($request, Throwable $exception)
+    {
+        if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
+            return response([
+                'success' => false,
+                'message' => 'You do not have the required authorization.',
+            ], 403);
+        }
+
+        return parent::render($request, $exception);
     }
 }
