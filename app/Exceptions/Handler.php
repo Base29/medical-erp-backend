@@ -53,7 +53,7 @@ class Handler extends ExceptionHandler
             if ($request->expectsJson()) {
                 return response([
                     'success' => false,
-                    'message' => 'Unauthenticated',
+                    'message' => 'Expired or Invalid token',
                 ], 401);
             }
         });
