@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Practice;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -67,5 +68,10 @@ class User extends Authenticatable implements JWTSubject
     {
         $url = env('FRONTEND_URL') . '/reset-password?token=' . $token . '&email=' . $this["email"];
         $this->notify(new ResetPasswordNotification($url));
+    }
+
+    public function practice()
+    {
+        return $this->belongsTo(Practice::class);
     }
 }
