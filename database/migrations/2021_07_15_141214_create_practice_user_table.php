@@ -17,7 +17,6 @@ class CreatePracticeUserTable extends Migration
             $table->id();
             $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->timestamps();
         });
     }
 

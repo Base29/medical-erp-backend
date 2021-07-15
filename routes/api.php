@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\PracticeController;
 use App\Http\Controllers\RoleController;
 use Illuminate\Support\Facades\Route;
 
@@ -26,4 +27,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('create-role', [RoleController::class, 'create_role']);
     Route::post('assign-role', [RoleController::class, 'assign_role']);
     Route::post('revoke-role', [RoleController::class, 'revoke_role']);
+    Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
 });
