@@ -33,7 +33,7 @@ class LoginController extends Controller
         }
 
         // Checking if the user exists in the database
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)->with('roles')->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([
@@ -41,6 +41,14 @@ class LoginController extends Controller
                 'message' => 'Invalid Credentials',
             ], 401);
         }
+
+        $user->roles->makeHidden([
+            'pivot',
+            'created_at',
+            'updated_at',
+            'guard_name',
+            'id',
+        ]);
 
         // Generating JWT token from provided creds
         $token = JWTAuth::attempt($request->only('email', 'password'));
