@@ -30,7 +30,7 @@ class RoleController extends Controller
         }
 
         // Checking if user have permissions to create roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('super_admin')) {
             return response([
                 'success' => false,
                 'message' => 'You don\'t have authorization to perform this action',
@@ -82,7 +82,7 @@ class RoleController extends Controller
         }
 
         // Checking if user have permissions to create roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('super_admin')) {
             return response([
                 'success' => false,
                 'message' => 'You don\'t have authorization to perform this action',
@@ -139,7 +139,7 @@ class RoleController extends Controller
         }
 
         // Checking if user have permissions to create roles
-        if (!auth()->user()->hasRole('admin')) {
+        if (!auth()->user()->hasRole('super_admin')) {
             return response([
                 'success' => false,
                 'message' => 'You don\'t have authorization to perform this action',
