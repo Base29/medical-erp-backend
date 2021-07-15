@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateUserPracticeAssociationTable extends Migration
+class CreatePracticeUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,10 @@ class CreateUserPracticeAssociationTable extends Migration
      */
     public function up()
     {
-        Schema::create('user_practice_association', function (Blueprint $table) {
+        Schema::create('practice_user', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ class CreateUserPracticeAssociationTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('user_practice_association');
+        Schema::dropIfExists('practice_user');
     }
 }

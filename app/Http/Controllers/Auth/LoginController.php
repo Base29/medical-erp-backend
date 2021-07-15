@@ -33,7 +33,7 @@ class LoginController extends Controller
         }
 
         // Checking if the user exists in the database
-        $user = User::where('email', $request->email)->with('roles')->first();
+        $user = User::where('email', $request->email)->with(['roles', 'practices'])->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response([

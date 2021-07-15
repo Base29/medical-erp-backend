@@ -73,9 +73,9 @@ class User extends Authenticatable implements JWTSubject
         $this->notify(new ResetPasswordNotification($url));
     }
 
-    public function practice()
+    public function practices()
     {
-        return $this->belongsTo(Practice::class);
+        return $this->belongsToMany(Practice::class);
     }
 
     public function role()
