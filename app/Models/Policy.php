@@ -13,6 +13,6 @@ class Policy extends Model
 
     public function practice()
     {
-        return $this->belongsTo(Practice::class);
+        return $this->belongsToMany(Practice::class);
     }
 }
