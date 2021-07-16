@@ -24,8 +24,10 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
-    Route::post('create-role', [RoleController::class, 'create_role']);
-    Route::post('assign-role', [RoleController::class, 'assign_role']);
-    Route::post('revoke-role', [RoleController::class, 'revoke_role']);
+    Route::middleware(['role:super_admin'])->group(function () {
+        Route::post('create-role', [RoleController::class, 'create_role']);
+        Route::post('assign-role', [RoleController::class, 'assign_role']);
+        Route::post('revoke-role', [RoleController::class, 'revoke_role']);
+    });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
 });
