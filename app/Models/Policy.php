@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Practice;
+use App\Models\Signature;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -16,8 +17,13 @@ class Policy extends Model
         'attachment',
     ];
 
-    public function practice()
+    public function practices()
     {
         return $this->belongsToMany(Practice::class);
+    }
+
+    public function signatures()
+    {
+        return $this->belongsToMany(Signature::class);
     }
 }
