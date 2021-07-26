@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Signature\SignatureController;
@@ -34,4 +35,5 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
     Route::get('practices', [PracticeController::class, 'get_practices']);
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
+    Route::get('policies', [PolicyController::class, 'fetch_policies']);
 });
