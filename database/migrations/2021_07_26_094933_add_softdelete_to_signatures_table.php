@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatPolicySignatureTable extends Migration
+class AddSoftdeleteToSignaturesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreatPolicySignatureTable extends Migration
      */
     public function up()
     {
-        Schema::table('policy_signature', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('policy_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('signature_id')->constrained()->cascadeOnDelete();
+        Schema::table('signatures', function (Blueprint $table) {
+            $table->softDeletes();
         });
     }
 
@@ -27,7 +25,7 @@ class CreatPolicySignatureTable extends Migration
      */
     public function down()
     {
-        Schema::table('policy_signature', function (Blueprint $table) {
+        Schema::table('signatures', function (Blueprint $table) {
             //
         });
     }

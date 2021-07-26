@@ -3,9 +3,76 @@
 namespace App\Http\Controllers\Signature;
 
 use App\Http\Controllers\Controller;
+use App\Models\Policy;
+use App\Models\Signature;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class SignatureController extends Controller
 {
-    //
+    public function sign_policy(Request $request)
+    {
+
+        // Validation rules
+        $rules = [
+            'confirmation' => 'required|boolean',
+            'policy_id' => 'required|numeric',
+        ];
+
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            ray($validator->errors()->all());
+            return response([
+                'success' => false,
+                'message' => 'All fields are required',
+            ], 422);
+        }
+
+        // Fetching policy and related signatures
+        $policy = Policy::where('id', $request->policy_id)->with('signatures')->first();
+
+        // Returning response incase the policy with the provided Id is not available
+        if (!$policy) {
+            return response([
+                'success' => false,
+                'message' => 'Something went wrong while fetching policy with id ' . $request->policy_id,
+            ]);
+        }
+
+        // Checking if the current logged in user has already signed the policy
+        $already_signed = $policy->signatures->contains('user_id', auth()->user()->id);
+
+        // Returning response incase the policy is already signed by the current logged in user
+        if ($already_signed) {
+            return response([
+                'success' => false,
+                'message' => auth()->user()->name . ' has already signed ' . $policy->name,
+            ]);
+        }
+
+        // Creating signature of the current logged in user
+        $signature = Signature::create([
+            'comment' => $request->comment,
+            'confirmation' => $request->confirmation,
+            'user_id' => auth()->id(),
+            'policy_id' => $request->policy_id,
+        ]);
+
+        // Returning response incase something went wrong while creating the signature
+        if (!$signature) {
+            return response([
+                'success' => false,
+                'message' => 'Something went wrong while creating signature',
+            ]);
+        }
+
+        // Returning response if the policy is successfully sgined by the currently logged in user
+        return response([
+            'success' => true,
+            'message' => $policy->name . ' has been signed by ' . auth()->user()->name,
+        ]);
+    }
 }

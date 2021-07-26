@@ -24,6 +24,6 @@ class Policy extends Model
 
     public function signatures()
     {
-        return $this->belongsToMany(Signature::class);
+        return $this->hasMany(Signature::class);
     }
 }

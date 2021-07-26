@@ -15,7 +15,9 @@ class CreateSignaturesTable extends Migration
     {
         Schema::create('signatures', function (Blueprint $table) {
             $table->id();
-            $table->text('comment');
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('policy_id')->constrained()->cascadeOnDelete();
+            $table->text('comment')->nullable();
             $table->boolean('comment_visible')->default(false);
             $table->boolean('confirmation')->default(false);
             $table->timestamps();

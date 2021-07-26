@@ -13,11 +13,13 @@ class Signature extends Model
 
     protected $fillable = [
         'comment',
+        'user_id',
+        'policy_id',
     ];
 
-    public function policies()
+    public function policy()
     {
-        return $this->belongsToMany(Policy::class);
+        return $this->belongsTo(Policy::class);
     }
 
     public function user()
