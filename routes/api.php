@@ -3,8 +3,8 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
-use App\Http\Controllers\PracticeController;
-use App\Http\Controllers\RoleController;
+use App\Http\Controllers\Practice\PracticeController;
+use App\Http\Controllers\Role\RoleController;
 use Illuminate\Support\Facades\Route;
 
 /*
