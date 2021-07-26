@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Policy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -12,13 +13,6 @@ class Practice extends Model
 
     protected $fillable = [
         'practice_name',
-    ];
-
-    protected $hidden = [
-        'pivot',
-        'created_at',
-        'updated_at',
-        'deleted_at',
     ];
 
     public function users()

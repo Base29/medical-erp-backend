@@ -30,4 +30,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('revoke-role', [RoleController::class, 'revoke_role']);
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
+    Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
+    Route::get('practices', [PracticeController::class, 'get_practices']);
 });

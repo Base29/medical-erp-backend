@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreatePolicyAttachmentsTable extends Migration
+class RemovePracticeIdFieldFromPoliciesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,8 @@ class CreatePolicyAttachmentsTable extends Migration
      */
     public function up()
     {
-        Schema::create('policy_attachments', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('policy_id')->constrained()->cascadeOnDelete();
-            $table->string('url');
-            $table->timestamps();
+        Schema::table('policies', function (Blueprint $table) {
+            $table->dropConstrainedForeignId('practice_id');
         });
     }
 
@@ -28,6 +25,8 @@ class CreatePolicyAttachmentsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('policy_attachments');
+        Schema::table('policies', function (Blueprint $table) {
+            //
+        });
     }
 }

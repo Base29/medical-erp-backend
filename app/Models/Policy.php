@@ -11,6 +11,11 @@ class Policy extends Model
 {
     use HasFactory, SoftDeletes;
 
+    protected $fillable = [
+        'name',
+        'attachment',
+    ];
+
     public function practice()
     {
         return $this->belongsToMany(Practice::class);
