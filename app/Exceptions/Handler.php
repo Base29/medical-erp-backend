@@ -68,6 +68,20 @@ class Handler extends ExceptionHandler
             ], 403);
         }
 
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
+            return response([
+                'success' => false,
+                'message' => 'Token has expired',
+            ], 401);
+        }
+
+        if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
+            return response([
+                'success' => false,
+                'message' => 'Token Signature could not be verified.',
+            ], 401);
+        }
+
         return parent::render($request, $exception);
     }
 }

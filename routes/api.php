@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\VerifyTokenController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\RoleController;
@@ -23,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 Route::post('login', [LoginController::class, 'login'])->name('login');
 Route::post('forgot-password', [ForgotPasswordController::class, 'generateResetLink'])->name('forgot.password');
 Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.password');
+Route::post('verify-token', [VerifyTokenController::class, 'verify_token']);
 
 Route::middleware(['auth:api'])->group(function () {
     Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
