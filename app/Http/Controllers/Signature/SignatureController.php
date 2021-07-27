@@ -54,12 +54,12 @@ class SignatureController extends Controller
         }
 
         // Creating signature of the current logged in user
-        $signature = Signature::create([
-            'comment' => $request->comment,
-            'confirmation' => $request->confirmation,
-            'user_id' => auth()->id(),
-            'policy_id' => $request->policy_id,
-        ]);
+        $signature = new Signature();
+        $signature->comment = $request->comment;
+        $signature->confirmation = $request->confirmation;
+        $signature->user_id = auth()->user()->id;
+        $signature->policy_id = $request->policy_id;
+        $signature->save();
 
         // Returning response incase something went wrong while creating the signature
         if (!$signature) {
