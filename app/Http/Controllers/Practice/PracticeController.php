@@ -1,7 +1,8 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Practice;
 
+use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,7 +12,7 @@ class PracticeController extends Controller
     public function assign_practice(Request $request)
     {
         $user = User::where('email', $request->email)->first();
-
+        ray($user->practices());
         $user->practices()->attach($request->practice);
         return response([
             'success' => true,
