@@ -35,7 +35,7 @@ class CreateRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => $request->name . ' role already exists',
-            ]);
+            ], 400);
         }
 
         // Create role
@@ -44,10 +44,10 @@ class CreateRoleController extends Controller
         return !$role ? response([
             'success' => false,
             'message' => 'Role not created. Something went wrong.',
-        ]) :
+        ], 400) :
         response([
             'success' => true,
             'message' => $role->name . ' role created successfully',
-        ]);
+        ], 200);
     }
 }
