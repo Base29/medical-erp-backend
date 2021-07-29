@@ -8,7 +8,8 @@ use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Signature\SignatureController;
-use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\User\CreateUserController;
+use App\Http\Controllers\User\DeleteUserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -28,6 +29,7 @@ Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword']
 Route::post('verify-token', [VerifyTokenController::class, 'verify_token']);
 
 Route::middleware(['auth:api'])->group(function () {
+    //TODO: Add prefixes for the all of the API endpoints
     Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
     Route::middleware(['role:super_admin'])->group(function () {
         Route::post('create-role', [RoleController::class, 'create_role']);
@@ -39,5 +41,10 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('practices', [PracticeController::class, 'get_practices']);
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
     Route::get('policies', [PolicyController::class, 'fetch_policies']);
-    Route::post('create-user', [UserController::class, 'create_user']);
+
+    // Endpoints for user operations
+    Route::prefix('user')->group(function () {
+        Route::post('create', CreateUserController::class);
+        Route::delete('/{id}', DeleteUserController::class);
+    });
 });

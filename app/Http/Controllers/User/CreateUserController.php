@@ -8,9 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class UserController extends Controller
+class CreateUserController extends Controller
 {
-    public function create_user(Request $request)
+    public function __invoke(Request $request)
     {
         // Validation rules
         $rules = [
