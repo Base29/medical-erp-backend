@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\VerifyTokenController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
+use App\Http\Controllers\Role\CreateRoleController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\User\CreateUserController;
@@ -32,10 +33,16 @@ Route::post('verify-token', [VerifyTokenController::class, 'verify_token']);
 Route::middleware(['auth:api'])->group(function () {
     //TODO: Add prefixes for the all of the API endpoints
     Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
+
+    // Endpoints accessible by super_admin only
     Route::middleware(['role:super_admin'])->group(function () {
-        Route::post('create-role', [RoleController::class, 'create_role']);
-        Route::post('assign-role', [RoleController::class, 'assign_role']);
-        Route::post('revoke-role', [RoleController::class, 'revoke_role']);
+        // Enpoints for role operations
+        Route::prefix('roles')->group(function () {
+            Route::post('create', CreateRoleController::class);
+            Route::post('assign-role', [RoleController::class, 'assign_role']);
+            Route::post('revoke-role', [RoleController::class, 'revoke_role']);
+        });
+
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
     Route::post('assign-policy', [PracticeController::class, 'assign_policy']);

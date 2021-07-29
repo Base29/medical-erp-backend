@@ -64,7 +64,7 @@ class Handler extends ExceptionHandler
         if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
             return response([
                 'success' => false,
-                'message' => 'You do not have the required authorization.',
+                'message' => 'You do not have the required authorization to perform this action',
             ], 403);
         }
 
