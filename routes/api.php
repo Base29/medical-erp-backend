@@ -10,6 +10,7 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\User\CreateUserController;
 use App\Http\Controllers\User\DeleteUserController;
+use App\Http\Controllers\User\ListUsersController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -42,9 +43,13 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
     Route::get('policies', [PolicyController::class, 'fetch_policies']);
 
-    // Endpoints for user operations
-    Route::prefix('user')->group(function () {
-        Route::post('create', CreateUserController::class);
-        Route::delete('/{id}', DeleteUserController::class);
+    Route::middleware(['role:manager|super_admin'])->group(function () {
+        // Endpoints for user operations
+        Route::prefix('users')->group(function () {
+            Route::post('create', CreateUserController::class);
+            Route::delete('/{id}', DeleteUserController::class);
+            Route::get('/', ListUsersController::class);
+        });
     });
+
 });
