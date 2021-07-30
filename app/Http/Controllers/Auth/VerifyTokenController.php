@@ -9,7 +9,7 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class VerifyTokenController extends Controller
 {
 
-    public function verify_token()
+    public function __invoke()
     {
 
         $user = JWTAuth::parseToken()->authenticate();

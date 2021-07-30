@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
+use App\Http\Controllers\Auth\PasswordResetController;
+use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyTokenController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
@@ -27,16 +28,16 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
  */
-
-Route::post('login', [LoginController::class, 'login'])->name('login');
-Route::post('forgot-password', [ForgotPasswordController::class, 'generateResetLink'])->name('forgot.password');
-Route::post('reset-password', [ForgotPasswordController::class, 'resetPassword'])->name('reset.password');
-Route::post('verify-token', [VerifyTokenController::class, 'verify_token']);
+//TODO: Add prefixes for the all of the API endpoints
+Route::prefix('auth')->group(function () {
+    Route::post('login', LoginController::class)->name('login');
+    Route::post('forgot-password', PasswordResetLinkController::class)->name('forgot.password');
+    Route::post('reset-password', PasswordResetController::class)->name('reset.password');
+    Route::post('verify-token', VerifyTokenController::class);
+    Route::post('logout', LogoutController::class)->middleware(['auth:api'])->name('logout');
+});
 
 Route::middleware(['auth:api'])->group(function () {
-    //TODO: Add prefixes for the all of the API endpoints
-    Route::post('logout', [LogoutController::class, 'logout'])->name('logout');
-
     // Endpoints accessible by super_admin only
     Route::middleware(['role:super_admin'])->group(function () {
         // Endpoints for role operations
