@@ -29,6 +29,8 @@ use Illuminate\Support\Facades\Route;
 |
  */
 //TODO: Add prefixes for the all of the API endpoints
+
+// Routes for authentication and password reset
 Route::prefix('auth')->group(function () {
     Route::post('login', LoginController::class)->name('login');
     Route::post('forgot-password', PasswordResetLinkController::class)->name('forgot.password');
@@ -55,6 +57,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
     Route::get('policies', [PolicyController::class, 'fetch_policies']);
 
+    // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
         // Endpoints for user operations
         Route::prefix('users')->group(function () {
