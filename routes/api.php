@@ -46,7 +46,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', CreateRoleController::class);
             Route::post('assign', AssignRoleController::class);
             Route::post('revoke', RevokeRoleController::class);
-            Route::delete('/{id}', DeleteRoleController::class);
+            Route::delete('delete/{id}', DeleteRoleController::class);
         });
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
@@ -59,7 +59,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Endpoints for user operations
         Route::prefix('users')->group(function () {
             Route::post('create', CreateUserController::class);
-            Route::delete('/{id}', DeleteUserController::class);
+            Route::delete('delete/{id}', DeleteUserController::class);
             Route::get('/', ListUsersController::class);
         });
     });
