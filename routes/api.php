@@ -8,6 +8,7 @@ use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\AssignRoleController;
 use App\Http\Controllers\Role\CreateRoleController;
+use App\Http\Controllers\Role\DeleteRoleController;
 use App\Http\Controllers\Role\ListRolesController;
 use App\Http\Controllers\Role\RevokeRoleController;
 use App\Http\Controllers\Signature\SignatureController;
@@ -44,6 +45,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', CreateRoleController::class);
             Route::post('assign', AssignRoleController::class);
             Route::post('revoke', RevokeRoleController::class);
+            Route::delete('/{id}', DeleteRoleController::class);
         });
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
