@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyTokenController;
 use App\Http\Controllers\Permission\CreatePermissionController;
+use App\Http\Controllers\Permission\ListPermissionsController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\AssignRoleController;
@@ -54,6 +55,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Endpoints for permissions operations
         Route::prefix('permissions')->group(function () {
+            Route::get('/', ListPermissionsController::class);
             Route::post('create', CreatePermissionController::class);
         });
     });
