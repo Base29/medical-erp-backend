@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyTokenController;
 use App\Http\Controllers\Permission\CreatePermissionController;
+use App\Http\Controllers\Permission\DeletePermissionController;
 use App\Http\Controllers\Permission\ListPermissionsController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
@@ -57,6 +58,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('permissions')->group(function () {
             Route::get('/', ListPermissionsController::class);
             Route::post('create', CreatePermissionController::class);
+            Route::delete('delete/{id}', DeletePermissionController::class);
         });
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
