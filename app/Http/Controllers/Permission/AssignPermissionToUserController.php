@@ -26,7 +26,6 @@ class AssignPermissionToUserController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors());
             $errors = $validator->errors();
             if (Arr::has($errors->messages(), 'email')) {
                 return response([
