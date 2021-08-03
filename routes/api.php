@@ -13,6 +13,7 @@ use App\Http\Controllers\Permission\ListPermissionsController;
 use App\Http\Controllers\Permission\RevokePermissionForRoleController;
 use App\Http\Controllers\Permission\RevokePermissionForUserController;
 use App\Http\Controllers\Policy\PolicyController;
+use App\Http\Controllers\Practice\CreatePracticeController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\AssignRoleController;
 use App\Http\Controllers\Role\CreateRoleController;
@@ -67,6 +68,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('assign-to-role', AssignPermissionToRoleController::class);
             Route::post('revoke-for-user', RevokePermissionForUserController::class);
             Route::post('revoke-for-role', RevokePermissionForRoleController::class);
+        });
+
+        // Endpoints for practice operations
+        Route::prefix('practices')->group(function () {
+            Route::post('create', CreatePracticeController::class);
         });
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
