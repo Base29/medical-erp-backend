@@ -10,6 +10,7 @@ use App\Http\Controllers\Permission\AssignPermissionToUserController;
 use App\Http\Controllers\Permission\CreatePermissionController;
 use App\Http\Controllers\Permission\DeletePermissionController;
 use App\Http\Controllers\Permission\ListPermissionsController;
+use App\Http\Controllers\Permission\RevokePermissionForUserController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\AssignRoleController;
@@ -63,6 +64,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::delete('delete/{id}', DeletePermissionController::class);
             Route::post('assign-to-user', AssignPermissionToUserController::class);
             Route::post('assign-to-role', AssignPermissionToRoleController::class);
+            Route::post('revoke-for-user', RevokePermissionForUserController::class);
         });
     });
     Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
