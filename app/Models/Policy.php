@@ -17,6 +17,10 @@ class Policy extends Model
         'attachment',
     ];
 
+    protected $hidden = [
+        'pivot',
+    ];
+
     public function practices()
     {
         return $this->belongsToMany(Practice::class);

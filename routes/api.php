@@ -14,7 +14,7 @@ use App\Http\Controllers\Permission\RevokePermissionForRoleController;
 use App\Http\Controllers\Permission\RevokePermissionForUserController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\CreatePracticeController;
-use App\Http\Controllers\Practice\PracticeController;
+use App\Http\Controllers\Practice\ListPracticesController;
 use App\Http\Controllers\Role\AssignRoleController;
 use App\Http\Controllers\Role\CreateRoleController;
 use App\Http\Controllers\Role\DeleteRoleController;
@@ -72,12 +72,13 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Endpoints for practice operations
         Route::prefix('practices')->group(function () {
+            Route::get('/', ListPracticesController::class);
             Route::post('create', CreatePracticeController::class);
         });
     });
-    Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
-    Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
-    Route::get('practices', [PracticeController::class, 'get_practices']);
+    // Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
+    // Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
+    // Route::get('practices', [PracticeController::class, 'get_practices']);
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
     Route::get('policies', [PolicyController::class, 'fetch_policies']);
 
