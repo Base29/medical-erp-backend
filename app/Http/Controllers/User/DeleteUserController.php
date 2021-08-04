@@ -16,7 +16,7 @@ class DeleteUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'No user found with the provided id ' . $id,
-            ]);
+            ], 404);
         }
 
         // Delete user with the provided $id
@@ -24,6 +24,6 @@ class DeleteUserController extends Controller
         return response([
             'success' => true,
             'message' => 'User delete successfully',
-        ]);
+        ], 200);
     }
 }
