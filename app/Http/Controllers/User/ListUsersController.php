@@ -15,6 +15,6 @@ class ListUsersController extends Controller
         return response([
             'success' => true,
             'users' => $users,
-        ]);
+        ], 200);
     }
 }
