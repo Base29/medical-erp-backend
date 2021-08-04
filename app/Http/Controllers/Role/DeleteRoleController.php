@@ -16,7 +16,7 @@ class DeleteRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'No role found with the provided id ' . $id,
-            ]);
+            ], 404);
         }
 
         // Delete user with the provided $id
@@ -24,6 +24,6 @@ class DeleteRoleController extends Controller
         return response([
             'success' => true,
             'message' => 'Role delete successfully',
-        ]);
+        ], 200);
     }
 }
