@@ -74,6 +74,6 @@ class RevokePermissionForRoleController extends Controller
         return response([
             'success' => true,
             'message' => 'Permission ' . $permission->name . ' revoked for role ' . $role->name,
-        ]);
+        ], 200);
     }
 }
