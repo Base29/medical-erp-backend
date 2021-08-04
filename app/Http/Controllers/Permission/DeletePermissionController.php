@@ -16,7 +16,7 @@ class DeletePermissionController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Permission not found with the provided id ' . $id,
-            ]);
+            ], 404);
         }
 
         // Delete permission
@@ -25,6 +25,6 @@ class DeletePermissionController extends Controller
         return response([
             'success' => true,
             'message' => 'Permission deleted successfully',
-        ]);
+        ], 200);
     }
 }
