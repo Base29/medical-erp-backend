@@ -23,7 +23,7 @@ class Policy extends Model
 
     public function practices()
     {
-        return $this->belongsToMany(Practice::class);
+        return $this->belongsTo(Practice::class);
     }
 
     public function signatures()

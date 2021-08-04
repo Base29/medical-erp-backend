@@ -22,7 +22,7 @@ class Practice extends Model
 
     public function policies()
     {
-        return $this->belongsToMany(Policy::class);
+        return $this->hasMany(Policy::class);
     }
 
 }

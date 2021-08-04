@@ -12,7 +12,6 @@ class CreatePracticeController extends Controller
 {
     public function __invoke(Request $request)
     {
-        ray($request->all());
         // Validation rules
         $rules = [
             'name' => 'required',

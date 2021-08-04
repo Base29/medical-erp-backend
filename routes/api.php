@@ -17,6 +17,7 @@ use App\Http\Controllers\Practice\AssignPracticeToUserController;
 use App\Http\Controllers\Practice\CreatePracticeController;
 use App\Http\Controllers\Practice\DeletePracticeController;
 use App\Http\Controllers\Practice\ListPracticesController;
+use App\Http\Controllers\Practice\RevokePracticeForUserController;
 use App\Http\Controllers\Role\AssignRoleController;
 use App\Http\Controllers\Role\CreateRoleController;
 use App\Http\Controllers\Role\DeleteRoleController;
@@ -78,6 +79,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', CreatePracticeController::class);
             Route::delete('delete/{id}', DeletePracticeController::class);
             Route::post('assign-to-user', AssignPracticeToUserController::class);
+            Route::post('revoke-for-user', RevokePracticeForUserController::class);
         });
     });
     // Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
