@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Role;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
@@ -23,11 +24,23 @@ class RevokeRoleController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors()->all());
-            return response([
-                'success' => false,
-                'message' => 'All fields are required',
-            ], 422);
+            $errors = $validator->errors();
+
+            // Return error messages for role
+            if (Arr::has($errors->messages(), 'role')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['role'][0],
+                ], 422);
+            }
+
+            // Return error messages for email
+            if (Arr::has($errors->messages(), 'email')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['email'][0],
+                ], 422);
+            }
         }
 
         // Checking if user exists
@@ -37,7 +50,7 @@ class RevokeRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'User ' . $request->email . ' does not exists',
-            ], 400);
+            ], 404);
         }
 
         // Checking if role exists
@@ -47,7 +60,7 @@ class RevokeRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Role ' . $request->role . ' does not exists.',
-            ], 400);
+            ], 404);
         }
 
         // Check if the user has assigned the provided role
@@ -55,7 +68,7 @@ class RevokeRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Role ' . $request->role . ' not assigned to ' . $user->email,
-            ], 400);
+            ], 409);
         }
 
         // Revoking role
@@ -64,6 +77,6 @@ class RevokeRoleController extends Controller
         return response([
             'success' => true,
             'message' => 'Role ' . $request->role . ' removed for ' . $user->email,
-        ]);
+        ], 200);
     }
 }
