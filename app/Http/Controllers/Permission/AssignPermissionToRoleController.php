@@ -32,7 +32,9 @@ class AssignPermissionToRoleController extends Controller
                     'success' => false,
                     'message' => $errors->messages()['role'][0],
                 ], 422);
-            } else if (Arr::has($errors->messages(), 'permission')) {
+            }
+
+            if (Arr::has($errors->messages(), 'permission')) {
                 return response([
                     'success' => false,
                     'message' => $errors->messages()['permission'][0],
