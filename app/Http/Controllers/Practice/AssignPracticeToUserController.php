@@ -57,7 +57,7 @@ class AssignPracticeToUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Practice with id ' . $request->practice . ' doesn\'t exists',
-            ]);
+            ], 404);
         }
 
         // Checking if the user is already assigned to the provided practice
@@ -76,7 +76,7 @@ class AssignPracticeToUserController extends Controller
         return response([
             'success' => true,
             'message' => 'User ' . $user->email . ' assigned to practice ' . $practice->practice_name,
-        ]);
+        ], 200);
 
     }
 }
