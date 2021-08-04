@@ -40,7 +40,7 @@ class LoginController extends Controller
                 return response([
                     'success' => false,
                     'message' => $errors->messages()['password'][0],
-                ]);
+                ], 422);
             }
         }
 
