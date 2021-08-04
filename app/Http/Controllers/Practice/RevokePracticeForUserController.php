@@ -79,6 +79,6 @@ class RevokePracticeForUserController extends Controller
         return response([
             'success' => true,
             'message' => 'User ' . $user->email . ' removed from practice ' . $practice->practice_name,
-        ]);
+        ], 200);
     }
 }
