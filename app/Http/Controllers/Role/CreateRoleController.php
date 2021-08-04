@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Role;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
@@ -20,12 +21,17 @@ class CreateRoleController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         // If validation fails
+        // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors()->all());
-            return response([
-                'success' => false,
-                'message' => 'All fields are required',
-            ], 422);
+            $errors = $validator->errors();
+
+            // Return error messages for name
+            if (Arr::has($errors->messages(), 'name')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['name'][0],
+                ], 422);
+            }
         }
 
         // Check if role is already created
@@ -35,7 +41,7 @@ class CreateRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => $request->name . ' role already exists',
-            ], 400);
+            ], 409);
         }
 
         // Create role
