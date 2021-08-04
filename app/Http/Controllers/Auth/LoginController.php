@@ -25,11 +25,23 @@ class LoginController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors()->all());
-            return response([
-                'success' => false,
-                'message' => 'All fields are required',
-            ], 422);
+            $errors = $validator->errors();
+
+            // Return error messages for email
+            if (Arr::has($errors->messages(), 'email')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['email'][0],
+                ], 422);
+            }
+
+            // Return error messages for password
+            if (Arr::has($errors->messages(), 'password')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['password'][0],
+                ]);
+            }
         }
 
         // Checking if the user exists in the database
