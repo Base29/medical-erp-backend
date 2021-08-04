@@ -47,7 +47,7 @@ class AssignPermissionToUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'User doesn\'t exist with the provided email ' . $request->email,
-            ]);
+            ], 404);
         }
 
         // Check if the user already has the provided permission
@@ -57,7 +57,7 @@ class AssignPermissionToUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'User ' . $user->email . ' already has ' . $request->permission . ' permission',
-            ]);
+            ], 409);
         }
 
         // Check if the permission exists
@@ -67,7 +67,7 @@ class AssignPermissionToUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
-            ]);
+            ], 404);
         }
 
         // Assigning permission to the user
@@ -76,7 +76,7 @@ class AssignPermissionToUserController extends Controller
         return response([
             'success' => true,
             'message' => 'Permission ' . $permission->name . ' assigned to ' . $user->email,
-        ]);
+        ], 200);
 
     }
 }
