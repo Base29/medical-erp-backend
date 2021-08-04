@@ -47,7 +47,7 @@ class AssignPermissionToRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Role ' . $request->role . ' doesn\'t exist',
-            ]);
+            ], 404);
         }
 
         // Check if the role already has the provided permission
@@ -57,7 +57,7 @@ class AssignPermissionToRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Role ' . $role->name . ' already has ' . $request->permission . ' permission',
-            ]);
+            ], 409);
         }
 
         // Check if the permission exists
@@ -67,7 +67,7 @@ class AssignPermissionToRoleController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
-            ]);
+            ], 404);
         }
 
         // Assigning permission to the role
@@ -76,7 +76,7 @@ class AssignPermissionToRoleController extends Controller
         return response([
             'success' => true,
             'message' => 'Permission ' . $permission->name . ' assigned to ' . $role->name . ' role',
-        ]);
+        ], 200);
 
     }
 }
