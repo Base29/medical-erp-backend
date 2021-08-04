@@ -14,6 +14,6 @@ class ListRolesController extends Controller
         return response([
             'success' => true,
             'roles' => $roles,
-        ]);
+        ], 200);
     }
 }
