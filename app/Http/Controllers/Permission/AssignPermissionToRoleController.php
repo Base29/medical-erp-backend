@@ -27,6 +27,8 @@ class AssignPermissionToRoleController extends Controller
         // If validation fails
         if ($validator->fails()) {
             $errors = $validator->errors();
+
+            // Return error messages for role
             if (Arr::has($errors->messages(), 'role')) {
                 return response([
                     'success' => false,
@@ -34,6 +36,7 @@ class AssignPermissionToRoleController extends Controller
                 ], 422);
             }
 
+            // Return error messages for permission
             if (Arr::has($errors->messages(), 'permission')) {
                 return response([
                     'success' => false,
