@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Permission;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 
@@ -21,11 +22,14 @@ class CreatePermissionController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors()->all());
-            return response([
-                'success' => false,
-                'message' => 'All fields are required',
-            ], 422);
+            $errors = $validator->errors();
+            // Return error messages for email
+            if (Arr::has($errors->messages(), 'name')) {
+                return response([
+                    'success' => false,
+                    'message' => $errors->messages()['name'][0],
+                ], 422);
+            }
         }
 
         // Check if the permission already exists
@@ -35,7 +39,7 @@ class CreatePermissionController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Permission ' . $request->name . ' already exists',
-            ], 400);
+            ], 409);
         }
 
         // Create permission
