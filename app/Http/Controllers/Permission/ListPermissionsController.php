@@ -15,6 +15,6 @@ class ListPermissionsController extends Controller
         return response([
             'success' => true,
             'permissions' => $permissions,
-        ]);
+        ], 200);
     }
 }
