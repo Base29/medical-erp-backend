@@ -45,7 +45,7 @@ class RevokePermissionForUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'User ' . $request->email . ' doesn\'t exists',
-            ]);
+            ], 404);
         }
 
         // Check if the permission exists which is being revoked for the user
@@ -55,7 +55,7 @@ class RevokePermissionForUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
-            ]);
+            ], 404);
         }
 
         // Check if the user has the permission that is being revoked
@@ -65,7 +65,7 @@ class RevokePermissionForUserController extends Controller
             return response([
                 'success' => false,
                 'message' => 'User ' . $user->email . ' doesn\'t have ' . $permission->name . ' permission',
-            ]);
+            ], 400);
         }
 
         // Revoke permission for the provided user
@@ -74,6 +74,6 @@ class RevokePermissionForUserController extends Controller
         return response([
             'success' => true,
             'message' => 'Permission ' . $permission->name . ' revoked for user ' . $user->email,
-        ]);
+        ], 200);
     }
 }
