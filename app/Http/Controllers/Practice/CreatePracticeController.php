@@ -49,7 +49,7 @@ class CreatePracticeController extends Controller
         return response([
             'success' => true,
             'message' => 'Practice with name ' . $practice->practice_name . ' created successfully',
-        ]);
+        ], 200);
 
     }
 }
