@@ -15,6 +15,6 @@ class ListPracticesController extends Controller
         return response([
             'success' => true,
             'practices' => $practices,
-        ]);
+        ], 200);
     }
 }
