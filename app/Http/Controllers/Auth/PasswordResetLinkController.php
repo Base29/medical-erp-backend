@@ -17,8 +17,6 @@ class PasswordResetLinkController extends Controller
 {
     public function __invoke(Request $request)
     {
-        $credentials = request()->validate(['email' => 'required|email']);
-
         // Validation rules
         $rules = [
             'email' => 'required|email',
@@ -30,7 +28,6 @@ class PasswordResetLinkController extends Controller
         // If validation fails
         if ($validator->fails()) {
             $errors = $validator->errors();
-
             // Return error messages for email
             if (Arr::has($errors->messages(), 'email')) {
                 return response([
@@ -40,6 +37,7 @@ class PasswordResetLinkController extends Controller
             }
         }
 
+        // Check if the user exists
         $user = User::where('email', $request->only('email'))->first();
 
         if (!$user) {
@@ -49,7 +47,7 @@ class PasswordResetLinkController extends Controller
             ], 404);
         }
 
-        Password::sendResetLink($request->email);
+        Password::sendResetLink($request->only('email'));
 
         return response([
             'success' => true,
