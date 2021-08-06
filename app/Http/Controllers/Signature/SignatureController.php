@@ -45,13 +45,14 @@ class SignatureController extends Controller
         // Checking if the current logged in user has already signed the policy
         $already_signed = $policy->signatures->contains('user_id', auth()->user()->id);
 
+        //TODO: Commented the below code block for testing purpose. This should be removed in production
         // Returning response incase the policy is already signed by the current logged in user
-        if ($already_signed) {
-            return response([
-                'success' => false,
-                'message' => auth()->user()->name . ' has already signed ' . $policy->name,
-            ]);
-        }
+        // if ($already_signed) {
+        //     return response([
+        //         'success' => false,
+        //         'message' => auth()->user()->name . ' has already signed ' . $policy->name,
+        //     ]);
+        // }
 
         // Creating signature of the current logged in user
         $signature = new Signature();
