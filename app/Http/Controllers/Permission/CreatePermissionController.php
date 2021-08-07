@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Permission;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 
@@ -22,14 +22,8 @@ class CreatePermissionController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-            // Return error messages for email
-            if (Arr::has($errors->messages(), 'name')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['name'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if the permission already exists

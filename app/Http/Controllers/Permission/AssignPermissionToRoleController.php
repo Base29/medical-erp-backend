@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Permission;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -26,23 +26,8 @@ class AssignPermissionToRoleController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error messages for role
-            if (Arr::has($errors->messages(), 'role')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['role'][0],
-                ], 422);
-            }
-
-            // Return error messages for permission
-            if (Arr::has($errors->messages(), 'permission')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['permission'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if the role exists

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Permission;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 
@@ -26,23 +26,8 @@ class AssignPermissionToUserController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error message for email
-            if (Arr::has($errors->messages(), 'email')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['email'][0],
-                ], 422);
-            }
-
-            // Return error message for permission
-            if (Arr::has($errors->messages(), 'permission')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['permission'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if the user exists
