@@ -6,9 +6,9 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
@@ -31,31 +31,8 @@ class PasswordResetController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error messages for email
-            if (Arr::has($errors->messages(), 'email')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['email'][0],
-                ], 422);
-            }
-
-            // Return error messages for password
-            if (Arr::has($errors->messages(), 'password')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['password'][0],
-                ], 422);
-            }
-
-            // Return error messages for token
-            if (Arr::has($errors->messages(), 'token')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['token'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         $status = Password::reset(
