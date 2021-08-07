@@ -12,7 +12,7 @@ use App\Http\Controllers\Permission\DeletePermissionController;
 use App\Http\Controllers\Permission\ListPermissionsController;
 use App\Http\Controllers\Permission\RevokePermissionForRoleController;
 use App\Http\Controllers\Permission\RevokePermissionForUserController;
-use App\Http\Controllers\Policy\PolicyController;
+use App\Http\Controllers\Policy\ListPoliciesController;
 use App\Http\Controllers\Practice\AssignPracticeToUserController;
 use App\Http\Controllers\Practice\CreatePracticeController;
 use App\Http\Controllers\Practice\DeletePracticeController;
@@ -86,7 +86,11 @@ Route::middleware(['auth:api'])->group(function () {
     // Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
     // Route::get('practices', [PracticeController::class, 'get_practices']);
     Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
-    Route::get('policies', [PolicyController::class, 'fetch_policies']);
+
+    // Endpoints for policies
+    Route::prefix('policies')->group(function () {
+        Route::get('/', ListPoliciesController::class)->name('policies');
+    });
 
     // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
