@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Practice;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class RevokePracticeForUserController extends Controller
@@ -24,23 +24,8 @@ class RevokePracticeForUserController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error message for email
-            if (Arr::has($errors->messages(), 'email')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['email'][0],
-                ], 422);
-            }
-
-            // Return error messages for practice
-            if (Arr::has($errors->messages(), 'practice')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['practice'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if user exists

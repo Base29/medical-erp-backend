@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Practice;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class AssignPracticeToUserController extends Controller
@@ -24,20 +24,8 @@ class AssignPracticeToUserController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors());
-            $errors = $validator->errors();
-            if (Arr::has($errors->messages(), 'email')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['email'][0],
-                ], 422);
-            }
-            if (Arr::has($errors->messages(), 'practice')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['practice'][0],
-                ]);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if user exists

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Practice;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 
 class CreatePracticeController extends Controller
@@ -22,13 +22,8 @@ class CreatePracticeController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-            if (Arr::has($errors->messages(), 'name')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['name'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if the practice already exist
