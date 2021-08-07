@@ -23,7 +23,7 @@ use App\Http\Controllers\Role\CreateRoleController;
 use App\Http\Controllers\Role\DeleteRoleController;
 use App\Http\Controllers\Role\ListRolesController;
 use App\Http\Controllers\Role\RevokeRoleController;
-use App\Http\Controllers\Signature\SignatureController;
+use App\Http\Controllers\Signature\SignPolicyController;
 use App\Http\Controllers\User\CreateUserController;
 use App\Http\Controllers\User\DeleteUserController;
 use App\Http\Controllers\User\ListUsersController;
@@ -85,7 +85,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
     // Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
     // Route::get('practices', [PracticeController::class, 'get_practices']);
-    Route::post('sign-policy', [SignatureController::class, 'sign_policy']);
+    Route::post('sign-policy', SignPolicyController::class);
 
     // Endpoints for policies
     Route::prefix('policies')->group(function () {

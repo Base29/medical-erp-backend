@@ -9,11 +9,10 @@ use App\Models\Signature;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class SignatureController extends Controller
+class SignPolicyController extends Controller
 {
-    public function sign_policy(Request $request)
+    public function __invoke(Request $request)
     {
-
         // Validation rules
         $rules = [
             'confirmation' => 'required|boolean',
