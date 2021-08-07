@@ -1,4 +1,10 @@
 <?php
+/**
+ * Custom Pagination class
+ *
+ * This class can be used to paginate custom collections where restructuring of data set is required
+ */
+
 namespace App\Helpers;
 
 use Illuminate\Database\Eloquent\Collection;

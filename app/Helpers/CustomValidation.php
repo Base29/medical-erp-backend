@@ -1,4 +1,9 @@
 <?php
+/**
+ * Custom Validation class
+ *
+ * This class can be used to return custom error messages in response against the rules. This class works in conjuction with the default Laravel Validator
+ */
 namespace App\Helpers;
 
 use Illuminate\Support\Arr;
