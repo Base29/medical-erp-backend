@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers\Role;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
@@ -21,17 +21,9 @@ class CreateRoleController extends Controller
         $validator = Validator::make($request->all(), $rules);
 
         // If validation fails
-        // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error messages for name
-            if (Arr::has($errors->messages(), 'name')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['name'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Check if role is already created

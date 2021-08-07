@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Role;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
@@ -24,23 +24,8 @@ class AssignRoleController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            $errors = $validator->errors();
-
-            // Return error messages for email
-            if (Arr::has($errors->messages(), 'email')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['email'][0],
-                ], 422);
-            }
-
-            // Return error messages for role
-            if (Arr::has($errors->messages(), 'role')) {
-                return response([
-                    'success' => false,
-                    'message' => $errors->messages()['role'][0],
-                ], 422);
-            }
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Checking if user exists
