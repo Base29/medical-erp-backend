@@ -1,5 +1,5 @@
 <?php
-namespace App\Helpers\CustomPagination;
+namespace App\Helpers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;

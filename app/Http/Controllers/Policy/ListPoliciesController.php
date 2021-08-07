@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Policy;
 
-use App\Helpers\CustomPagination\CustomPagination;
+use App\Helpers\CustomPagination;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\User;
@@ -44,7 +44,7 @@ class ListPoliciesController extends Controller
         return response([
             'success' => true,
             'policies' => $policies_paginated,
-        ]);
+        ], 200);
     }
 
     private function signature_data($signatures)

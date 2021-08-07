@@ -31,7 +31,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/CustomPagination.php"
+            "app/Helpers/CustomPagination.php",
+            "app/Helpers/CustomValidation.php"
         ]
     },
     "autoload-dev": {
