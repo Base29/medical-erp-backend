@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Signature;
 
+use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Signature;
@@ -24,11 +25,8 @@ class SignatureController extends Controller
 
         // If validation fails
         if ($validator->fails()) {
-            ray($validator->errors()->all());
-            return response([
-                'success' => false,
-                'message' => 'All fields are required',
-            ], 422);
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
         }
 
         // Fetching policy and related signatures
