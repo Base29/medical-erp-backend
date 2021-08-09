@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Policy;
+use App\Models\Room;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -23,6 +24,11 @@ class Practice extends Model
     public function policies()
     {
         return $this->hasMany(Policy::class);
+    }
+
+    public function rooms()
+    {
+        return $this->hasMany(Room::class);
     }
 
 }

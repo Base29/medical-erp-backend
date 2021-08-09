@@ -14,7 +14,9 @@ class AddPracticeIdFieldToPoliciesTable extends Migration
     public function up()
     {
         Schema::table('policies', function (Blueprint $table) {
-            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            if (!Schema::hasColumn('policies', 'practice_id')) {
+                $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            }
         });
     }
 
