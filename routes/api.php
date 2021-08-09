@@ -23,6 +23,7 @@ use App\Http\Controllers\Role\CreateRoleController;
 use App\Http\Controllers\Role\DeleteRoleController;
 use App\Http\Controllers\Role\ListRolesController;
 use App\Http\Controllers\Role\RevokeRoleController;
+use App\Http\Controllers\Room\CreateRoomController;
 use App\Http\Controllers\Signature\SignPolicyController;
 use App\Http\Controllers\User\CreateUserController;
 use App\Http\Controllers\User\DeleteUserController;
@@ -99,6 +100,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', CreateUserController::class);
             Route::delete('delete/{id}', DeleteUserController::class);
             Route::get('/', ListUsersController::class);
+        });
+
+        // Endpoints for room operations
+        Route::prefix('rooms')->group(function () {
+            Route::post('create', CreateRoomController::class);
         });
     });
 
