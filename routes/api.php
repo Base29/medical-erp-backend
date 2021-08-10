@@ -24,6 +24,7 @@ use App\Http\Controllers\Role\DeleteRoleController;
 use App\Http\Controllers\Role\ListRolesController;
 use App\Http\Controllers\Role\RevokeRoleController;
 use App\Http\Controllers\Room\CreateRoomController;
+use App\Http\Controllers\Room\DeleteRoomController;
 use App\Http\Controllers\Signature\SignPolicyController;
 use App\Http\Controllers\User\CreateUserController;
 use App\Http\Controllers\User\DeleteUserController;
@@ -83,9 +84,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('revoke-for-user', RevokePracticeForUserController::class);
         });
     });
-    // Route::post('assign-practice', [PracticeController::class, 'assign_practice']);
-    // Route::post('assign-policy', [PracticeController::class, 'assign_policy']);
-    // Route::get('practices', [PracticeController::class, 'get_practices']);
+
     Route::post('sign-policy', SignPolicyController::class);
 
     // Endpoints for policies
@@ -105,6 +104,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Endpoints for room operations
         Route::prefix('rooms')->group(function () {
             Route::post('create', CreateRoomController::class);
+            Route::delete('delete/{id}', DeleteRoomController::class);
         });
     });
 
