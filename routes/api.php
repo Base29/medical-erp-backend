@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\PasswordResetController;
 use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\VerifyTokenController;
+use App\Http\Controllers\CheckList\CreateCheckListController;
 use App\Http\Controllers\Permission\AssignPermissionToRoleController;
 use App\Http\Controllers\Permission\AssignPermissionToUserController;
 use App\Http\Controllers\Permission\CreatePermissionController;
@@ -107,6 +108,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', ListRoomsController::class);
             Route::post('create', CreateRoomController::class);
             Route::delete('delete/{id}', DeleteRoomController::class);
+        });
+
+        // Endpoints for CheckList Operations
+        Route::prefix('checklists')->group(function () {
+            Route::post('create', CreateCheckListController::class);
         });
     });
 
