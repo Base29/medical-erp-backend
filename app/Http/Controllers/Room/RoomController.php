@@ -9,9 +9,10 @@ use App\Models\Room;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class CreateRoomController extends Controller
+class RoomController extends Controller
 {
-    public function __invoke(Request $request)
+    // Method for creating room
+    public function create(Request $request)
     {
         // Validation rules
         $rules = [
@@ -57,6 +58,62 @@ class CreateRoomController extends Controller
         return response([
             'success' => true,
             'message' => 'Room ' . $room->name . ' created successfully for practice ' . $practice->practice_name,
+        ], 200);
+    }
+
+    // Method for deleting room
+    public function delete($id)
+    {
+        // Check if the room exists with the provided $id
+        $room = Room::find($id);
+
+        if (!$room) {
+            return response([
+                'success' => false,
+                'message' => 'Room not found with the provided id ' . $id,
+            ], 404);
+        }
+
+        $room->delete();
+
+        return response([
+            'success' => true,
+            'message' => 'Room deleted successfully',
+        ], 200);
+    }
+
+    // Method for fetching rooms
+    public function fetch(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'practice' => 'required|numeric',
+        ];
+
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
+        }
+
+        //Check if the practice exists
+        $practice = Practice::find($request->practice);
+
+        if (!$practice) {
+            return response([
+                'success' => false,
+                'message' => 'Practice not found with the provided id ' . $request->practice,
+            ], 404);
+        }
+        // Get rooms for the practice
+        $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+
+        return response([
+            'success' => true,
+            'rooms' => $rooms,
         ], 200);
     }
 }

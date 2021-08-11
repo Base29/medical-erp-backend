@@ -9,9 +9,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
-class CreateUserController extends Controller
+class UserController extends Controller
 {
-    public function __invoke(Request $request)
+    // Method for creating user
+    public function create(Request $request)
     {
         // Validation rules
         $rules = [
@@ -55,5 +56,38 @@ class CreateUserController extends Controller
             'success' => false,
             'message' => 'Something went wrong while creating user',
         ], 400);
+    }
+
+    // Method for deleting user
+    public function delete($id)
+    {
+        // Check if the user exists with the provided $id
+        $user = User::find($id);
+
+        if (!$user) {
+            return response([
+                'success' => false,
+                'message' => 'No user found with the provided id ' . $id,
+            ], 404);
+        }
+
+        // Delete user with the provided $id
+        $user->delete();
+        return response([
+            'success' => true,
+            'message' => 'User delete successfully',
+        ], 200);
+    }
+
+    // Method for fetching users
+    public function fetch()
+    {
+        // Fetching all the users from database
+        $users = User::with('roles', 'practices')->paginate(10);
+
+        return response([
+            'success' => true,
+            'users' => $users,
+        ], 200);
     }
 }

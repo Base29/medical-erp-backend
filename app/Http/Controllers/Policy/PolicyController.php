@@ -5,11 +5,11 @@ namespace App\Http\Controllers\Policy;
 use App\Helpers\CustomPagination;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
-use App\Models\User;
 
-class ListPoliciesController extends Controller
+class PolicyController extends Controller
 {
-    public function __invoke()
+    // Method for fetching policies
+    public function fetch_policies()
     {
         // Fetching policies
         $policies = Policy::with('signatures')->get();
@@ -47,6 +47,7 @@ class ListPoliciesController extends Controller
         ], 200);
     }
 
+    // Method for getting user data for the signatures
     private function signature_data($signatures)
     {
         $signature_arr = [];
