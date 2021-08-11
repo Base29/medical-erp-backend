@@ -9,7 +9,7 @@ use App\Models\Policy;
 class PolicyController extends Controller
 {
     // Method for fetching policies
-    public function fetch_policies()
+    public function fetch()
     {
         // Fetching policies
         $policies = Policy::with('signatures')->get();
