@@ -59,8 +59,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', [PracticeController::class, 'fetch']);
             Route::post('create', [PracticeController::class, 'create']);
             Route::delete('delete/{id}', [PracticeController::class, 'delete']);
-            Route::post('assign-to-user', [PracticeController::class, 'assign_user']);
-            Route::post('revoke-for-user', [PracticeController::class, 'revoke_user']);
+            Route::post('assign-to-user', [PracticeController::class, 'assign_to_user']);
+            Route::post('revoke-for-user', [PracticeController::class, 'revoke_for_user']);
         });
     });
 

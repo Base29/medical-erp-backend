@@ -85,7 +85,7 @@ class PracticeController extends Controller
     }
 
     // Method for assigning user to practice
-    public function assign_user(Request $request)
+    public function assign_to_user(Request $request)
     {
         // Validation rules
         $rules = [
@@ -143,7 +143,7 @@ class PracticeController extends Controller
     }
 
     // Method for revoking user from practice
-    public function revoke_user(Request $request)
+    public function revoke_for_user(Request $request)
     {
         // Validation rules
         $rules = [
