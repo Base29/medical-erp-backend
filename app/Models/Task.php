@@ -16,7 +16,7 @@ class Task extends Model
         'status',
         'comment',
         'reason',
-        'checklist_id',
+        'check_list_id',
     ];
 
     public function checkList()

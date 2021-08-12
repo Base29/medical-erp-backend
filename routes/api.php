@@ -3,11 +3,11 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Permission\PermissionController;
-use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignPolicyController;
+use App\Http\Controllers\Task\TaskController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -66,11 +66,6 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('sign-policy', SignPolicyController::class);
 
-    // Endpoints for policies
-    Route::prefix('policies')->group(function () {
-        Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
-    });
-
     // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
         // Endpoints for user operations
@@ -78,6 +73,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [UserController::class, 'create']);
             Route::delete('delete/{id}', [UserController::class, 'delete']);
             Route::get('/', [UserController::class, 'fetch']);
+        });
+
+        // Endpoints for policy operations
+        Route::prefix('policies')->group(function () {
+            Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
         });
 
         // Endpoints for room operations
@@ -90,6 +90,11 @@ Route::middleware(['auth:api'])->group(function () {
         // Endpoints for CheckList Operations
         Route::prefix('checklists')->group(function () {
             Route::post('create', [CheckListController::class, 'create']);
+        });
+
+        // Endpoints for Task operations
+        Route::prefix('tasks')->group(function () {
+            Route::post('create', [TaskController::class, 'create']);
         });
     });
 

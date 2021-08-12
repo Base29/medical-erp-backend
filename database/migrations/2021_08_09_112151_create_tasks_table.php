@@ -20,7 +20,7 @@ class CreateTasksTable extends Migration
             $table->boolean('status')->nullable();
             $table->text('comment')->nullable();
             $table->string('reason')->nullable();
-            $table->foreignId('checklist_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('check_list_id')->constrained()->cascadeOnDelete();
             $table->softDeletes();
             $table->timestamps();
         });
