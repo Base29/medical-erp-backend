@@ -95,6 +95,8 @@ Route::middleware(['auth:api'])->group(function () {
         // Endpoints for Task operations
         Route::prefix('tasks')->group(function () {
             Route::post('create', [TaskController::class, 'create']);
+            Route::post('update', [TaskController::class, 'update']);
+            Route::delete('delete/{id}', [TaskController::class, 'delete']);
         });
     });
 

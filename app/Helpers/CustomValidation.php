@@ -14,6 +14,8 @@ class CustomValidation
     {
         foreach ($rules as $key => $value) {
             $errors = $validator->errors();
+            ray($errors);
+            ray('Validation');
 
             // Return error messages for email
             if (Arr::has($errors->messages(), $key)) {

@@ -62,4 +62,25 @@ class TaskController extends Controller
             'message' => 'Task created successfully',
         ], 200);
     }
+
+    // Method for deleting a task
+    public function delete($id)
+    {
+        $task = Task::find($id);
+
+        if (!$task) {
+            return response([
+                'success' => false,
+                'message' => 'Task not found with the provided id ' . $id,
+            ], 404);
+        }
+
+        // Delete task
+        $task->delete();
+
+        return response([
+            'success' => true,
+            'message' => 'Task deleted successfully',
+        ], 200);
+    }
 }
