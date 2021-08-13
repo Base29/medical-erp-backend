@@ -66,6 +66,7 @@ class TaskController extends Controller
     // Method for deleting a task
     public function delete($id)
     {
+        // Check if a task exists with a provided $id
         $task = Task::find($id);
 
         if (!$task) {
