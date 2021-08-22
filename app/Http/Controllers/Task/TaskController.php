@@ -84,4 +84,13 @@ class TaskController extends Controller
             'message' => 'Task deleted successfully',
         ], 200);
     }
+
+    public function update($id, Request $request)
+    {
+        $allowed_fields = [
+            'status',
+            'reason',
+            'comment',
+        ];
+    }
 }
