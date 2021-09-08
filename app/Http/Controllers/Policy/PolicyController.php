@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\Policy;
 
 use App\Helpers\CustomPagination;
+use App\Helpers\CustomValidation;
+use App\Helpers\FileUpload;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PolicyController extends Controller
 {
@@ -75,5 +80,27 @@ class PolicyController extends Controller
         }
 
         return $signature_arr;
+    }
+
+    public function create(Request $request)
+    {
+        ray($request->all());
+
+        // Validation rules
+        $rules = [
+            'name' => 'required',
+            'attachment' => 'required|file',
+        ];
+
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
+        }
+
+        return FileUpload::upload($request->file('attachment'), 'policies', 's3');
     }
 }
