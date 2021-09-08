@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Policy;
 use App\Helpers\CustomPagination;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
+use App\Models\User;
 
 class PolicyController extends Controller
 {
