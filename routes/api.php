@@ -70,6 +70,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Endpoints for policies
     Route::prefix('policies')->group(function () {
         Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
+        Route::post('/create', [PolicyController::class, 'create']);
     });
 
     // Routes accessible by super admin and managers only

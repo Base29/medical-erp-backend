@@ -3,9 +3,14 @@
 namespace App\Http\Controllers\Policy;
 
 use App\Helpers\CustomPagination;
+use App\Helpers\CustomValidation;
+use App\Helpers\FileUpload;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
+use App\Models\Practice;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PolicyController extends Controller
 {
@@ -76,5 +81,60 @@ class PolicyController extends Controller
         }
 
         return $signature_arr;
+    }
+
+    public function create(Request $request)
+    {
+        ray($request->all());
+
+        // Validation rules
+        $rules = [
+            'name' => 'required',
+            'attachment' => 'required|file|mimes:doc,docx,pdf',
+            'practice' => 'required|numeric',
+        ];
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
+        }
+
+        // Check if the practice exists
+        $practice = Practice::find($request->practice);
+
+        if (!$practice) {
+            return response([
+                'success' => false,
+                'message' => 'Practice with the ID ' . $request->practice . ' not found',
+            ]);
+        }
+
+        // Check if the policy exists
+        $policy_exists = Policy::where('name', $request->name)->first();
+
+        if ($policy_exists) {
+            return response([
+                'success' => false,
+                'message' => 'Policy with the name ' . $request->name . ' already exists',
+            ]);
+        }
+
+        // Upload policy document
+        $attachment_url = FileUpload::upload($request->file('attachment'), 'policies', 's3');
+
+        // Create Policy
+        $policy = new Policy();
+        $policy->name = $request->name;
+        $policy->attachment = $attachment_url;
+        $policy->practice_id = $practice->id;
+        $policy->save();
+
+        return response([
+            'success' => true,
+            'message' => 'Policy created successfully',
+        ]);
     }
 }
