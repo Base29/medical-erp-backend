@@ -8,17 +8,19 @@ class FileUpload
 {
     public static function upload($file, $folder, $disk)
     {
-        $filename = time() . '.' . $file->getClientOriginalName();
-        $path = $file->storePubliclyAs(
-            $folder,
-            $filename,
-            's3'
-        );
-        $url = Storage::disk($disk)->url($path);
 
-        return response([
-            'success' => true,
-            'file' => $url,
-        ]);
+        $file_url = '';
+        if ($disk === 's3') {
+
+            $filename = time() . '.' . $file->getClientOriginalName();
+            $path = $file->storePubliclyAs(
+                $folder,
+                $filename,
+                $disk
+            );
+            $file_url = Storage::disk($disk)->url($path);
+        }
+
+        return $file_url;
     }
 }
