@@ -134,7 +134,7 @@ class PolicyController extends Controller
 
         return response([
             'success' => true,
-            'message' => 'Policy created successfully',
+            'policy' => $policy,
         ]);
     }
 }
