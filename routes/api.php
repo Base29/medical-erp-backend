@@ -71,6 +71,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('policies')->group(function () {
         Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
         Route::post('/create', [PolicyController::class, 'create']);
+        Route::delete('/delete/{id}', [PolicyController::class, 'delete']);
     });
 
     // Routes accessible by super admin and managers only

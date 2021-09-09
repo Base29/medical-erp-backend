@@ -109,7 +109,7 @@ class PolicyController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Practice with the ID ' . $request->practice . ' not found',
-            ]);
+            ], 404);
         }
 
         // Check if the policy exists
@@ -119,7 +119,7 @@ class PolicyController extends Controller
             return response([
                 'success' => false,
                 'message' => 'Policy with the name ' . $request->name . ' already exists',
-            ]);
+            ], 409);
         }
 
         // Upload policy document
@@ -135,6 +135,27 @@ class PolicyController extends Controller
         return response([
             'success' => true,
             'policy' => $policy,
-        ]);
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        // Check if practice exists
+        $policy = Policy::find($id);
+
+        if (!$policy) {
+            return response([
+                'success' => false,
+                'message' => 'Policy with the provided id ' . $id . ' doesn\'t exists',
+            ], 404);
+        }
+
+        // Deleting practice
+        $policy->delete();
+
+        return response([
+            'success' => true,
+            'message' => 'Policy deleted successfully',
+        ], 200);
     }
 }
