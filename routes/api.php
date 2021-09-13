@@ -9,6 +9,7 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignPolicyController;
 use App\Http\Controllers\Task\TaskController;
+use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -69,6 +70,8 @@ Route::middleware(['auth:api'])->group(function () {
     // Endpoints for policy operations
     Route::prefix('policies')->group(function () {
         Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
+        Route::post('/create', [PolicyController::class, 'create']);
+        Route::delete('/delete/{id}', [PolicyController::class, 'delete']);
     });
 
     // Routes accessible by super admin and managers only
