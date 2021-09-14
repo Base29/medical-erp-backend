@@ -85,7 +85,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Endpoints for room operations
         Route::prefix('rooms')->group(function () {
-            Route::get('/', [RoomController::class, 'fetch']);
+            Route::post('/', [RoomController::class, 'fetch']);
             Route::post('create', [RoomController::class, 'create']);
             Route::delete('delete/{id}', [RoomController::class, 'delete']);
         });

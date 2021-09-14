@@ -85,35 +85,44 @@ class RoomController extends Controller
     // Method for fetching rooms
     public function fetch(Request $request)
     {
-        // Validation rules
-        $rules = [
-            'practice' => 'required|numeric',
-        ];
+        if ($request->has('practice')) {
+            // Validation rules
+            $rules = [
+                'practice' => 'required|numeric',
+            ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+            // Validating params in request
+            $validator = Validator::make($request->all(), $rules);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
-        }
+            // If validation fails
+            if ($validator->fails()) {
+                // Return error messages against $rules
+                return CustomValidation::error_messages($rules, $validator);
+            }
 
-        //Check if the practice exists
-        $practice = Practice::find($request->practice);
+            //Check if the practice exists
+            $practice = Practice::find($request->practice);
 
-        if (!$practice) {
+            if (!$practice) {
+                return response([
+                    'success' => false,
+                    'message' => 'Practice not found with the provided id ' . $request->practice,
+                ], 404);
+            }
+            // Get rooms for the practice
+            $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+
             return response([
-                'success' => false,
-                'message' => 'Practice not found with the provided id ' . $request->practice,
-            ], 404);
+                'success' => true,
+                'rooms' => $rooms,
+            ], 200);
         }
-        // Get rooms for the practice
-        $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+
+        $rooms = Room::paginate(10);
 
         return response([
             'success' => true,
-            'rooms' => $rooms,
-        ], 200);
+            'rooms' => $rooms->count(),
+        ]);
     }
 }
