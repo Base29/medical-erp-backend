@@ -125,4 +125,57 @@ class RoomController extends Controller
             'rooms' => $rooms,
         ]);
     }
+
+    public function update(Request $request)
+    {
+        if (!$request->has('status') && !$request->has('active')) {
+            return response([
+                'success' => false,
+                'message' => 'Key status or active is required',
+            ], 400);
+        }
+
+        // Validation rules
+        $rules = [
+            'status' => 'boolean',
+            'active' => 'boolean',
+            'room' => 'required|numeric',
+        ];
+
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            // Return error messages against $rules
+            return CustomValidation::error_messages($rules, $validator);
+        }
+
+        // Check if the room exists
+        $room = Room::find($request->room);
+
+        if (!$room) {
+            return response([
+                'success' => false,
+                'message' => 'Room with ID ' . $request->room . ' not found',
+            ], 404);
+        }
+
+        // If status key is being sent
+        if ($request->has('status')) {
+            $room->status = $request->status;
+        }
+
+        // If active key is being sent
+        if ($request->has('active')) {
+            $room->active = $request->active;
+        }
+
+        $room->save();
+
+        return response([
+            'success' => true,
+            'room' => $room,
+        ]);
+    }
 }

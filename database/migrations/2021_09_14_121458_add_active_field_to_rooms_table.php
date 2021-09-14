@@ -14,8 +14,8 @@ class AddActiveFieldToRoomsTable extends Migration
     public function up()
     {
         Schema::table('rooms', function (Blueprint $table) {
-            $table->boolean('active')->default(0);
-            $table->boolean('status')->default(0);
+            $table->boolean('active')->default(0)->after('practice_id');
+            $table->boolean('status')->default(0)->after('practice_id');
         });
     }
 

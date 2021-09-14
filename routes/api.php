@@ -88,6 +88,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [RoomController::class, 'fetch']);
             Route::post('create', [RoomController::class, 'create']);
             Route::delete('delete/{id}', [RoomController::class, 'delete']);
+            Route::post('update', [RoomController::class, 'update']);
         });
 
         // Endpoints for CheckList Operations
