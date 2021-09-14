@@ -176,6 +176,6 @@ class RoomController extends Controller
         return response([
             'success' => true,
             'room' => $room,
-        ]);
+        ], 200);
     }
 }
