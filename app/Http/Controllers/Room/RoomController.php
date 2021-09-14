@@ -122,7 +122,7 @@ class RoomController extends Controller
 
         return response([
             'success' => true,
-            'rooms' => $rooms->count(),
+            'rooms' => $rooms,
         ]);
     }
 }
