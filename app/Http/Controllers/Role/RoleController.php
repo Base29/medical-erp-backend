@@ -52,7 +52,7 @@ class RoleController extends Controller
     }
 
     // Method for deleting role
-    public function delete()
+    public function delete($id)
     {
         // Check if the user exists with the provided $id
         $role = Role::find($id);
