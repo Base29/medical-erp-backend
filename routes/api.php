@@ -66,7 +66,6 @@ Route::middleware(['auth:api'])->group(function () {
 
         // Endpoints for policies
         Route::prefix('policies')->group(function () {
-            Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
             Route::post('/create', [PolicyController::class, 'create']);
             Route::delete('/delete/{id}', [PolicyController::class, 'delete']);
         });
@@ -81,6 +80,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     Route::post('sign-policy', SignPolicyController::class);
     Route::post('rooms/', [RoomController::class, 'fetch'])->middleware(['permission:view_rooms']);
+    Route::get('policies/', [PolicyController::class, 'fetch'])->middleware(['permission:view_policies'])->name('policies');
 
     // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
