@@ -63,25 +63,26 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('assign-to-user', [PracticeController::class, 'assign_to_user']);
             Route::post('revoke-for-user', [PracticeController::class, 'revoke_for_user']);
         });
-    });
 
-    Route::post('sign-policy', SignPolicyController::class);
+        // Endpoints for policies
+        Route::prefix('policies')->group(function () {
+            Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
+            Route::post('/create', [PolicyController::class, 'create']);
+            Route::delete('/delete/{id}', [PolicyController::class, 'delete']);
+        });
 
-    // Endpoints for policies
-    Route::prefix('policies')->group(function () {
-        Route::get('/', [PolicyController::class, 'fetch'])->name('policies');
-        Route::post('/create', [PolicyController::class, 'create']);
-        Route::delete('/delete/{id}', [PolicyController::class, 'delete']);
-    });
-
-    // Routes accessible by super admin and managers only
-    Route::middleware(['role:manager|super_admin'])->group(function () {
         // Endpoints for user operations
         Route::prefix('users')->group(function () {
             Route::post('create', [UserController::class, 'create']);
             Route::delete('delete/{id}', [UserController::class, 'delete']);
             Route::get('/', [UserController::class, 'fetch']);
         });
+    });
+
+    Route::post('sign-policy', SignPolicyController::class);
+
+    // Routes accessible by super admin and managers only
+    Route::middleware(['role:manager|super_admin'])->group(function () {
 
         // Endpoints for room operations
         Route::prefix('rooms')->group(function () {
