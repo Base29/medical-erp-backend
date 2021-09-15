@@ -18,6 +18,7 @@ class RoomController extends Controller
         $rules = [
             'name' => 'required',
             'practice' => 'required|numeric',
+            'icon' => 'required',
         ];
 
         // Validating params in request
@@ -53,6 +54,7 @@ class RoomController extends Controller
         $room = new Room();
         $room->name = $request->name;
         $room->practice_id = $request->practice;
+        $room->icon = $request->icon;
         $room->save();
 
         return response([
