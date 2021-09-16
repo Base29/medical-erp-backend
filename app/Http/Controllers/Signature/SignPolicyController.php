@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Signature;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class SignPolicyController extends Controller
 {
@@ -19,13 +18,12 @@ class SignPolicyController extends Controller
             'policy_id' => 'required|numeric',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Fetching policy and related signatures
