@@ -5,6 +5,7 @@ use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Practice\PracticeController;
+use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignPolicyController;
@@ -90,6 +91,10 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [RoomController::class, 'create']);
             Route::delete('delete/{id}', [RoomController::class, 'delete']);
             Route::post('update', [RoomController::class, 'update']);
+        });
+
+        Route::prefix('reasons')->group(function () {
+            Route::post('create', [ReasonController::class, 'create']);
         });
 
         // Endpoints for CheckList Operations
