@@ -7,10 +7,23 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\Validator;
 
 class CustomValidation
 {
-    public static function error_messages($rules, $validator)
+    public static function validate_request($rules, $request)
+    {
+        // Validating params in request
+        $validator = Validator::make($request->all(), $rules);
+
+        // If validation fails
+        if ($validator->fails()) {
+            // Return error messages against $rules
+            return self::error_messages($rules, $validator);
+        }
+    }
+
+    private static function error_messages($rules, $validator)
     {
         foreach ($rules as $key => $value) {
             $errors = $validator->errors();
