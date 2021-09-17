@@ -96,6 +96,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('reasons')->group(function () {
             Route::get('/', [ReasonController::class, 'fetch']);
             Route::post('create', [ReasonController::class, 'create']);
+            Route::delete('delete/{id}', [ReasonController::class, 'delete']);
         });
 
         // Endpoints for CheckList Operations
