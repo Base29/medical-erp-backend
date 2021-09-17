@@ -94,6 +94,7 @@ Route::middleware(['auth:api'])->group(function () {
         });
 
         Route::prefix('reasons')->group(function () {
+            Route::get('/', [ReasonController::class, 'fetch']);
             Route::post('create', [ReasonController::class, 'create']);
         });
 

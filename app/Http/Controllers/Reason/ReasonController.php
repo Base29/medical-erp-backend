@@ -44,4 +44,15 @@ class ReasonController extends Controller
             'reason' => $reason,
         ]);
     }
+
+    public function fetch()
+    {
+        // Reasons
+        $reasons = Reason::paginate(10);
+
+        return response([
+            'success' => true,
+            'reasons' => $reasons,
+        ]);
+    }
 }
