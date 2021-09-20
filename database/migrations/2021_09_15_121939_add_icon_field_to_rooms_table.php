@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class DropSoftDeleteFromUsersTable extends Migration
+class AddIconFieldToRoomsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class DropSoftDeleteFromUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('users', function (Blueprint $table) {
-            if (Schema::hasColumn('users', 'deleted_at')) {
-                $table->dropSoftDeletes();
-            }
+        Schema::table('rooms', function (Blueprint $table) {
+            $table->string('icon')->default('free_breakfast')->after('practice_id');
         });
     }
 
@@ -27,7 +25,7 @@ class DropSoftDeleteFromUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('users', function (Blueprint $table) {
+        Schema::table('rooms', function (Blueprint $table) {
             //
         });
     }

@@ -6,7 +6,6 @@ use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -20,13 +19,12 @@ class PermissionController extends Controller
             'name' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the permission already exists
@@ -95,13 +93,12 @@ class PermissionController extends Controller
             'permission' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the role exists
@@ -152,13 +149,12 @@ class PermissionController extends Controller
             'permission' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the user exists
@@ -209,13 +205,12 @@ class PermissionController extends Controller
             'permission' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the role exists for which the permission is being revoked
@@ -266,13 +261,12 @@ class PermissionController extends Controller
             'permission' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the user exists for which the permission is being revoked

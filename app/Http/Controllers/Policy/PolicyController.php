@@ -10,7 +10,6 @@ use App\Models\Policy;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class PolicyController extends Controller
 {
@@ -93,13 +92,13 @@ class PolicyController extends Controller
             'attachment' => 'required|file|mimes:doc,docx,pdf',
             'practice' => 'required|numeric',
         ];
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the practice exists

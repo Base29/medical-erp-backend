@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\Room;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class RoomController extends Controller
 {
@@ -18,15 +17,15 @@ class RoomController extends Controller
         $rules = [
             'name' => 'required',
             'practice' => 'required|numeric',
+            'icon' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the practice exists
@@ -53,6 +52,7 @@ class RoomController extends Controller
         $room = new Room();
         $room->name = $request->name;
         $room->practice_id = $request->practice;
+        $room->icon = $request->icon;
         $room->save();
 
         return response([
@@ -85,35 +85,95 @@ class RoomController extends Controller
     // Method for fetching rooms
     public function fetch(Request $request)
     {
-        // Validation rules
-        $rules = [
-            'practice' => 'required|numeric',
-        ];
+        if ($request->has('practice')) {
+            // Validation rules
+            $rules = [
+                'practice' => 'required|numeric',
+            ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+            // Validation errors
+            $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
-        }
+            // Return errors
+            if ($request_errors) {
+                return $request_errors;
+            }
 
-        //Check if the practice exists
-        $practice = Practice::find($request->practice);
+            //Check if the practice exists
+            $practice = Practice::find($request->practice);
 
-        if (!$practice) {
+            if (!$practice) {
+                return response([
+                    'success' => false,
+                    'message' => 'Practice not found with the provided id ' . $request->practice,
+                ], 404);
+            }
+            // Get rooms for the practice
+            $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+
             return response([
-                'success' => false,
-                'message' => 'Practice not found with the provided id ' . $request->practice,
-            ], 404);
+                'success' => true,
+                'rooms' => $rooms,
+            ], 200);
         }
-        // Get rooms for the practice
-        $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+
+        $rooms = Room::paginate(10);
 
         return response([
             'success' => true,
             'rooms' => $rooms,
+        ]);
+    }
+
+    public function update(Request $request)
+    {
+        if (!$request->has('status') && !$request->has('active')) {
+            return response([
+                'success' => false,
+                'message' => 'Key status or active is required',
+            ], 400);
+        }
+
+        // Validation rules
+        $rules = [
+            'status' => 'boolean',
+            'active' => 'boolean',
+            'room' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Check if the room exists
+        $room = Room::find($request->room);
+
+        if (!$room) {
+            return response([
+                'success' => false,
+                'message' => 'Room with ID ' . $request->room . ' not found',
+            ], 404);
+        }
+
+        // If status key is being sent
+        if ($request->has('status')) {
+            $room->status = $request->status;
+        }
+
+        // If active key is being sent
+        if ($request->has('active')) {
+            $room->active = $request->active;
+        }
+
+        $room->save();
+
+        return response([
+            'success' => true,
+            'room' => $room,
         ], 200);
     }
 }

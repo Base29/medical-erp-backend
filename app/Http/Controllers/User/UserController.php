@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -21,13 +20,12 @@ class UserController extends Controller
             'password' => 'required|confirmed',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if the user already exists

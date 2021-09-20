@@ -6,7 +6,6 @@ use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
@@ -19,13 +18,12 @@ class RoleController extends Controller
             'name' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Check if role is already created
@@ -52,7 +50,7 @@ class RoleController extends Controller
     }
 
     // Method for deleting role
-    public function delete()
+    public function delete($id)
     {
         // Check if the user exists with the provided $id
         $role = Role::find($id);
@@ -92,13 +90,12 @@ class RoleController extends Controller
             'role' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Checking if user exists
@@ -147,13 +144,12 @@ class RoleController extends Controller
             'role' => 'required',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
         // Checking if user exists
