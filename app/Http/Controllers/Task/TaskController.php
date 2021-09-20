@@ -4,10 +4,8 @@ namespace App\Http\Controllers\Task;
 
 use App\Helpers\CustomValidation;
 use App\Http\Controllers\Controller;
-use App\Models\CheckList;
 use App\Models\Task;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Validator;
 
 class TaskController extends Controller
 {
@@ -21,46 +19,45 @@ class TaskController extends Controller
             'checklist' => 'required|numeric',
         ];
 
-        // Validating params in request
-        $validator = Validator::make($request->all(), $rules);
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
 
-        // If validation fails
-        if ($validator->fails()) {
-            // Return error messages against $rules
-            return CustomValidation::error_messages($rules, $validator);
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
         }
 
-        // Check if the checklist exists
-        $checklist = CheckList::find($request->checklist);
+        // // Check if the checklist exists
+        // $checklist = CheckList::where('id', $request->checklist)->with('tasks')->first();
 
-        if (!$checklist) {
-            return response([
-                'success' => false,
-                'message' => 'Checklist not found with the provided id ' . $request->checklist,
-            ], 404);
-        }
+        // if (!$checklist) {
+        //     return response([
+        //         'success' => false,
+        //         'message' => 'Checklist not found with the provided id ' . $request->checklist,
+        //     ], 404);
+        // }
 
-        // Check if the task with same name already exists in the checklist
-        $task_already_exist = $checklist->tasks->contains('name', $request->name);
+        // // Check if the task with same name already exists in the checklist
+        // $task_already_exist = $checklist->tasks->contains('name', $request->name);
 
-        if ($task_already_exist) {
-            return response([
-                'success' => false,
-                'message' => 'Task with name ' . $request->name . ' already exists in checklist ' . $checklist->name,
-            ], 409);
-        }
+        // if ($task_already_exist) {
+        //     return response([
+        //         'success' => false,
+        //         'message' => 'Task with name ' . $request->name . ' already exists in checklist ' . $checklist->name,
+        //     ], 409);
+        // }
 
-        // Create task
-        $task = new Task();
-        $task->name = $request->name;
-        $task->check_list_id = $checklist->id;
-        $task->frequency = $request->frequency;
-        $task->save();
+        // // Create task
+        // $task = new Task();
+        // $task->name = $request->name;
+        // $task->check_list_id = $checklist->id;
+        // $task->frequency = $request->frequency;
+        // $task->save();
 
-        return response([
-            'success' => true,
-            'message' => 'Task created successfully',
-        ], 200);
+        // return response([
+        //     'success' => true,
+        //     'message' => 'Task created successfully',
+        // ], 200);
     }
 
     // Method for deleting a task
