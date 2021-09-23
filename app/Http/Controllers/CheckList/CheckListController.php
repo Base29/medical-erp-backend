@@ -87,7 +87,7 @@ class CheckListController extends Controller
         }
 
         // Fetch checklists for the room
-        $checklists = CheckList::where('room_id', $room->id)->with('tasks')->paginate(10);
+        $checklists = CheckList::where('room_id', $room->id)->with('tasks')->first();
 
         return response([
             'success' => true,
