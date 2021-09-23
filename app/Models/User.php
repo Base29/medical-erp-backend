@@ -84,11 +84,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Signature::class);
     }
 
-    // public function signedPolicies()
-    // {
-    //     return $this->hasManyThrough(Signature::class, Policy::class);
-    // }
-
     public function signedBy(User $user)
     {
         return $this->signatures->contains('user_id', $user->id);
