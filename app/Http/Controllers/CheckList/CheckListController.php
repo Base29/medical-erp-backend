@@ -60,4 +60,38 @@ class CheckListController extends Controller
             'message' => 'Checklist created',
         ], 200);
     }
+
+    public function fetch(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'room' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Check if the room exists
+        $room = Room::find($request->room);
+
+        if (!$room) {
+            return response([
+                'success' => false,
+                'message' => 'Room with the ID ' . $request->room . ' not found',
+            ], 404);
+        }
+
+        // Fetch checklists for the room
+        $checklists = CheckList::where('room_id', $room->id)->with('tasks')->paginate(10);
+
+        return response([
+            'success' => true,
+            'checklists' => $checklists,
+        ], 200);
+    }
 }

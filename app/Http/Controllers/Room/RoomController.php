@@ -109,7 +109,7 @@ class RoomController extends Controller
                 ], 404);
             }
             // Get rooms for the practice
-            $rooms = Room::where('practice_id', $request->practice)->paginate(10);
+            $rooms = Room::where('practice_id', $request->practice)->with('check_lists')->paginate(10);
 
             return response([
                 'success' => true,
@@ -127,10 +127,17 @@ class RoomController extends Controller
 
     public function update(Request $request)
     {
-        if (!$request->has('status') && !$request->has('active')) {
+        // Allowed fields when updating a task
+        $allowed_fields = [
+            'status',
+            'active',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowed_fields)) {
             return response([
                 'success' => false,
-                'message' => 'Key status or active is required',
+                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
             ], 400);
         }
 
