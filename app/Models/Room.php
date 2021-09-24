@@ -21,7 +21,7 @@ class Room extends Model
         return $this->belongsTo(Practice::class);
     }
 
-    public function checkLists()
+    public function checklists()
     {
         return $this->hasMany(CheckList::class);
     }
