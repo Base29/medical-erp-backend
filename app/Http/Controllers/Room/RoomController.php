@@ -100,7 +100,7 @@ class RoomController extends Controller
             }
 
             //Check if the practice exists
-            $practice = Practice::find($request->practice);
+            $practice = Practice::where('id', $request->practice)->first();
 
             if (!$practice) {
                 return response([
@@ -108,6 +108,17 @@ class RoomController extends Controller
                     'message' => 'Practice not found with the provided id ' . $request->practice,
                 ], 404);
             }
+
+            // Check if the user is assigned to $practice
+            $belongs_to_practice = $practice->users->contains('id', auth()->user()->id);
+
+            if (!$belongs_to_practice) {
+                return response([
+                    'success' => false,
+                    'message' => 'You cannot view the rooms of the practice ' . $practice->practice_name,
+                ]);
+            }
+
             // Get rooms for the practice
             $rooms = Room::where('practice_id', $request->practice)->with('checklists')->paginate(10);
 
