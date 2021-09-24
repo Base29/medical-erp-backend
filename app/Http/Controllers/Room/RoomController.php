@@ -109,7 +109,7 @@ class RoomController extends Controller
                 ], 404);
             }
             // Get rooms for the practice
-            $rooms = Room::where('practice_id', $request->practice)->with('check_lists')->paginate(10);
+            $rooms = Room::where('practice_id', $request->practice)->with('checkLists')->paginate(10);
 
             return response([
                 'success' => true,
