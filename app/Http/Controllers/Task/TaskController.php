@@ -105,9 +105,9 @@ class TaskController extends Controller
         // Validation rules
         $rules = [
             'status' => 'boolean',
-            'reason' => 'string',
-            'comment' => 'string',
-            'manager_comment' => 'string',
+            'reason' => 'string|nullable',
+            'comment' => 'string|nullable',
+            'manager_comment' => 'string|nullable',
             'acknowledgement' => 'boolean',
             'task' => 'required|numeric',
         ];
