@@ -106,7 +106,7 @@ class TaskController extends Controller
         $rules = [
             'status' => 'boolean',
             'reason' => 'string',
-            'comment' => 'alpha_dash',
+            'comment' => 'alpha_dash', //TODO: Remove 'alpha_dash' validation and change it to string
             'manager_comment' => 'string',
             'acknowledgement' => 'boolean',
             'task' => 'required|numeric',

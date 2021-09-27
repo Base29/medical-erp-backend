@@ -115,4 +115,10 @@ Route::middleware(['auth:api'])->group(function () {
         });
     });
 
+    // Routes for cleaner forum
+    Route::middleware(['permission:manage_cleaner_forum'])->group(function () {
+        Route::prefix('')->group(function () {
+            //
+        });
+    });
 });

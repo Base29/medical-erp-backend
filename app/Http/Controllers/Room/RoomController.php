@@ -128,6 +128,7 @@ class RoomController extends Controller
             ], 200);
         }
 
+        //TODO: Allow only Admins to fetch all the rooms regardless of which practice the room belongs to.
         $rooms = Room::with('checklists')->paginate(10);
 
         return response([
