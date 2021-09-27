@@ -86,6 +86,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('policies/', [PolicyController::class, 'fetch'])->middleware(['permission:view_policies'])->name('policies');
     Route::get('reasons/', [ReasonController::class, 'fetch'])->middleware(['permission:view_reasons']);
     Route::post('checklists/', [CheckListController::class, 'fetch'])->middleware(['permission:view_checklists']);
+    Route::post('tasks/update', [TaskController::class, 'update'])->middleware(['permission:can_update_task']);
 
     // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
@@ -111,7 +112,6 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('tasks')->group(function () {
             Route::post('create', [TaskController::class, 'create']);
             Route::delete('delete/{id}', [TaskController::class, 'delete']);
-            Route::post('update', [TaskController::class, 'update']);
         });
     });
 

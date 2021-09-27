@@ -106,7 +106,7 @@ class TaskController extends Controller
         $rules = [
             'status' => 'boolean',
             'reason' => 'string',
-            'comment' => 'alpha_dash',
+            'comment' => 'string',
             'manager_comment' => 'string',
             'acknowledgement' => 'boolean',
             'task' => 'required|numeric',
