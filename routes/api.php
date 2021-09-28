@@ -87,6 +87,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::get('reasons/', [ReasonController::class, 'fetch'])->middleware(['permission:view_reasons']);
     Route::post('checklists/', [CheckListController::class, 'fetch'])->middleware(['permission:view_checklists']);
     Route::post('tasks/update', [TaskController::class, 'update'])->middleware(['permission:can_update_task']);
+    Route::post('rooms/update', [RoomController::class, 'update'])->middleware(['permission:can_update_room']);
 
     // Routes accessible by super admin and managers only
     Route::middleware(['role:manager|super_admin'])->group(function () {
@@ -95,7 +96,6 @@ Route::middleware(['auth:api'])->group(function () {
             // Route::post('/', [RoomController::class, 'fetch']);
             Route::post('create', [RoomController::class, 'create']);
             Route::delete('delete/{id}', [RoomController::class, 'delete']);
-            Route::post('update', [RoomController::class, 'update']);
         });
 
         Route::prefix('reasons')->group(function () {
