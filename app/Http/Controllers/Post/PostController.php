@@ -9,6 +9,19 @@ class PostController extends Controller
 {
     public function create(Request $request)
     {
-        return 'POST CREATE';
+        // Validation rules
+        $rules = [
+            'name' => 'required',
+            'practice' => 'required|numeric',
+            'icon' => 'required',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
     }
 }

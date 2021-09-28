@@ -2,6 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Answer;
+use App\Models\Comment;
+use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Signature;
 use App\Notifications\ResetPasswordNotification;
@@ -84,14 +87,24 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Signature::class);
     }
 
-    // public function signedPolicies()
-    // {
-    //     return $this->hasManyThrough(Signature::class, Policy::class);
-    // }
-
     public function signedBy(User $user)
     {
         return $this->signatures->contains('user_id', $user->id);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function answers()
+    {
+        return $this->hasMany(Answer::class);
+    }
+
+    public function comments()
+    {
+        return $this->hasMany(Comment::class);
     }
 
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
+use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
@@ -116,9 +117,8 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     // Routes for cleaner forum
-    Route::middleware(['permission:manage_cleaner_forum'])->group(function () {
-        Route::prefix('')->group(function () {
-            //
-        });
+    Route::prefix('communication-book')->group(function () {
+        Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
     });
+
 });
