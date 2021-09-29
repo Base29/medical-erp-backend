@@ -89,10 +89,23 @@ class PostController extends Controller
 
     }
 
-    public function fetch_own()
+    public function me(Request $request)
     {
+        // Validation rules
+        $rules = [
+            'practice' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
         // Fetching the post of the authenticated user only
-        $posts = Post::where('user_id', auth()->user()->id)->with('post_attachments')->paginate(10);
+        $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])->with('post_attachments')->paginate(10);
 
         return response([
             'success' => true,
