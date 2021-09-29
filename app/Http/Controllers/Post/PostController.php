@@ -60,4 +60,9 @@ class PostController extends Controller
         ], 200);
 
     }
+
+    public function fetch(Request $request)
+    {
+        return 'FETCH';
+    }
 }

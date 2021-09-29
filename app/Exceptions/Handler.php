@@ -75,6 +75,13 @@ class Handler extends ExceptionHandler
             ], 401);
         }
 
+        if ($exception instanceof \Spatie\Permission\Exceptions\PermissionDoesNotExist) {
+            return response([
+                'success' => false,
+                'message' => 'Permission `' . $request->permission . '` does not exist',
+            ], 404);
+        }
+
         if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
             return response([
                 'success' => false,
