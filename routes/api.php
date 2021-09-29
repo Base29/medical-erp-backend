@@ -116,9 +116,10 @@ Route::middleware(['auth:api'])->group(function () {
         });
     });
 
-    // Routes for cleaner forum
+    // Routes for cleaner forum (Communication Book)
     Route::prefix('communication-book')->group(function () {
-        Route::post('/', [PostController::class, 'fetch'])->middleware(['permission:can_view_posts']);
+        Route::get('/', [PostController::class, 'fetch'])->middleware(['permission:can_view_posts']);
+        Route::get('me', [PostController::class, 'fetch_own'])->middleware(['permission:can_view_own_posts']);
         Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
     });
 

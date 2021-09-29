@@ -21,6 +21,7 @@ class Post extends Model
         'category',
         'type',
         'user_id',
+        'practice_id',
     ];
 
     public function answers()
@@ -41,5 +42,10 @@ class Post extends Model
     public function post_attachments()
     {
         return $this->hasMany(PostAttachment::class, 'post_id', 'id');
+    }
+
+    public function practice()
+    {
+        return $this->belongsTo(Practice::class);
     }
 }
