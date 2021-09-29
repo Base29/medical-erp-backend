@@ -22,7 +22,7 @@ class PostController extends Controller
             'message' => 'required|string',
             'category' => 'required|string',
             'type' => 'required|string',
-            'attachment' => 'file|mimes:doc,docx,pdf,jpg,png,jpeg|nullable',
+            'attachments.*' => 'mimes:doc,docx,pdf,jpg,png,jpeg',
         ];
 
         // Validation errors
@@ -44,11 +44,16 @@ class PostController extends Controller
         $post->save();
 
         // If file is attached when creating a post
-        if ($request->has('attachment')) {
-            $attachment_url = FileUpload::upload(request()->attachment, 'communication-book', 's3');
-            $attachment = new PostAttachment();
-            $attachment->url = $attachment_url;
-            $post->post_attachments()->save($attachment);
+        if ($request->has('attachments')) {
+            $files = $request->attachments;
+
+            foreach ($files as $file) {
+                ray($file);
+                $attachment_url = FileUpload::upload($file, 'communication-book', 's3');
+                $attachment = new PostAttachment();
+                $attachment->url = $attachment_url;
+                $post->post_attachments()->save($attachment);
+            }
         }
 
         // Adding attachments to the response
