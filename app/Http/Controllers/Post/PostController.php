@@ -71,7 +71,6 @@ class PostController extends Controller
             $files = $request->attachments;
 
             foreach ($files as $file) {
-                ray($file);
                 $attachment_url = FileUpload::upload($file, 'communication-book', 's3');
                 $attachment = new PostAttachment();
                 $attachment->url = $attachment_url;
@@ -87,6 +86,16 @@ class PostController extends Controller
             'post' => $post,
         ], 200);
 
+    }
+
+    public function fetch()
+    {
+        $posts = Post::with('post_attachments')->paginate(10);
+
+        return response([
+            'success' => true,
+            'posts' => $posts,
+        ], 200);
     }
 
     public function me(Request $request)
