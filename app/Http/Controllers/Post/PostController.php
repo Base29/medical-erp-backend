@@ -121,4 +121,33 @@ class PostController extends Controller
             'posts' => $posts,
         ], 200);
     }
+
+    public function delete($id)
+    {
+        // Check if post exist with the provided $id
+        $post = Post::find($id);
+
+        if (!$post) {
+            return response([
+                'success' => false,
+                'message' => 'Post with the ID ' . $id . ' not found',
+            ], 404);
+        }
+
+        // Check if user own's the post
+        if (!$post->owned_by(auth()->user())) {
+            return response([
+                'success' => false,
+                'message' => 'You are not authorize to delete this post',
+            ], 403);
+        }
+
+        // Delete post
+        $post->delete();
+
+        return response([
+            'success' => true,
+            'message' => 'Post ' . $post->id . ' deleted',
+        ], 200);
+    }
 }

@@ -48,4 +48,9 @@ class Post extends Model
     {
         return $this->belongsTo(Practice::class);
     }
+
+    public function owned_by(User $user)
+    {
+        return $user->id === $this->user_id;
+    }
 }
