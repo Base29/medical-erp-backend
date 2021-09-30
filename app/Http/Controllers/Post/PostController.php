@@ -122,6 +122,62 @@ class PostController extends Controller
         ], 200);
     }
 
+    public function update(Request $request)
+    {
+        // Allowed fields when updating a task
+        $allowed_fields = [
+            'title',
+            'subject',
+            'message',
+            'category',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowed_fields)) {
+            return response([
+                'success' => false,
+                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
+            ], 400);
+        }
+
+        // Validation rules
+        $rules = [
+            'title' => 'required|string',
+            'subject' => 'required|string',
+            'message' => 'required|string',
+            'category' => 'required|string',
+            'post' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Check if the post exist
+        $post = Post::find($request->post);
+
+        if (!$post) {
+            return response([
+                'success' => false,
+                'message' => 'Post with ID ' . $request->post . ' not found',
+            ], 404);
+        }
+
+        // Update task's fields with the ones provided in the $request
+        $post_updated = $this->update_task($request->all(), $post);
+
+        if ($post_updated) {
+            return response([
+                'success' => true,
+                'post' => $post,
+            ]);
+        }
+    }
+
     public function delete($id)
     {
         // Check if post exist with the provided $id
@@ -149,5 +205,16 @@ class PostController extends Controller
             'success' => true,
             'message' => 'Post ' . $post->id . ' deleted',
         ], 200);
+    }
+
+    private function update_post($fields, $post)
+    {
+        foreach ($fields as $field => $value) {
+            if ($field !== 'task') {
+                $post->$field = $value;
+            }
+        }
+        $post->save();
+        return true;
     }
 }
