@@ -167,6 +167,14 @@ class PostController extends Controller
             ], 404);
         }
 
+        // Check if user own's the post
+        if (!$post->owned_by(auth()->user())) {
+            return response([
+                'success' => false,
+                'message' => 'You are not authorize to update this post',
+            ], 403);
+        }
+
         // Update task's fields with the ones provided in the $request
         $post_updated = $this->update_task($request->all(), $post);
 
