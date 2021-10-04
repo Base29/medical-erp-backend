@@ -14,6 +14,7 @@ use Illuminate\Support\Arr;
 
 class PostController extends Controller
 {
+    // Create Post
     public function create(Request $request)
     {
         // Validation rules
@@ -88,9 +89,10 @@ class PostController extends Controller
 
     }
 
+    // Fetch all posts
     public function fetch()
     {
-        $posts = Post::with('post_attachments')->paginate(10);
+        $posts = Post::with('post_attachments', 'answers', 'comments')->withCount(['answers', 'comments'])->paginate(10);
 
         return response([
             'success' => true,
@@ -98,6 +100,7 @@ class PostController extends Controller
         ], 200);
     }
 
+    // Fetch user's own post
     public function me(Request $request)
     {
         // Validation rules
@@ -114,7 +117,10 @@ class PostController extends Controller
         }
 
         // Fetching the post of the authenticated user only
-        $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])->with('post_attachments')->paginate(10);
+        $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])
+            ->with('post_attachments', 'answers', 'comments')
+            ->withCount(['answers', 'comments'])
+            ->paginate(10);
 
         return response([
             'success' => true,
@@ -232,7 +238,10 @@ class PostController extends Controller
         }
 
         // Check if the post exists
-        $post = Post::where('id', $request->post)->with('answers', 'comments')->first();
+        $post = Post::where('id', $request->post)
+            ->with('post_attachments', 'answers', 'comments')
+            ->withCount(['answers', 'comments'])
+            ->first();
 
         if (!$post) {
             return response([
@@ -255,23 +264,6 @@ class PostController extends Controller
                 ], 403);
             }
         }
-
-        // Count of answers on the post
-        $answer_count = $post->answers->count();
-
-        // Count of comments on the post
-        $comment_count = $post->comments->count();
-
-        $extra_data = [
-            'answer_count' => $answer_count,
-            'comment_count' => $comment_count,
-        ];
-
-        // Add answer count to $post object
-        Arr::add($post, 'answer_count', $answer_count);
-
-        // Add comment count to $post object
-        Arr::add($post, 'comment_count', $comment_count);
 
         return response([
             'success' => true,
