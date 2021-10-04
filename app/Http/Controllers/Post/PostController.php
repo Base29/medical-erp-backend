@@ -215,6 +215,72 @@ class PostController extends Controller
         ], 200);
     }
 
+    // Fetch single post details
+    public function fetch_single_post(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'post' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Check if the post exists
+        $post = Post::where('id', $request->post)->with('answers', 'comments')->first();
+
+        if (!$post) {
+            return response([
+                'success' => false,
+                'message' => 'Post with ID ' . $request->post . ' not found',
+            ], 404);
+        }
+
+        // Check if the visibility is private for the post
+        $visibility = $post->is_public;
+
+        if (!$visibility) {
+            // Check if the logged in user own's the post
+            $owned_by_user = $post->owned_by(auth()->user());
+
+            if (!$owned_by_user) {
+                return response([
+                    'success' => false,
+                    'message' => 'You are not allowed view this post',
+                ], 403);
+            }
+        }
+
+        // Count of answers on the post
+        $answer_count = $post->answers->count();
+
+        // Count of comments on the post
+        $comment_count = $post->comments->count();
+
+        $extra_data = [
+            'answer_count' => $answer_count,
+            'comment_count' => $comment_count,
+        ];
+
+        // Add answer count to $post object
+        Arr::add($post, 'answer_count', $answer_count);
+
+        // Add comment count to $post object
+        Arr::add($post, 'comment_count', $comment_count);
+
+        return response([
+            'success' => true,
+            'post' => $post,
+        ], 200);
+
+    }
+
+    // Helper function for updating fields for the post sent through request
     private function update_post($fields, $post)
     {
         foreach ($fields as $field => $value) {

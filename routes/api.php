@@ -118,10 +118,11 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for cleaner forum (Communication Book)
     Route::prefix('communication-book')->group(function () {
-        Route::get('/', [PostController::class, 'fetch'])->middleware(['permission:can_view_posts']);
-        Route::post('me', [PostController::class, 'me'])->middleware(['permission:can_view_own_posts']);
+        Route::get('/', [PostController::class, 'fetch'])->middleware(['permission:can_fetch_posts|can_fetch_communication_book_posts']);
+        Route::post('me', [PostController::class, 'me'])->middleware(['permission:can_fetch_own_posts']);
         Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
         Route::delete('delete/{id}', [PostController::class, 'delete'])->middleware(['permission:can_delete_own_post']);
         Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_own_post']);
+        Route::post('post', [PostController::class, 'fetch_single_post'])->middleware(['permission:can_view_own_post']);
     });
 });
