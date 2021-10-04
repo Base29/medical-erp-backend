@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\PostAttachment;
+use App\Models\PostView;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -52,5 +53,10 @@ class Post extends Model
     public function owned_by(User $user)
     {
         return $user->id === $this->user_id;
+    }
+
+    public function post_views()
+    {
+        return $this->hasMany(PostView::class);
     }
 }

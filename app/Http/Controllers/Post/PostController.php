@@ -7,6 +7,7 @@ use App\Helpers\FileUpload;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostAttachment;
+use App\Models\PostView;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -92,7 +93,7 @@ class PostController extends Controller
     // Fetch all posts
     public function fetch()
     {
-        $posts = Post::with('post_attachments', 'answers', 'comments')->withCount(['answers', 'comments'])->paginate(10);
+        $posts = Post::with('post_attachments', 'answers', 'comments')->withCount(['answers', 'comments', 'post_views'])->paginate(10);
 
         return response([
             'success' => true,
@@ -282,5 +283,36 @@ class PostController extends Controller
         }
         $post->save();
         return true;
+    }
+
+    // Post Views
+    public function post_view(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'post' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Get the post
+        $post = Post::find($request->post);
+
+        // Check if the user has already viewed the post
+        $already_viewed = $post->post_views->contains('user_id', auth()->user()->id);
+
+        // Recording unique view for the post
+        if (!$already_viewed) {
+            $post_view = new PostView();
+            $post_view->post_id = $request->post;
+            $post_view->user_id = auth()->user()->id;
+            $post_view->save();
+        }
     }
 }
