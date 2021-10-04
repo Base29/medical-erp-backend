@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+  esm_backend:
+    container_name: esm_backend
+    build:
+      context: .
+      dockerfile: ./docker/php/Dockerfile
+    expose:
+      - 9000
+    volumes:
+      - .:/usr/src/app
+      - ./public:/usr/src/app/public
+    depends_on:
+      - esm_db
+    networks:
+      - esm_network
+
+  esm_nginx:
+    container_name: esm_nginx
+    build:
+      context: .
+      dockerfile: ./docker/nginx/Dockerfile
+    volumes:
+      - ./public:/usr/src/app/public
+    ports:
+      - 8000:80
+    depends_on:
+      - esm_backend
+    environment:
+      NGINX_FPM_HOST: esm_backend
+      NGINX_ROOT: /usr/src/app/public
+    networks:
+      - esm_network
+
+  esm_db:
+    container_name: esm_db
+    image: mysql:8.0.20
+    restart: always
+    volumes:
+      - ./storage/db-data:/var/lib/mysql
+    ports:
+      - 9999:3306
+    environment:
+      MYSQL_DATABASE: esm
+      MYSQL_ROOT_PASSWORD: esmdb2021
+      MYSQL_USER: esm
+      MYSQL_PASSWORD: esmdb2021
+    networks:
+      - esm_network
+
+  esm_redis:
+    container_name: esm_redis
+    image: redis:latest
+    ports:
+      - 6379:6379
+    networks:
+      - esm_network
+
+networks:
+  esm_network:
+    driver: bridge
