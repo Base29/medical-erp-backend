@@ -176,7 +176,7 @@ class PostController extends Controller
         }
 
         // Update task's fields with the ones provided in the $request
-        $post_updated = $this->update_task($request->all(), $post);
+        $post_updated = $this->update_post($request->all(), $post);
 
         if ($post_updated) {
             return response([
