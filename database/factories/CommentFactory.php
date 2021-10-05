@@ -23,7 +23,7 @@ class CommentFactory extends Factory
     {
         return [
             'post_id' => 1,
-            'user_id' => 9,
+            'user_id' => 6,
             'comment' => $this->faker->paragraph(3, true),
         ];
     }
