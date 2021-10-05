@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Answer\AnswerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -125,5 +126,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_own_post']);
         Route::post('post', [PostController::class, 'fetch_single_post'])->middleware(['permission:can_view_own_post']);
         Route::post('post-view', [PostController::class, 'post_view']);
+
+        // Routes for answer
+        Route::prefix('answers')->group(function () {
+            Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
+        });
     });
 });
