@@ -69,7 +69,7 @@ class PostController extends Controller
         $post->save();
 
         // If file is attached when creating a post
-        if ($request->has('attachments')) {
+        if ($request->has('attachments') && $request->filled('attachments')) {
             $files = $request->attachments;
 
             foreach ($files as $file) {
