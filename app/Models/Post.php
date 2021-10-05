@@ -27,7 +27,7 @@ class Post extends Model
 
     public function answers()
     {
-        return $this->hasMany(Answer::class);
+        return $this->hasMany(Answer::class, 'post_id', 'id');
     }
 
     public function comments()
