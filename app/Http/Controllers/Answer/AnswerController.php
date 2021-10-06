@@ -49,4 +49,38 @@ class AnswerController extends Controller
             'answer' => $answer,
         ], 200);
     }
+
+    // fetch post answers
+    public function fetch(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'post' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Check if the post exist
+        $post = Post::find($request->id);
+
+        if (!$post) {
+            return response([
+                'success' => false,
+                'message' => 'Post with ID ' . $request->post . ' not found',
+            ], 404);
+        }
+
+        // Fetch answers for post
+        $answers = Answer::where('post_id', $post->id)->with('post')->paginate(10);
+        return response([
+            'success' => true,
+            'post_answers' => $answers,
+        ], 200);
+    }
 }

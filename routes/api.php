@@ -130,6 +130,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Routes for answer
         Route::prefix('answers')->group(function () {
             Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
+            Route::post('/', [AnswerController::class, 'fetch']);
         });
     });
 });
