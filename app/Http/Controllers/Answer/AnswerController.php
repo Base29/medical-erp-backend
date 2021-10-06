@@ -42,6 +42,7 @@ class AnswerController extends Controller
         $answer->user_id = auth()->user()->id;
         $post->answers()->save($answer);
 
+        // Appending commenter's name
         Arr::add($answer, 'commenter_name', auth()->user()->name);
 
         return response([
@@ -110,16 +111,50 @@ class AnswerController extends Controller
         if (!$owned_by_user) {
             return response([
                 'success' => false,
-                'message' => 'You are not allowed to update this post',
+                'message' => 'You are not allowed to update this answer',
             ], 400);
         }
 
         // Update answer
         $answer->update(['answer' => $request->answer]);
 
+        // Appending commenter's name
+        Arr::add($answer, 'commenter_name', auth()->user()->name);
+
         return response([
             'success' => true,
             'answer' => $answer,
+        ], 200);
+    }
+
+    public function delete($id)
+    {
+        // Check if answer exist with the provided ID
+        $answer = Answer::find($id);
+
+        if (!$answer) {
+            return response([
+                'success' => false,
+                'message' => 'Answer with the given ID ' . $id . ' not found',
+            ], 404);
+        }
+
+        // Check if the user updating the answer is the author of the answer
+        $owned_by_user = $answer->owned_by(auth()->user());
+
+        if (!$owned_by_user) {
+            return response([
+                'success' => false,
+                'message' => 'You are not allowed to delete this answer',
+            ], 400);
+        }
+
+        // Delete the answer
+        $answer->delete();
+
+        return response([
+            'success' => true,
+            'message' => 'Answer deleted',
         ], 200);
     }
 }
