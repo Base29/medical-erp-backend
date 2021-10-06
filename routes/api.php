@@ -131,6 +131,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('answers')->group(function () {
             Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
             Route::post('/', [AnswerController::class, 'fetch']);
+            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_answer']);
         });
     });
 });

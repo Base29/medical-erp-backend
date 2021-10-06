@@ -67,7 +67,7 @@ class AnswerController extends Controller
         }
 
         // Check if the post exist
-        $post = Post::find($request->id);
+        $post = Post::find($request->post);
 
         if (!$post) {
             return response([
@@ -81,6 +81,45 @@ class AnswerController extends Controller
         return response([
             'success' => true,
             'post_answers' => $answers,
+        ], 200);
+    }
+
+    // Update answer
+    public function update(Request $request)
+    {
+        // Validation rules
+        $rules = [
+            'answer' => 'required',
+            'answer_id' => 'required|numeric',
+        ];
+
+        // Validation errors
+        $request_errors = CustomValidation::validate_request($rules, $request);
+
+        // Return errors
+        if ($request_errors) {
+            return $request_errors;
+        }
+
+        // Fetch the answer
+        $answer = Answer::where('id', $request->answer_id)->with('post')->first();
+
+        // Check if the user updating the answer is the author of the answer
+        $owned_by_user = $answer->owned_by(auth()->user());
+
+        if (!$owned_by_user) {
+            return response([
+                'success' => false,
+                'message' => 'You are not allowed to update this post',
+            ], 400);
+        }
+
+        // Update answer
+        $answer->update(['answer' => $request->answer]);
+
+        return response([
+            'success' => true,
+            'answer' => $answer,
         ], 200);
     }
 }
