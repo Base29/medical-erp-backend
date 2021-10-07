@@ -43,7 +43,7 @@ class CommentController extends Controller
 
         return response([
             'success' => true,
-            'answer' => $comment->with('user')->latest('id')->first(),
+            'comment' => $comment->with('user')->latest('id')->first(),
         ], 200);
     }
 
@@ -77,7 +77,7 @@ class CommentController extends Controller
         $comments = Comment::where('post_id', $post->id)->with('post', 'user')->paginate(10);
         return response([
             'success' => true,
-            'post_answers' => $comments,
+            'post_comments' => $comments,
         ], 200);
     }
 
@@ -99,7 +99,7 @@ class CommentController extends Controller
         }
 
         // Fetch the answer
-        $comment = Comment::where('id', $request->answer_id)->with('post', 'user')->first();
+        $comment = Comment::where('id', $request->comment_id)->with('post', 'user')->first();
 
         // Check if the user updating the answer is the author of the answer
         $owned_by_user = $comment->owned_by(auth()->user());
@@ -116,7 +116,7 @@ class CommentController extends Controller
 
         return response([
             'success' => true,
-            'answer' => $comment->with('post', 'user')->latest('updated_at')->first(),
+            'comment' => $comment->with('post', 'user')->latest('updated_at')->first(),
         ], 200);
     }
 
@@ -147,7 +147,7 @@ class CommentController extends Controller
 
         return response([
             'success' => true,
-            'message' => 'Answer deleted',
+            'message' => 'Comment deleted',
         ], 200);
     }
 }
