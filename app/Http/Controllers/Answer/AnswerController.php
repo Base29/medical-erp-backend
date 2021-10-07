@@ -7,7 +7,6 @@ use App\Http\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Post;
 use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class AnswerController extends Controller
 {
@@ -42,12 +41,9 @@ class AnswerController extends Controller
         $answer->user_id = auth()->user()->id;
         $post->answers()->save($answer);
 
-        // Appending commenter's name
-        Arr::add($answer, 'commenter_name', auth()->user()->name);
-
         return response([
             'success' => true,
-            'answer' => $answer,
+            'answer' => $answer->with('user')->latest('id')->first(),
         ], 200);
     }
 
@@ -78,7 +74,7 @@ class AnswerController extends Controller
         }
 
         // Fetch answers for post
-        $answers = Answer::where('post_id', $post->id)->with('post')->paginate(10);
+        $answers = Answer::where('post_id', $post->id)->with('post', 'user')->paginate(10);
         return response([
             'success' => true,
             'post_answers' => $answers,
@@ -103,7 +99,7 @@ class AnswerController extends Controller
         }
 
         // Fetch the answer
-        $answer = Answer::where('id', $request->answer_id)->with('post')->first();
+        $answer = Answer::where('id', $request->answer_id)->with('post', 'user')->first();
 
         // Check if the user updating the answer is the author of the answer
         $owned_by_user = $answer->owned_by(auth()->user());
@@ -118,12 +114,9 @@ class AnswerController extends Controller
         // Update answer
         $answer->update(['answer' => $request->answer]);
 
-        // Appending commenter's name
-        Arr::add($answer, 'commenter_name', auth()->user()->name);
-
         return response([
             'success' => true,
-            'answer' => $answer,
+            'answer' => $answer->with('post', 'user')->latest('updated_at')->first(),
         ], 200);
     }
 

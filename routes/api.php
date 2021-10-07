@@ -131,7 +131,8 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('answers')->group(function () {
             Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
             Route::post('/', [AnswerController::class, 'fetch']);
-            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_answer']);
+            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_own_answer']);
+            Route::delete('delete/{id}', [AnswerController::class, 'delete'])->middleware(['permission:can_delete_own_answer']);
         });
     });
 });

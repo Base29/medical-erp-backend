@@ -93,7 +93,7 @@ class PostController extends Controller
     // Fetch all posts
     public function fetch()
     {
-        $posts = Post::with('post_attachments', 'answers', 'comments')->withCount(['answers', 'comments', 'post_views'])->paginate(10);
+        $posts = Post::with('post_attachments', 'answers', 'comments', 'user')->withCount(['answers', 'comments', 'post_views'])->paginate(10);
 
         return response([
             'success' => true,
@@ -119,7 +119,7 @@ class PostController extends Controller
 
         // Fetching the post of the authenticated user only
         $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])
-            ->with('post_attachments', 'answers', 'comments')
+            ->with('post_attachments', 'answers', 'comments', 'user')
             ->withCount(['answers', 'comments'])
             ->paginate(10);
 
@@ -240,7 +240,7 @@ class PostController extends Controller
 
         // Check if the post exists
         $post = Post::where('id', $request->post)
-            ->with('post_attachments', 'answers', 'comments')
+            ->with('post_attachments', 'answers', 'comments', 'user')
             ->withCount(['answers', 'comments'])
             ->first();
 
