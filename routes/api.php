@@ -124,7 +124,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
         Route::delete('delete/{id}', [PostController::class, 'delete'])->middleware(['permission:can_delete_own_post']);
         Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_own_post']);
-        Route::post('post', [PostController::class, 'fetch_single_post'])->middleware(['permission:can_view_own_post']);
+        Route::post('post', [PostController::class, 'fetch_single_post'])->middleware(['permission:can_view_post']);
         Route::post('post-view', [PostController::class, 'post_view']);
 
         // Routes for answer

@@ -255,15 +255,10 @@ class PostController extends Controller
         $visibility = $post->is_public;
 
         if (!$visibility) {
-            // Check if the logged in user own's the post
-            $owned_by_user = $post->owned_by(auth()->user());
-
-            if (!$owned_by_user) {
-                return response([
-                    'success' => false,
-                    'message' => 'You are not allowed view this post',
-                ], 403);
-            }
+            return response([
+                'success' => true,
+                'message' => 'Post ' . $post->id . ' is not public',
+            ], 400);
         }
 
         return response([
