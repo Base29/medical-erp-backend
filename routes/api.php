@@ -140,7 +140,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('comments')->group(function () {
             Route::post('create', [CommentController::class, 'create'])->middleware(['permission:can_create_comment']);
             Route::post('update', [CommentController::class, 'update'])->middleware(['permission:can_update_comment']);
-            Route::post('delete/{id}', [CommentController::class, 'delete'])->middleware(['permission:can_delete_comment']);
+            Route::delete('delete/{id}', [CommentController::class, 'delete'])->middleware(['permission:can_delete_comment']);
         });
     });
 });
