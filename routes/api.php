@@ -124,7 +124,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('me', [PostController::class, 'me'])->middleware(['permission:can_fetch_own_posts']);
         Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
         Route::delete('delete/{id}', [PostController::class, 'delete'])->middleware(['permission:can_delete_own_post']);
-        Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_own_post']);
+        Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_post']);
         Route::post('post', [PostController::class, 'fetch_single_post'])->middleware(['permission:can_view_post']);
         Route::post('post-view', [PostController::class, 'post_view']);
 
@@ -132,12 +132,15 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('answers')->group(function () {
             Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
             Route::post('/', [AnswerController::class, 'fetch']);
-            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_own_answer']);
-            Route::delete('delete/{id}', [AnswerController::class, 'delete'])->middleware(['permission:can_delete_own_answer']);
+            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_answer']);
+            Route::delete('delete/{id}', [AnswerController::class, 'delete'])->middleware(['permission:can_delete_answer']);
         });
 
+        // Routes for comments
         Route::prefix('comments')->group(function () {
             Route::post('create', [CommentController::class, 'create'])->middleware(['permission:can_create_comment']);
+            Route::post('update', [CommentController::class, 'update'])->middleware(['permission:can_update_comment']);
+            Route::post('delete/{id}', [CommentController::class, 'delete'])->middleware(['permission:can_delete_comment']);
         });
     });
 });

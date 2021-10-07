@@ -137,6 +137,8 @@ class PostController extends Controller
             'subject',
             'message',
             'category',
+            'is_public',
+            'is_answered',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -190,7 +192,7 @@ class PostController extends Controller
         if ($post_updated) {
             return response([
                 'success' => true,
-                'post' => $post,
+                'post' => $post->with('user')->latest('updated_at')->first(),
             ]);
         }
     }
@@ -274,7 +276,7 @@ class PostController extends Controller
     private function update_post($fields, $post)
     {
         foreach ($fields as $field => $value) {
-            if ($field !== 'task') {
+            if ($field !== 'post') {
                 $post->$field = $value;
             }
         }
