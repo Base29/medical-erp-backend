@@ -149,11 +149,13 @@ class PostController extends Controller
 
         // Validation rules
         $rules = [
-            'title' => 'required|string',
-            'subject' => 'required|string',
-            'message' => 'required|string',
-            'category' => 'required|string',
+            'title' => 'string',
+            'subject' => 'string',
+            'message' => 'string',
+            'category' => 'string',
             'post' => 'required|numeric',
+            'is_public' => 'boolean',
+            'is_answered' => 'boolean',
         ];
 
         // Validation errors

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Answer\AnswerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
+use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Post\PostController;
@@ -133,6 +134,10 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [AnswerController::class, 'fetch']);
             Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_own_answer']);
             Route::delete('delete/{id}', [AnswerController::class, 'delete'])->middleware(['permission:can_delete_own_answer']);
+        });
+
+        Route::prefix('comments')->group(function () {
+            Route::post('create', [CommentController::class, 'create'])->middleware(['permission:can_create_comment']);
         });
     });
 });
