@@ -24,7 +24,7 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        $schedule->command('checklist:reset')->everyMinute();
+        $schedule->command('checklist:reset')->dailyAt('03:00')->timezone('Europe/London');
     }
 
     /**
