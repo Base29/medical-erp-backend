@@ -26,6 +26,7 @@ class PostController extends Controller
             'category' => 'required|string',
             'type' => 'required|string',
             'attachments.*' => 'mimes:doc,docx,pdf,jpg,png,jpeg',
+            'is_public' => 'boolean',
             'practice' => 'required|numeric',
         ];
 
