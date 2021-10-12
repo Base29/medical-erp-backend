@@ -67,7 +67,7 @@ class PostController extends Controller
         $post->type = $request->type;
         $post->user_id = auth()->user()->id;
         $post->practice_id = $practice->id;
-        $post->is_public = $request->is_public;
+        $post->is_public = $request->has('is_public') ? $request->is_public : 0;
         $post->save();
 
         // If file is attached when creating a post
