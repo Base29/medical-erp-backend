@@ -23,6 +23,7 @@ class Post extends Model
         'type',
         'user_id',
         'practice_id',
+        'is_public',
     ];
 
     public function answers()
