@@ -14,10 +14,6 @@ class Response
 {
     public static function success($args)
     {
-        if (!Arr::has($args, 'code')) {
-            throw new ResponseException('Argument `code` is missing for the Response::success() method.');
-        }
-
         return response(self::response_data($args, 'success'), 200);
     }
 
@@ -32,10 +28,12 @@ class Response
 
     private static function response_data($args, $type)
     {
+        // Setting the success key to true or false depending upon the response method called
         $response_array = [
             'success' => $type === 'success' ? true : false,
         ];
 
+        // Iterating through the $args passed in the Response methods and adding them to the response array
         foreach ($args as $key => $value) {
             if ($key !== 'code') {
                 $response_array[$key] = $value;
