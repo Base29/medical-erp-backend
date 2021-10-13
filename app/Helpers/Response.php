@@ -12,23 +12,32 @@ use Illuminate\Support\Arr;
 
 class Response
 {
-    public static function send($args)
+    public static function success($args)
     {
-        if (!Arr::has($args, 'type') && !Arr::has($args, 'code')) {
-            throw new ResponseException('Arguments `type` and `code` are missing for the Response::send() method.');
+        if (!Arr::has($args, 'code')) {
+            throw new ResponseException('Argument `code` is missing for the Response::success() method.');
         }
 
-        return response(self::response_data($args), $args['code']);
+        return response(self::response_data($args, 'success'), 200);
     }
 
-    private static function response_data($args)
+    public static function fail($args)
+    {
+        if (!Arr::has($args, 'message') && !Arr::has($args, 'code')) {
+            throw new ResponseException('Arguments `message` and `code` are missing for the Response::send() method.');
+        }
+
+        return response(self::response_data($args, 'fail'), $args['code']);
+    }
+
+    private static function response_data($args, $type)
     {
         $response_array = [
-            'success' => $args['type'],
+            'success' => $type === 'success' ? true : false,
         ];
 
         foreach ($args as $key => $value) {
-            if ($key !== 'code' && $key !== 'type') {
+            if ($key !== 'code') {
                 $response_array[$key] = $value;
             }
         }

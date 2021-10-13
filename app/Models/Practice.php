@@ -17,6 +17,10 @@ class Practice extends Model
         'practice_name',
     ];
 
+    protected $hidden = [
+        'pivot',
+    ];
+
     public function users()
     {
         return $this->belongsToMany(User::class);

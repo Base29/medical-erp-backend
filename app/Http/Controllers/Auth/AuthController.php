@@ -36,10 +36,11 @@ class AuthController extends Controller
         $user = User::where('email', $request->email)->with(['roles', 'practices'])->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([
-                'success' => false,
+
+            return Response::fail([
+                'code' => 401,
                 'message' => 'Invalid Credentials',
-            ], 401);
+            ]);
         }
 
         $user->roles->makeHidden([
@@ -56,21 +57,14 @@ class AuthController extends Controller
         $userArr = Arr::add($user, 'token', $token);
 
         // Return response
-
-        $args = [
-            'user' => $userArr,
-        ];
-        return Response::send($args);
+        return Response::success(['user' => $userArr]);
     }
 
     // Method for logging out the user
     public function logout()
     {
         auth()->logout(true);
-        return response([
-            'success' => true,
-            'message' => 'Logged out successfully',
-        ], 200);
+        return Response::success(['message' => 'Logged out successfully']);
     }
 
     // Method for resetting password
@@ -103,8 +97,8 @@ class AuthController extends Controller
         );
 
         return $status === Password::INVALID_TOKEN || $status === Password::INVALID_USER ?
-        response(['success' => false, 'message' => 'Invalid Token or User'], 401) :
-        response(['success' => true, 'message' => 'Password reset successfully'], 200);
+        Response::fail(['message' => 'Invalid Token or User', 'code' => 401]) :
+        Response::success(['message' => 'Password reset successfully']);
     }
 
     // Method for generating reset password link
@@ -127,18 +121,15 @@ class AuthController extends Controller
         $user = User::where('email', $request->only('email'))->first();
 
         if (!$user) {
-            return response([
-                'success' => false,
-                'message' => 'User not found',
-            ], 404);
+            return Response::fail([
+                'message' => 'User with email ' . $request->email . ' not found',
+                'code' => 404,
+            ]);
         }
 
         Password::sendResetLink($request->only('email'));
 
-        return response([
-            'success' => true,
-            'message' => 'Reset password link sent on your email id.',
-        ], 200);
+        return Response::success(['message' => 'Reset password link sent on your email id.']);
     }
 
     // Method for verifying user token
@@ -162,9 +153,6 @@ class AuthController extends Controller
             ]);
         $user_with_roles = Arr::add($user, 'roles', $user_roles);
         $user_with_practices = Arr::add($user_with_roles, 'practices', $user_practices);
-        return response([
-            'success' => true,
-            'user' => $user_with_practices,
-        ], 200);
+        return Response::success(['user' => $user_with_practices]);
     }
 }
