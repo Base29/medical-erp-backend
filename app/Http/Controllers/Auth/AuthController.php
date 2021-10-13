@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -55,10 +56,11 @@ class AuthController extends Controller
         $userArr = Arr::add($user, 'token', $token);
 
         // Return response
-        return response([
-            'success' => true,
+
+        $args = [
             'user' => $userArr,
-        ], 200);
+        ];
+        return Response::send($args);
     }
 
     // Method for logging out the user
