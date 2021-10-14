@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Task;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\CheckList;
 use App\Models\Task;
@@ -32,20 +33,20 @@ class TaskController extends Controller
         $checklist = CheckList::where('id', $request->checklist)->with('tasks')->first();
 
         if (!$checklist) {
-            return response([
-                'success' => false,
-                'message' => 'Checklist not found with the provided id ' . $request->checklist,
-            ], 404);
+            return Response::fail([
+                'message' => 'Checklist with ID ' . $request->checklist . ' not found',
+                'code' => 404,
+            ]);
         }
 
         // Check if the task with same name already exists in the checklist
         $task_already_exist = $checklist->tasks->contains('name', $request->name);
 
         if ($task_already_exist) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Task with name ' . $request->name . ' already exists in checklist ' . $checklist->name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create task
@@ -55,10 +56,7 @@ class TaskController extends Controller
         $task->frequency = $request->frequency;
         $task->save();
 
-        return response([
-            'success' => true,
-            'task' => $task,
-        ], 200);
+        return Response::success(['task' => $task]);
     }
 
     // Method for deleting a task
@@ -68,19 +66,16 @@ class TaskController extends Controller
         $task = Task::find($id);
 
         if (!$task) {
-            return response([
-                'success' => false,
-                'message' => 'Task not found with the provided id ' . $id,
-            ], 404);
+            return Response::fail([
+                'message' => 'Task with ID ' . $id . ' not found',
+                'code' => 404,
+            ]);
         }
 
         // Delete task
         $task->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Task deleted successfully',
-        ], 200);
+        return Response::success(['message' => 'Task deleted successfully']);
     }
 
     public function update(Request $request)
@@ -96,10 +91,10 @@ class TaskController extends Controller
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Validation rules
@@ -124,20 +119,17 @@ class TaskController extends Controller
         $task = Task::find($request->task);
 
         if (!$task) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Task with ID ' . $request->task . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Update task's fields with the ones provided in the $request
         $task_updated = $this->update_task($request->all(), $task);
 
         if ($task_updated) {
-            return response([
-                'success' => true,
-                'task' => $task,
-            ]);
+            return Response::success(['task' => $task]);
         }
 
     }
