@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Signature;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Signature;
@@ -31,16 +32,16 @@ class SignPolicyController extends Controller
 
         // Returning response incase the policy with the provided Id is not available
         if (!$policy) {
-            return response([
-                'success' => false,
-                'message' => 'Something went wrong while fetching policy with id ' . $request->policy_id,
+            return Response::fail([
+                'message' => 'Policy with ID ' . $request->policy_id . ' not found',
+                'code' => 404,
             ]);
         }
 
         // Checking if the current logged in user has already signed the policy
         $already_signed = $policy->signatures->contains('user_id', auth()->user()->id);
 
-        //TODO: Commented the below code block for testing purpose. This should be removed in production
+        //TODO: Commented the below code block for testing purpose. This should be un-commented in production
         // Returning response incase the policy is already signed by the current logged in user
         // if ($already_signed) {
         //     return response([
@@ -57,18 +58,7 @@ class SignPolicyController extends Controller
         $signature->policy_id = $request->policy_id;
         $signature->save();
 
-        // Returning response incase something went wrong while creating the signature
-        if (!$signature) {
-            return response([
-                'success' => false,
-                'message' => 'Something went wrong while creating signature',
-            ]);
-        }
-
         // Returning response if the policy is successfully sgined by the currently logged in user
-        return response([
-            'success' => true,
-            'message' => $policy->name . ' has been signed by ' . auth()->user()->name,
-        ]);
+        return Response::success(['signature' => $signature->with('policy')->latest()->first()]);
     }
 }
