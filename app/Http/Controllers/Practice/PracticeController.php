@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Practice;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\User;
@@ -30,10 +31,10 @@ class PracticeController extends Controller
         $practice_exists = Practice::where('practice_name', $request->name)->first();
 
         if ($practice_exists) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Practice with name ' . $request->name . ' already exists',
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create practice with the provided name
@@ -41,10 +42,7 @@ class PracticeController extends Controller
             'practice_name' => $request->name,
         ]);
 
-        return response([
-            'success' => true,
-            'message' => 'Practice with name ' . $practice->practice_name . ' created successfully',
-        ], 200);
+        return Response::success(['practice' => $practice]);
     }
 
     // Method for deleting practice
@@ -54,19 +52,16 @@ class PracticeController extends Controller
         $practice = Practice::find($id);
 
         if (!$practice) {
-            return response([
-                'success' => false,
-                'message' => 'Practice with the provided id ' . $id . ' doesn\'t exists',
-            ], 404);
+            return Response::fail([
+                'message' => 'Practice with the provided id ' . $id . ' doesn\'t exist',
+                'code' => 404,
+            ]);
         }
 
         // Deleting practice
         $practice->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Practice deleted successfully',
-        ], 200);
+        return Response::success(['message' => 'Practice deleted successfully']);
 
     }
 
@@ -76,10 +71,7 @@ class PracticeController extends Controller
         // Fetch practices
         $practices = Practice::with('policies')->paginate(10);
 
-        return response([
-            'success' => true,
-            'practices' => $practices,
-        ], 200);
+        return Response::success(['practices' => $practices]);
     }
 
     // Method for assigning user to practice
@@ -103,39 +95,36 @@ class PracticeController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response([
-                'success' => false,
-                'message' => 'User with email ' . $request->email . ' doesn\'t exists',
-            ], 404);
+            return Response::fail([
+                'message' => 'User with email ' . $request->email . ' doesn\'t exist',
+                'code' => 404,
+            ]);
         }
 
         // Check if the practice exist that is being assigned to the user
         $practice = Practice::find($request->practice);
 
         if (!$practice) {
-            return response([
-                'success' => false,
-                'message' => 'Practice with id ' . $request->practice . ' doesn\'t exists',
-            ], 404);
+            return Response::fail([
+                'message' => 'Practice with id ' . $request->practice . ' doesn\'t exist',
+                'code' => 404,
+            ]);
         }
 
         // Checking if the user is already assigned to the provided practice
-        $user_already_assigned_to_practice = $user->practices->contains('id', $request->practice);
+        $user_already_assigned_to_practice = $user->practices->contains('id', $practice->id);
 
         if ($user_already_assigned_to_practice) {
-            return response([
-                'success' => true,
+            return Response::fail([
                 'message' => 'User ' . $user->email . ' already assigned to practice ' . $practice->practice_name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Attach user to practice
         $user->practices()->attach($practice->id);
 
-        return response([
-            'success' => true,
-            'message' => 'User ' . $user->email . ' assigned to practice ' . $practice->practice_name,
-        ], 200);
+        return Response::success(['message' => 'User ' . $user->email . ' assigned to practice ' . $practice->practice_name]);
 
     }
 
@@ -160,38 +149,35 @@ class PracticeController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'User ' . $request->email . ' doesn\'t exists',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the practice exists with the provided id
         $practice = Practice::find($request->practice);
 
         if (!$practice) {
-            return response([
-                'success' => false,
-                'message' => 'Practice not found',
-            ], 404);
+            return Response::fail([
+                'message' => 'Practice with ID ' . $request->practice . ' not found',
+                'code' => 404,
+            ]);
         }
 
         // Check if the user is already assigned to the practice
         $associated_to_practice = $user->practices->contains('id', $request->practice);
 
         if (!$associated_to_practice) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'User ' . $user->email . ' is not associated with practice ' . $practice->practice_name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Revoke user from practice
         $user->practices()->detach($practice->id);
 
-        return response([
-            'success' => true,
-            'message' => 'User ' . $user->email . ' removed from practice ' . $practice->practice_name,
-        ], 200);
+        return Response::success(['message' => 'User ' . $user->email . ' removed from practice ' . $practice->practice_name]);
     }
 }
