@@ -12,13 +12,16 @@ use Illuminate\Support\Arr;
 
 class Response
 {
+    // Send Success Response
     public static function success($args)
     {
         return response(self::response_data($args, 'success'), 200);
     }
 
+    // Send Failed Response
     public static function fail($args)
     {
+        // Checking if the required args (message & code) are passed where the Response::fail() method is used
         if (!Arr::has($args, 'message') || !Arr::has($args, 'code')) {
             throw new ResponseException('Arguments `message` and `code` are missing for the Response::fail() method.');
         }
@@ -26,6 +29,7 @@ class Response
         return response(self::response_data($args, 'fail'), $args['code']);
     }
 
+    // Building response array with the fields provided
     private static function response_data($args, $type)
     {
         // Setting the success key to true or false depending upon the response method called
