@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Comment;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
@@ -30,10 +31,10 @@ class CommentController extends Controller
         $post = Post::find($request->post);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         $comment = new Comment();
@@ -41,10 +42,7 @@ class CommentController extends Controller
         $comment->user_id = auth()->user()->id;
         $post->answers()->save($comment);
 
-        return response([
-            'success' => true,
-            'comment' => $comment->with('user')->latest('id')->first(),
-        ], 200);
+        return Response::success(['comment' => $comment->with('user')->latest('id')->first()]);
     }
 
     // fetch post comments
@@ -67,18 +65,15 @@ class CommentController extends Controller
         $post = Post::find($request->post);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Fetch answers for post
         $comments = Comment::where('post_id', $post->id)->with('post', 'user')->paginate(10);
-        return response([
-            'success' => true,
-            'post_comments' => $comments,
-        ], 200);
+        return Response::success(['post_comments' => $comments]);
     }
 
     // Update comment
@@ -105,19 +100,16 @@ class CommentController extends Controller
         $owned_by_user = $comment->owned_by(auth()->user());
 
         if (!$owned_by_user) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not allowed to update this comment',
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Update answer
         $comment->update(['comment' => $request->comment]);
 
-        return response([
-            'success' => true,
-            'comment' => $comment->with('post', 'user')->latest('updated_at')->first(),
-        ], 200);
+        return Response::success(['comment' => $comment->with('post', 'user')->latest('updated_at')->first()]);
     }
 
     public function delete($id)
@@ -126,28 +118,25 @@ class CommentController extends Controller
         $comment = Comment::find($id);
 
         if (!$comment) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Comment with the given ID ' . $id . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the user updating the answer is the author of the answer
         $owned_by_user = $comment->owned_by(auth()->user());
 
         if (!$owned_by_user) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not allowed to delete this comment',
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Delete the answer
         $comment->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Comment deleted',
-        ], 200);
+        return Response::success(['message' => 'Comment deleted']);
     }
 }
