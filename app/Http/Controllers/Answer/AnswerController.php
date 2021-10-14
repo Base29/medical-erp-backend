@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Answer;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Post;
@@ -30,10 +31,10 @@ class AnswerController extends Controller
         $post = Post::find($request->post);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         $answer = new Answer();
@@ -41,10 +42,7 @@ class AnswerController extends Controller
         $answer->user_id = auth()->user()->id;
         $post->answers()->save($answer);
 
-        return response([
-            'success' => true,
-            'answer' => $answer->with('user')->latest('id')->first(),
-        ], 200);
+        return Response::success(['answer' => $answer->with('user')->latest('id')->first()]);
     }
 
     // fetch post answers
@@ -67,18 +65,15 @@ class AnswerController extends Controller
         $post = Post::find($request->post);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Fetch answers for post
         $answers = Answer::where('post_id', $post->id)->with('post', 'user')->paginate(10);
-        return response([
-            'success' => true,
-            'post_answers' => $answers,
-        ], 200);
+        return Response::success(['post_answers' => $answers]);
     }
 
     // Update answer
@@ -105,19 +100,16 @@ class AnswerController extends Controller
         $owned_by_user = $answer->owned_by(auth()->user());
 
         if (!$owned_by_user) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not allowed to update this answer',
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Update answer
         $answer->update(['answer' => $request->answer]);
 
-        return response([
-            'success' => true,
-            'answer' => $answer->with('post', 'user')->latest('updated_at')->first(),
-        ], 200);
+        return Response::success(['answer' => $answer->with('post', 'user')->latest('updated_at')->first()]);
     }
 
     public function delete($id)
@@ -126,28 +118,25 @@ class AnswerController extends Controller
         $answer = Answer::find($id);
 
         if (!$answer) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Answer with the given ID ' . $id . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the user updating the answer is the author of the answer
         $owned_by_user = $answer->owned_by(auth()->user());
 
         if (!$owned_by_user) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not allowed to delete this answer',
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Delete the answer
         $answer->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Answer deleted',
-        ], 200);
+        return Response::success(['message' => 'Answer deleted']);
     }
 }
