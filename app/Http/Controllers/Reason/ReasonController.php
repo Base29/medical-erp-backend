@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Reason;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Reason;
 use Illuminate\Http\Request;
@@ -30,10 +31,10 @@ class ReasonController extends Controller
         $reason_exist = Reason::where('reason', $request->reason)->first();
 
         if ($reason_exist) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Reason ' . $reason_exist->reason . ' already exists',
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create reason
@@ -41,10 +42,7 @@ class ReasonController extends Controller
         $reason->reason = $request->reason;
         $reason->save();
 
-        return response([
-            'success' => true,
-            'reason' => $reason,
-        ], 200);
+        return Response::success(['reason' => $reason]);
     }
 
     // Fetch Reasons
@@ -53,10 +51,7 @@ class ReasonController extends Controller
         // Reasons
         $reasons = Reason::paginate(10);
 
-        return response([
-            'success' => true,
-            'reasons' => $reasons,
-        ], 200);
+        return Response(['reasons' => $reasons]);
     }
 
     // Delete Reasons
@@ -66,18 +61,15 @@ class ReasonController extends Controller
         $reason = Reason::find($id);
 
         if (!$reason) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Reason with ID ' . $id . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Delete reason
         $reason->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Reason deleted',
-        ], 200);
+        return Response::success(['message' => 'Reason with ID ' . $reason->id . ' deleted']);
     }
 }
