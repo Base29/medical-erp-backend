@@ -2,33 +2,17 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\CreateUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
     // Method for creating user
-    public function create(Request $request)
+    public function create(CreateUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email|unique:users,email',
-            'name' => 'required',
-            'password' => 'required|confirmed',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Create user
         $user = new User();
         $user->email = $request->email;

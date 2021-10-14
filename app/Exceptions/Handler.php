@@ -2,6 +2,7 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\Response;
 use Illuminate\Auth\AuthenticationException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
@@ -42,19 +43,19 @@ class Handler extends ExceptionHandler
 
         $this->renderable(function (NotFoundHttpException $e, $request) {
             if ($request->expectsJson()) {
-                return response([
-                    'success' => false,
+                return Response::fail([
                     'message' => 'Invalid endpoint',
-                ], 404);
+                    'code' => 404,
+                ]);
             }
         });
 
         $this->renderable(function (AuthenticationException $exception, $request) {
             if ($request->expectsJson()) {
-                return response([
-                    'success' => false,
+                return Response::fail([
                     'message' => 'Expired or Invalid token',
-                ], 401);
+                    'code' => 401,
+                ]);
             }
         });
     }
@@ -62,31 +63,31 @@ class Handler extends ExceptionHandler
     public function render($request, Throwable $exception)
     {
         if ($exception instanceof \Spatie\Permission\Exceptions\UnauthorizedException) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You do not have the required permission to perform this action',
-            ], 403);
+                'code' => 403,
+            ]);
         }
 
         if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenExpiredException) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Token has expired',
-            ], 401);
+                'code' => 401,
+            ]);
         }
 
         if ($exception instanceof \Spatie\Permission\Exceptions\PermissionDoesNotExist) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Permission `' . $request->permission . '` does not exist',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         if ($exception instanceof \Tymon\JWTAuth\Exceptions\TokenInvalidException) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Token Signature could not be verified.',
-            ], 401);
+                'code' => 401,
+            ]);
         }
 
         return parent::render($request, $exception);
