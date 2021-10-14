@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Policy;
 use App\Helpers\CustomPagination;
 use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Practice;
@@ -46,10 +47,7 @@ class PolicyController extends Controller
             $perPage = 10,
         )->setPath(route('policies'));
 
-        return response([
-            'success' => true,
-            'policies' => $policies_paginated,
-        ], 200);
+        return Response::success(['policies' => $policies_paginated]);
     }
 
     // Method for getting user data for the signatures
@@ -105,20 +103,20 @@ class PolicyController extends Controller
         $practice = Practice::find($request->practice);
 
         if (!$practice) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Practice with the ID ' . $request->practice . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the policy exists
         $policy_exists = Policy::where('name', $request->name)->first();
 
         if ($policy_exists) {
-            return response([
-                'success' => false,
-                'message' => 'Policy with the name ' . $request->name . ' already exists',
-            ], 409);
+            return Response::fail([
+                'message' => 'Policy with the name ' . $request->name . ' already exist',
+                'code' => 409,
+            ]);
         }
 
         // Upload policy document
@@ -131,10 +129,7 @@ class PolicyController extends Controller
         $policy->practice_id = $practice->id;
         $policy->save();
 
-        return response([
-            'success' => true,
-            'policy' => $policy,
-        ], 200);
+        return Response::success(['policy' => $policy]);
     }
 
     public function delete($id)
@@ -143,18 +138,15 @@ class PolicyController extends Controller
         $policy = Policy::find($id);
 
         if (!$policy) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Policy with the provided id ' . $id . ' doesn\'t exists',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Deleting practice
         $policy->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Policy deleted successfully',
-        ], 200);
+        return Response::success(['message' => 'Policy deleted successfully']);
     }
 }
