@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\CheckList;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\CheckList;
 use App\Models\Room;
@@ -32,20 +33,20 @@ class CheckListController extends Controller
         $room = Room::where('id', $request->room)->first();
 
         if (!$room) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Room not found with the provided id ' . $request->room,
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the checklist with same name exists for the provided room
         $checklist_exists = $room->checkLists->contains('name', $request->name);
 
         if ($checklist_exists) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Checklist with the provided name ' . $request->name . ' already exists for the room ' . $room->name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create Checklist
@@ -55,10 +56,7 @@ class CheckListController extends Controller
         $checklist->notes = $request->notes;
         $checklist->save();
 
-        return response([
-            'success' => true,
-            'message' => 'Checklist created',
-        ], 200);
+        return Response::success(['message' => 'Checklist created']);
     }
 
     public function fetch(Request $request)
@@ -80,18 +78,15 @@ class CheckListController extends Controller
         $room = Room::find($request->room);
 
         if (!$room) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Room with the ID ' . $request->room . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Fetch checklists for the room
         $checklists = CheckList::where('room_id', $room->id)->with('tasks')->first();
 
-        return response([
-            'success' => true,
-            'checklists' => $checklists,
-        ], 200);
+        return Response::success(['checklists' => $checklists]);
     }
 }
