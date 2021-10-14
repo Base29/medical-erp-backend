@@ -19,7 +19,7 @@ class Response
 
     public static function fail($args)
     {
-        if (!Arr::has($args, 'message') && !Arr::has($args, 'code')) {
+        if (!Arr::has($args, 'message') || !Arr::has($args, 'code')) {
             throw new ResponseException('Arguments `message` and `code` are missing for the Response::fail() method.');
         }
 

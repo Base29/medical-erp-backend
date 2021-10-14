@@ -8,6 +8,6 @@ class ResponseException extends Exception
 {
     public function render($request)
     {
-        return response()->json(["error" => true, "message" => $this->getMessage()], 500);
+        return response()->json(["error" => true, "message" => $this->getMessage(), "trace" => $this->getTrace()[0]], 500);
     }
 }
