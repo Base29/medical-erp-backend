@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Room;
 
 use App\Helpers\CustomValidation;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\Room;
@@ -32,20 +33,20 @@ class RoomController extends Controller
         $practice = Practice::where('id', $request->practice)->with('rooms')->first();
 
         if (!$practice) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Practice not found by the provided id ' . $request->practice,
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the room with the same name already exists within the practice
         $room_exists = $practice->rooms->contains('name', $request->name);
 
         if ($room_exists) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Room already exists with the provided name ' . $request->name . ' in practice ' . $practice->practice_name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create room
@@ -55,10 +56,7 @@ class RoomController extends Controller
         $room->icon = $request->icon;
         $room->save();
 
-        return response([
-            'success' => true,
-            'message' => 'Room ' . $room->name . ' created successfully for practice ' . $practice->practice_name,
-        ], 200);
+        return Response::success(['room' => $room->with('practice')->latest()->first()]);
     }
 
     // Method for deleting room
@@ -68,18 +66,15 @@ class RoomController extends Controller
         $room = Room::find($id);
 
         if (!$room) {
-            return response([
-                'success' => false,
-                'message' => 'Room not found with the provided id ' . $id,
-            ], 404);
+            return Response::fail([
+                'message' => 'Room with ID ' . $id . ' not found',
+                'code' => 404,
+            ]);
         }
 
         $room->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Room deleted successfully',
-        ], 200);
+        return Response::success(['message' => 'Room deleted successfully']);
     }
 
     // Method for fetching rooms
@@ -103,38 +98,32 @@ class RoomController extends Controller
             $practice = Practice::where('id', $request->practice)->first();
 
             if (!$practice) {
-                return response([
-                    'success' => false,
-                    'message' => 'Practice not found with the provided id ' . $request->practice,
-                ], 404);
+                return Response::fail([
+                    'message' => 'Practice with ID ' . $request->practice . ' not found',
+                    'code' => 404,
+                ]);
             }
 
             // Check if the user is assigned to $practice
             $belongs_to_practice = $practice->users->contains('id', auth()->user()->id);
 
             if (!$belongs_to_practice) {
-                return response([
-                    'success' => false,
+                return Response::fail([
                     'message' => 'You cannot view the rooms of the practice ' . $practice->practice_name,
+                    'code' => 409,
                 ]);
             }
 
             // Get rooms for the practice
-            $rooms = Room::where('practice_id', $request->practice)->with('checklists')->paginate(10);
+            $rooms = Room::where('practice_id', $request->practice)->with('checklists')->latest()->paginate(10);
 
-            return response([
-                'success' => true,
-                'rooms' => $rooms,
-            ], 200);
+            return Response::success(['rooms' => $rooms]);
         }
 
         //TODO: Allow only Admins to fetch all the rooms regardless of which practice the room belongs to.
-        $rooms = Room::with('checklists')->paginate(10);
+        $rooms = Room::with('checklists')->latest()->paginate(10);
 
-        return response([
-            'success' => true,
-            'rooms' => $rooms,
-        ]);
+        return Response::success(['rooms' => $rooms]);
     }
 
     public function update(Request $request)
@@ -147,10 +136,10 @@ class RoomController extends Controller
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Validation rules
@@ -172,10 +161,10 @@ class RoomController extends Controller
         $room = Room::find($request->room);
 
         if (!$room) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Room with ID ' . $request->room . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // If status key is being sent
@@ -190,9 +179,6 @@ class RoomController extends Controller
 
         $room->save();
 
-        return response([
-            'success' => true,
-            'room' => $room,
-        ], 200);
+        return Response::success(['room' => $room]);
     }
 }
