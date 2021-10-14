@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Post;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostAttachment;
@@ -42,20 +43,20 @@ class PostController extends Controller
         $practice = Practice::find($request->practice);
 
         if (!$practice) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Practice with ID ' . $request->practice . ' does not exist',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the user belongs to the provided practice
         $user_belongs_to_practice = auth()->user()->practices->contains('id', $practice->id);
 
         if (!$user_belongs_to_practice) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'User ' . auth()->user()->name . ' does not belongs to practice ' . $practice->practice_name,
-            ], 409);
+                'code' => 409,
+            ]);
         }
 
         // Create Post
@@ -85,10 +86,7 @@ class PostController extends Controller
         // Adding attachments to the response
         Arr::add($post, 'post_attachments', $post->post_attachments()->get());
 
-        return response([
-            'success' => true,
-            'post' => $post,
-        ], 200);
+        return Response::success(['post' => $post]);
 
     }
 
@@ -97,10 +95,7 @@ class PostController extends Controller
     {
         $posts = Post::with('post_attachments', 'answers.user.roles', 'comments.user.roles', 'user')->withCount(['answers', 'comments', 'post_views'])->paginate(10);
 
-        return response([
-            'success' => true,
-            'posts' => $posts,
-        ], 200);
+        return Response::success(['posts' => $posts]);
     }
 
     // Fetch user's own post
@@ -125,10 +120,7 @@ class PostController extends Controller
             ->withCount(['answers', 'comments'])
             ->paginate(10);
 
-        return response([
-            'success' => true,
-            'posts' => $posts,
-        ], 200);
+        return Response::success(['posts' => $posts]);
     }
 
     public function update(Request $request)
@@ -145,10 +137,10 @@ class PostController extends Controller
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
         // Validation rules
@@ -174,28 +166,25 @@ class PostController extends Controller
         $post = Post::find($request->post);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if user own's the post
         if (!$post->owned_by(auth()->user())) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not authorize to update this post',
-            ], 403);
+                'code' => 403,
+            ]);
         }
 
         // Update task's fields with the ones provided in the $request
         $post_updated = $this->update_post($request->all(), $post);
 
         if ($post_updated) {
-            return response([
-                'success' => true,
-                'post' => $post->with('user')->latest('updated_at')->first(),
-            ]);
+            return Response::success(['post' => $post->with('user')->latest('updated_at')->first()]);
         }
     }
 
@@ -205,27 +194,24 @@ class PostController extends Controller
         $post = Post::find($id);
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with the ID ' . $id . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if user own's the post
         if (!$post->owned_by(auth()->user())) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'You are not authorize to delete this post',
-            ], 403);
+                'code' => 403,
+            ]);
         }
 
         // Delete post
         $post->delete();
 
-        return response([
-            'success' => true,
-            'message' => 'Post ' . $post->id . ' deleted',
-        ], 200);
+        return Response::success(['message' => 'Post ' . $post->id . ' deleted']);
     }
 
     // Fetch single post details
@@ -251,26 +237,23 @@ class PostController extends Controller
             ->first();
 
         if (!$post) {
-            return response([
-                'success' => false,
+            return Response::fail([
                 'message' => 'Post with ID ' . $request->post . ' not found',
-            ], 404);
+                'code' => 404,
+            ]);
         }
 
         // Check if the visibility is private for the post
         $visibility = $post->is_public;
 
         if (!$visibility) {
-            return response([
-                'success' => true,
+            return Response::fail([
                 'message' => 'Post ' . $post->id . ' is not public',
-            ], 400);
+                'code' => 400,
+            ]);
         }
 
-        return response([
-            'success' => true,
-            'post' => $post,
-        ], 200);
+        return Response::success(['post' => $post]);
 
     }
 
