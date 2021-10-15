@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -39,7 +40,7 @@ class AuthController extends Controller
 
             return Response::fail([
                 'code' => 401,
-                'message' => 'Invalid Credentials',
+                'message' => ResponseMessage::invalidCredentials(),
             ]);
         }
 
@@ -64,7 +65,7 @@ class AuthController extends Controller
     public function logout()
     {
         auth()->logout(true);
-        return Response::success(['message' => 'Logged out successfully']);
+        return Response::success(['message' => ResponseMessage::logout()]);
     }
 
     // Method for resetting password
@@ -97,8 +98,8 @@ class AuthController extends Controller
         );
 
         return $status === Password::INVALID_TOKEN || $status === Password::INVALID_USER ?
-        Response::fail(['message' => 'Invalid Token or User', 'code' => 401]) :
-        Response::success(['message' => 'Password reset successfully']);
+        Response::fail(['message' => ResponseMessage::invalidToken(), 'code' => 401]) :
+        Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
     }
 
     // Method for generating reset password link
@@ -122,14 +123,14 @@ class AuthController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User with email ' . $request->email . ' not found',
+                'message' => ResponseMessage::notFound('User', $request->email, true),
                 'code' => 404,
             ]);
         }
 
         Password::sendResetLink($request->only('email'));
 
-        return Response::success(['message' => 'Reset password link sent on your email id.']);
+        return Response::success(['message' => ResponseMessage::passwordResetLink($request->only('email'))]);
     }
 
     // Method for verifying user token
