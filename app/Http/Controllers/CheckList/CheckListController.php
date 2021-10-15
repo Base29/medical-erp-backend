@@ -4,6 +4,7 @@ namespace App\Http\Controllers\CheckList;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\CheckList;
 use App\Models\Room;
@@ -34,7 +35,7 @@ class CheckListController extends Controller
 
         if (!$room) {
             return Response::fail([
-                'message' => 'Room not found with the provided id ' . $request->room,
+                'message' => ResponseMessage::notFound('Room', $request->room, false),
                 'code' => 404,
             ]);
         }
@@ -44,7 +45,7 @@ class CheckListController extends Controller
 
         if ($checklist_exists) {
             return Response::fail([
-                'message' => 'Checklist with the provided name ' . $request->name . ' already exists for the room ' . $room->name,
+                'message' => ResponseMessage::alreadyExists('Checklist'),
                 'code' => 409,
             ]);
         }
@@ -79,7 +80,7 @@ class CheckListController extends Controller
 
         if (!$room) {
             return Response::fail([
-                'message' => 'Room with the ID ' . $request->room . ' not found',
+                'message' => ResponseMessage::notFound('Room', $request->room, false),
                 'code' => 404,
             ]);
         }
