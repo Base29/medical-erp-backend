@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Answer;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Answer;
 use App\Models\Post;
@@ -32,7 +33,7 @@ class AnswerController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
@@ -66,7 +67,7 @@ class AnswerController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
@@ -101,7 +102,7 @@ class AnswerController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => 'You are not allowed to update this answer',
+                'message' => ResponseMessage::notAllowedToUpdate('Answer'),
                 'code' => 400,
             ]);
         }
@@ -119,7 +120,7 @@ class AnswerController extends Controller
 
         if (!$answer) {
             return Response::fail([
-                'message' => 'Answer with the given ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Answer', $id, false),
                 'code' => 404,
             ]);
         }
@@ -129,7 +130,7 @@ class AnswerController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => 'You are not allowed to delete this answer',
+                'message' => ResponseMessage::notAllowedToDelete('Answer'),
                 'code' => 400,
             ]);
         }
@@ -137,6 +138,6 @@ class AnswerController extends Controller
         // Delete the answer
         $answer->delete();
 
-        return Response::success(['message' => 'Answer deleted']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Answer')]);
     }
 }

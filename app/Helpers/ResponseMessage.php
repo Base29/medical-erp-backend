@@ -1,9 +1,13 @@
 <?php
 /**
- * Response Error Messages
+ * Response Messages
+ *
+ * Class for building response messages
  */
 
-class ErrorMessage
+namespace App\Helpers;
+
+class ResponseMessage
 {
 
     // Message for records not found
