@@ -56,7 +56,7 @@ class CheckListController extends Controller
         $checklist->notes = $request->notes;
         $checklist->save();
 
-        return Response::success(['message' => 'Checklist created']);
+        return Response::success(['checklist' => $checklist]);
     }
 
     public function fetch(Request $request)

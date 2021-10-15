@@ -40,11 +40,7 @@ class RoleController extends Controller
         // Create role
         $role = Role::create(['guard_name' => 'api', 'name' => $request->name]);
 
-        return !$role ? Response::fail([
-            'message' => 'Role not created. Something went wrong.',
-            'code' => 400,
-        ]) :
-        Response::success(['role' => $role->name]);
+        return Response::success(['role' => $role->name]);
     }
 
     // Method for deleting role

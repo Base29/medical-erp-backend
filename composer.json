@@ -35,7 +35,8 @@
             "app/Helpers/CustomPagination.php",
             "app/Helpers/CustomValidation.php",
             "app/Helpers/FileUpload.php",
-            "app/Helpers/Response.php"
+            "app/Helpers/Response.php",
+            "app/Helpers/ResponseMessage.php"
         ]
     },
     "autoload-dev": {

@@ -41,11 +41,7 @@ class PermissionController extends Controller
         // Create permission
         $permission = Permission::create(['guard_name' => 'api', 'name' => $request->name]);
 
-        return !$permission ? Response::fail([
-            'message' => 'Permission not created. Something went wrong.',
-            'code' => 400,
-        ]) :
-        Response::success(['message' => $permission->name . ' permission created successfully']);
+        return Response::success(['permission' => $permission]);
     }
 
     // Method for deleting permission
