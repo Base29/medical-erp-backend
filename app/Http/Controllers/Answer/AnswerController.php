@@ -102,7 +102,7 @@ class AnswerController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => ResponseMessage::notAllowedToUpdate('Answer'),
+                'message' => ResponseMessage::notAllowedToUpdate('answer'),
                 'code' => 400,
             ]);
         }
@@ -130,7 +130,7 @@ class AnswerController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => ResponseMessage::notAllowedToDelete('Answer'),
+                'message' => ResponseMessage::notAllowedToDelete('answer'),
                 'code' => 400,
             ]);
         }

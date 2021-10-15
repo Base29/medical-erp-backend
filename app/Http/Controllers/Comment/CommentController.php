@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Comment;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
 use App\Models\Post;
@@ -32,7 +33,7 @@ class CommentController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
@@ -66,13 +67,14 @@ class CommentController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
 
         // Fetch answers for post
         $comments = Comment::where('post_id', $post->id)->with('post', 'user')->paginate(10);
+
         return Response::success(['post_comments' => $comments]);
     }
 
@@ -101,7 +103,7 @@ class CommentController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => 'You are not allowed to update this comment',
+                'message' => ResponseMessage::notAllowedToUpdate('comment'),
                 'code' => 400,
             ]);
         }
@@ -119,7 +121,7 @@ class CommentController extends Controller
 
         if (!$comment) {
             return Response::fail([
-                'message' => 'Comment with the given ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Comment', $id, false),
                 'code' => 404,
             ]);
         }
@@ -129,7 +131,7 @@ class CommentController extends Controller
 
         if (!$owned_by_user) {
             return Response::fail([
-                'message' => 'You are not allowed to delete this comment',
+                'message' => ResponseMessage::notAllowedToDelete('comment'),
                 'code' => 400,
             ]);
         }
@@ -137,6 +139,6 @@ class CommentController extends Controller
         // Delete the answer
         $comment->delete();
 
-        return Response::success(['message' => 'Comment deleted']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Comment')]);
     }
 }
