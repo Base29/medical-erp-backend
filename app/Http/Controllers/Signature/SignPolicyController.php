@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Signature;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Signature;
@@ -33,7 +34,7 @@ class SignPolicyController extends Controller
         // Returning response incase the policy with the provided Id is not available
         if (!$policy) {
             return Response::fail([
-                'message' => 'Policy with ID ' . $request->policy_id . ' not found',
+                'message' => ResponseMessage::notFound('Policy', $request->policy_id, false),
                 'code' => 404,
             ]);
         }

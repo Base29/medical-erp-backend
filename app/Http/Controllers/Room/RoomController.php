@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Room;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Practice;
 use App\Models\Room;
@@ -34,7 +35,7 @@ class RoomController extends Controller
 
         if (!$practice) {
             return Response::fail([
-                'message' => 'Practice not found by the provided id ' . $request->practice,
+                'message' => ResponseMessage::notFound('Practice', $request->practice, false),
                 'code' => 404,
             ]);
         }
@@ -44,7 +45,7 @@ class RoomController extends Controller
 
         if ($room_exists) {
             return Response::fail([
-                'message' => 'Room already exists with the provided name ' . $request->name . ' in practice ' . $practice->practice_name,
+                'message' => ResponseMessage::alreadyExists($request->name),
                 'code' => 409,
             ]);
         }
@@ -67,14 +68,14 @@ class RoomController extends Controller
 
         if (!$room) {
             return Response::fail([
-                'message' => 'Room with ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Room', $id, false),
                 'code' => 404,
             ]);
         }
 
         $room->delete();
 
-        return Response::success(['message' => 'Room deleted successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Room')]);
     }
 
     // Method for fetching rooms
@@ -99,7 +100,7 @@ class RoomController extends Controller
 
             if (!$practice) {
                 return Response::fail([
-                    'message' => 'Practice with ID ' . $request->practice . ' not found',
+                    'message' => ResponseMessage::notFound('Practice', $request->practice, false),
                     'code' => 404,
                 ]);
             }
@@ -109,7 +110,7 @@ class RoomController extends Controller
 
             if (!$belongs_to_practice) {
                 return Response::fail([
-                    'message' => 'You cannot view the rooms of the practice ' . $practice->practice_name,
+                    'message' => ResponseMessage::customMessage('You cannot view the rooms of the practice ' . $practice->practice_name),
                     'code' => 409,
                 ]);
             }
@@ -137,7 +138,7 @@ class RoomController extends Controller
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
             return Response::fail([
-                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
+                'message' => ResponseMessage::allowedFields($allowed_fields),
                 'code' => 400,
             ]);
         }
@@ -162,7 +163,7 @@ class RoomController extends Controller
 
         if (!$room) {
             return Response::fail([
-                'message' => 'Room with ID ' . $request->room . ' not found',
+                'message' => ResponseMessage::notFound('Room', $request->room, false),
                 'code' => 404,
             ]);
         }

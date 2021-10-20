@@ -6,6 +6,7 @@ use App\Helpers\CustomPagination;
 use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Policy;
 use App\Models\Practice;
@@ -104,7 +105,7 @@ class PolicyController extends Controller
 
         if (!$practice) {
             return Response::fail([
-                'message' => 'Practice with the ID ' . $request->practice . ' not found',
+                'message' => ResponseMessage::notFound('Practice', $request->practice, false),
                 'code' => 404,
             ]);
         }
@@ -114,7 +115,7 @@ class PolicyController extends Controller
 
         if ($policy_exists) {
             return Response::fail([
-                'message' => 'Policy with the name ' . $request->name . ' already exist',
+                'message' => ResponseMessage::alreadyExists($request->name),
                 'code' => 409,
             ]);
         }
@@ -139,7 +140,7 @@ class PolicyController extends Controller
 
         if (!$policy) {
             return Response::fail([
-                'message' => 'Policy with the provided id ' . $id . ' doesn\'t exists',
+                'message' => ResponseMessage::notFound('Policy', $id, false),
                 'code' => 404,
             ]);
         }
@@ -147,6 +148,6 @@ class PolicyController extends Controller
         // Deleting practice
         $policy->delete();
 
-        return Response::success(['message' => 'Policy deleted successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Policy')]);
     }
 }

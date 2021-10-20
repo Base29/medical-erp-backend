@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Task;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\CheckList;
 use App\Models\Task;
@@ -34,7 +35,7 @@ class TaskController extends Controller
 
         if (!$checklist) {
             return Response::fail([
-                'message' => 'Checklist with ID ' . $request->checklist . ' not found',
+                'message' => ResponseMessage::notFound('Checklist', $request->checklist, false),
                 'code' => 404,
             ]);
         }
@@ -44,7 +45,7 @@ class TaskController extends Controller
 
         if ($task_already_exist) {
             return Response::fail([
-                'message' => 'Task with name ' . $request->name . ' already exists in checklist ' . $checklist->name,
+                'message' => ResponseMessage::alreadyExists($request->name),
                 'code' => 409,
             ]);
         }
@@ -67,7 +68,7 @@ class TaskController extends Controller
 
         if (!$task) {
             return Response::fail([
-                'message' => 'Task with ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Task', $id, false),
                 'code' => 404,
             ]);
         }
@@ -75,7 +76,7 @@ class TaskController extends Controller
         // Delete task
         $task->delete();
 
-        return Response::success(['message' => 'Task deleted successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Task')]);
     }
 
     public function update(Request $request)
@@ -92,7 +93,7 @@ class TaskController extends Controller
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
             return Response::fail([
-                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
+                'message' => ResponseMessage::allowedFields($allowed_fields),
                 'code' => 400,
             ]);
         }
@@ -120,7 +121,7 @@ class TaskController extends Controller
 
         if (!$task) {
             return Response::fail([
-                'message' => 'Task with ID ' . $request->task . ' not found',
+                'message' => ResponseMessage::notFound('Task', $request->task, false),
                 'code' => 404,
             ]);
         }

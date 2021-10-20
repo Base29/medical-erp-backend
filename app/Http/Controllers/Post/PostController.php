@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Post;
 use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use App\Models\PostAttachment;
@@ -44,7 +45,7 @@ class PostController extends Controller
 
         if (!$practice) {
             return Response::fail([
-                'message' => 'Practice with ID ' . $request->practice . ' does not exist',
+                'message' => ResponseMessage::notAllowedToDelete('Practice', $request->practice, false),
                 'code' => 404,
             ]);
         }
@@ -54,7 +55,7 @@ class PostController extends Controller
 
         if (!$user_belongs_to_practice) {
             return Response::fail([
-                'message' => 'User ' . auth()->user()->name . ' does not belongs to practice ' . $practice->practice_name,
+                'message' => ResponseMessage::notBelongTo(auth()->user()->name, $practice->practice_name),
                 'code' => 409,
             ]);
         }
@@ -138,7 +139,7 @@ class PostController extends Controller
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowed_fields)) {
             return Response::fail([
-                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
+                'message' => ResponseMessage::allowedFields($allowed_fields),
                 'code' => 400,
             ]);
         }
@@ -167,7 +168,7 @@ class PostController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
@@ -175,7 +176,7 @@ class PostController extends Controller
         // Check if user own's the post
         if (!$post->owned_by(auth()->user())) {
             return Response::fail([
-                'message' => 'You are not authorize to update this post',
+                'message' => ResponseMessage::notAllowedToUpdate('post'),
                 'code' => 403,
             ]);
         }
@@ -195,7 +196,7 @@ class PostController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with the ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Post', $id, false),
                 'code' => 404,
             ]);
         }
@@ -203,7 +204,7 @@ class PostController extends Controller
         // Check if user own's the post
         if (!$post->owned_by(auth()->user())) {
             return Response::fail([
-                'message' => 'You are not authorize to delete this post',
+                'message' => ResponseMessage::notAllowedToDelete('post'),
                 'code' => 403,
             ]);
         }
@@ -211,7 +212,7 @@ class PostController extends Controller
         // Delete post
         $post->delete();
 
-        return Response::success(['message' => 'Post ' . $post->id . ' deleted']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Post')]);
     }
 
     // Fetch single post details
@@ -238,7 +239,7 @@ class PostController extends Controller
 
         if (!$post) {
             return Response::fail([
-                'message' => 'Post with ID ' . $request->post . ' not found',
+                'message' => ResponseMessage::notFound('Post', $request->post, false),
                 'code' => 404,
             ]);
         }
@@ -248,7 +249,7 @@ class PostController extends Controller
 
         if (!$visibility) {
             return Response::fail([
-                'message' => 'Post ' . $post->id . ' is not public',
+                'message' => ResponseMessage::notPublic('Post'),
                 'code' => 400,
             ]);
         }

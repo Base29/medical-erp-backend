@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reason;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\Reason;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class ReasonController extends Controller
 
         if ($reason_exist) {
             return Response::fail([
-                'message' => 'Reason ' . $reason_exist->reason . ' already exists',
+                'message' => ResponseMessage::alreadyExists($request->reason),
                 'code' => 409,
             ]);
         }
@@ -62,7 +63,7 @@ class ReasonController extends Controller
 
         if (!$reason) {
             return Response::fail([
-                'message' => 'Reason with ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Reason', $id, false),
                 'code' => 404,
             ]);
         }
@@ -70,6 +71,6 @@ class ReasonController extends Controller
         // Delete reason
         $reason->delete();
 
-        return Response::success(['message' => 'Reason with ID ' . $reason->id . ' deleted']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
     }
 }

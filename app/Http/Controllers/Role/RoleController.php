@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Role;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -32,7 +33,7 @@ class RoleController extends Controller
 
         if ($role_exists) {
             return Response::fail([
-                'message' => $request->name . ' role already exists',
+                'message' => ResponseMessage::alreadyExists($request->name),
                 'code' => 409,
             ]);
         }
@@ -51,7 +52,7 @@ class RoleController extends Controller
 
         if (!$role) {
             return Response::fail([
-                'message' => 'Role with ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('Role', $id, false),
                 'code' => 404,
             ]);
         }
@@ -59,7 +60,7 @@ class RoleController extends Controller
         // Delete user with the provided $id
         $role->delete();
 
-        return Response::success(['message' => 'Role delete successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Role')]);
     }
 
     // Method for fetching roles
@@ -93,7 +94,7 @@ class RoleController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User with email ' . $request->email . ' does not exists',
+                'message' => ResponseMessage::notFound('User', $request->email, true),
                 'code' => 404,
             ]);
         }
@@ -103,7 +104,7 @@ class RoleController extends Controller
 
         if (!$role_exists) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' does not exists.',
+                'message' => ResponseMessage::notFound('Role', $request->role, false),
                 'code' => 404,
             ]);
         }
@@ -111,7 +112,7 @@ class RoleController extends Controller
         // Check if the user has assigned the provided role
         if ($user->hasRole($request->role)) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' already assigned to ' . $user->email,
+                'message' => ResponseMessage::alreadyAssigned($request->role, $user->email),
                 'code' => 409,
             ]);
         }
@@ -119,7 +120,7 @@ class RoleController extends Controller
         // Assigning role to the user
         $user->assignRole($request->role);
 
-        return Response::success(['message' => 'Role ' . $request->role . ' assigned to ' . $user->email]);
+        return Response::success(['message' => ResponseMessage::assigned($request->role, $user->email)]);
     }
 
     // Method for revoking role for user
@@ -144,32 +145,32 @@ class RoleController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User ' . $request->email . ' does not exists',
+                'message' => ResponseMessage::notFound('User', $request->email, true),
                 'code' => 404,
             ]);
         }
 
         // Checking if role exists
-        $role_exists = Role::where('name', $request->role)->first();
+        $role = Role::where('name', $request->role)->first();
 
-        if (!$role_exists) {
+        if (!$role) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' does not exists.',
+                'message' => ResponseMessage::notFound('Role', $request->role, false),
                 'code' => 404,
             ]);
         }
 
         // Check if the user has assigned the provided role
-        if (!$user->hasRole($request->role)) {
+        if (!$user->hasRole($role->name)) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' not assigned to ' . $user->email,
+                'message' => ResponseMessage::notAssigned($role->name, $user->email),
                 'code' => 409,
             ]);
         }
 
         // Revoking role
-        $user->removeRole($request->role);
+        $user->removeRole($role->name);
 
-        return Response::success(['message' => 'Role ' . $request->role . ' removed for ' . $user->email]);
+        return Response::success(['message' => ResponseMessage::revoked($role->name, $user->email)]);
     }
 }

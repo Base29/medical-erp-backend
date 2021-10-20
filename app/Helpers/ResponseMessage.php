@@ -13,7 +13,7 @@ class ResponseMessage
     // Message for records not found
     public static function notFound($model, $data, $switch)
     {
-        $handle = $switch ? 'email' : 'ID';
+        $handle = $switch ? 'email' : 'ID/name';
         return $model . ' with ' . $handle . ' ' . $data . ' not found';
     }
 
@@ -111,6 +111,18 @@ class ResponseMessage
     public static function notPublic($model)
     {
         return $model . ' not public';
+    }
+
+    // Message for not belong to
+    public static function notBelongTo($model, $entity)
+    {
+        return $model . ' does not belongs to ' . $entity;
+    }
+
+    // Message for custom message
+    public static function customMessage($message)
+    {
+        return $message;
     }
 
 }

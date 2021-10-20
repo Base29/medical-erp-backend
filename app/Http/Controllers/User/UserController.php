@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Models\User;
@@ -31,7 +32,7 @@ class UserController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User with ID ' . $id . ' not found',
+                'message' => ResponseMessage::notFound('User', $id, false),
                 'code' => 404,
             ]);
         }
@@ -39,7 +40,7 @@ class UserController extends Controller
         // Delete user with the provided $id
         $user->delete();
 
-        return Response::success(['message' => 'User delete successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('User')]);
     }
 
     // Method for fetching users

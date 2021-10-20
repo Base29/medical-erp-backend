@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Permission;
 
 use App\Helpers\CustomValidation;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -33,7 +34,7 @@ class PermissionController extends Controller
 
         if ($permission_exists) {
             return Response::fail([
-                'message' => 'Permission ' . $request->name . ' already exists',
+                'message' => ResponseMessage::alreadyExists('Permission'),
                 'code' => 409,
             ]);
         }
@@ -52,7 +53,7 @@ class PermissionController extends Controller
         // Check if permission exists
         if (!$permission) {
             return Response::fail([
-                'message' => 'Permission not found with the provided id ' . $id,
+                'message' => ResponseMessage::notFound('Permission', $id, false),
                 'code' => 404,
             ]);
         }
@@ -60,7 +61,7 @@ class PermissionController extends Controller
         // Delete permission
         $permission->delete();
 
-        return Response::success(['message' => 'Permission deleted successfully']);
+        return Response::success(['message' => ResponseMessage::deleteSuccess('Permission')]);
     }
 
     // Method for fetching permissions
@@ -94,7 +95,7 @@ class PermissionController extends Controller
 
         if (!$role) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' doesn\'t exist',
+                'message' => ResponseMessage::notFound('Role', $request->role, false),
                 'code' => 404,
             ]);
         }
@@ -104,7 +105,7 @@ class PermissionController extends Controller
 
         if ($already_has_permission) {
             return Response::fail([
-                'message' => 'Role ' . $role->name . ' already has ' . $request->permission . ' permission',
+                'message' => ResponseMessage::alreadyAssigned($request->permission, $role->name),
                 'code' => 409,
             ]);
         }
@@ -114,7 +115,7 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return Response::fail([
-                'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
+                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
                 'code' => 404,
             ]);
         }
@@ -122,7 +123,7 @@ class PermissionController extends Controller
         // Assigning permission to the role
         $role->givePermissionTo($request->permission);
 
-        return Response::success(['message' => 'Permission ' . $permission->name . ' assigned to ' . $role->name . ' role']);
+        return Response::success(['role' => ResponseMessage::assigned($permission->name, $role->name)]);
     }
 
     // Method for assigning permission to a user
@@ -147,7 +148,7 @@ class PermissionController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User doesn\'t exist with the provided email ' . $request->email,
+                'message' => ResponseMessage::notFound('User', $request->email, true),
                 'code' => 404,
             ]);
         }
@@ -157,7 +158,7 @@ class PermissionController extends Controller
 
         if ($already_has_permission) {
             return Response::false([
-                'message' => 'User ' . $user->email . ' already has ' . $request->permission . ' permission',
+                'message' => ResponseMessage::alreadyAssigned($request->permission, $user->name),
                 'code' => 409,
             ]);
         }
@@ -167,7 +168,7 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return Response::fail([
-                'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
+                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
                 'code' => 404,
             ]);
         }
@@ -175,7 +176,7 @@ class PermissionController extends Controller
         // Assigning permission to the user
         $user->givePermissionTo($request->permission);
 
-        return Response::success(['message' => 'Permission ' . $permission->name . ' assigned to ' . $user->email]);
+        return Response::success(['message' => ResponseMessage::assigned($permission->name, $user->email)]);
     }
 
     // Method for revoking permission for role
@@ -200,7 +201,7 @@ class PermissionController extends Controller
 
         if (!$role) {
             return Response::fail([
-                'message' => 'Role ' . $request->role . ' doesn\'t exists',
+                'message' => ResponseMessage::notFound('Role', $request->role, false),
                 'code' => 404,
             ]);
         }
@@ -210,7 +211,7 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return Response::fail([
-                'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
+                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
                 'code' => 404,
             ]);
         }
@@ -220,7 +221,7 @@ class PermissionController extends Controller
 
         if (!$role_has_permission) {
             return Response::fail([
-                'message' => 'Role ' . $role->name . ' doesn\'t have ' . $permission->name . ' permission',
+                'message' => ResponseMessage::notAssigned($permission->name, $role->name),
                 'code' => 400,
             ]);
         }
@@ -228,7 +229,7 @@ class PermissionController extends Controller
         // Revoke permission for the provided role
         $role->revokePermissionTo($permission->name);
 
-        return Response::success(['message' => 'Permission ' . $permission->name . ' revoked for role ' . $role->name]);
+        return Response::success(['message' => ResponseMessage::revoked($permission->name, $role->name)]);
     }
 
     // Method for revoking permission for user
@@ -253,7 +254,7 @@ class PermissionController extends Controller
 
         if (!$user) {
             return Response::fail([
-                'message' => 'User ' . $request->email . ' doesn\'t exists',
+                'message' => ResponseMessage::notFound('User', $request->email, true),
                 'code' => 404,
             ]);
         }
@@ -263,7 +264,7 @@ class PermissionController extends Controller
 
         if (!$permission) {
             return Response::fail([
-                'message' => 'Permission ' . $request->permission . ' doesn\'t exist',
+                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
                 'code' => 404,
             ]);
         }
@@ -273,7 +274,7 @@ class PermissionController extends Controller
 
         if (!$user_has_permission) {
             return response::fail([
-                'message' => 'User ' . $user->email . ' doesn\'t have ' . $permission->name . ' permission',
+                'message' => ResponseMessage::notAssigned($permission->name, $user->name),
                 'code' => 400,
             ]);
         }
@@ -281,6 +282,6 @@ class PermissionController extends Controller
         // Revoke permission for the provided user
         $user->revokePermissionTo($permission->name);
 
-        return Response::success(['message' => 'Permission ' . $permission->name . ' revoked for user ' . $user->email]);
+        return Response::success(['message' => ResponseMessage::revoked($permission->name, $user->name)]);
     }
 }
