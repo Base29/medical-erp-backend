@@ -2,42 +2,24 @@
 
 namespace App\Http\Controllers\Answer;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Answer\CreateAnswerRequest;
+use App\Http\Requests\Answer\FetchAnswersRequest;
+use App\Http\Requests\Answer\UpdateAnswerRequest;
 use App\Models\Answer;
 use App\Models\Post;
-use Illuminate\Http\Request;
 
 class AnswerController extends Controller
 {
-    public function create(Request $request)
+    public function create(CreateAnswerRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'answer' => 'required',
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the post exist
         $post = Post::find($request->post);
 
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
-
+        // Create answer for the post
         $answer = new Answer();
         $answer->answer = $request->answer;
         $answer->user_id = auth()->user()->id;
@@ -47,30 +29,11 @@ class AnswerController extends Controller
     }
 
     // fetch post answers
-    public function fetch(Request $request)
+    public function fetch(FetchAnswersRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the post exist
         $post = Post::find($request->post);
-
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
 
         // Fetch answers for post
         $answers = Answer::where('post_id', $post->id)->with('post', 'user')->paginate(10);
@@ -78,21 +41,8 @@ class AnswerController extends Controller
     }
 
     // Update answer
-    public function update(Request $request)
+    public function update(UpdateAnswerRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'answer' => 'required',
-            'answer_id' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Fetch the answer
         $answer = Answer::where('id', $request->answer_id)->with('post', 'user')->first();

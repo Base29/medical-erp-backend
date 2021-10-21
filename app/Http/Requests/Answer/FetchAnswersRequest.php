@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Answer;
 
 use App\Helpers\CustomValidation;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateUserRequest extends FormRequest
+class FetchAnswersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,7 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users,email',
-            'name' => 'required',
-            'password' => 'required|confirmed',
+            'post' => 'required|numeric|exists:posts,id',
         ];
     }
 
