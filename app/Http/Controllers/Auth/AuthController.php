@@ -31,13 +31,6 @@ class AuthController extends Controller
             ]);
         }
 
-        $user->roles->makeHidden([
-            'pivot',
-            'created_at',
-            'updated_at',
-            'guard_name',
-        ]);
-
         // Generating JWT token from provided creds
         $token = JWTAuth::attempt($request->only('email', 'password'));
 
@@ -86,23 +79,7 @@ class AuthController extends Controller
     public function verify_token()
     {
         $user = JWTAuth::parseToken()->authenticate();
-        $user_roles = $user->roles
-            ->makeHidden([
-                'pivot',
-                'created_at',
-                'updated_at',
-                'guard_name',
-            ]);
 
-        $user_practices = $user->practices
-            ->makeHidden([
-                'pivot',
-                'created_at',
-                'updated_at',
-                'deleted_at',
-            ]);
-        $user_with_roles = Arr::add($user, 'roles', $user_roles);
-        $user_with_practices = Arr::add($user_with_roles, 'practices', $user_practices);
-        return Response::success(['user' => $user_with_practices]);
+        return Response::success(['user' => $user->with('roles', 'practices')->first()]);
     }
 }

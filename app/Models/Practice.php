@@ -19,6 +19,7 @@ class Practice extends Model
 
     protected $hidden = [
         'pivot',
+        'deleted_at',
     ];
 
     public function users()
