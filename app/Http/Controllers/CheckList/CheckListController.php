@@ -2,43 +2,22 @@
 
 namespace App\Http\Controllers\CheckList;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Checklist\CreateChecklistRequest;
+use App\Http\Requests\Checklist\FetchChecklistRequest;
 use App\Models\CheckList;
 use App\Models\Room;
-use Illuminate\Http\Request;
 
 class CheckListController extends Controller
 {
     // Method for creating check list
-    public function create(Request $request)
+    public function create(CreateChecklistRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-            'room' => 'required|numeric',
-            'notes' => 'String',
-        ];
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the room exists
+        // Fetch room
         $room = Room::where('id', $request->room)->first();
-
-        if (!$room) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Room', $request->room, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the checklist with same name exists for the provided room
         $checklist_exists = $room->checkLists->contains('name', $request->name);
@@ -60,33 +39,9 @@ class CheckListController extends Controller
         return Response::success(['checklist' => $checklist]);
     }
 
-    public function fetch(Request $request)
+    public function fetch(FetchChecklistRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'room' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the room exists
-        $room = Room::find($request->room);
-
-        if (!$room) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Room', $request->room, false),
-                'code' => 404,
-            ]);
-        }
-
-        // Fetch checklists for the room
-        $checklists = CheckList::where('room_id', $room->id)->with('tasks')->first();
+        $checklists = CheckList::where('room_id', $request->room)->with('tasks')->first();
 
         return Response::success(['checklists' => $checklists]);
     }
