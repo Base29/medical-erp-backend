@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\AuthenticateUserRequest;
+use App\Http\Requests\Auth\ResetPasswordLinkRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -17,22 +18,8 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     // Method for Authenticating the user
-    public function login(Request $request)
+    public function login(AuthenticateUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'password' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Checking if the user exists in the database
         $user = User::where('email', $request->email)->with(['roles', 'practices'])->first();
 
@@ -55,10 +42,10 @@ class AuthController extends Controller
         $token = JWTAuth::attempt($request->only('email', 'password'));
 
         // Adding token to user array
-        $userArr = Arr::add($user, 'token', $token);
+        Arr::add($user, 'token', $token);
 
         // Return response
-        return Response::success(['user' => $userArr]);
+        return Response::success(['user' => $user]);
     }
 
     // Method for logging out the user
@@ -69,23 +56,8 @@ class AuthController extends Controller
     }
 
     // Method for resetting password
-    public function reset_password(Request $request)
+    public function reset_password(ResetPasswordRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'token' => 'required',
-            'password' => 'required|min:8|confirmed',
-            'email' => 'required|email',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         $status = Password::reset(
             $request->only('email', 'password', 'password_confirmation', 'token'),
             function ($user, $password) {
@@ -103,34 +75,11 @@ class AuthController extends Controller
     }
 
     // Method for generating reset password link
-    public function generate_reset_password_link(Request $request)
+    public function generate_reset_password_link(ResetPasswordLinkRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the user exists
-        $user = User::where('email', $request->only('email'))->first();
-
-        if (!$user) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('User', $request->email, true),
-                'code' => 404,
-            ]);
-        }
-
         Password::sendResetLink($request->only('email'));
 
-        return Response::success(['message' => ResponseMessage::passwordResetLink($request->only('email'))]);
+        return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
     }
 
     // Method for verifying user token
