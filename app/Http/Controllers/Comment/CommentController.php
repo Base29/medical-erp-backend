@@ -2,41 +2,22 @@
 
 namespace App\Http\Controllers\Comment;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Comment\CreateCommentRequest;
+use App\Http\Requests\Comment\FetchCommentRequest;
+use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Models\Comment;
 use App\Models\Post;
-use Illuminate\Http\Request;
 
 class CommentController extends Controller
 {
-    public function create(Request $request)
+    public function create(CreateCommentRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'comment' => 'required',
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the post exist
         $post = Post::find($request->post);
-
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
 
         $comment = new Comment();
         $comment->comment = $request->comment;
@@ -47,58 +28,33 @@ class CommentController extends Controller
     }
 
     // fetch post comments
-    public function fetch(Request $request)
+    public function fetch(FetchCommentRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the post exist
         $post = Post::find($request->post);
 
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
-
-        // Fetch answers for post
+        // Fetch comments for post
         $comments = Comment::where('post_id', $post->id)->with('post', 'user')->paginate(10);
 
         return Response::success(['post_comments' => $comments]);
     }
 
     // Update comment
-    public function update(Request $request)
+    public function update(UpdateCommentRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'comment' => 'required',
-            'comment_id' => 'required|numeric',
-        ];
+        // Fetch the comment
+        $comment = Comment::where('id', $request->comment_id)->with('post', 'user')->withTrashed()->first();
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+        // Check if the comment is soft deleted
+        if ($comment->trashed()) {
+            return Response::fail([
+                'message' => ResponseMessage::customMessage('The selected comment id is invalid.'),
+                'code' => 404,
+            ]);
         }
 
-        // Fetch the answer
-        $comment = Comment::where('id', $request->comment_id)->with('post', 'user')->first();
-
-        // Check if the user updating the answer is the author of the answer
+        // Check if the user updating the comment is the author of the comment
         $owned_by_user = $comment->owned_by(auth()->user());
 
         if (!$owned_by_user) {
@@ -108,10 +64,11 @@ class CommentController extends Controller
             ]);
         }
 
-        // Update answer
+        // Update comment
         $comment->update(['comment' => $request->comment]);
 
         return Response::success(['comment' => $comment->with('post', 'user')->latest('updated_at')->first()]);
+
     }
 
     public function delete($id)
