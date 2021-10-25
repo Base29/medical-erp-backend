@@ -2,43 +2,23 @@
 
 namespace App\Http\Controllers\Permission;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Permission\AssignPermissionToRoleRequest;
+use App\Http\Requests\Permission\AssignPermissionToUserRequest;
+use App\Http\Requests\Permission\CreatePermissionRequest;
+use App\Http\Requests\Permission\RevokePermissionForRoleRequest;
+use App\Http\Requests\Permission\RevokePermissionForUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
 class PermissionController extends Controller
 {
     // Method for creating a permission
-    public function create(Request $request)
+    public function create(CreatePermissionRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the permission already exists
-        $permission_exists = Permission::where('name', $request->name)->first();
-
-        if ($permission_exists) {
-            return Response::fail([
-                'message' => ResponseMessage::alreadyExists('Permission'),
-                'code' => 409,
-            ]);
-        }
-
         // Create permission
         $permission = Permission::create(['guard_name' => 'api', 'name' => $request->name]);
 
@@ -74,31 +54,10 @@ class PermissionController extends Controller
     }
 
     // Method for assigning permission to a role
-    public function assign_to_role(Request $request)
+    public function assign_to_role(AssignPermissionToRoleRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'role' => 'required',
-            'permission' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Check if the role exists
         $role = Role::where('name', $request->role)->first();
-
-        if (!$role) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Role', $request->role, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the role already has the provided permission
         $already_has_permission = $role->hasPermissionTo($request->permission);
@@ -113,13 +72,6 @@ class PermissionController extends Controller
         // Check if the permission exists
         $permission = Permission::where('name', $request->permission)->first();
 
-        if (!$permission) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
-                'code' => 404,
-            ]);
-        }
-
         // Assigning permission to the role
         $role->givePermissionTo($request->permission);
 
@@ -127,31 +79,11 @@ class PermissionController extends Controller
     }
 
     // Method for assigning permission to a user
-    public function assign_to_user(Request $request)
+    public function assign_to_user(AssignPermissionToUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'permission' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the user exists
         $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('User', $request->email, true),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the user already has the provided permission
         $already_has_permission = $user->hasPermissionTo($request->permission);
@@ -166,13 +98,6 @@ class PermissionController extends Controller
         // Check if the permission exists
         $permission = Permission::where('name', $request->permission)->first();
 
-        if (!$permission) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
-                'code' => 404,
-            ]);
-        }
-
         // Assigning permission to the user
         $user->givePermissionTo($request->permission);
 
@@ -180,41 +105,14 @@ class PermissionController extends Controller
     }
 
     // Method for revoking permission for role
-    public function revoke_for_role(Request $request)
+    public function revoke_for_role(RevokePermissionForRoleRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'role' => 'required',
-            'permission' => 'required',
-        ];
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the role exists for which the permission is being revoked
+        // Get role
         $role = Role::where('name', $request->role)->first();
 
-        if (!$role) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Role', $request->role, false),
-                'code' => 404,
-            ]);
-        }
-
-        // Check if the permission exists which is being revoked for the role
+        // Get permission
         $permission = Permission::where('name', $request->permission)->first();
-
-        if (!$permission) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the role has the permission that is being revoked
         $role_has_permission = $role->hasPermissionTo($permission->name);
@@ -233,41 +131,13 @@ class PermissionController extends Controller
     }
 
     // Method for revoking permission for user
-    public function revoke_for_user(Request $request)
+    public function revoke_for_user(RevokePermissionForUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'permission' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the user exists for which the permission is being revoked
+        // Get User
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('User', $request->email, true),
-                'code' => 404,
-            ]);
-        }
-
-        // Check if the permission exists which is being revoked for the user
+        // Get Permission
         $permission = Permission::where('name', $request->permission)->first();
-
-        if (!$permission) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Permission', $request->permission, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the user has the permission that is being revoked
         $user_has_permission = $user->hasPermissionTo($permission->name);
