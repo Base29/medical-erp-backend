@@ -2,42 +2,18 @@
 
 namespace App\Http\Controllers\Reason;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Reason\CreateReasonRequest;
 use App\Models\Reason;
-use Illuminate\Http\Request;
 
 class ReasonController extends Controller
 {
 
     // Create Reason
-    public function create(Request $request)
+    public function create(CreateReasonRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'reason' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the reason exists
-        $reason_exist = Reason::where('reason', $request->reason)->first();
-
-        if ($reason_exist) {
-            return Response::fail([
-                'message' => ResponseMessage::alreadyExists($request->reason),
-                'code' => 409,
-            ]);
-        }
-
         // Create reason
         $reason = new Reason();
         $reason->reason = $request->reason;
