@@ -107,4 +107,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Comment::class);
     }
 
+    public function isSuperAdmin()
+    {
+        return $this->roles->contains('name', 'super_admin');
+    }
+
 }
