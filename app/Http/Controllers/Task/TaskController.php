@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Task;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Task\CreateTaskRequest;
 use App\Models\CheckList;
 use App\Models\Task;
 use Illuminate\Http\Request;
@@ -13,32 +13,10 @@ use Illuminate\Http\Request;
 class TaskController extends Controller
 {
     // Method for creating a task
-    public function create(Request $request)
+    public function create(CreateTaskRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-            'frequency' => 'required',
-            'checklist' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Check if the checklist exists
         $checklist = CheckList::where('id', $request->checklist)->with('tasks')->first();
-
-        if (!$checklist) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Checklist', $request->checklist, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the task with same name already exists in the checklist
         $task_already_exist = $checklist->tasks->contains('name', $request->name);
@@ -98,33 +76,8 @@ class TaskController extends Controller
             ]);
         }
 
-        // Validation rules
-        $rules = [
-            'status' => 'boolean',
-            'reason' => 'string|nullable',
-            'comment' => 'string|nullable',
-            'manager_comment' => 'string|nullable',
-            'acknowledgement' => 'boolean',
-            'task' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the task exists
+        // Get Task
         $task = Task::find($request->task);
-
-        if (!$task) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Task', $request->task, false),
-                'code' => 404,
-            ]);
-        }
 
         // Update task's fields with the ones provided in the $request
         $task_updated = $this->update_task($request->all(), $task);
