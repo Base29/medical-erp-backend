@@ -2,42 +2,20 @@
 
 namespace App\Http\Controllers\Role;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Role\AssignRoleToUserRequest;
+use App\Http\Requests\Role\CreateRoleRequest;
+use App\Http\Requests\Role\RevokeRoleForUserRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Spatie\Permission\Models\Role;
 
 class RoleController extends Controller
 {
     // Method for create role
-    public function create(Request $request)
+    public function create(CreateRoleRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if role is already created
-        $role_exists = Role::where('name', $request->name)->first();
-
-        if ($role_exists) {
-            return Response::fail([
-                'message' => ResponseMessage::alreadyExists($request->name),
-                'code' => 409,
-            ]);
-        }
-
         // Create role
         $role = Role::create(['guard_name' => 'api', 'name' => $request->name]);
 
@@ -73,41 +51,10 @@ class RoleController extends Controller
     }
 
     // Method for assigning role to user
-    public function assign_to_user(Request $request)
+    public function assign_to_user(AssignRoleToUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'role' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Checking if user exists
+        // Get User
         $user = User::where('email', $request->email)->first();
-
-        if (!$user) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('User', $request->email, true),
-                'code' => 404,
-            ]);
-        }
-
-        // Checking if role exists
-        $role_exists = Role::where('name', $request->role)->first();
-
-        if (!$role_exists) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Role', $request->role, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the user has assigned the provided role
         if ($user->hasRole($request->role)) {
@@ -124,41 +71,13 @@ class RoleController extends Controller
     }
 
     // Method for revoking role for user
-    public function revoke_for_user(Request $request)
+    public function revoke_for_user(RevokeRoleForUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'role' => 'required',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Checking if user exists
+        // Get User
         $user = User::where('email', $request->email)->first();
 
-        if (!$user) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('User', $request->email, true),
-                'code' => 404,
-            ]);
-        }
-
-        // Checking if role exists
+        // Get Role
         $role = Role::where('name', $request->role)->first();
-
-        if (!$role) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Role', $request->role, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the user has assigned the provided role
         if (!$user->hasRole($role->name)) {
