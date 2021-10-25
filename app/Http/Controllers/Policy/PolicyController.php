@@ -2,16 +2,13 @@
 
 namespace App\Http\Controllers\Policy;
 
-use App\Helpers\CustomPagination;
-use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Policy\CreatePolicyRequest;
 use App\Models\Policy;
 use App\Models\Practice;
-use App\Models\User;
-use Illuminate\Http\Request;
 
 class PolicyController extends Controller
 {
@@ -19,106 +16,16 @@ class PolicyController extends Controller
     public function fetch()
     {
         // Fetching policies
-        $policies = Policy::with('signatures')->get();
+        $policies = Policy::with('signatures.user')->get();
 
-        $policies_arr = [];
-
-        foreach ($policies as $policy) {
-            // Structure policy object
-            $policy_data = [
-                'id' => $policy->id,
-                'practice_id' => $policy->practice_id,
-                'name' => $policy->name,
-                'attachment' => $policy->attachment,
-                'created_at' => $policy->created_at,
-                'updated_at' => $policy->updated_at,
-                'signatures' => $this->signature_data($policy->signatures),
-            ];
-
-            // Pushing $policy_data object to $policy_arr
-            array_push($policies_arr, $policy_data);
-        }
-
-        // Compiling a custom collection for policies
-        $policies_collection = collect($policies_arr);
-
-        // Applying pagination to custom policies collection $policies_collection
-        $policies_paginated = CustomPagination::paginate(
-            $policies_collection,
-            $perPage = 10,
-        )->setPath(route('policies'));
-
-        return Response::success(['policies' => $policies_paginated]);
+        return Response::success(['policies' => $policies]);
     }
 
-    // Method for getting user data for the signatures
-    private function signature_data($signatures)
+    public function create(CreatePolicyRequest $request)
     {
-        $signature_arr = [];
-        foreach ($signatures as $signature) {
-            // Fetch user data for signature
-            $user = User::find($signature->user_id);
-
-            // Structure signature object
-            $signature_data = [
-                'id' => $signature->id,
-                'user_id' => $signature->user_id,
-                'signatory_name' => $user->name,
-                'policy_id' => $signature->policy_id,
-                'comment' => $signature->comment,
-                'comment_visible' => $signature->comment_visible,
-                'confirmation' => $signature->confirmation,
-                'created_at' => $signature->created_at,
-                'updated_at' => $signature->updated_at,
-                'deleted_at' => $signature->deleted_at,
-            ];
-
-            // Pushing $signature_data object to $signature_arr
-            array_push($signature_arr, $signature_data);
-
-        }
-
-        return $signature_arr;
-    }
-
-    public function create(Request $request)
-    {
-        ray($request->all());
-
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-            'attachment' => 'required|file|mimes:doc,docx,pdf',
-            'practice' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the practice exists
         $practice = Practice::find($request->practice);
-
-        if (!$practice) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Practice', $request->practice, false),
-                'code' => 404,
-            ]);
-        }
-
-        // Check if the policy exists
-        $policy_exists = Policy::where('name', $request->name)->first();
-
-        if ($policy_exists) {
-            return Response::fail([
-                'message' => ResponseMessage::alreadyExists($request->name),
-                'code' => 409,
-            ]);
-        }
 
         // Upload policy document
         $attachment_url = FileUpload::upload($request->file('attachment'), 'policies', 's3');
