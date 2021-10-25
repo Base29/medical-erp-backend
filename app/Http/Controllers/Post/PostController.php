@@ -2,53 +2,29 @@
 
 namespace App\Http\Controllers\Post;
 
-use App\Helpers\CustomValidation;
 use App\Helpers\FileUpload;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Post\CreatePostRequest;
+use App\Http\Requests\Post\FetchOwnPostRequest;
+use App\Http\Requests\Post\FetchSinglePostRequest;
+use App\Http\Requests\Post\RecordPostViewRequest;
+use App\Http\Requests\Post\UpdatePostRequest;
 use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\PostView;
 use App\Models\Practice;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Arr;
 
 class PostController extends Controller
 {
     // Create Post
-    public function create(Request $request)
+    public function create(CreatePostRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'title' => 'required|string',
-            'subject' => 'required|string',
-            'message' => 'required|string',
-            'category' => 'required|string',
-            'type' => 'required|string',
-            'attachments.*' => 'mimes:doc,docx,pdf,jpg,png,jpeg',
-            'is_public' => 'boolean',
-            'practice' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the practice exists
         $practice = Practice::find($request->practice);
-
-        if (!$practice) {
-            return Response::fail([
-                'message' => ResponseMessage::notAllowedToDelete('Practice', $request->practice, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the user belongs to the provided practice
         $user_belongs_to_practice = auth()->user()->practices->contains('id', $practice->id);
@@ -84,10 +60,7 @@ class PostController extends Controller
             }
         }
 
-        // Adding attachments to the response
-        Arr::add($post, 'post_attachments', $post->post_attachments()->get());
-
-        return Response::success(['post' => $post]);
+        return Response::success(['post' => $post->with('post_attachments')->latest()->first()]);
 
     }
 
@@ -100,21 +73,8 @@ class PostController extends Controller
     }
 
     // Fetch user's own post
-    public function me(Request $request)
+    public function me(FetchOwnPostRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'practice' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Fetching the post of the authenticated user only
         $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])
             ->with('post_attachments', 'answers.user.roles', 'comments.user.roles', 'user')
@@ -124,7 +84,8 @@ class PostController extends Controller
         return Response::success(['posts' => $posts]);
     }
 
-    public function update(Request $request)
+    // Update Post
+    public function update(UpdatePostRequest $request)
     {
         // Allowed fields when updating a task
         $allowed_fields = [
@@ -144,34 +105,8 @@ class PostController extends Controller
             ]);
         }
 
-        // Validation rules
-        $rules = [
-            'title' => 'string',
-            'subject' => 'string',
-            'message' => 'string',
-            'category' => 'string',
-            'post' => 'required|numeric',
-            'is_public' => 'boolean',
-            'is_answered' => 'boolean',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Check if the post exist
         $post = Post::find($request->post);
-
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if user own's the post
         if (!$post->owned_by(auth()->user())) {
@@ -216,33 +151,14 @@ class PostController extends Controller
     }
 
     // Fetch single post details
-    public function fetch_single_post(Request $request)
+    public function fetch_single_post(FetchSinglePostRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
 
         // Check if the post exists
         $post = Post::where('id', $request->post)
             ->with('post_attachments', 'answers', 'comments', 'user')
             ->withCount(['answers', 'comments'])
             ->first();
-
-        if (!$post) {
-            return Response::fail([
-                'message' => ResponseMessage::notFound('Post', $request->post, false),
-                'code' => 404,
-            ]);
-        }
 
         // Check if the visibility is private for the post
         $visibility = $post->is_public;
@@ -271,21 +187,8 @@ class PostController extends Controller
     }
 
     // Post Views
-    public function post_view(Request $request)
+    public function post_view(RecordPostViewRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'post' => 'required|numeric',
-        ];
-
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
         // Get the post
         $post = Post::find($request->post);
 
