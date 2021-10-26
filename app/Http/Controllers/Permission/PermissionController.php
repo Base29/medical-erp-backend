@@ -44,7 +44,7 @@ class PermissionController extends Controller
     {
         try {
 
-            $permission = Permission::find($id);
+            $permission = Permission::findOrFail($id);
 
             // Check if permission exists
             if (!$permission) {
@@ -95,7 +95,7 @@ class PermissionController extends Controller
         try {
 
             // Check if the role exists
-            $role = Role::where('name', $request->role)->first();
+            $role = Role::where('name', $request->role)->firstOrFail();
 
             // Check if the role already has the provided permission
             $already_has_permission = $role->hasPermissionTo($request->permission);
@@ -108,7 +108,7 @@ class PermissionController extends Controller
             }
 
             // Check if the permission exists
-            $permission = Permission::where('name', $request->permission)->first();
+            $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Assigning permission to the role
             $role->givePermissionTo($request->permission);
@@ -130,7 +130,7 @@ class PermissionController extends Controller
         try {
 
             // Check if the user exists
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->firstOrFail();
 
             // Check if the user already has the provided permission
             $already_has_permission = $user->hasPermissionTo($request->permission);
@@ -143,7 +143,7 @@ class PermissionController extends Controller
             }
 
             // Check if the permission exists
-            $permission = Permission::where('name', $request->permission)->first();
+            $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Assigning permission to the user
             $user->givePermissionTo($request->permission);
@@ -167,10 +167,10 @@ class PermissionController extends Controller
         try {
 
             // Get role
-            $role = Role::where('name', $request->role)->first();
+            $role = Role::where('name', $request->role)->firstOrFail();
 
             // Get permission
-            $permission = Permission::where('name', $request->permission)->first();
+            $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Check if the role has the permission that is being revoked
             $role_has_permission = $role->hasPermissionTo($permission->name);
@@ -204,10 +204,10 @@ class PermissionController extends Controller
         try {
 
             // Get User
-            $user = User::where('email', $request->email)->first();
+            $user = User::where('email', $request->email)->firstOrFail();
 
             // Get Permission
-            $permission = Permission::where('name', $request->permission)->first();
+            $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Check if the user has the permission that is being revoked
             $user_has_permission = $user->hasPermissionTo($permission->name);

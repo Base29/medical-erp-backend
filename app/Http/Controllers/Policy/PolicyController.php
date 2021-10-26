@@ -15,46 +15,77 @@ class PolicyController extends Controller
     // Method for fetching policies
     public function fetch()
     {
-        // Fetching policies
-        $policies = Policy::with('signatures.user')->get();
+        try {
 
-        return Response::success(['policies' => $policies]);
+            // Fetching policies
+            $policies = Policy::with('signatures.user')->get();
+
+            return Response::success(['policies' => $policies]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function create(CreatePolicyRequest $request)
     {
 
-        // Check if the practice exists
-        $practice = Practice::find($request->practice);
+        try {
 
-        // Upload policy document
-        $attachment_url = FileUpload::upload($request->file('attachment'), 'policies', 's3');
+            // Check if the practice exists
+            $practice = Practice::findOrFail($request->practice);
 
-        // Create Policy
-        $policy = new Policy();
-        $policy->name = $request->name;
-        $policy->attachment = $attachment_url;
-        $policy->practice_id = $practice->id;
-        $policy->save();
+            // Upload policy document
+            $attachment_url = FileUpload::upload($request->file('attachment'), 'policies', 's3');
 
-        return Response::success(['policy' => $policy]);
+            // Create Policy
+            $policy = new Policy();
+            $policy->name = $request->name;
+            $policy->attachment = $attachment_url;
+            $policy->practice_id = $practice->id;
+            $policy->save();
+
+            return Response::success(['policy' => $policy]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function delete($id)
     {
-        // Check if practice exists
-        $policy = Policy::find($id);
 
-        if (!$policy) {
+        try {
+
+            // Check if practice exists
+            $policy = Policy::findOrFail($id);
+
+            if (!$policy) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Policy', $id, false),
+                    'code' => 404,
+                ]);
+            }
+
+            // Deleting practice
+            $policy->delete();
+
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Policy')]);
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::notFound('Policy', $id, false),
-                'code' => 404,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Deleting practice
-        $policy->delete();
-
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Policy')]);
     }
 }
