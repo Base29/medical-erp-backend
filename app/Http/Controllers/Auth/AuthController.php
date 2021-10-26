@@ -20,25 +20,34 @@ class AuthController extends Controller
     // Method for Authenticating the user
     public function login(AuthenticateUserRequest $request)
     {
-        // Checking if the user exists in the database
-        $user = User::where('email', $request->email)->with(['roles', 'practices'])->first();
+        try {
+            // Checking if the user exists in the database
+            $user = User::where('email', $request->email)->with(['roles', 'practices'])->firstOrFail();
 
-        if (!$user || !Hash::check($request->password, $user->password)) {
+            if (!$user || !Hash::check($request->password, $user->password)) {
+
+                return Response::fail([
+                    'code' => 401,
+                    'message' => ResponseMessage::invalidCredentials(),
+                ]);
+            }
+
+            // Generating JWT token from provided creds
+            $token = JWTAuth::attempt($request->only('email', 'password'));
+
+            // Adding token to user array
+            Arr::add($user, 'token', $token);
+
+            // Return response
+            return Response::success(['user' => $user]);
+
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 401,
-                'message' => ResponseMessage::invalidCredentials(),
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Generating JWT token from provided creds
-        $token = JWTAuth::attempt($request->only('email', 'password'));
-
-        // Adding token to user array
-        Arr::add($user, 'token', $token);
-
-        // Return response
-        return Response::success(['user' => $user]);
     }
 
     // Method for logging out the user
@@ -51,35 +60,67 @@ class AuthController extends Controller
     // Method for resetting password
     public function reset_password(ResetPasswordRequest $request)
     {
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
+        try {
 
-                $user->save();
+            // Initiating password reset
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => Hash::make($password),
+                    ])->setRememberToken(Str::random(60));
+
+                    $user->save();
+                }
+            );
+
+            // Check if the provided reset token or user is valid
+            if ($status === Password::INVALID_TOKEN || $status === Password::INVALID_USER) {
+                return Response::fail(['message' => ResponseMessage::invalidToken(), 'code' => 401]);
             }
-        );
 
-        return $status === Password::INVALID_TOKEN || $status === Password::INVALID_USER ?
-        Response::fail(['message' => ResponseMessage::invalidToken(), 'code' => 401]) :
-        Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
+            return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Method for generating reset password link
     public function generate_reset_password_link(ResetPasswordLinkRequest $request)
     {
-        Password::sendResetLink($request->only('email'));
+        try {
+            Password::sendResetLink($request->only('email'));
 
-        return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
+            return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Method for verifying user token
     public function verify_token()
     {
-        $user = JWTAuth::parseToken()->authenticate();
+        try {
 
-        return Response::success(['user' => $user->with('roles', 'practices')->first()]);
+            $user = JWTAuth::parseToken()->authenticate();
+
+            return Response::success(['user' => $user->with('roles', 'practices')->firstOrFail()]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }
