@@ -16,80 +16,134 @@ class RoleController extends Controller
     // Method for create role
     public function create(CreateRoleRequest $request)
     {
-        // Create role
-        $role = Role::create(['guard_name' => 'api', 'name' => $request->name]);
 
-        return Response::success(['role' => $role->name]);
+        try {
+
+            // Create role
+            $role = new Role();
+            $role->guard_name = 'api';
+            $role->name = $request->name;
+            $role->save();
+
+            return Response::success(['role' => $role->name]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Method for deleting role
     public function delete($id)
     {
-        // Check if the user exists with the provided $id
-        $role = Role::find($id);
+        try {
 
-        if (!$role) {
+            // Check if the user exists with the provided $id
+            $role = Role::findOrFail($id);
+
+            if (!$role) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Role', $id, false),
+                    'code' => 404,
+                ]);
+            }
+
+            // Delete user with the provided $id
+            $role->delete();
+
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Role')]);
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::notFound('Role', $id, false),
-                'code' => 404,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Delete user with the provided $id
-        $role->delete();
-
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Role')]);
     }
 
     // Method for fetching roles
     public function fetch()
     {
-        // Fetching roles
-        $roles = Role::with('users')->paginate(10);
+        try {
 
-        return Response::success(['roles' => $roles]);
+            // Fetching roles
+            $roles = Role::with('users')->paginate(10);
+
+            return Response::success(['roles' => $roles]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Method for assigning role to user
     public function assign_to_user(AssignRoleToUserRequest $request)
     {
-        // Get User
-        $user = User::where('email', $request->email)->first();
+        try {
 
-        // Check if the user has assigned the provided role
-        if ($user->hasRole($request->role)) {
+            // Get User
+            $user = User::where('email', $request->email)->firstOrFail();
+
+            // Check if the user has assigned the provided role
+            if ($user->hasRole($request->role)) {
+                return Response::fail([
+                    'message' => ResponseMessage::alreadyAssigned($request->role, $user->email),
+                    'code' => 409,
+                ]);
+            }
+
+            // Assigning role to the user
+            $user->assignRole($request->role);
+
+            return Response::success(['message' => ResponseMessage::assigned($request->role, $user->email)]);
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::alreadyAssigned($request->role, $user->email),
-                'code' => 409,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Assigning role to the user
-        $user->assignRole($request->role);
-
-        return Response::success(['message' => ResponseMessage::assigned($request->role, $user->email)]);
     }
 
     // Method for revoking role for user
     public function revoke_for_user(RevokeRoleForUserRequest $request)
     {
-        // Get User
-        $user = User::where('email', $request->email)->first();
+        try {
 
-        // Get Role
-        $role = Role::where('name', $request->role)->first();
+            // Get User
+            $user = User::where('email', $request->email)->firstOrFail();
 
-        // Check if the user has assigned the provided role
-        if (!$user->hasRole($role->name)) {
+            // Get Role
+            $role = Role::where('name', $request->role)->firstOrFail();
+
+            // Check if the user has assigned the provided role
+            if (!$user->hasRole($role->name)) {
+                return Response::fail([
+                    'message' => ResponseMessage::notAssigned($role->name, $user->email),
+                    'code' => 409,
+                ]);
+            }
+
+            // Revoking role
+            $user->removeRole($role->name);
+
+            return Response::success(['message' => ResponseMessage::revoked($role->name, $user->email)]);
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::notAssigned($role->name, $user->email),
-                'code' => 409,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Revoking role
-        $user->removeRole($role->name);
-
-        return Response::success(['message' => ResponseMessage::revoked($role->name, $user->email)]);
     }
 }
