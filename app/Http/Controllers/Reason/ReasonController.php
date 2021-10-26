@@ -14,39 +14,69 @@ class ReasonController extends Controller
     // Create Reason
     public function create(CreateReasonRequest $request)
     {
-        // Create reason
-        $reason = new Reason();
-        $reason->reason = $request->reason;
-        $reason->save();
+        try {
 
-        return Response::success(['reason' => $reason]);
+            // Create reason
+            $reason = new Reason();
+            $reason->reason = $request->reason;
+            $reason->save();
+
+            return Response::success(['reason' => $reason]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Fetch Reasons
     public function fetch()
     {
-        // Reasons
-        $reasons = Reason::paginate(10);
+        try {
 
-        return Response(['reasons' => $reasons]);
+            // Reasons
+            $reasons = Reason::paginate(10);
+
+            return Response(['reasons' => $reasons]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Delete Reasons
     public function delete($id)
     {
-        // Check if the reason exists with the provided ID
-        $reason = Reason::find($id);
+        try {
 
-        if (!$reason) {
+            // Check if the reason exists with the provided ID
+            $reason = Reason::findOrFail($id);
+
+            if (!$reason) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Reason', $id, false),
+                    'code' => 404,
+                ]);
+            }
+
+            // Delete reason
+            $reason->delete();
+
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::notFound('Reason', $id, false),
-                'code' => 404,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
-        // Delete reason
-        $reason->delete();
-
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
     }
 }
