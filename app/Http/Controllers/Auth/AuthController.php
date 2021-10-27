@@ -114,7 +114,10 @@ class AuthController extends Controller
 
             $user = JWTAuth::parseToken()->authenticate();
 
-            return Response::success(['user' => $user->with('roles', 'practices')->firstOrFail()]);
+            // Add token to the response
+            $userWithToken = Arr::add($user->with('roles', 'practices')->firstOrFail(), 'token', request()->token);
+
+            return Response::success(['user' => $userWithToken]);
 
         } catch (\Exception $e) {
             return Response::fail([
