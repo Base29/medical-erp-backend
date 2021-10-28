@@ -38,7 +38,7 @@ class ReasonController extends Controller
         try {
 
             // Reasons
-            $reasons = Reason::paginate(10);
+            $reasons = Reason::latest()->paginate(10);
 
             return Response(['reasons' => $reasons]);
 

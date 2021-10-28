@@ -21,9 +21,9 @@ class TaskController extends Controller
             $checklist = CheckList::where('id', $request->checklist)->with('tasks')->firstOrFail();
 
             // Check if the task with same name already exists in the checklist
-            $task_already_exist = $checklist->tasks->contains('name', $request->name);
+            $taskAlreadyExist = $checklist->tasks->contains('name', $request->name);
 
-            if ($task_already_exist) {
+            if ($taskAlreadyExist) {
                 return Response::fail([
                     'message' => ResponseMessage::alreadyExists($request->name),
                     'code' => 409,
@@ -84,7 +84,7 @@ class TaskController extends Controller
         try {
 
             // Allowed fields when updating a task
-            $allowed_fields = [
+            $allowedFields = [
                 'status',
                 'reason',
                 'comment',
@@ -93,9 +93,9 @@ class TaskController extends Controller
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
-            if (!$request->hasAny($allowed_fields)) {
+            if (!$request->hasAny($allowedFields)) {
                 return Response::fail([
-                    'message' => ResponseMessage::allowedFields($allowed_fields),
+                    'message' => ResponseMessage::allowedFields($allowedFields),
                     'code' => 400,
                 ]);
             }
@@ -104,9 +104,9 @@ class TaskController extends Controller
             $task = Task::findOrFail($request->task);
 
             // Update task's fields with the ones provided in the $request
-            $task_updated = $this->update_task($request->all(), $task);
+            $taskUpdated = $this->updateTask($request->all(), $task);
 
-            if ($task_updated) {
+            if ($taskUpdated) {
                 return Response::success(['task' => $task]);
             }
 
@@ -119,7 +119,7 @@ class TaskController extends Controller
         }
     }
 
-    private function update_task($fields, $task)
+    private function updateTask($fields, $task)
     {
         foreach ($fields as $field => $value) {
             if ($field !== 'task') {

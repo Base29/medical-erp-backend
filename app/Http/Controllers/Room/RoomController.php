@@ -23,9 +23,9 @@ class RoomController extends Controller
             $practice = Practice::where('id', $request->practice)->with('rooms')->firstOrFail();
 
             // Check if the room with the same name already exists within the practice
-            $room_exists = $practice->rooms->contains('name', $request->name);
+            $roomExists = $practice->rooms->contains('name', $request->name);
 
-            if ($room_exists) {
+            if ($roomExists) {
                 return Response::fail([
                     'message' => ResponseMessage::alreadyExists($request->name),
                     'code' => 409,
@@ -90,9 +90,9 @@ class RoomController extends Controller
                 $practice = Practice::where('id', $request->practice)->firstOrFail();
 
                 // Check if the user is assigned to $practice
-                $belongs_to_practice = $practice->users->contains('id', auth()->user()->id);
+                $belongsToPractice = $practice->users->contains('id', auth()->user()->id);
 
-                if (!$belongs_to_practice) {
+                if (!$belongsToPractice) {
                     return Response::fail([
                         'message' => ResponseMessage::customMessage('You cannot view the rooms of the practice ' . $practice->practice_name),
                         'code' => 409,
@@ -134,15 +134,15 @@ class RoomController extends Controller
         try {
 
             // Allowed fields when updating a task
-            $allowed_fields = [
+            $allowedFields = [
                 'status',
                 'active',
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
-            if (!$request->hasAny($allowed_fields)) {
+            if (!$request->hasAny($allowedFields)) {
                 return Response::fail([
-                    'message' => ResponseMessage::allowedFields($allowed_fields),
+                    'message' => ResponseMessage::allowedFields($allowedFields),
                     'code' => 400,
                 ]);
             }
@@ -151,7 +151,7 @@ class RoomController extends Controller
             $room = Room::findOrFail($request->room);
 
             // Update Room
-            $roomUpdated = $this->update_room($request->all(), $room);
+            $roomUpdated = $this->updateRoom($request->all(), $room);
 
             if ($roomUpdated) {
                 return Response::success(['room' => $room]);
@@ -167,7 +167,7 @@ class RoomController extends Controller
     }
 
     // Helper function for updating fields for the room sent through request
-    private function update_room($fields, $room)
+    private function updateRoom($fields, $room)
     {
         foreach ($fields as $field => $value) {
             if ($field !== 'room') {

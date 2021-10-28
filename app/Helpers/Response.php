@@ -15,7 +15,7 @@ class Response
     // Send Success Response
     public static function success($args)
     {
-        return response(self::response_data($args, 'success'), 200);
+        return response(self::responseData($args, 'success'), 200);
     }
 
     // Send Failed Response
@@ -26,23 +26,23 @@ class Response
             throw new ResponseException('Arguments `message` and `code` are missing for the Response::fail() method.');
         }
 
-        return response(self::response_data($args, 'fail'), $args['code']);
+        return response(self::responseData($args, 'fail'), $args['code']);
     }
 
     // Building response array with the fields provided
-    private static function response_data($args, $type)
+    private static function responseData($args, $type)
     {
         // Setting the success key to true or false depending upon the response method called
-        $response_array = [
+        $responseArray = [
             'success' => $type === 'success' ? true : false,
         ];
 
         // Iterating through the $args passed in the Response methods and adding them to the response array
         foreach ($args as $key => $value) {
             if ($key !== 'code') {
-                $response_array[$key] = $value;
+                $responseArray[$key] = $value;
             }
         }
-        return $response_array;
+        return $responseArray;
     }
 }

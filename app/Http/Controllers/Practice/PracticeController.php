@@ -72,7 +72,7 @@ class PracticeController extends Controller
         try {
 
             // Fetch practices
-            $practices = Practice::with('policies')->paginate(10);
+            $practices = Practice::with('policies')->latest()->paginate(10);
 
             return Response::success(['practices' => $practices]);
 
@@ -86,7 +86,7 @@ class PracticeController extends Controller
     }
 
     // Method for assigning user to practice
-    public function assign_to_user(AssignPracticeToUserRequest $request)
+    public function assignToUser(AssignPracticeToUserRequest $request)
     {
 
         try {
@@ -98,9 +98,9 @@ class PracticeController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Checking if the user is already assigned to the provided practice
-            $user_already_assigned_to_practice = $user->practices->contains('id', $practice->id);
+            $userAlreadyAssignedToPractice = $user->practices->contains('id', $practice->id);
 
-            if ($user_already_assigned_to_practice) {
+            if ($userAlreadyAssignedToPractice) {
                 return Response::fail([
                     'message' => ResponseMessage::alreadyAssigned($user->email, $practice->practice_name),
                     'code' => 409,
@@ -123,7 +123,7 @@ class PracticeController extends Controller
     }
 
     // Method for revoking user from practice
-    public function revoke_for_user(RevokePracticeForUserRequest $request)
+    public function revokeForUser(RevokePracticeForUserRequest $request)
     {
 
         try {
@@ -135,9 +135,9 @@ class PracticeController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Check if the user is already assigned to the practice
-            $associated_to_practice = $user->practices->contains('id', $practice->id);
+            $associatedToPractice = $user->practices->contains('id', $practice->id);
 
-            if (!$associated_to_practice) {
+            if (!$associatedToPractice) {
                 return Response::fail([
                     'message' => ResponseMessage::notBelongTo($user->email, $practice->practice_name),
                     'code' => 409,

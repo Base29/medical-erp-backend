@@ -58,7 +58,7 @@ class AuthController extends Controller
     }
 
     // Method for resetting password
-    public function reset_password(ResetPasswordRequest $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
         try {
 
@@ -91,7 +91,7 @@ class AuthController extends Controller
     }
 
     // Method for generating reset password link
-    public function generate_reset_password_link(ResetPasswordLinkRequest $request)
+    public function generateResetPasswordLink(ResetPasswordLinkRequest $request)
     {
         try {
             Password::sendResetLink($request->only('email'));
@@ -108,7 +108,7 @@ class AuthController extends Controller
     }
 
     // Method for verifying user token
-    public function verify_token()
+    public function verifyToken()
     {
         try {
 

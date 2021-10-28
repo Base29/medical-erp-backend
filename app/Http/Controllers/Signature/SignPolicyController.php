@@ -18,11 +18,11 @@ class SignPolicyController extends Controller
             $policy = Policy::where('id', $request->policy_id)->with('signatures')->firstOrFail();
 
             // Checking if the current logged in user has already signed the policy
-            $already_signed = $policy->signatures->contains('user_id', auth()->user()->id);
+            $alreadySigned = $policy->signatures->contains('user_id', auth()->user()->id);
 
             //TODO: Commented the below code block for testing purpose. This should be un-commented in production
             // Returning response incase the policy is already signed by the current logged in user
-            // if ($already_signed) {
+            // if ($alreadySigned) {
             //     return response([
             //         'success' => false,
             //         'message' => auth()->user()->name . ' has already signed ' . $policy->name,

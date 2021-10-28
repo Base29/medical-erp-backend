@@ -45,7 +45,7 @@ class AnswerController extends Controller
             $post = Post::findOrFail($request->post);
 
             // Fetch answers for post
-            $answers = Answer::where('post_id', $post->id)->with('post', 'user')->paginate(10);
+            $answers = Answer::where('post_id', $post->id)->with('post', 'user')->latest()->paginate(10);
             return Response::success(['post_answers' => $answers]);
 
         } catch (\Exception $e) {
@@ -65,9 +65,9 @@ class AnswerController extends Controller
             $answer = Answer::where('id', $request->answer_id)->with('post', 'user')->firstOrFail();
 
             // Check if the user updating the answer is the author of the answer
-            $owned_by_user = $answer->owned_by(auth()->user());
+            $ownedByUser = $answer->ownedBy(auth()->user());
 
-            if (!$owned_by_user) {
+            if (!$ownedByUser) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToUpdate('answer'),
                     'code' => 400,
@@ -101,9 +101,9 @@ class AnswerController extends Controller
             }
 
             // Check if the user updating the answer is the author of the answer
-            $owned_by_user = $answer->owned_by(auth()->user());
+            $ownedByUser = $answer->ownedBy(auth()->user());
 
-            if (!$owned_by_user) {
+            if (!$ownedByUser) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToDelete('answer'),
                     'code' => 400,

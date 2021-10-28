@@ -76,7 +76,7 @@ class PermissionController extends Controller
         try {
 
             // Fetching permissions
-            $permissions = Permission::paginate(10);
+            $permissions = Permission::latest()->paginate(10);
 
             return Response::success(['permissions' => $permissions]);
 
@@ -90,7 +90,7 @@ class PermissionController extends Controller
     }
 
     // Method for assigning permission to a role
-    public function assign_to_role(AssignPermissionToRoleRequest $request)
+    public function assignToRole(AssignPermissionToRoleRequest $request)
     {
         try {
 
@@ -98,9 +98,9 @@ class PermissionController extends Controller
             $role = Role::where('name', $request->role)->firstOrFail();
 
             // Check if the role already has the provided permission
-            $already_has_permission = $role->hasPermissionTo($request->permission);
+            $alreadyHasPermission = $role->hasPermissionTo($request->permission);
 
-            if ($already_has_permission) {
+            if ($alreadyHasPermission) {
                 return Response::fail([
                     'message' => ResponseMessage::alreadyAssigned($request->permission, $role->name),
                     'code' => 409,
@@ -125,7 +125,7 @@ class PermissionController extends Controller
     }
 
     // Method for assigning permission to a user
-    public function assign_to_user(AssignPermissionToUserRequest $request)
+    public function assignToUser(AssignPermissionToUserRequest $request)
     {
         try {
 
@@ -133,9 +133,9 @@ class PermissionController extends Controller
             $user = User::where('email', $request->email)->firstOrFail();
 
             // Check if the user already has the provided permission
-            $already_has_permission = $user->hasPermissionTo($request->permission);
+            $alreadyHasPermission = $user->hasPermissionTo($request->permission);
 
-            if ($already_has_permission) {
+            if ($alreadyHasPermission) {
                 return Response::false([
                     'message' => ResponseMessage::alreadyAssigned($request->permission, $user->name),
                     'code' => 409,
@@ -161,7 +161,7 @@ class PermissionController extends Controller
     }
 
     // Method for revoking permission for role
-    public function revoke_for_role(RevokePermissionForRoleRequest $request)
+    public function revokeForRole(RevokePermissionForRoleRequest $request)
     {
 
         try {
@@ -173,9 +173,9 @@ class PermissionController extends Controller
             $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Check if the role has the permission that is being revoked
-            $role_has_permission = $role->hasPermissionTo($permission->name);
+            $roleHasPermission = $role->hasPermissionTo($permission->name);
 
-            if (!$role_has_permission) {
+            if (!$roleHasPermission) {
                 return Response::fail([
                     'message' => ResponseMessage::notAssigned($permission->name, $role->name),
                     'code' => 400,
@@ -198,7 +198,7 @@ class PermissionController extends Controller
     }
 
     // Method for revoking permission for user
-    public function revoke_for_user(RevokePermissionForUserRequest $request)
+    public function revokeForUser(RevokePermissionForUserRequest $request)
     {
 
         try {
@@ -210,9 +210,9 @@ class PermissionController extends Controller
             $permission = Permission::where('name', $request->permission)->firstOrFail();
 
             // Check if the user has the permission that is being revoked
-            $user_has_permission = $user->hasPermissionTo($permission->name);
+            $userHasPermission = $user->hasPermissionTo($permission->name);
 
-            if (!$user_has_permission) {
+            if (!$userHasPermission) {
                 return response::fail([
                     'message' => ResponseMessage::notAssigned($permission->name, $user->name),
                     'code' => 400,

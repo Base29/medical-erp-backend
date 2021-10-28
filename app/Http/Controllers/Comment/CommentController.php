@@ -47,7 +47,7 @@ class CommentController extends Controller
             $post = Post::findOrFail($request->post);
 
             // Fetch comments for post
-            $comments = Comment::where('post_id', $post->id)->with('post', 'user')->paginate(10);
+            $comments = Comment::where('post_id', $post->id)->with('post', 'user')->latest()->paginate(10);
 
             return Response::success(['post_comments' => $comments]);
 
@@ -71,15 +71,15 @@ class CommentController extends Controller
             // Check if the comment is soft deleted
             if ($comment->trashed()) {
                 return Response::fail([
-                    'message' => ResponseMessage::customMessage('The selected comment id is invalid.'),
+                    'message' => ResponseMessage::customMessage('The selected comment is invalid or deleted.'),
                     'code' => 404,
                 ]);
             }
 
             // Check if the user updating the comment is the author of the comment
-            $owned_by_user = $comment->owned_by(auth()->user());
+            $ownedByUser = $comment->ownedBy(auth()->user());
 
-            if (!$owned_by_user) {
+            if (!$ownedByUser) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToUpdate('comment'),
                     'code' => 400,
@@ -115,9 +115,9 @@ class CommentController extends Controller
             }
 
             // Check if the user updating the answer is the author of the answer
-            $owned_by_user = $comment->owned_by(auth()->user());
+            $ownedByUser = $comment->ownedBy(auth()->user());
 
-            if (!$owned_by_user) {
+            if (!$ownedByUser) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToDelete('comment'),
                     'code' => 400,

@@ -21,9 +21,9 @@ class CheckListController extends Controller
             $room = Room::where('id', $request->room)->first();
 
             // Check if the checklist with same name exists for the provided room
-            $checklist_exists = $room->checkLists->contains('name', $request->name);
+            $checklistExists = $room->checkLists->contains('name', $request->name);
 
-            if ($checklist_exists) {
+            if ($checklistExists) {
                 return Response::fail([
                     'message' => ResponseMessage::alreadyExists('Checklist'),
                     'code' => 409,
@@ -52,7 +52,7 @@ class CheckListController extends Controller
     {
         try {
 
-            $checklists = CheckList::where('room_id', $request->room)->with('tasks')->first();
+            $checklists = CheckList::where('room_id', $request->room)->with('tasks')->latest()->first();
 
             return Response::success(['checklists' => $checklists]);
 

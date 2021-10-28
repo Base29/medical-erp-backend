@@ -28,7 +28,7 @@ class Answer extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function owned_by(User $user)
+    public function ownedBy(User $user)
     {
         return $user->id === $this->user_id;
     }

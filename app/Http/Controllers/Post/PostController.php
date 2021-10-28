@@ -28,9 +28,9 @@ class PostController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Check if the user belongs to the provided practice
-            $user_belongs_to_practice = auth()->user()->practices->contains('id', $practice->id);
+            $userBelongsToPractice = auth()->user()->practices->contains('id', $practice->id);
 
-            if (!$user_belongs_to_practice) {
+            if (!$userBelongsToPractice) {
                 return Response::fail([
                     'message' => ResponseMessage::notBelongTo(auth()->user()->name, $practice->practice_name),
                     'code' => 409,
@@ -54,14 +54,14 @@ class PostController extends Controller
                 $files = $request->attachments;
 
                 foreach ($files as $file) {
-                    $attachment_url = FileUpload::upload($file, 'communication-book', 's3');
+                    $attachmentUrl = FileUpload::upload($file, 'communication-book', 's3');
                     $attachment = new PostAttachment();
-                    $attachment->url = $attachment_url;
-                    $post->post_attachments()->save($attachment);
+                    $attachment->url = $attachmentUrl;
+                    $post->postAttachments()->save($attachment);
                 }
             }
 
-            return Response::success(['post' => $post->with('post_attachments')->latest()->first()]);
+            return Response::success(['post' => $post->with('postAttachments')->latest()->first()]);
 
         } catch (\Exception $e) {
 
@@ -77,7 +77,7 @@ class PostController extends Controller
     {
         try {
 
-            $posts = Post::with('post_attachments', 'answers.user.roles', 'comments.user.roles', 'user')->withCount(['answers', 'comments', 'post_views'])->paginate(10);
+            $posts = Post::with('postAttachments', 'answers.user.roles', 'comments.user.roles', 'user.roles')->withCount(['answers', 'comments', 'postViews'])->latest()->paginate(10);
 
             return Response::success(['posts' => $posts]);
 
@@ -97,8 +97,9 @@ class PostController extends Controller
 
             // Fetching the post of the authenticated user only
             $posts = Post::where(['user_id' => auth()->user()->id, 'practice_id' => $request->practice])
-                ->with('post_attachments', 'answers.user.roles', 'comments.user.roles', 'user')
+                ->with('postAttachments', 'answers.user.roles', 'comments.user.roles', 'user')
                 ->withCount(['answers', 'comments'])
+                ->latest()
                 ->paginate(10);
 
             return Response::success(['posts' => $posts]);
@@ -118,7 +119,7 @@ class PostController extends Controller
         try {
 
             // Allowed fields when updating a task
-            $allowed_fields = [
+            $allowedFields = [
                 'title',
                 'subject',
                 'message',
@@ -128,9 +129,9 @@ class PostController extends Controller
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
-            if (!$request->hasAny($allowed_fields)) {
+            if (!$request->hasAny($allowedFields)) {
                 return Response::fail([
-                    'message' => ResponseMessage::allowedFields($allowed_fields),
+                    'message' => ResponseMessage::allowedFields($allowedFields),
                     'code' => 400,
                 ]);
             }
@@ -139,7 +140,7 @@ class PostController extends Controller
             $post = Post::findOrFail($request->post);
 
             // Check if user own's the post
-            if (!$post->owned_by(auth()->user())) {
+            if (!$post->ownedBy(auth()->user())) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToUpdate('post'),
                     'code' => 403,
@@ -147,9 +148,9 @@ class PostController extends Controller
             }
 
             // Update task's fields with the ones provided in the $request
-            $post_updated = $this->update_post($request->all(), $post);
+            $postUpdated = $this->updatePost($request->all(), $post);
 
-            if ($post_updated) {
+            if ($postUpdated) {
                 return Response::success(['post' => $post->with('user')->latest('updated_at')->first()]);
             }
 
@@ -177,7 +178,7 @@ class PostController extends Controller
             }
 
             // Check if user own's the post
-            if (!$post->owned_by(auth()->user())) {
+            if (!$post->ownedBy(auth()->user())) {
                 return Response::fail([
                     'message' => ResponseMessage::notAllowedToDelete('post'),
                     'code' => 403,
@@ -199,13 +200,13 @@ class PostController extends Controller
     }
 
     // Fetch single post details
-    public function fetch_single_post(FetchSinglePostRequest $request)
+    public function fetchSinglePost(FetchSinglePostRequest $request)
     {
         try {
 
             // Check if the post exists
             $post = Post::where('id', $request->post)
-                ->with('post_attachments', 'answers', 'comments', 'user')
+                ->with('postAttachments', 'answers.user.roles', 'comments.user.roles', 'user.roles')
                 ->withCount(['answers', 'comments'])
                 ->firstOrFail();
 
@@ -222,7 +223,7 @@ class PostController extends Controller
             return Response::success(['post' => $post]);
 
         } catch (\Exception $e) {
-
+            ray($e);
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
@@ -232,7 +233,7 @@ class PostController extends Controller
     }
 
     // Helper function for updating fields for the post sent through request
-    private function update_post($fields, $post)
+    private function updatePost($fields, $post)
     {
         foreach ($fields as $field => $value) {
             if ($field !== 'post') {
@@ -244,7 +245,7 @@ class PostController extends Controller
     }
 
     // Post Views
-    public function post_view(RecordPostViewRequest $request)
+    public function postView(RecordPostViewRequest $request)
     {
         try {
 
@@ -252,14 +253,14 @@ class PostController extends Controller
             $post = Post::findOrFail($request->post);
 
             // Check if the user has already viewed the post
-            $already_viewed = $post->post_views->contains('user_id', auth()->user()->id);
+            $alreadyViewed = $post->postViews->contains('user_id', auth()->user()->id);
 
             // Recording unique view for the post
-            if (!$already_viewed) {
-                $post_view = new PostView();
-                $post_view->post_id = $request->post;
-                $post_view->user_id = auth()->user()->id;
-                $post_view->save();
+            if (!$alreadyViewed) {
+                $postView = new PostView();
+                $postView->post_id = $request->post;
+                $postView->user_id = auth()->user()->id;
+                $postView->save();
             }
 
         } catch (\Exception $e) {

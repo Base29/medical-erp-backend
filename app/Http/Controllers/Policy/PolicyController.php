@@ -18,7 +18,7 @@ class PolicyController extends Controller
         try {
 
             // Fetching policies
-            $policies = Policy::with('signatures.user')->get();
+            $policies = Policy::with('signatures.user')->latest()->get();
 
             return Response::success(['policies' => $policies]);
 
@@ -40,12 +40,12 @@ class PolicyController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Upload policy document
-            $attachment_url = FileUpload::upload($request->file('attachment'), 'policies', 's3');
+            $attachmentUrl = FileUpload::upload($request->file('attachment'), 'policies', 's3');
 
             // Create Policy
             $policy = new Policy();
             $policy->name = $request->name;
-            $policy->attachment = $attachment_url;
+            $policy->attachment = $attachmentUrl;
             $policy->practice_id = $practice->id;
             $policy->save();
 

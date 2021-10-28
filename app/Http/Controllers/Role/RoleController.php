@@ -71,7 +71,7 @@ class RoleController extends Controller
         try {
 
             // Fetching roles
-            $roles = Role::with('users')->paginate(10);
+            $roles = Role::with('users')->latest()->paginate(10);
 
             return Response::success(['roles' => $roles]);
 
@@ -85,7 +85,7 @@ class RoleController extends Controller
     }
 
     // Method for assigning role to user
-    public function assign_to_user(AssignRoleToUserRequest $request)
+    public function assignToUser(AssignRoleToUserRequest $request)
     {
         try {
 
@@ -115,7 +115,7 @@ class RoleController extends Controller
     }
 
     // Method for revoking role for user
-    public function revoke_for_user(RevokeRoleForUserRequest $request)
+    public function revokeForUser(RevokeRoleForUserRequest $request)
     {
         try {
 

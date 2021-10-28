@@ -41,7 +41,7 @@ class Post extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function post_attachments()
+    public function postAttachments()
     {
         return $this->hasMany(PostAttachment::class, 'post_id', 'id');
     }
@@ -51,12 +51,12 @@ class Post extends Model
         return $this->belongsTo(Practice::class);
     }
 
-    public function owned_by(User $user)
+    public function ownedBy(User $user)
     {
         return $user->id === $this->user_id;
     }
 
-    public function post_views()
+    public function postViews()
     {
         return $this->hasMany(PostView::class);
     }
