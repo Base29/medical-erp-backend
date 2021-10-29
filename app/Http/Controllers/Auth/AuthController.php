@@ -112,8 +112,6 @@ class AuthController extends Controller
     {
         try {
 
-            ray(JWTAuth::parseToken()->authenticate()->token);
-
             $user = JWTAuth::parseToken()->authenticate();
 
             // Add token to the response
