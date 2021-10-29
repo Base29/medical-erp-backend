@@ -7,7 +7,6 @@ use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Post\PostController;
-use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
@@ -38,46 +37,42 @@ Route::prefix('auth')->group(function () {
 });
 
 Route::middleware(['auth:api'])->group(function () {
-    // Endpoints accessible by super_admin only
-    Route::middleware(['role:super_admin'])->group(function () {
-        // Endpoints for role operations
-        Route::prefix('roles')->group(function () {
-            Route::get('/', [RoleController::class, 'fetch']);
-            Route::post('create', [RoleController::class, 'create']);
-            Route::post('assign', [RoleController::class, 'assignToUser']);
-            Route::post('revoke', [RoleController::class, 'revokeForUser']);
-            Route::delete('delete/{id}', [RoleController::class, 'delete']);
-        });
 
-        // Endpoints for permissions operations
-        Route::prefix('permissions')->group(function () {
-            Route::get('/', [PermissionController::class, 'fetch']);
-            Route::post('create', [PermissionController::class, 'create']);
-            Route::delete('delete/{id}', [PermissionController::class, 'delete']);
-            Route::post('assign-to-user', [PermissionController::class, 'assignToUser']);
-            Route::post('assign-to-role', [PermissionController::class, 'assignToRole']);
-            Route::post('revoke-for-user', [PermissionController::class, 'revokeForUser']);
-            Route::post('revoke-for-role', [PermissionController::class, 'revokeForRole']);
-        });
-
-        // Endpoints for practice operations
-        Route::prefix('practices')->group(function () {
-            Route::get('/', [PracticeController::class, 'fetch']);
-            Route::post('create', [PracticeController::class, 'create']);
-            Route::delete('delete/{id}', [PracticeController::class, 'delete']);
-            Route::post('assign-to-user', [PracticeController::class, 'assignToUser']);
-            Route::post('revoke-for-user', [PracticeController::class, 'revokeForUser']);
-        });
-
-        // Endpoints for user operations
-        Route::prefix('users')->group(function () {
-            Route::post('create', [UserController::class, 'create']);
-            Route::delete('delete/{id}', [UserController::class, 'delete']);
-            Route::get('/', [UserController::class, 'fetch']);
-        });
+    // Endpoints for role operations
+    Route::prefix('roles')->group(function () {
+        Route::get('/', [RoleController::class, 'fetch'])->middleware(['permission:can_manage_role']);
+        Route::post('create', [RoleController::class, 'create'])->middleware(['permission:can_manage_role']);
+        Route::post('assign', [RoleController::class, 'assignToUser'])->middleware(['permission:can_manage_role']);
+        Route::post('revoke', [RoleController::class, 'revokeForUser'])->middleware(['permission:can_manage_role']);
+        Route::delete('delete/{id}', [RoleController::class, 'delete'])->middleware(['permission:can_manage_role']);
     });
 
-    // Routes accessible through permissions
+    // Endpoints for permissions operations
+    Route::prefix('permissions')->group(function () {
+        Route::get('/', [PermissionController::class, 'fetch'])->middleware(['permission:can_manage_permission']);
+        Route::post('create', [PermissionController::class, 'create'])->middleware(['permission:can_manage_permission']);
+        Route::delete('delete/{id}', [PermissionController::class, 'delete'])->middleware(['permission:can_manage_permission']);
+        Route::post('assign-to-user', [PermissionController::class, 'assignToUser'])->middleware(['permission:can_manage_permission']);
+        Route::post('assign-to-role', [PermissionController::class, 'assignToRole'])->middleware(['permission:can_manage_permission']);
+        Route::post('revoke-for-user', [PermissionController::class, 'revokeForUser'])->middleware(['permission:can_manage_permission']);
+        Route::post('revoke-for-role', [PermissionController::class, 'revokeForRole'])->middleware(['permission:can_manage_permission']);
+    });
+
+    // Endpoints for user operations
+    Route::prefix('users')->group(function () {
+        Route::post('create', [UserController::class, 'create'])->middleware(['permission:can_manage_user']);
+        Route::delete('delete/{id}', [UserController::class, 'delete'])->middleware(['permission:can_manage_user']);
+        Route::get('/', [UserController::class, 'fetch'])->middleware(['permission:can_manage_user']);
+    });
+
+    // Endpoints for practice operations
+    Route::prefix('practices')->group(function () {
+        Route::get('/', [PracticeController::class, 'fetch'])->middleware(['permission:can_view_practices']);
+        Route::post('create', [PracticeController::class, 'create'])->middleware(['permission:can_create_practice']);
+        Route::delete('delete/{id}', [PracticeController::class, 'delete'])->middleware(['permission:can_delete_practice']);
+        Route::post('assign-to-user', [PracticeController::class, 'assignToUser'])->middleware(['permission:can_assign_practice']);
+        Route::post('revoke-for-user', [PracticeController::class, 'revokeForUser'])->middleware(['permission:can_revoke_practice']);
+    });
 
     // Endpoints for policies
     Route::prefix('policies')->group(function () {
