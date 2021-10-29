@@ -7,6 +7,7 @@ use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Post\PostController;
+use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
@@ -78,7 +79,7 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('policies')->group(function () {
         Route::post('/create', [PolicyController::class, 'create'])->middleware(['permission:can_create_policy']);
         Route::delete('/delete/{id}', [PolicyController::class, 'delete'])->middleware(['permission:can_delete-policy']);
-        Route::get('/', [PolicyController::class, 'fetch'])->middleware(['permission:view_policies'])->name('policies');
+        Route::get('/', [PolicyController::class, 'fetch'])->middleware(['permission:can_view_policies']);
         Route::post('sign-policy', SignPolicyController::class)->middleware(['permission:can_sign_policy']);
     });
 
