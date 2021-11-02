@@ -5,21 +5,21 @@ namespace App\Console\Commands;
 use App\Models\Task;
 use Illuminate\Console\Command;
 
-class ResetChecklistTasksCommand extends Command
+class ResetChecklistTasksDailyCommand extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'checklist:reset';
+    protected $signature = 'checklist:resetDaily';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Reset the tasks for checklist daily';
+    protected $description = 'Reset daily tasks for checklists';
 
     /**
      * Create a new command instance.
@@ -39,8 +39,8 @@ class ResetChecklistTasksCommand extends Command
     public function handle()
     {
 
-        // Get All Tasks
-        $tasks = Task::get();
+        // Get All Daily Tasks
+        $tasks = Task::where('frequency', 'Daily')->get();
 
         // Iterating through tasks
         foreach ($tasks as $task) {
