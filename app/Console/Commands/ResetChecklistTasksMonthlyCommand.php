@@ -48,6 +48,12 @@ class ResetChecklistTasksMonthlyCommand extends Command
             // Checking which task are active
             if ($task->is_active === 1) {
 
+                // Getting the ID of the room to which the $task belongs to
+                $roomId = $task->checkList->room->id;
+
+                // Resetting the status of the room to 0 (false)
+                $task->checkList->room->updateRoomStatus($roomId);
+
                 // Date when the task is created
                 $createdAt = new Carbon($task->created_at);
 

@@ -40,13 +40,19 @@ class ResetChecklistTasksDailyCommand extends Command
     {
 
         // Get All Daily Tasks
-        $tasks = Task::where('frequency', 'Daily')->get();
+        $tasks = Task::where('frequency', 'Daily')->with('checkList.room')->get();
 
         // Iterating through tasks
         foreach ($tasks as $task) {
 
             // Checking which task are active
             if ($task->is_active === 1) {
+
+                // Getting the ID of the room to which the $task belongs to
+                $roomId = $task->checkList->room->id;
+
+                // Resetting the status of the room to 0 (false)
+                $task->checkList->room->updateRoomStatus($roomId);
 
                 // Replicating active tasks
                 $new_task = $task->replicate();
