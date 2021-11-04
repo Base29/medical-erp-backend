@@ -8,9 +8,9 @@ use App\Models\Policy;
 use App\Models\Signature;
 use Illuminate\Http\Request;
 
-class SignPolicyController extends Controller
+class SignatureController extends Controller
 {
-    public function __invoke(Request $request)
+    public function signPolicy(Request $request)
     {
         try {
 
@@ -39,6 +39,26 @@ class SignPolicyController extends Controller
 
             // Returning response if the policy is successfully sgined by the currently logged in user
             return Response::success(['signature' => $signature->with('policy')->latest()->firstOrFail()]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch all signatures
+    public function fetch()
+    {
+        try {
+            // Get all signatures from DB
+            $signatures = Signature::with('user', 'policy.practice')->latest()->paginate(10);
+
+            return Response::success([
+                'signatures' => $signatures,
+            ]);
 
         } catch (\Exception $e) {
 

@@ -11,7 +11,7 @@ use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
-use App\Http\Controllers\Signature\SignPolicyController;
+use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\User\UserController;
 use Illuminate\Support\Facades\Route;
@@ -80,7 +80,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/create', [PolicyController::class, 'create'])->middleware(['permission:can_create_policy']);
         Route::delete('/delete/{id}', [PolicyController::class, 'delete'])->middleware(['permission:can_delete-policy']);
         Route::get('/', [PolicyController::class, 'fetch'])->middleware(['permission:can_view_policies']);
-        Route::post('sign-policy', SignPolicyController::class)->middleware(['permission:can_sign_policy']);
+        Route::post('sign-policy', [SignatureController::class, 'signPolicy'])->middleware(['permission:can_sign_policy']);
     });
 
     // Endpoints for room operations
@@ -134,5 +134,10 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update', [CommentController::class, 'update'])->middleware(['permission:can_update_comment']);
             Route::delete('delete/{id}', [CommentController::class, 'delete'])->middleware(['permission:can_delete_comment']);
         });
+    });
+
+    // Routes for signatures
+    Route::prefix('signatures')->group(function () {
+        Route::get('/', [SignatureController::class, 'fetch'])->middleware(['permission:can_fetch_signatures']);
     });
 });
