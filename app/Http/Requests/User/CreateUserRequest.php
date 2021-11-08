@@ -27,8 +27,26 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:users,email',
-            'name' => 'required',
+            'first_name' => 'required|string',
+            'last_name' => 'required|string',
+            'profile_image' => 'required|file|mimes:png,jpg',
             'password' => 'required|confirmed',
+            'gender' => 'required',
+            'email_professional' => 'nullable|email|unique:users,email_professional',
+            'mobile_phone' => 'required|string',
+            'dob' => 'required|date|date_format:Y-m-d',
+            'address' => 'required|string',
+            'city' => 'required|string',
+            'county' => 'required|string',
+            'country' => 'required|string',
+            'zip_code' => 'required|string',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'email_professional.unique' => 'Professional email ' . request()->email_professional . ' already associated with another account',
         ];
     }
 

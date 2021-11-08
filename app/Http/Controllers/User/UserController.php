@@ -19,8 +19,25 @@ class UserController extends Controller
             // Create user
             $user = new User();
             $user->email = $request->email;
-            $user->name = $request->name;
+            $user->first_name = $request->first_name;
+            $user->middle_name = $request->middle_name;
+            $user->maiden_name = $request->maiden_name;
+            $user->last_name = $request->last_name;
             $user->password = Hash::make($request->password);
+            $user->profile_image = $request->profile_image;
+            $user->gender = $request->gender;
+            $user->email_professional = $request->email_professional;
+            $user->work_phone = $request->work_phone;
+            $user->home_phone = $request->home_phone;
+            $user->mobile_phone = $request->mobile_phone;
+            $user->dob = $request->dob;
+            $user->address = $request->address;
+            $user->city = $request->city;
+            $user->county = $request->county;
+            $user->country = $request->country;
+            $user->zip_code = $request->zip_code;
+            $user->nhs_card = $request->nhs_card;
+            $user->nhs_number = $request->nhs_number;
             $user->save();
 
             return Response::success(['user' => $user]);
