@@ -17,8 +17,17 @@ class UserController extends Controller
     {
         try {
 
-            // Upload user profile picture
-            $profileImage = FileUpload::upload($request->file('profile_image'), 'profileImages', 's3');
+            // Initiating a null variable for profile image
+            $profileImage = null;
+
+            // Check if the profile_image is present and filled
+            if ($request->has('profile_image') || $request->filled('profile_image')) {
+                // Upload user profile picture
+                $url = FileUpload::upload($request->file('profile_image'), 'profileImages', 's3');
+
+                // Assigning value of $url to $profileImage
+                $profileImage = $url;
+            }
 
             // Create user
             $user = new User();
