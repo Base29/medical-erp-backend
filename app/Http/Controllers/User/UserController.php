@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\User;
 
+use App\Helpers\FileUpload;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
@@ -16,6 +17,9 @@ class UserController extends Controller
     {
         try {
 
+            // Upload user profile picture
+            $profileImage = FileUpload::upload($request->file('profile_image'), 'profileImages', 's3');
+
             // Create user
             $user = new User();
             $user->email = $request->email;
@@ -24,7 +28,7 @@ class UserController extends Controller
             $user->maiden_name = $request->maiden_name;
             $user->last_name = $request->last_name;
             $user->password = Hash::make($request->password);
-            $user->profile_image = $request->profile_image;
+            $user->profile_image = $profileImage ? $profileImage : null;
             $user->gender = $request->gender;
             $user->email_professional = $request->email_professional;
             $user->work_phone = $request->work_phone;

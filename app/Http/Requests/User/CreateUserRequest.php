@@ -29,7 +29,7 @@ class CreateUserRequest extends FormRequest
             'email' => 'required|email|unique:users,email',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'profile_image' => 'required|file|mimes:png,jpg',
+            'profile_image' => 'nullable|file|mimes:png,jpg',
             'password' => 'required|confirmed',
             'gender' => 'required',
             'email_professional' => 'nullable|email|unique:users,email_professional',
