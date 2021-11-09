@@ -9,7 +9,7 @@ namespace App\Helpers;
 use App\Helpers\Response;
 use Illuminate\Support\Arr;
 
-class CustomValidation
+class CustomValidationService
 {
     // Building response object
     public static function error_messages($rules, $validator)

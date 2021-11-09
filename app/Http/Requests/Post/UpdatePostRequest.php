@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Post;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
@@ -38,6 +38,6 @@ class UpdatePostRequest extends FormRequest
 
     public function failedValidation($validator)
     {
-        throw new ValidationException($validator, CustomValidation::error_messages($this->rules(), $validator));
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }

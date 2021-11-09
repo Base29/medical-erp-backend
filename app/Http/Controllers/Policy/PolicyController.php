@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Policy;
 
-use App\Helpers\FileUpload;
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
@@ -40,7 +40,7 @@ class PolicyController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Upload policy document
-            $attachmentUrl = FileUpload::upload($request->file('attachment'), 'policies', 's3');
+            $attachmentUrl = FileUploadService::upload($request->file('attachment'), 'policies', 's3');
 
             // Create Policy
             $policy = new Policy();

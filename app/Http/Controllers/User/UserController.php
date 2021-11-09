@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Helpers\FileUpload;
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 
@@ -23,7 +24,7 @@ class UserController extends Controller
             // Check if the profile_image is present and filled
             if ($request->has('profile_image') || $request->filled('profile_image')) {
                 // Upload user profile picture
-                $url = FileUpload::upload($request->file('profile_image'), 'profileImages', 's3');
+                $url = FileUploadService::upload($request->file('profile_image'), 'profileImages', 's3');
 
                 // Assigning value of $url to $profileImage
                 $profileImage = $url;
@@ -110,5 +111,45 @@ class UserController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    // Method for updating user
+    public function update(UpdateUserRequest $request)
+    {
+        // Allowed fields when updating a task
+        $allowedFields = [
+            'first_name',
+            'last_name',
+            'profile_image',
+            'gender',
+            'email_professional',
+            'mobile_phone',
+            'dob',
+            'address',
+            'city',
+            'county',
+            'country',
+            'zip_code',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowedFields)) {
+            return Response::fail([
+                'message' => ResponseMessage::allowedFields($allowedFields),
+                'code' => 400,
+            ]);
+        }
+    }
+
+    // Helper function for updating fields for the user sent through request
+    private function updateUser($fields, $user)
+    {
+        foreach ($fields as $field => $value) {
+            if ($field !== 'post') {
+                $user->$field = $value;
+            }
+        }
+        $user->save();
+        return true;
     }
 }

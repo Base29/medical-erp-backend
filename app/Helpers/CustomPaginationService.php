@@ -11,7 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Pagination\Paginator;
 
-class CustomPagination
+class CustomPaginationService
 {
     public static function paginate($items, $perPage = 15, $page = null, $options = [])
     {

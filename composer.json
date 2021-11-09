@@ -32,9 +32,9 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/CustomPagination.php",
-            "app/Helpers/CustomValidation.php",
-            "app/Helpers/FileUpload.php",
+            "app/Helpers/CustomPaginationService.php",
+            "app/Helpers/CustomValidationService.php",
+            "app/Helpers/FileUploadService.php",
             "app/Helpers/Response.php",
             "app/Helpers/ResponseMessage.php"
         ]

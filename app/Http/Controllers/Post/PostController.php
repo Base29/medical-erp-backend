@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Post;
 
-use App\Helpers\FileUpload;
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
@@ -54,7 +54,7 @@ class PostController extends Controller
                 $files = $request->attachments;
 
                 foreach ($files as $file) {
-                    $attachmentUrl = FileUpload::upload($file, 'communication-book', 's3');
+                    $attachmentUrl = FileUploadService::upload($file, 'communication-book', 's3');
                     $attachment = new PostAttachment();
                     $attachment->url = $attachmentUrl;
                     $post->postAttachments()->save($attachment);
