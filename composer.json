@@ -36,7 +36,8 @@
             "app/Helpers/CustomValidationService.php",
             "app/Helpers/FileUploadService.php",
             "app/Helpers/Response.php",
-            "app/Helpers/ResponseMessage.php"
+            "app/Helpers/ResponseMessage.php",
+            "app/Helpers/UpdateService.php"
         ]
     },
     "autoload-dev": {

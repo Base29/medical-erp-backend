@@ -10,6 +10,7 @@ use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use UpdateService;
 
 class UserController extends Controller
 {
@@ -116,40 +117,49 @@ class UserController extends Controller
     // Method for updating user
     public function update(UpdateUserRequest $request)
     {
-        // Allowed fields when updating a task
-        $allowedFields = [
-            'first_name',
-            'last_name',
-            'profile_image',
-            'gender',
-            'email_professional',
-            'mobile_phone',
-            'dob',
-            'address',
-            'city',
-            'county',
-            'country',
-            'zip_code',
-        ];
+        try {
 
-        // Checking if the $request doesn't contain any of the allowed fields
-        if (!$request->hasAny($allowedFields)) {
+            // Allowed fields when updating a task
+            $allowedFields = [
+                'first_name',
+                'last_name',
+                'profile_image',
+                'gender',
+                'email_professional',
+                'mobile_phone',
+                'dob',
+                'address',
+                'city',
+                'county',
+                'country',
+                'zip_code',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Fetch User
+            $user = User::findOrFail($request->user);
+
+            $userUpdated = UpdateService::updateModel($user, $request->all(), 'user');
+
+            if ($userUpdated) {
+                return Response::success([
+                    'user' => $user->latest('updated_at')->first(),
+                ]);
+            }
+
+        } catch (\Exception $e) {
+
             return Response::fail([
-                'message' => ResponseMessage::allowedFields($allowedFields),
-                'code' => 400,
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    // Helper function for updating fields for the user sent through request
-    private function updateUser($fields, $user)
-    {
-        foreach ($fields as $field => $value) {
-            if ($field !== 'post') {
-                $user->$field = $value;
-            }
-        }
-        $user->save();
-        return true;
     }
 }

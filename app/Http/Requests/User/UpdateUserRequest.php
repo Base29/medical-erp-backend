@@ -29,15 +29,16 @@ class UpdateUserRequest extends FormRequest
             'first_name' => 'string',
             'last_name' => 'string',
             'profile_image' => 'nullable|file|mimes:png,jpg',
-            'gender' => 'required',
+            'gender' => 'string',
             'email_professional' => 'nullable|email|unique:users,email_professional',
-            'mobile_phone' => 'required|string',
+            'mobile_phone' => 'string',
             'dob' => 'date|date_format:Y-m-d',
             'address' => 'string',
             'city' => 'string',
             'county' => 'string',
             'country' => 'string',
             'zip_code' => 'string',
+            'user' => 'required|numeric',
         ];
     }
 
