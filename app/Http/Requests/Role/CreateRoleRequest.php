@@ -2,7 +2,7 @@
 
 namespace App\Http\Requests\Role;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
@@ -32,6 +32,6 @@ class CreateRoleRequest extends FormRequest
 
     public function failedValidation($validator)
     {
-        throw new ValidationException($validator, CustomValidation::error_messages($this->rules(), $validator));
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }

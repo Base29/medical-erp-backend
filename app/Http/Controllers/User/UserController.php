@@ -2,13 +2,15 @@
 
 namespace App\Http\Controllers\User;
 
-use App\Helpers\FileUpload;
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use UpdateService;
 
 class UserController extends Controller
 {
@@ -23,7 +25,7 @@ class UserController extends Controller
             // Check if the profile_image is present and filled
             if ($request->has('profile_image') || $request->filled('profile_image')) {
                 // Upload user profile picture
-                $url = FileUpload::upload($request->file('profile_image'), 'profileImages', 's3');
+                $url = FileUploadService::upload($request->file('profile_image'), 'profileImages', 's3');
 
                 // Assigning value of $url to $profileImage
                 $profileImage = $url;
@@ -102,6 +104,55 @@ class UserController extends Controller
             $users = User::with('roles', 'practices')->latest()->paginate(10);
 
             return Response::success(['users' => $users]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Method for updating user
+    public function update(UpdateUserRequest $request)
+    {
+        try {
+
+            // Allowed fields when updating a task
+            $allowedFields = [
+                'first_name',
+                'last_name',
+                'profile_image',
+                'gender',
+                'email_professional',
+                'mobile_phone',
+                'dob',
+                'address',
+                'city',
+                'county',
+                'country',
+                'zip_code',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Fetch User
+            $user = User::findOrFail($request->user);
+
+            $userUpdated = UpdateService::updateModel($user, $request->all(), 'user');
+
+            if ($userUpdated) {
+                return Response::success([
+                    'user' => $user->latest('updated_at')->first(),
+                ]);
+            }
 
         } catch (\Exception $e) {
 

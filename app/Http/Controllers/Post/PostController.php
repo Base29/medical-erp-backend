@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Post;
 
-use App\Helpers\FileUpload;
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
@@ -16,6 +16,7 @@ use App\Models\PostAttachment;
 use App\Models\PostView;
 use App\Models\Practice;
 use App\Models\User;
+use UpdateService;
 
 class PostController extends Controller
 {
@@ -54,7 +55,7 @@ class PostController extends Controller
                 $files = $request->attachments;
 
                 foreach ($files as $file) {
-                    $attachmentUrl = FileUpload::upload($file, 'communication-book', 's3');
+                    $attachmentUrl = FileUploadService::upload($file, 'communication-book', 's3');
                     $attachment = new PostAttachment();
                     $attachment->url = $attachmentUrl;
                     $post->postAttachments()->save($attachment);
@@ -148,7 +149,7 @@ class PostController extends Controller
             }
 
             // Update task's fields with the ones provided in the $request
-            $postUpdated = $this->updatePost($request->all(), $post);
+            $postUpdated = UpdateService::updateModel($post, $request->all(), 'post');
 
             if ($postUpdated) {
                 return Response::success(['post' => $post->with('user')->latest('updated_at')->first()]);
@@ -230,18 +231,6 @@ class PostController extends Controller
             ]);
         }
 
-    }
-
-    // Helper function for updating fields for the post sent through request
-    private function updatePost($fields, $post)
-    {
-        foreach ($fields as $field => $value) {
-            if ($field !== 'post') {
-                $post->$field = $value;
-            }
-        }
-        $post->save();
-        return true;
     }
 
     // Post Views

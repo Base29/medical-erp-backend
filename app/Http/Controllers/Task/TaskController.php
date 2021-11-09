@@ -9,6 +9,7 @@ use App\Http\Requests\Task\CreateTaskRequest;
 use App\Models\CheckList;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use UpdateService;
 
 class TaskController extends Controller
 {
@@ -104,7 +105,7 @@ class TaskController extends Controller
             $task = Task::findOrFail($request->task);
 
             // Update task's fields with the ones provided in the $request
-            $taskUpdated = $this->updateTask($request->all(), $task);
+            $taskUpdated = UpdateService::updateModel($task, $request->all(), 'task');
 
             if ($taskUpdated) {
                 return Response::success(['task' => $task]);
@@ -117,16 +118,5 @@ class TaskController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
-    }
-
-    private function updateTask($fields, $task)
-    {
-        foreach ($fields as $field => $value) {
-            if ($field !== 'task') {
-                $task->$field = $value;
-            }
-        }
-        $task->save();
-        return true;
     }
 }

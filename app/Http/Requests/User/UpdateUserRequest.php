@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,27 +26,19 @@ class CreateUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|unique:users,email',
-            'first_name' => 'required|string',
-            'last_name' => 'required|string',
+            'first_name' => 'string',
+            'last_name' => 'string',
             'profile_image' => 'nullable|file|mimes:png,jpg',
-            'password' => 'required|confirmed',
-            'gender' => 'required',
+            'gender' => 'string',
             'email_professional' => 'nullable|email|unique:users,email_professional',
-            'mobile_phone' => 'required|string',
-            'dob' => 'required|date|date_format:Y-m-d',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'county' => 'required|string',
-            'country' => 'required|string',
-            'zip_code' => 'required|string',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'email_professional.unique' => 'Professional email ' . request()->email_professional . ' already associated with another account',
+            'mobile_phone' => 'string',
+            'dob' => 'date|date_format:Y-m-d',
+            'address' => 'string',
+            'city' => 'string',
+            'county' => 'string',
+            'country' => 'string',
+            'zip_code' => 'string',
+            'user' => 'required|numeric',
         ];
     }
 
@@ -54,5 +46,4 @@ class CreateUserRequest extends FormRequest
     {
         throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
-
 }

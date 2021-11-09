@@ -40,31 +40,38 @@ Route::prefix('auth')->group(function () {
 Route::middleware(['auth:api'])->group(function () {
 
     // Endpoints for role operations
-    Route::prefix('roles')->group(function () {
-        Route::get('/', [RoleController::class, 'fetch'])->middleware(['permission:can_manage_role']);
-        Route::post('create', [RoleController::class, 'create'])->middleware(['permission:can_manage_role']);
-        Route::post('assign', [RoleController::class, 'assignToUser'])->middleware(['permission:can_manage_role']);
-        Route::post('revoke', [RoleController::class, 'revokeForUser'])->middleware(['permission:can_manage_role']);
-        Route::delete('delete/{id}', [RoleController::class, 'delete'])->middleware(['permission:can_manage_role']);
-    });
+    Route::prefix('roles')
+        ->middleware(['permission:can_manage_role'])
+        ->group(function () {
+            Route::get('/', [RoleController::class, 'fetch']);
+            Route::post('create', [RoleController::class, 'create']);
+            Route::post('assign', [RoleController::class, 'assignToUser']);
+            Route::post('revoke', [RoleController::class, 'revokeForUser']);
+            Route::delete('delete/{id}', [RoleController::class, 'delete']);
+        });
 
     // Endpoints for permissions operations
-    Route::prefix('permissions')->group(function () {
-        Route::get('/', [PermissionController::class, 'fetch'])->middleware(['permission:can_manage_permission']);
-        Route::post('create', [PermissionController::class, 'create'])->middleware(['permission:can_manage_permission']);
-        Route::delete('delete/{id}', [PermissionController::class, 'delete'])->middleware(['permission:can_manage_permission']);
-        Route::post('assign-to-user', [PermissionController::class, 'assignToUser'])->middleware(['permission:can_manage_permission']);
-        Route::post('assign-to-role', [PermissionController::class, 'assignToRole'])->middleware(['permission:can_manage_permission']);
-        Route::post('revoke-for-user', [PermissionController::class, 'revokeForUser'])->middleware(['permission:can_manage_permission']);
-        Route::post('revoke-for-role', [PermissionController::class, 'revokeForRole'])->middleware(['permission:can_manage_permission']);
-    });
+    Route::prefix('permissions')
+        ->middleware(['permission:can_manage_permission'])
+        ->group(function () {
+            Route::get('/', [PermissionController::class, 'fetch']);
+            Route::post('create', [PermissionController::class, 'create']);
+            Route::delete('delete/{id}', [PermissionController::class, 'delete']);
+            Route::post('assign-to-user', [PermissionController::class, 'assignToUser']);
+            Route::post('assign-to-role', [PermissionController::class, 'assignToRole']);
+            Route::post('revoke-for-user', [PermissionController::class, 'revokeForUser']);
+            Route::post('revoke-for-role', [PermissionController::class, 'revokeForRole']);
+        });
 
     // Endpoints for user operations
-    Route::prefix('users')->group(function () {
-        Route::post('create', [UserController::class, 'create'])->middleware(['permission:can_manage_user']);
-        Route::delete('delete/{id}', [UserController::class, 'delete'])->middleware(['permission:can_manage_user']);
-        Route::get('/', [UserController::class, 'fetch'])->middleware(['permission:can_manage_user']);
-    });
+    Route::prefix('users')
+        ->middleware(['permission:can_manage_user'])
+        ->group(function () {
+            Route::post('create', [UserController::class, 'create']);
+            Route::delete('delete/{id}', [UserController::class, 'delete']);
+            Route::get('/', [UserController::class, 'fetch']);
+            Route::post('update', [UserController::class, 'update']);
+        });
 
     // Endpoints for practice operations
     Route::prefix('practices')->group(function () {

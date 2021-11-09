@@ -5,7 +5,7 @@ namespace App\Helpers;
 use App\Helpers\Response;
 use Illuminate\Support\Facades\Storage;
 
-class FileUpload
+class FileUploadService
 {
     public static function upload($file, $folder, $disk)
     {
