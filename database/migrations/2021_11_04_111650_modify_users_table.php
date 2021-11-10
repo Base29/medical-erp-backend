@@ -14,22 +14,23 @@ class ModifyUsersTable extends Migration
     public function up()
     {
         Schema::table('users', function (Blueprint $table) {
-            $table->string('first_name')->default(null)->after('id');
+            $table->string('first_name')->after('id');
             $table->string('middle_name')->default(null)->nullable()->after('first_name');
             $table->string('maiden_name')->default(null)->nullable()->after('middle_name');
-            $table->string('last_name')->default(null)->after('maiden_name');
+            $table->string('last_name')->after('maiden_name');
+            $table->string('primary_role')->after('last_name');
             $table->string('profile_image')->default(null)->nullable()->after('last_name');
-            $table->string('gender')->default(null)->after('profile_image');
+            $table->string('gender')->after('profile_image');
             $table->string('email_professional')->default(null)->nullable()->after('email');
             $table->string('work_phone')->default(null)->nullable()->after('email_verified_at');
             $table->string('home_phone')->default(null)->nullable()->after('work_phone');
             $table->string('mobile_phone')->default(null)->after('home_phone');
             $table->date('dob')->default('1970-01-01')->after('mobile_phone');
-            $table->string('address')->default(null)->after('dob');
-            $table->string('city')->default(null)->after('address');
-            $table->string('county')->default(null)->after('city');
-            $table->string('country')->default(null)->after('county');
-            $table->string('zip_code')->default(null)->after('country');
+            $table->string('address')->after('dob');
+            $table->string('city')->after('address');
+            $table->string('county')->after('city');
+            $table->string('country')->after('county');
+            $table->string('zip_code')->after('country');
             $table->string('nhs_card')->default(null)->nullable()->after('zip_code');
             $table->string('nhs_number')->default(null)->nullable()->after('nhs_card');
             $table->dropColumn('name');
@@ -48,6 +49,7 @@ class ModifyUsersTable extends Migration
             $table->dropColumn('middle_name');
             $table->dropColumn('maiden_name');
             $table->dropColumn('last_name');
+            $table->dropColumn('primary_role');
             $table->dropColumn('profile_image');
             $table->dropColumn('gender');
             $table->dropColumn('email_professional');

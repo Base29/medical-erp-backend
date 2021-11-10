@@ -38,6 +38,7 @@ class UserController extends Controller
             $user->middle_name = $request->middle_name;
             $user->maiden_name = $request->maiden_name;
             $user->last_name = $request->last_name;
+            $user->primary_role = $request->primary_role;
             $user->password = Hash::make($request->password);
             $user->profile_image = $profileImage ? $profileImage : null;
             $user->gender = $request->gender;
@@ -55,7 +56,15 @@ class UserController extends Controller
             $user->nhs_number = $request->nhs_number;
             $user->save();
 
-            return Response::success(['user' => $user]);
+            // Assigning primary role (position) to user
+            $user->assignRole($request->primary_role);
+
+            // Assigning additional roles to user
+            foreach ($request->additional_roles as $additional_role) {
+                $user->assignRole($additional_role);
+            }
+
+            return Response::success(['user' => $user->with('roles', 'practices')->latest()->first()]);
 
         } catch (\Exception $e) {
 
