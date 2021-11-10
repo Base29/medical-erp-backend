@@ -40,6 +40,8 @@ class CreateUserRequest extends FormRequest
             'county' => 'required|string',
             'country' => 'required|string',
             'zip_code' => 'required|string',
+            'primary_role' => 'required|string',
+            'additional_roles' => 'nullable|array',
         ];
     }
 
@@ -47,6 +49,7 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'email_professional.unique' => 'Professional email ' . request()->email_professional . ' already associated with another account',
+            'primary_role.required' => 'User should have a primary role.',
         ];
     }
 
