@@ -7,6 +7,7 @@ use App\Models\Comment;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
+use App\Models\Profile;
 use App\Models\Signature;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -25,7 +26,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
     ];
@@ -116,6 +116,11 @@ class User extends Authenticatable implements JWTSubject
     public function positionSummary()
     {
         return $this->hasOne(PositionSummary::class);
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
     }
 
 }
