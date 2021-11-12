@@ -18,7 +18,6 @@ class ModifyUsersTable extends Migration
             $table->string('middle_name')->default(null)->nullable()->after('first_name');
             $table->string('maiden_name')->default(null)->nullable()->after('middle_name');
             $table->string('last_name')->after('maiden_name');
-            $table->string('primary_role')->after('last_name');
             $table->string('profile_image')->default(null)->nullable()->after('last_name');
             $table->string('gender')->after('profile_image');
             $table->string('email_professional')->default(null)->nullable()->after('email');
@@ -50,7 +49,6 @@ class ModifyUsersTable extends Migration
             $table->dropColumn('maiden_name');
             $table->dropColumn('last_name');
             $table->dropColumn('primary_role');
-            $table->dropColumn('profile_image');
             $table->dropColumn('gender');
             $table->dropColumn('email_professional');
             $table->dropColumn('work_phone');

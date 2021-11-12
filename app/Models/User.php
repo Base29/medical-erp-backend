@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Signature;
@@ -110,6 +111,11 @@ class User extends Authenticatable implements JWTSubject
     public function isSuperAdmin()
     {
         return $this->roles->contains('name', 'super_admin');
+    }
+
+    public function positionSummary()
+    {
+        return $this->hasOne(PositionSummary::class);
     }
 
 }

@@ -3,14 +3,16 @@
  *
  */
 
+namespace App\Helpers;
+
 class UpdateService
 {
 
-    public static function updateModel($model, $fields, $except)
+    public static function updateModel($model, $fields, $excludeField)
     {
         try {
             foreach ($fields as $field => $value) {
-                if ($field !== $except) {
+                if ($field !== $excludeField) {
                     $model->$field = $value;
                 }
             }

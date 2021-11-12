@@ -5,12 +5,12 @@ namespace App\Http\Controllers\User;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
-use UpdateService;
 
 class UserController extends Controller
 {
@@ -38,7 +38,6 @@ class UserController extends Controller
             $user->middle_name = $request->middle_name;
             $user->maiden_name = $request->maiden_name;
             $user->last_name = $request->last_name;
-            $user->primary_role = $request->primary_role;
             $user->password = Hash::make($request->password);
             $user->profile_image = $profileImage ? $profileImage : null;
             $user->gender = $request->gender;
@@ -57,14 +56,18 @@ class UserController extends Controller
             $user->save();
 
             // Assigning primary role (position) to user
-            $user->assignRole($request->primary_role);
+            $user->assignRole($request->job_title);
 
             // Assigning additional roles to user
             foreach ($request->additional_roles as $additional_role) {
                 $user->assignRole($additional_role);
             }
 
-            return Response::success(['user' => $user->with('roles', 'practices')->latest()->first()]);
+            return Response::success([
+                'user' => $user->with('roles', 'practices', 'positionSummary')
+                    ->latest()
+                    ->first(),
+            ]);
 
         } catch (\Exception $e) {
 

@@ -40,8 +40,13 @@ class CreateUserRequest extends FormRequest
             'county' => 'required|string',
             'country' => 'required|string',
             'zip_code' => 'required|string',
-            'primary_role' => 'required|string',
             'additional_roles' => 'nullable|array',
+            'job_title' => 'required|string',
+            'contract_type' => 'required|string',
+            'department' => 'required|string',
+            'reports_to' => 'required|string',
+            'probation_end_date' => 'required|date|date_format:Y-m-d',
+            'notice_period' => 'required|string',
         ];
     }
 
