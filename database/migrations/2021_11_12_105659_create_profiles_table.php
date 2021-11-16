@@ -35,6 +35,7 @@ class CreateProfilesTable extends Migration
             $table->string('zip_code')->nullable();
             $table->string('nhs_card')->nullable();
             $table->string('nhs_number')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

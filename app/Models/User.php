@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\ContractSummary;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
@@ -113,14 +114,19 @@ class User extends Authenticatable implements JWTSubject
         return $this->roles->contains('name', 'super_admin');
     }
 
+    public function profile()
+    {
+        return $this->hasOne(Profile::class);
+    }
+
     public function positionSummary()
     {
         return $this->hasOne(PositionSummary::class);
     }
 
-    public function profile()
+    public function contractSummary()
     {
-        return $this->hasOne(Profile::class);
+        return $this->hasOne(ContractSummary::class);
     }
 
 }
