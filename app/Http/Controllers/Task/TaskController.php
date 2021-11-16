@@ -152,7 +152,7 @@ class TaskController extends Controller
             $taskUpdated = UpdateService::updateModel($task, $request->all(), 'task');
 
             if ($taskUpdated) {
-                return Response::success(['task' => $task]);
+                return Response::success(['task' => $task->latest('updated_at')->first()]);
             }
 
         } catch (\Exception $e) {
