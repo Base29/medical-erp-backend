@@ -127,7 +127,7 @@ class TaskController extends Controller
                 // For weekly tasks $daysPast should be less than $daysForWeeklyTask
                 $daysForWeeklyTask = 7;
 
-                // If the task is weekly
+                // If the task is not daily
                 if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly') {
                     // Calculating the days past from the date of creation
                     $daysPast = $createdAt->diffInDays(Carbon::now());
