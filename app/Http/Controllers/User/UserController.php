@@ -50,7 +50,6 @@ class UserController extends Controller
                 ]);
             }
 
-            ray($request->all());
             // // Initiating a null variable for profile image
             // $profileImage = null;
 
