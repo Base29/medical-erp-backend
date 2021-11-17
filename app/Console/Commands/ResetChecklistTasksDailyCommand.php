@@ -39,41 +39,43 @@ class ResetChecklistTasksDailyCommand extends Command
     public function handle()
     {
 
-        // Get All Daily Tasks
-        $tasks = Task::where('frequency', 'Daily')->with('checkList.room')->get();
+        try {
 
-        // Iterating through tasks
-        foreach ($tasks as $task) {
+            // Get All Daily Tasks
+            $tasks = Task::where('frequency', 'Daily')->with('checkList.room')->get();
 
-            // Checking which task are active
-            if ($task->is_active === 1) {
+            // Iterating through tasks
+            foreach ($tasks as $task) {
 
-                // Getting the ID of the room to which the $task belongs to
-                $roomId = $task->checkList->room->id;
+                // Checking which task are active
+                if ($task->is_active === 1) {
 
-                // Resetting the status of the room to 0 (false)
-                $task->checkList->room->updateRoomStatus($roomId);
+                    // Replicating active tasks
+                    $new_task = $task->replicate();
 
-                // Replicating active tasks
-                $new_task = $task->replicate();
+                    // Creating tasks
+                    $new_task->status = null;
+                    $new_task->comment = null;
+                    $new_task->reason = null;
+                    $new_task->acknowledgement = 0;
+                    $new_task->manager_comment = '';
+                    $new_task->is_active = 1;
+                    $new_task->save();
 
-                // Creating tasks
-                $new_task->status = 0;
-                $new_task->comment = null;
-                $new_task->reason = null;
-                $new_task->acknowledgement = 0;
-                $new_task->manager_comment = '';
-                $new_task->is_active = 1;
-                $new_task->save();
+                    // Making old tasks in active
+                    if ($task->id !== $new_task->id) {
+                        $task->is_active = 0;
+                        $task->save();
 
-                // Making old tasks in active
-                if ($task->id !== $new_task->id) {
-                    $task->is_active = 0;
-                    $task->save();
+                        // Resetting the status of the room to 0 (false)
+                        $task->checkList->room->updateRoomStatus($task->checkList->room_id);
+                    }
                 }
+
             }
 
+        } catch (\Exception $e) {
+            error_log($e);
         }
-
     }
 }

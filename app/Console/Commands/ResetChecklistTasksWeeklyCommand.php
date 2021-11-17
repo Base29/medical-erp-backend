@@ -48,12 +48,6 @@ class ResetChecklistTasksWeeklyCommand extends Command
             // Checking which task are active
             if ($task->is_active === 1) {
 
-                // Getting the ID of the room to which the $task belongs to
-                $roomId = $task->checkList->room->id;
-
-                // Resetting the status of the room to 0 (false)
-                $task->checkList->room->updateRoomStatus($roomId);
-
                 // Date when the task is created
                 $createdAt = new Carbon($task->created_at);
 
@@ -67,7 +61,7 @@ class ResetChecklistTasksWeeklyCommand extends Command
                     $new_task = $task->replicate();
 
                     // Creating tasks
-                    $new_task->status = 0;
+                    $new_task->status = null;
                     $new_task->comment = null;
                     $new_task->reason = null;
                     $new_task->acknowledgement = 0;
@@ -79,6 +73,9 @@ class ResetChecklistTasksWeeklyCommand extends Command
                     if ($task->id !== $new_task->id) {
                         $task->is_active = 0;
                         $task->save();
+
+                        // Resetting the status of the room to 0 (false)
+                        $task->checkList->room->updateRoomStatus($task->checkList->room_id);
                     }
 
                 }
