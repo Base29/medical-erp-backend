@@ -4,8 +4,11 @@ namespace App\Models;
 
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\ContractSummary;
+use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
+use App\Models\Profile;
 use App\Models\Signature;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -24,7 +27,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
     ];
@@ -110,6 +112,21 @@ class User extends Authenticatable implements JWTSubject
     public function isSuperAdmin()
     {
         return $this->roles->contains('name', 'super_admin');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function positionSummary()
+    {
+        return $this->hasOne(PositionSummary::class, 'user_id', 'id');
+    }
+
+    public function contractSummary()
+    {
+        return $this->hasOne(ContractSummary::class, 'user_id', 'id');
     }
 
 }

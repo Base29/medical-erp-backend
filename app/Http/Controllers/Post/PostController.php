@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Post;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Post\CreatePostRequest;
 use App\Http\Requests\Post\FetchOwnPostRequest;
@@ -16,7 +17,6 @@ use App\Models\PostAttachment;
 use App\Models\PostView;
 use App\Models\Practice;
 use App\Models\User;
-use UpdateService;
 
 class PostController extends Controller
 {

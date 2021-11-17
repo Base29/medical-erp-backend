@@ -27,20 +27,17 @@ class CreateUserRequest extends FormRequest
     {
         return [
             'email' => 'required|email|unique:users,email',
+            'password' => 'nullable|confirmed',
             'first_name' => 'required|string',
             'last_name' => 'required|string',
-            'profile_image' => 'nullable|file|mimes:png,jpg',
-            'password' => 'required|confirmed',
-            'gender' => 'required',
-            'email_professional' => 'nullable|email|unique:users,email_professional',
-            'mobile_phone' => 'required|string',
-            'dob' => 'required|date|date_format:Y-m-d',
-            'address' => 'required|string',
-            'city' => 'required|string',
-            'county' => 'required|string',
-            'country' => 'required|string',
-            'zip_code' => 'required|string',
-            'primary_role' => 'required|string',
+            'is_candidate' => 'required|boolean',
+            'gender' => 'nullable|string',
+            'mobile_phone' => 'nullable|string',
+            'additional_roles' => 'nullable|array',
+            'job_title' => 'nullable|string',
+            'contract_type' => 'nullable|string',
+            'contract_start_date' => 'nullable|date|date_format:d-m-Y',
+            'contracted_hours_per_week' => 'nullable|string',
             'additional_roles' => 'nullable|array',
         ];
     }
@@ -48,8 +45,8 @@ class CreateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'email_professional.unique' => 'Professional email ' . request()->email_professional . ' already associated with another account',
             'primary_role.required' => 'User should have a primary role.',
+            'is_candidate.required' => 'The is_candidate field is required',
         ];
     }
 
