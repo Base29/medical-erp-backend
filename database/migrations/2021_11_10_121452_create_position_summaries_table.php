@@ -16,8 +16,8 @@ class CreatePositionSummariesTable extends Migration
         Schema::create('position_summaries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('job_title');
-            $table->string('contract_type');
+            $table->string('job_title')->nullable();
+            $table->string('contract_type')->nullable();
             $table->string('department')->nullable();
             $table->string('reports_to')->nullable();
             $table->date('probation_end_date')->nullable();

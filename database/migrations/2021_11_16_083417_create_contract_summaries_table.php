@@ -16,13 +16,13 @@ class CreateContractSummariesTable extends Migration
         Schema::create('contract_summaries', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('employee_type');
-            $table->date('employee_start_date');
-            $table->date('contract_start_date');
-            $table->string('working_time_pattern');
-            $table->string('contracted_hours_per_week');
-            $table->string('min_leave_entitlement');
-            $table->string('contract_document');
+            $table->string('employee_type')->nullable();
+            $table->date('employee_start_date')->nullable();
+            $table->date('contract_start_date')->nullable();
+            $table->string('working_time_pattern')->nullable();
+            $table->string('contracted_hours_per_week')->nullable();
+            $table->string('min_leave_entitlement')->nullable();
+            $table->string('contract_document')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

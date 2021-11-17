@@ -15,7 +15,7 @@ class AddFieldsToUsersTable extends Migration
     {
         Schema::table('users', function (Blueprint $table) {
             $table->dropColumn('name');
-            $table->boolean('is_active')->default(0)->after('email');
+            $table->boolean('is_active')->default(1)->after('email');
             $table->boolean('is_candidate')->default(0)->after('is_active');
             $table->boolean('is_hired')->default(0)->after('is_candidate');
         });

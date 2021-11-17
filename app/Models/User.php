@@ -116,17 +116,17 @@ class User extends Authenticatable implements JWTSubject
 
     public function profile()
     {
-        return $this->hasOne(Profile::class);
+        return $this->hasOne(Profile::class, 'user_id', 'id');
     }
 
     public function positionSummary()
     {
-        return $this->hasOne(PositionSummary::class);
+        return $this->hasOne(PositionSummary::class, 'user_id', 'id');
     }
 
     public function contractSummary()
     {
-        return $this->hasOne(ContractSummary::class);
+        return $this->hasOne(ContractSummary::class, 'user_id', 'id');
     }
 
 }

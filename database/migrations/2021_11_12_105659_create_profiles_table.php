@@ -20,13 +20,13 @@ class CreateProfilesTable extends Migration
             $table->string('last_name');
             $table->string('middle_name')->nullable();
             $table->string('maiden_name')->nullable();
-            $table->string('primary_role');
+            $table->string('primary_role')->nullable();
             $table->string('profile_image')->nullable();
-            $table->string('gender');
+            $table->string('gender')->nullable();
             $table->string('professional_email')->nullable();
             $table->string('work_phone')->nullable();
             $table->string('home_phone')->nullable();
-            $table->string('mobile_phone');
+            $table->string('mobile_phone')->nullable();
             $table->date('dob')->nullable();
             $table->string('address')->nullable();
             $table->string('city')->nullable();
