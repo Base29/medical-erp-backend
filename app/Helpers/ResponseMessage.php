@@ -125,4 +125,10 @@ class ResponseMessage
         return $message;
     }
 
+    // Message for if the user is not active
+    public static function userNotActive($user)
+    {
+        return 'The ' . $user . ' is not active';
+    }
+
 }
