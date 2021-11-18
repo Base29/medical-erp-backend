@@ -4,6 +4,7 @@ use App\Http\Controllers\Answer\AnswerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Post\PostController;
@@ -146,5 +147,10 @@ Route::middleware(['auth:api'])->group(function () {
     // Routes for signatures
     Route::prefix('signatures')->group(function () {
         Route::get('/', [SignatureController::class, 'fetch'])->middleware(['permission:can_fetch_signatures']);
+    });
+
+    // Routes for contract summary
+    Route::prefix('contract-summaries')->group(function () {
+        Route::post('create', [ContractSummaryController::class, 'create'])->middleware(['permission:can_create_contract_summary']);
     });
 });
