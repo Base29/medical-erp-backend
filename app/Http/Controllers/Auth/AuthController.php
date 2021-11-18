@@ -22,7 +22,17 @@ class AuthController extends Controller
     {
         try {
             // Checking if the user exists in the database
-            $user = User::where('email', $request->email)->with(['roles', 'practices'])->firstOrFail();
+            $user = User::where('email', $request->email)
+                ->with(['profile', 'positionSummary', 'contractSummary', 'roles', 'practices'])
+                ->firstOrFail();
+
+            // Check if the user is active
+            if (!$user->is_active) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::userNotActive($user->email),
+                ]);
+            }
 
             if (!$user || !Hash::check($request->password, $user->password)) {
 
