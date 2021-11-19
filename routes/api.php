@@ -7,6 +7,7 @@ use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
+use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Reason\ReasonController;
@@ -196,5 +197,11 @@ Route::middleware(['auth:api'])->group(function () {
             ->middleware(['permission:can_fetch_single_contract_summary']);
         Route::delete('delete/{id}', [ContractSummaryController::class, 'delete'])
             ->middleware(['permission:can_delete_contract_summary']);
+    });
+
+    // Routes for position summary
+    Route::prefix('position-summaries')->group(function () {
+        Route::post('create', [PositionSummaryController::class, 'create'])
+            ->middleware(['permission:can_create_position_summary']);
     });
 });
