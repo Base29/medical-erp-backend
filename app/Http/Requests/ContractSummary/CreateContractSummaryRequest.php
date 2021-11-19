@@ -28,8 +28,8 @@ class CreateContractSummaryRequest extends FormRequest
         return [
             'user' => 'required|numeric|exists:users,id',
             'employee_type' => 'nullable|string',
-            'employee_start_date' => 'nullable|date|date_format:Y-m-d H:i:s',
-            'contract_start_date' => 'nullable|date|date_format:Y-m-d H:i:s',
+            'employee_start_date' => 'nullable|date|date_format:Y-m-d',
+            'contract_start_date' => 'nullable|date|date_format:Y-m-d',
             'working_time_pattern' => 'nullable|string',
             'contracted_hours_per_week' => 'nullable|string',
             'contract_document' => 'nullable|file|mimes:doc,docx,pdf',

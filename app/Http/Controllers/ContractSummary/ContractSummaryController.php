@@ -8,6 +8,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractSummary\CreateContractSummaryRequest;
+use App\Http\Requests\ContractSummary\FetchSingleContractSummaryRequest;
 use App\Http\Requests\ContractSummary\UpdateContractSummaryRequest;
 use App\Models\ContractSummary;
 use App\Models\User;
@@ -22,11 +23,15 @@ class ContractSummaryController extends Controller
             // Fetch user
             $user = User::findOrFail($request->user);
 
-            // Upload contract
-            $url = FileUploadService::upload(
-                $request->file('contract_document'),
-                'employeeContracts',
-                's3');
+            // Initiating a null variable $url for the contract_document
+            $url = null;
+            if ($request->hasFile('contract_document')) {
+                // Upload contract
+                $url = FileUploadService::upload(
+                    $request->file('contract_document'),
+                    'employeeContracts',
+                    's3');
+            }
 
             // Create contract summary
             $contractSummary = new ContractSummary();
@@ -102,6 +107,28 @@ class ContractSummaryController extends Controller
                     'contract_summary' => $contractSummary->with('user')->latest('updated_at')->first(),
                 ]);
             }
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single contract summary
+    public function fetchSingle(FetchSingleContractSummaryRequest $request)
+    {
+        try {
+
+            // Fetch single contract summary
+            $contractSummary = ContractSummary::findOrFail($request->contract_summary);
+
+            // Return response with the Contract Summary
+            return Response::success([
+                'contract_summary' => $contractSummary->with('user')->first(),
+            ]);
 
         } catch (\Exception $e) {
 

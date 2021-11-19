@@ -152,5 +152,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Routes for contract summary
     Route::prefix('contract-summaries')->group(function () {
         Route::post('create', [ContractSummaryController::class, 'create'])->middleware(['permission:can_create_contract_summary']);
+        Route::post('update', [ContractSummaryController::class, 'update'])->middleware(['permission:can_update_contract_summary']);
+        Route::post('contract-summary', [ContractSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_contract_summary']);
     });
 });
