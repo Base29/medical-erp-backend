@@ -16,7 +16,6 @@ class PositionSummaryController extends Controller
 
             // Creating position summary entry
             $positionSummary = new PositionSummary();
-            $positionSummary->user_id = $request->id; //TODO: Switch this to be the id of ghost profile
             $positionSummary->job_title = $request->job_title;
             $positionSummary->contract_type = $request->contract_type;
             $positionSummary->department = $request->department;
@@ -24,6 +23,7 @@ class PositionSummaryController extends Controller
             $positionSummary->probation_end_date = $request->probation_end_date;
             $positionSummary->notice_period = $request->notice_period;
             $positionSummary->save();
+
         } catch (\Exception $e) {
 
             return Response::fail([
