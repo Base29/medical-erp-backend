@@ -23,7 +23,10 @@ class ContractSummaryController extends Controller
             $user = User::findOrFail($request->user);
 
             // Upload contract
-            $url = FileUploadService::upload($request->file('contract_document'), 'employeeContracts', 's3');
+            $url = FileUploadService::upload(
+                $request->file('contract_document'),
+                'employeeContracts',
+                's3');
 
             // Create contract summary
             $contractSummary = new ContractSummary();
@@ -54,7 +57,7 @@ class ContractSummaryController extends Controller
     public function update(UpdateContractSummaryRequest $request)
     {
         try {
-            // Allowed fields
+            // Allowed fields that can be updated
             $allowedFields = [
                 'employee_type',
                 'employee_start_date',
