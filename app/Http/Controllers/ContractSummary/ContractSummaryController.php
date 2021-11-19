@@ -138,4 +138,35 @@ class ContractSummaryController extends Controller
             ]);
         }
     }
+
+    // Delete contract summary
+    public function delete($id)
+    {
+        try {
+
+            // Fetch contract summary
+            $contractSummary = ContractSummary::findOrFail($id);
+
+            if (!$contractSummary) {
+                return Response::fail([
+                    'code' => 404,
+                    'message' => ResponseMessage::notFound('Contract Summary', $id, false),
+                ]);
+            }
+
+            $contractSummary->delete();
+
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Contract Summary'),
+            ]);
+
+        } catch (\Exception $e) {
+
+            ray($e);
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
