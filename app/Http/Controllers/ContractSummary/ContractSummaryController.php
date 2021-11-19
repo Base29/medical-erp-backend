@@ -162,7 +162,6 @@ class ContractSummaryController extends Controller
 
         } catch (\Exception $e) {
 
-            ray($e);
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
