@@ -26,7 +26,7 @@ class CreateContractSummaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
+            'user' => 'required|numeric|exists:users,id|unique:contract_summaries,user_id',
             'employee_type' => 'nullable|string',
             'employee_start_date' => 'nullable|date|date_format:Y-m-d',
             'contract_start_date' => 'nullable|date|date_format:Y-m-d',
@@ -34,6 +34,13 @@ class CreateContractSummaryRequest extends FormRequest
             'contracted_hours_per_week' => 'nullable|string',
             'contract_document' => 'nullable|file|mimes:doc,docx,pdf',
             'min_leave_entitlement' => 'nullable|string',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'user.unique' => 'This user already has a contract summary',
         ];
     }
 
