@@ -4,7 +4,9 @@ namespace App\Exceptions;
 
 use App\Helpers\Response;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Throwable;
 
@@ -55,6 +57,24 @@ class Handler extends ExceptionHandler
                 return Response::fail([
                     'message' => 'Expired or Invalid token',
                     'code' => 401,
+                ]);
+            }
+        });
+
+        $this->renderable(function (ModelNotFoundException $exception, $request) {
+            if ($request->expectsJson()) {
+                return Response::fail([
+                    'code' => 404,
+                    'message' => 'No results for model id ' . $request->id,
+                ]);
+            }
+        });
+
+        $this->renderable(function (MethodNotAllowedHttpException $exception, $request) {
+            if ($request->expectsJson()) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => 'Method not allowed',
                 ]);
             }
         });

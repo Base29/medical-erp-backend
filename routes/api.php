@@ -4,6 +4,7 @@ use App\Http\Controllers\Answer\AnswerController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
+use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\Post\PostController;
@@ -31,10 +32,13 @@ use Illuminate\Support\Facades\Route;
 // Routes for authentication and password reset
 Route::prefix('auth')->group(function () {
     Route::post('login', [AuthController::class, 'login'])->name('login');
-    Route::post('forgot-password', [AuthController::class, 'generateResetPasswordLink'])->name('forgot.password');
-    Route::post('reset-password', [AuthController::class, 'resetPassword'])->name('reset.password');
+    Route::post('forgot-password', [AuthController::class, 'generateResetPasswordLink'])
+        ->name('forgot.password');
+    Route::post('reset-password', [AuthController::class, 'resetPassword'])
+        ->name('reset.password');
     Route::post('verify-token', [AuthController::class, 'verifyToken']);
-    Route::post('logout', [AuthController::class, 'logout'])->middleware(['auth:api'])->name('logout');
+    Route::post('logout', [AuthController::class, 'logout'])
+        ->middleware(['auth:api'])->name('logout');
 });
 
 Route::middleware(['auth:api'])->group(function () {
@@ -75,76 +79,122 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Endpoints for practice operations
     Route::prefix('practices')->group(function () {
-        Route::get('/', [PracticeController::class, 'fetch'])->middleware(['permission:can_view_practices']);
-        Route::post('create', [PracticeController::class, 'create'])->middleware(['permission:can_create_practice']);
-        Route::delete('delete/{id}', [PracticeController::class, 'delete'])->middleware(['permission:can_delete_practice']);
-        Route::post('assign-to-user', [PracticeController::class, 'assignToUser'])->middleware(['permission:can_assign_practice']);
-        Route::post('revoke-for-user', [PracticeController::class, 'revokeForUser'])->middleware(['permission:can_revoke_practice']);
+        Route::get('/', [PracticeController::class, 'fetch'])
+            ->middleware(['permission:can_view_practices']);
+        Route::post('create', [PracticeController::class, 'create'])
+            ->middleware(['permission:can_create_practice']);
+        Route::delete('delete/{id}', [PracticeController::class, 'delete'])
+            ->middleware(['permission:can_delete_practice']);
+        Route::post('assign-to-user', [PracticeController::class, 'assignToUser'])
+            ->middleware(['permission:can_assign_practice']);
+        Route::post('revoke-for-user', [PracticeController::class, 'revokeForUser'])
+            ->middleware(['permission:can_revoke_practice']);
     });
 
     // Endpoints for policies
     Route::prefix('policies')->group(function () {
-        Route::post('/create', [PolicyController::class, 'create'])->middleware(['permission:can_create_policy']);
-        Route::delete('/delete/{id}', [PolicyController::class, 'delete'])->middleware(['permission:can_delete-policy']);
-        Route::get('/', [PolicyController::class, 'fetch'])->middleware(['permission:can_view_policies']);
-        Route::post('sign-policy', [SignatureController::class, 'signPolicy'])->middleware(['permission:can_sign_policy']);
+        Route::post('/create', [PolicyController::class, 'create'])
+            ->middleware(['permission:can_create_policy']);
+        Route::delete('/delete/{id}', [PolicyController::class, 'delete'])
+            ->middleware(['permission:can_delete-policy']);
+        Route::get('/', [PolicyController::class, 'fetch'])
+            ->middleware(['permission:can_view_policies']);
+        Route::post('sign-policy', [SignatureController::class, 'signPolicy'])
+            ->middleware(['permission:can_sign_policy']);
     });
 
     // Endpoints for room operations
     Route::prefix('rooms')->group(function () {
-        Route::post('/', [RoomController::class, 'fetch'])->middleware(['permission:can_view_rooms']);
-        Route::post('create', [RoomController::class, 'create'])->middleware(['permission:can_create_room']);
-        Route::delete('delete/{id}', [RoomController::class, 'delete'])->middleware(['permission:can_delete_room']);
-        Route::post('update', [RoomController::class, 'update'])->middleware(['permission:can_update_room']);
+        Route::post('/', [RoomController::class, 'fetch'])
+            ->middleware(['permission:can_view_rooms']);
+        Route::post('create', [RoomController::class, 'create'])
+            ->middleware(['permission:can_create_room']);
+        Route::delete('delete/{id}', [RoomController::class, 'delete'])
+            ->middleware(['permission:can_delete_room']);
+        Route::post('update', [RoomController::class, 'update'])
+            ->middleware(['permission:can_update_room']);
     });
 
     Route::prefix('reasons')->group(function () {
-        Route::get('/', [ReasonController::class, 'fetch'])->middleware(['permission:can_view_reasons']);
-        Route::post('create', [ReasonController::class, 'create'])->middleware(['permission:can_create_reason']);
-        Route::delete('delete/{id}', [ReasonController::class, 'delete'])->middleware(['permission:can_delete_reason']);
+        Route::get('/', [ReasonController::class, 'fetch'])
+            ->middleware(['permission:can_view_reasons']);
+        Route::post('create', [ReasonController::class, 'create'])
+            ->middleware(['permission:can_create_reason']);
+        Route::delete('delete/{id}', [ReasonController::class, 'delete'])
+            ->middleware(['permission:can_delete_reason']);
     });
 
     // Endpoints for CheckList Operations
     Route::prefix('checklists')->group(function () {
-        Route::post('/', [CheckListController::class, 'fetch'])->middleware(['permission:can_view_checklists']);
-        Route::post('create', [CheckListController::class, 'create'])->middleware(['permission:can_create_checklist']);
+        Route::post('/', [CheckListController::class, 'fetch'])
+            ->middleware(['permission:can_view_checklists']);
+        Route::post('create', [CheckListController::class, 'create'])
+            ->middleware(['permission:can_create_checklist']);
     });
 
     // Endpoints for Task operations
     Route::prefix('tasks')->group(function () {
-        Route::post('update', [TaskController::class, 'update'])->middleware(['permission:can_update_task']);
-        Route::post('create', [TaskController::class, 'create'])->middleware(['permission:can_create_task']);
-        Route::delete('delete/{id}', [TaskController::class, 'delete'])->middleware(['permission:can_delete_task']);
+        Route::post('update', [TaskController::class, 'update'])
+            ->middleware(['permission:can_update_task']);
+        Route::post('create', [TaskController::class, 'create'])
+            ->middleware(['permission:can_create_task']);
+        Route::delete('delete/{id}', [TaskController::class, 'delete'])
+            ->middleware(['permission:can_delete_task']);
     });
 
     // Routes for cleaner forum (Communication Book)
     Route::prefix('communication-book')->group(function () {
-        Route::get('/', [PostController::class, 'fetch'])->middleware(['permission:can_fetch_posts|can_fetch_communication_book_posts']);
-        Route::post('me', [PostController::class, 'me'])->middleware(['permission:can_fetch_own_posts']);
-        Route::post('create', [PostController::class, 'create'])->middleware(['permission:can_create_post']);
-        Route::delete('delete/{id}', [PostController::class, 'delete'])->middleware(['permission:can_delete_own_post']);
-        Route::post('update', [PostController::class, 'update'])->middleware(['permission:can_update_post']);
-        Route::post('post', [PostController::class, 'fetchSinglePost'])->middleware(['permission:can_view_post']);
+        Route::get('/', [PostController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_posts|can_fetch_communication_book_posts']);
+        Route::post('me', [PostController::class, 'me'])
+            ->middleware(['permission:can_fetch_own_posts']);
+        Route::post('create', [PostController::class, 'create'])
+            ->middleware(['permission:can_create_post']);
+        Route::delete('delete/{id}', [PostController::class, 'delete'])
+            ->middleware(['permission:can_delete_own_post']);
+        Route::post('update', [PostController::class, 'update'])
+            ->middleware(['permission:can_update_post']);
+        Route::post('post', [PostController::class, 'fetchSinglePost'])
+            ->middleware(['permission:can_view_post']);
         Route::post('post-view', [PostController::class, 'postView']);
 
         // Routes for answer
         Route::prefix('answers')->group(function () {
-            Route::post('create', [AnswerController::class, 'create'])->middleware(['permission:can_create_answer']);
+            Route::post('create', [AnswerController::class, 'create'])
+                ->middleware(['permission:can_create_answer']);
             Route::post('/', [AnswerController::class, 'fetch']);
-            Route::post('update', [AnswerController::class, 'update'])->middleware(['permission:can_update_answer']);
-            Route::delete('delete/{id}', [AnswerController::class, 'delete'])->middleware(['permission:can_delete_answer']);
+            Route::post('update', [AnswerController::class, 'update'])
+                ->middleware(['permission:can_update_answer']);
+            Route::delete('delete/{id}', [AnswerController::class, 'delete'])
+                ->middleware(['permission:can_delete_answer']);
         });
 
         // Routes for comments
         Route::prefix('comments')->group(function () {
-            Route::post('create', [CommentController::class, 'create'])->middleware(['permission:can_create_comment']);
-            Route::post('update', [CommentController::class, 'update'])->middleware(['permission:can_update_comment']);
-            Route::delete('delete/{id}', [CommentController::class, 'delete'])->middleware(['permission:can_delete_comment']);
+            Route::post('create', [CommentController::class, 'create'])
+                ->middleware(['permission:can_create_comment']);
+            Route::post('update', [CommentController::class, 'update'])
+                ->middleware(['permission:can_update_comment']);
+            Route::delete('delete/{id}', [CommentController::class, 'delete'])
+                ->middleware(['permission:can_delete_comment']);
         });
     });
 
     // Routes for signatures
     Route::prefix('signatures')->group(function () {
-        Route::get('/', [SignatureController::class, 'fetch'])->middleware(['permission:can_fetch_signatures']);
+        Route::get('/', [SignatureController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_signatures']);
+    });
+
+    // Routes for contract summary
+    Route::prefix('contract-summaries')->group(function () {
+        Route::post('create', [ContractSummaryController::class, 'create'])
+            ->middleware(['permission:can_create_contract_summary']);
+        Route::post('update', [ContractSummaryController::class, 'update'])
+            ->middleware(['permission:can_update_contract_summary']);
+        Route::post('contract-summary', [ContractSummaryController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_contract_summary']);
+        Route::delete('delete/{id}', [ContractSummaryController::class, 'delete'])
+            ->middleware(['permission:can_delete_contract_summary']);
     });
 });
