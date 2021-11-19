@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateContractSummaryRequest extends FormRequest
+class UpdateContractSummaryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,7 +26,7 @@ class CreateContractSummaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
+            'contract_summary' => 'required|numeric|exists:contract_summaries,id',
             'employee_type' => 'nullable|string',
             'employee_start_date' => 'nullable|date|date_format:Y-m-d H:i:s',
             'contract_start_date' => 'nullable|date|date_format:Y-m-d H:i:s',

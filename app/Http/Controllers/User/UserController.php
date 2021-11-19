@@ -94,7 +94,7 @@ class UserController extends Controller
 
             // Create contract summary
             $contractSummary = new ContractSummary();
-            $contractSummary->contract_start_date = $request->is_candidate ? $formattedDate : null;
+            $contractSummary->contract_start_date = $request->is_candidate ? $request->contract_start_date : null;
             $contractSummary->contracted_hours_per_week = $request->is_candidate ? $request->contracted_hours_per_week : null;
             $user->contractSummary()->save($contractSummary);
 
