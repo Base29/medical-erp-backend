@@ -7,6 +7,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PositionSummary\CreatePositionSummaryRequest;
+use App\Http\Requests\PositionSummary\FetchSinglePositionSummaryRequest;
 use App\Http\Requests\PositionSummary\UpdatePositionSummaryRequest;
 use App\Models\PositionSummary;
 use App\Models\User;
@@ -79,6 +80,28 @@ class PositionSummaryController extends Controller
                     'position_summary' => $positionSummary->with('user.profile')->latest('updated_at')->first(),
                 ]);
             }
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single position summary
+    public function fetchSingle(FetchSinglePositionSummaryRequest $request)
+    {
+        try {
+
+            // Fetch single contract summary
+            $positionSummary = PositionSummary::where('id', $request->position_summary)->with('user.profile')->first();
+
+            // Return response with the Contract Summary
+            return Response::success([
+                'position_summary' => $positionSummary,
+            ]);
 
         } catch (\Exception $e) {
 

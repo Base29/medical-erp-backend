@@ -252,5 +252,7 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [PositionSummaryController::class, 'update'])
             ->middleware(['permission:can_update_position_summary']);
+
+        Route::post('position-summary', [PositionSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_position_summary']);
     });
 });
