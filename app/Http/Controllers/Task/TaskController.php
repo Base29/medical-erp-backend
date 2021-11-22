@@ -37,6 +37,7 @@ class TaskController extends Controller
             $task->name = $request->name;
             $task->check_list_id = $checklist->id;
             $task->frequency = $request->frequency;
+            $task->status = 0;
             $task->save();
 
             return Response::success(['task' => $task]);
@@ -102,48 +103,36 @@ class TaskController extends Controller
                 ]);
             }
 
-            // Check if the request contains more than one field for update
-            if (count($request->all()) > 2) {
-                return Response::fail([
-                    'code' => 400,
-                    'message' => ResponseMessage::customMessage('Only one of the following fields is allowed ' . implode("|", $allowedFields)),
-                ]);
-            }
-
             // Get Task
             $task = Task::findOrFail($request->task);
 
-            // If status of the task is being updated
-            if ($request->has('status')) {
-                // Get the time of creation of the task
-                $createdAt = new Carbon($task->created_at);
+            // Get the time of creation of the task
+            $createdAt = new Carbon($task->created_at);
 
-                // Get task frequency
-                $taskFrequency = $task->frequency;
+            // Get task frequency
+            $taskFrequency = $task->frequency;
 
-                // For monthly tasks $daysPast should be less than $daysForMonthlyTask
-                $daysForMonthlyTask = 30;
+            // For monthly tasks $daysPast should be less than $daysForMonthlyTask
+            $daysForMonthlyTask = 30;
 
-                // For weekly tasks $daysPast should be less than $daysForWeeklyTask
-                $daysForWeeklyTask = 7;
+            // For weekly tasks $daysPast should be less than $daysForWeeklyTask
+            $daysForWeeklyTask = 7;
 
-                // If the task is not daily
-                if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly') {
-                    // Calculating the days past from the date of creation
-                    $daysPast = $createdAt->diffInDays(Carbon::now());
+            // If the task is not daily
+            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly') {
+                // Calculating the days past from the date of creation
+                $daysPast = $createdAt->diffInDays(Carbon::now());
 
-                    // Calculating days remaining
-                    $daysRemaining = Carbon::now()
-                        ->subDays($taskFrequency === 'Weekly' ? $daysForWeeklyTask : $daysForMonthlyTask)
-                        ->diffInDays($createdAt);
+                // Calculating days remaining
+                $daysRemaining = Carbon::now()
+                    ->subDays($taskFrequency === 'Weekly' ? $daysForWeeklyTask : $daysForMonthlyTask)
+                    ->diffInDays($createdAt);
 
-                    if ($daysPast < $daysForMonthlyTask || $daysPast < $daysForWeeklyTask) {
-                        return Response::fail([
-                            'code' => 400,
-                            'message' => ResponseMessage::customMessage('Cannot update status'),
-                        ]);
-                    }
-
+                if ($daysPast < $daysForMonthlyTask || $daysPast < $daysForWeeklyTask) {
+                    return Response::fail([
+                        'code' => 400,
+                        'message' => ResponseMessage::customMessage('Task cannot be updated at the moment'),
+                    ]);
                 }
 
             }

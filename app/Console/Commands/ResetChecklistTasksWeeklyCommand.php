@@ -61,7 +61,7 @@ class ResetChecklistTasksWeeklyCommand extends Command
                     $new_task = $task->replicate();
 
                     // Creating tasks
-                    $new_task->status = null;
+                    $new_task->status = 0;
                     $new_task->comment = null;
                     $new_task->reason = null;
                     $new_task->acknowledgement = 0;
