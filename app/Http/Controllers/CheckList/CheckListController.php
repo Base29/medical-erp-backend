@@ -52,7 +52,7 @@ class CheckListController extends Controller
     {
         try {
 
-            $checklists = CheckList::where('room_id', $request->room)->with('tasks')->latest()->first();
+            $checklists = CheckList::where('room_id', $request->room)->with('activeTasks')->latest()->first();
 
             return Response::success(['checklists' => $checklists]);
 
