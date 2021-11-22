@@ -254,5 +254,8 @@ Route::middleware(['auth:api'])->group(function () {
             ->middleware(['permission:can_update_position_summary']);
 
         Route::post('position-summary', [PositionSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_position_summary']);
+
+        Route::delete('delete/{id}', [PositionSummaryController::class, 'delete'])
+            ->middleware(['permission:can_delete_position_summary']);
     });
 });
