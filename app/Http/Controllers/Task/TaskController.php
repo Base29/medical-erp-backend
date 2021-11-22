@@ -37,7 +37,6 @@ class TaskController extends Controller
             $task->name = $request->name;
             $task->check_list_id = $checklist->id;
             $task->frequency = $request->frequency;
-            $task->status = 0;
             $task->save();
 
             return Response::success(['task' => $task]);

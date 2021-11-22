@@ -24,12 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('checklist:resetDaily')->dailyAt('03:00')->timezone('Europe/London');
-        // $schedule->command('checklist:resetWeekly')->dailyAt('03:00')->timezone('Europe/London');
-        // $schedule->command('checklist:resetMonthly')->dailyAt('03:00')->timezone('Europe/London');
-        $schedule->command('checklist:resetDaily')->everyMinute();
-        $schedule->command('checklist:resetWeekly')->everyMinute();
-        $schedule->command('checklist:resetMonthly')->everyMinute();
+        $schedule->command('checklist:resetDaily')->dailyAt('03:00')->timezone('Europe/London');
+        $schedule->command('checklist:resetWeekly')->dailyAt('03:00')->timezone('Europe/London');
+        $schedule->command('checklist:resetMonthly')->dailyAt('03:00')->timezone('Europe/London');
+
     }
 
     /**
