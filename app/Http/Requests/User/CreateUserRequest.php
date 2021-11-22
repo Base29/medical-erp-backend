@@ -36,7 +36,7 @@ class CreateUserRequest extends FormRequest
             'additional_roles' => 'nullable|array',
             'job_title' => 'nullable|string',
             'contract_type' => 'nullable|string',
-            'contract_start_date' => 'nullable|date|date_format:Y-m-d H:i:s',
+            'contract_start_date' => 'nullable|date|date_format:Y-m-d',
             'contracted_hours_per_week' => 'nullable|string',
             'additional_roles' => 'nullable|array',
         ];
