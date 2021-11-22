@@ -163,7 +163,7 @@ class UserController extends Controller
         try {
 
             // Fetching all the users from database
-            $users = User::with('roles', 'practices')->latest()->paginate(10);
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')->latest()->paginate(10);
 
             return Response::success(['users' => $users]);
 
