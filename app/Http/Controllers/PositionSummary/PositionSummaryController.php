@@ -33,7 +33,7 @@ class PositionSummaryController extends Controller
 
             // Return created Position Summary
             return Response::success([
-                'position_summary' => $positionSummary->with('user')->latest()->first(),
+                'position_summary' => $positionSummary->with('user.profile')->latest()->first(),
             ]);
 
         } catch (\Exception $e) {
@@ -76,7 +76,7 @@ class PositionSummaryController extends Controller
 
             if ($positionSummaryUpdated) {
                 return Response::success([
-                    'position_summary' => $positionSummary->with('user')->latest('updated_at')->first(),
+                    'position_summary' => $positionSummary->with('user.profile')->latest('updated_at')->first(),
                 ]);
             }
 
