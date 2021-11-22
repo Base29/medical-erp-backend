@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\ContractSummary;
+namespace App\Http\Requests\PositionSummary;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateContractSummaryRequest extends FormRequest
+class FetchSinglePositionSummaryRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,21 +26,14 @@ class CreateContractSummaryRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id|unique:contract_summaries,user_id',
-            'employee_type' => 'nullable|string',
-            'employee_start_date' => 'nullable|date|date_format:Y-m-d',
-            'contract_start_date' => 'nullable|date|date_format:Y-m-d',
-            'working_time_pattern' => 'nullable|string',
-            'contracted_hours_per_week' => 'nullable|string',
-            'contract_document' => 'nullable|file|mimes:doc,docx,pdf',
-            'min_leave_entitlement' => 'nullable|string',
+            'position_summary' => 'required|numeric|exists:position_summaries,id',
         ];
     }
 
     public function messages()
     {
         return [
-            'user.unique' => 'This user already has a contract summary',
+            'position_summary.required' => 'The position_summary field is required.',
         ];
     }
 

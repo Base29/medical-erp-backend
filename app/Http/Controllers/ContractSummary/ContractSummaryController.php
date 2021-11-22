@@ -46,7 +46,7 @@ class ContractSummaryController extends Controller
 
             // Return created contract summary
             return Response::success([
-                'contract_summary' => $contractSummary->with('user')->latest()->first(),
+                'contract_summary' => $contractSummary->with('user.profile')->latest()->first(),
             ]);
 
         } catch (\Exception $e) {
@@ -104,7 +104,7 @@ class ContractSummaryController extends Controller
 
             if ($contractSummaryUpdated) {
                 return Response::success([
-                    'contract_summary' => $contractSummary->with('user')->latest('updated_at')->first(),
+                    'contract_summary' => $contractSummary->with('user.profile')->latest('updated_at')->first(),
                 ]);
             }
 
@@ -123,11 +123,11 @@ class ContractSummaryController extends Controller
         try {
 
             // Fetch single contract summary
-            $contractSummary = ContractSummary::findOrFail($request->contract_summary);
+            $contractSummary = ContractSummary::where('id', $request->contract_summary)->with('user.profile')->first();
 
             // Return response with the Contract Summary
             return Response::success([
-                'contract_summary' => $contractSummary->with('user')->first(),
+                'contract_summary' => $contractSummary,
             ]);
 
         } catch (\Exception $e) {
