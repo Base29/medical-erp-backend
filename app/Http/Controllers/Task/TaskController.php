@@ -122,7 +122,7 @@ class TaskController extends Controller
             $isTaskProcessed = $task->is_processed;
 
             // If the task is not daily
-            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly' && $isTaskProcessed === 1) {
+            if ($isTaskProcessed === 1 && ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly')) {
                 // Calculating the days past from the date of creation
                 $daysPast = $updatedAt->diffInDays(Carbon::now());
 
