@@ -92,6 +92,7 @@ class TaskController extends Controller
                 'comment',
                 'manager_comment',
                 'acknowledgement',
+                'is_processed',
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
@@ -105,8 +106,8 @@ class TaskController extends Controller
             // Get Task
             $task = Task::findOrFail($request->task);
 
-            // Get the time of creation of the task
-            $createdAt = new Carbon($task->created_at);
+            // Get the time of update of the task
+            $updatedAt = new Carbon($task->updated_at);
 
             // Get task frequency
             $taskFrequency = $task->frequency;
@@ -117,15 +118,18 @@ class TaskController extends Controller
             // For weekly tasks $daysPast should be less than $daysForWeeklyTask
             $daysForWeeklyTask = 7;
 
+            // Get is_processed
+            $isTaskProcessed = $task->is_processed;
+
             // If the task is not daily
-            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly') {
+            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly' && $isTaskProcessed === 1) {
                 // Calculating the days past from the date of creation
-                $daysPast = $createdAt->diffInDays(Carbon::now());
+                $daysPast = $updatedAt->diffInDays(Carbon::now());
 
                 // Calculating days remaining
                 $daysRemaining = Carbon::now()
                     ->subDays($taskFrequency === 'Weekly' ? $daysForWeeklyTask : $daysForMonthlyTask)
-                    ->diffInDays($createdAt);
+                    ->diffInDays($updatedAt);
 
                 if ($daysPast < $daysForMonthlyTask || $daysPast < $daysForWeeklyTask) {
                     return Response::fail([
