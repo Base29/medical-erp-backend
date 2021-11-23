@@ -95,6 +95,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update', [UserController::class, 'update']);
         });
 
+    // Endpoint for fetching individual user profile
+    Route::post('users/me', [UserController::class, 'me'])->middleware(['permission:can_view_own_profile']);
+
     // Endpoints for practice operations
     Route::prefix('practices')->group(function () {
         Route::get('/', [PracticeController::class, 'fetch'])

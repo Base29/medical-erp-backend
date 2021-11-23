@@ -224,4 +224,31 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch individual user profile
+    public function me()
+    {
+        try {
+
+            // Get ID of the logged in user
+            $authenticatedUser = auth()->user()->id;
+
+            // Get user from database
+            $user = User::where('id', $authenticatedUser)
+                ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+                ->get();
+
+            // Return details of the user
+            return Response::success([
+                'user' => $user,
+            ]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
