@@ -92,6 +92,7 @@ class TaskController extends Controller
                 'comment',
                 'manager_comment',
                 'acknowledgement',
+                'is_processed',
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
@@ -117,8 +118,11 @@ class TaskController extends Controller
             // For weekly tasks $daysPast should be less than $daysForWeeklyTask
             $daysForWeeklyTask = 7;
 
+            // Get is_processed
+            $isTaskProcessed = $task->is_processed;
+
             // If the task is not daily
-            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly') {
+            if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly' && $isTaskProcessed === 1) {
                 // Calculating the days past from the date of creation
                 $daysPast = $createdAt->diffInDays(Carbon::now());
 

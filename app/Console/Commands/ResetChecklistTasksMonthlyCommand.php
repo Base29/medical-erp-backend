@@ -46,13 +46,13 @@ class ResetChecklistTasksMonthlyCommand extends Command
         foreach ($tasks as $task) {
 
             // Checking which task are active
-            if ($task->is_active === 1) {
+            if ($task->is_active === 1 && $task->is_processed === 1) {
 
-                // Date when the task is created
-                $createdAt = new Carbon($task->created_at);
+                // Date when the task is updated
+                $updatedAt = new Carbon($task->updated_at);
 
                 // Calculating the days past from the date of creation
-                $daysPast = $createdAt->diffInDays(Carbon::now());
+                $daysPast = $updatedAt->diffInDays(Carbon::now());
 
                 // If a week (7 days) has passed after the date of creation then reset the task
                 if ($daysPast >= 30) {
