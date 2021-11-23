@@ -10,6 +10,7 @@ use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Profile;
 use App\Models\Signature;
+use App\Models\WorkPattern;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -127,6 +128,11 @@ class User extends Authenticatable implements JWTSubject
     public function contractSummary()
     {
         return $this->hasOne(ContractSummary::class, 'user_id', 'id');
+    }
+
+    public function workPatterns()
+    {
+        return $this->belongsToMany(WorkPattern::class);
     }
 
 }
