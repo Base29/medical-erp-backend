@@ -106,8 +106,8 @@ class TaskController extends Controller
             // Get Task
             $task = Task::findOrFail($request->task);
 
-            // Get the time of creation of the task
-            $createdAt = new Carbon($task->created_at);
+            // Get the time of update of the task
+            $updatedAt = new Carbon($task->updated_at);
 
             // Get task frequency
             $taskFrequency = $task->frequency;
@@ -124,12 +124,12 @@ class TaskController extends Controller
             // If the task is not daily
             if ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly' && $isTaskProcessed === 1) {
                 // Calculating the days past from the date of creation
-                $daysPast = $createdAt->diffInDays(Carbon::now());
+                $daysPast = $updatedAt->diffInDays(Carbon::now());
 
                 // Calculating days remaining
                 $daysRemaining = Carbon::now()
                     ->subDays($taskFrequency === 'Weekly' ? $daysForWeeklyTask : $daysForMonthlyTask)
-                    ->diffInDays($createdAt);
+                    ->diffInDays($updatedAt);
 
                 if ($daysPast < $daysForMonthlyTask || $daysPast < $daysForWeeklyTask) {
                     return Response::fail([
