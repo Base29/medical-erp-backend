@@ -16,7 +16,6 @@ class CustomValidationService
     {
         foreach ($rules as $key => $value) {
             $errors = $validator->errors();
-
             // Return error messages for email
             if (Arr::has($errors->messages(), $key)) {
                 return Response::fail([

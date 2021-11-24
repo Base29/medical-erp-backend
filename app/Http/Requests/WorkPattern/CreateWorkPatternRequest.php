@@ -28,14 +28,21 @@ class CreateWorkPatternRequest extends FormRequest
         return [
             'name' => 'required|string|unique:work_patterns,name',
             'work_timings' => 'required|array',
-            'work_timings.*.start_time' => 'required|string',
+            'work_timings.start_time' => 'required|string',
+            'work_timings.end_time' => 'required|string',
+            'working_timings.break_time' => 'required|string',
+            'work_timings.repeat_days' => 'required|string',
         ];
     }
 
     public function messages()
     {
         return [
-            'work_timings.*.start_time' => 'The start_time field is required.',
+            'work_timings.required' => 'The work_timings array is required and should not be empty.',
+            'work_timings.start_time.required' => 'The start_time field is missing in a object of work_timings',
+            'work_timings.end_time.required' => 'The end_time field is missing in a object of work_timings',
+            'work_timings.break_time.required' => 'The break_time field is missing in a object of work_timings',
+            'work_timings.repeat_time.required' => 'The repeat_time field is missing in a object of work_timings',
         ];
     }
 
