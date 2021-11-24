@@ -43,4 +43,15 @@ class WorkPatternController extends Controller
             ]);
         }
     }
+
+    // Fetch work patterns
+    public function fetch()
+    {
+        // Fetch all work patterns
+        $workPatterns = WorkPattern::with('workTimings')->latest()->get();
+
+        return Response::success([
+            'work_patterns' => $workPatterns,
+        ]);
+    }
 }
