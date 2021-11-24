@@ -18,7 +18,7 @@ class CreateWorkTimingsTable extends Migration
             $table->foreignId('work_pattern_id')->constrained()->cascadeOnDelete();
             $table->time('start_time');
             $table->time('end_time');
-            $table->string('break');
+            $table->string('break_time');
             $table->string('repeat_days');
             $table->softDeletes();
             $table->timestamps();

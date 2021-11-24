@@ -16,6 +16,7 @@ use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\WorkPattern\WorkPatternController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -260,5 +261,10 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::delete('delete/{id}', [PositionSummaryController::class, 'delete'])
             ->middleware(['permission:can_delete_position_summary']);
+    });
+
+    // Routes for work pattern
+    Route::prefix('work-patterns')->group(function () {
+        Route::post('create', [WorkPatternController::class, 'create']);
     });
 });

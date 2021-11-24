@@ -13,6 +13,10 @@ class WorkTiming extends Model
 
     protected $fillable = [];
 
+    protected $casts = [
+        'repeat_days' => 'array',
+    ];
+
     public function workPattern()
     {
         return $this->belongsTo(WorkPattern::class);
