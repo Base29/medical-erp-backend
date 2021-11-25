@@ -63,7 +63,7 @@ class WorkTimingController extends Controller
     {
         try {
 
-            $workTimings = WorkTiming::where('work_pattern', $request->work_pattern)->with('workPattern')->latest()->get();
+            $workTimings = WorkTiming::where('work_pattern_id', $request->work_pattern)->with('workPattern')->latest()->get();
 
             return Response::success([
                 'work_timings' => $workTimings,
