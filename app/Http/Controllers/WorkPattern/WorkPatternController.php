@@ -49,7 +49,7 @@ class WorkPatternController extends Controller
     public function fetch()
     {
         // Fetch all work patterns
-        $workPatterns = WorkPattern::with('workTimings')->latest()->get();
+        $workPatterns = WorkPattern::latest()->get();
 
         return Response::success([
             'work_patterns' => $workPatterns,

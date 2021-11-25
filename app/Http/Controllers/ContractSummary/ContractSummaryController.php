@@ -44,6 +44,9 @@ class ContractSummaryController extends Controller
             $contractSummary->contract_document = $url;
             $user->contractSummary()->save($contractSummary);
 
+            // Attach work pattern with user
+            $user->workPatterns()->attach($contractSummary->working_time_pattern);
+
             // Return created contract summary
             return Response::success([
                 'contract_summary' => $contractSummary->with('user.profile')->latest()->first(),

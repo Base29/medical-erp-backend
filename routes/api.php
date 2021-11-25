@@ -279,5 +279,9 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('work-timings')->group(function () {
         Route::post('update', [WorkTimingController::class, 'update'])
             ->middleware(['permission:can_update_work_timing']);
+
+        Route::post('/', [WorkTimingController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_work_patterns']);
+
     });
 });
