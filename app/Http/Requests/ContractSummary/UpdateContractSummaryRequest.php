@@ -30,7 +30,7 @@ class UpdateContractSummaryRequest extends FormRequest
             'employee_type' => 'nullable|string',
             'employee_start_date' => 'nullable|date|date_format:Y-m-d',
             'contract_start_date' => 'nullable|date|date_format:Y-m-d',
-            'working_time_pattern' => 'nullable|string',
+            'working_time_pattern' => 'nullable|numeric|exists:work_patterns,id',
             'contracted_hours_per_week' => 'nullable|string',
             'contract_document' => 'nullable|file|mimes:doc,docx,pdf',
             'min_leave_entitlement' => 'nullable|string',

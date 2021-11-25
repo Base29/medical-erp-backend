@@ -16,6 +16,8 @@ use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\User\UserController;
+use App\Http\Controllers\WorkPattern\WorkPatternController;
+use App\Http\Controllers\WorkTiming\WorkTimingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -260,5 +262,22 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::delete('delete/{id}', [PositionSummaryController::class, 'delete'])
             ->middleware(['permission:can_delete_position_summary']);
+    });
+
+    // Routes for work pattern
+    Route::prefix('work-patterns')->group(function () {
+        Route::post('create', [WorkPatternController::class, 'create'])
+            ->middleware(['permission:can_create_work_pattern']);
+
+        Route::get('/', [WorkPatternController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_work_patterns']);
+
+        Route::delete('delete/{id}', [WorkPatternController::class, 'delete'])
+            ->middleware(['permission:can_delete_work_pattern']);
+    });
+
+    Route::prefix('work-timings')->group(function () {
+        Route::post('update', [WorkTimingController::class, 'update'])
+            ->middleware(['permission:can_update_work_timing']);
     });
 });
