@@ -265,7 +265,13 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for work pattern
     Route::prefix('work-patterns')->group(function () {
-        Route::post('create', [WorkPatternController::class, 'create']);
-        Route::get('/', [WorkPatternController::class, 'fetch'])->middleware(['permission:can_fetch_work_patterns']);
+        Route::post('create', [WorkPatternController::class, 'create'])
+            ->middleware(['permission:can_create_work_pattern']);
+
+        Route::get('/', [WorkPatternController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_work_patterns']);
+
+        Route::delete('delete/{id}', [WorkPatternController::class, 'delete'])
+            ->middleware(['permission:can_delete_work_pattern']);
     });
 });

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\WorkPattern;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkPattern\CreateWorkPatternRequest;
 use App\Models\WorkPattern;
@@ -53,5 +54,29 @@ class WorkPatternController extends Controller
         return Response::success([
             'work_patterns' => $workPatterns,
         ]);
+    }
+
+    // Delete Work Pattern
+    public function delete($id)
+    {
+        try {
+
+            // Get work pattern
+            $workPattern = WorkPattern::findOrFail($id);
+
+            // Delete work pattern
+            $workPattern->delete();
+
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Work Pattern'),
+            ]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }
