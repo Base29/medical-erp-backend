@@ -17,6 +17,7 @@ use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
+use App\Http\Controllers\WorkTiming\WorkTimingController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -273,5 +274,10 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::delete('delete/{id}', [WorkPatternController::class, 'delete'])
             ->middleware(['permission:can_delete_work_pattern']);
+    });
+
+    Route::prefix('work-timings')->group(function () {
+        Route::post('update', [WorkTimingController::class, 'update'])
+            ->middleware(['permission:can_update_work_timing']);
     });
 });
