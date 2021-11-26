@@ -30,7 +30,7 @@ class UpdateUserRequest extends FormRequest
             'last_name' => 'string',
             'profile_image' => 'nullable|file|mimes:png,jpg',
             'gender' => 'string',
-            'email_professional' => 'nullable|email|unique:users,email_professional',
+            'professional_email' => 'nullable|email|unique:profiles,professional_email',
             'mobile_phone' => 'string',
             'dob' => 'date|date_format:Y-m-d',
             'address' => 'string',
