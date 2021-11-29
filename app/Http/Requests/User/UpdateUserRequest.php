@@ -26,19 +26,27 @@ class UpdateUserRequest extends FormRequest
     public function rules()
     {
         return [
+            'user' => 'required|numeric',
             'first_name' => 'string',
             'last_name' => 'string',
+            'middle_name' => 'string',
+            'maiden_name' => 'string',
             'profile_image' => 'nullable|file|mimes:png,jpg',
             'gender' => 'string',
             'professional_email' => 'nullable|email|unique:profiles,professional_email',
+            'work_phone' => 'string',
+            'home_phone' => 'string',
             'mobile_phone' => 'string',
             'dob' => 'date|date_format:Y-m-d',
-            'address' => 'string',
+            'address_line_1' => 'string',
+            'address_line_2' => 'string',
             'city' => 'string',
             'county' => 'string',
             'country' => 'string',
             'zip_code' => 'string',
-            'user' => 'required|numeric',
+            'nhs_card' => 'string',
+            'nhs_number' => 'string',
+
         ];
     }
 
