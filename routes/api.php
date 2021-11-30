@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\PositionSummary\PositionSummaryController;
@@ -291,5 +292,10 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [ProfileController::class, 'update'])
             ->middleware(['permission:can_update_profile']);
+    });
+
+    Route::prefix('misc-info')->group(function () {
+        Route::post('create', [MiscellaneousInformationController::class, 'create'])
+            ->middleware(['permission:can_create_misc_info']);
     });
 });
