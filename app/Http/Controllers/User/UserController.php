@@ -209,11 +209,18 @@ class UserController extends Controller
             // Fetch User
             $user = User::findOrFail($request->user);
 
-            $userUpdated = UpdateService::updateModel($user, $request->all(), 'user');
+            // Get profile for the user
+            $profile = Profile::where('user_id', $user->id)->get();
+
+            ray($profile);
+
+            $userUpdated = UpdateService::updateModel($profile, $request->all(), 'user');
 
             if ($userUpdated) {
                 return Response::success([
-                    'user' => $user->latest('updated_at')->first(),
+                    'user' => $user::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+                        ->latest('updated_at')
+                        ->first(),
                 ]);
             }
 
