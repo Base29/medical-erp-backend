@@ -10,6 +10,7 @@ use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
+use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
@@ -283,5 +284,12 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/', [WorkTimingController::class, 'fetch'])
             ->middleware(['permission:can_fetch_work_patterns']);
 
+    });
+
+    // Routes for profile
+    Route::prefix('profiles')->group(function () {
+
+        Route::post('update', [ProfileController::class, 'update'])
+            ->middleware(['permission:can_update_profile']);
     });
 });
