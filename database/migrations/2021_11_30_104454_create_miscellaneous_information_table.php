@@ -15,6 +15,7 @@ class CreateMiscellaneousInformationTable extends Migration
     {
         Schema::create('miscellaneous_information', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('job_description')->nullable();
             $table->text('interview_notes')->nullable();
             $table->string('offer_letter_email')->nullable();
