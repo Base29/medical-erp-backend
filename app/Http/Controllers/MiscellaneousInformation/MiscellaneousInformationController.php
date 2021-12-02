@@ -6,6 +6,7 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationRequest;
+use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
 use App\Models\MiscellaneousInformation;
 use App\Models\User;
 
@@ -72,6 +73,30 @@ class MiscellaneousInformationController extends Controller
 
         } catch (\Exception $e) {
 
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch misc-info for a single user
+    public function fetchSingle(FetchMiscellaneousInformationRequest $request)
+    {
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Get misc-info for the user $user->id
+            $miscInfo = MiscellaneousInformation::where('user_id', $user->id)->first();
+
+            // Return response
+            return Response::success([
+                'misc-info' => $miscInfo,
+            ]);
+
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),

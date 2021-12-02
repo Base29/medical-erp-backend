@@ -298,7 +298,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [MiscellaneousInformationController::class, 'create'])
             ->middleware(['permission:can_create_misc_info']);
 
-        Route::post('/', [MiscellaneousInformationController::class, 'fetch'])
+        Route::post('/', [MiscellaneousInformationController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_misc_info']);
     });
 });
