@@ -6,9 +6,11 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationRequest;
+use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
 use App\Models\MiscellaneousInformation;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class MiscellaneousInformationController extends Controller
 {
@@ -65,13 +67,13 @@ class MiscellaneousInformationController extends Controller
             $miscInfo->proof_of_address = $proofOfAddressUrl;
 
             // Saving misc-info
-            $user->miscellaneousInformation()->save($miscInfo);
+            $user->miscInfo()->save($miscInfo);
 
             return Response::success([
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,
@@ -96,7 +98,29 @@ class MiscellaneousInformationController extends Controller
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete single misc-info
+    public function delete(DeleteMiscellaneousInformationRequest $request)
+    {
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            $userID = 40;
+            $userFolder = 'misc-info/user-' . $userID;
+            ray($userFolder);
+            Storage::disk('s3')->deleteDirectory($userFolder);
+            ray(Storage::disk('s3'));
+
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),

@@ -300,5 +300,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [MiscellaneousInformationController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_misc_info']);
+
+        Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
+            ->middleware(['permission:can_delete_misc_info']);
     });
 });

@@ -136,7 +136,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(WorkPattern::class);
     }
 
-    public function miscellaneousInformation()
+    public function miscInfo()
     {
         return $this->hasOne(MiscellaneousInformation::class);
     }
