@@ -6,9 +6,9 @@ use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
 use App\Models\DbsCheck;
+use App\Models\MiscellaneousInformation;
 use App\Models\Nationality;
 use App\Models\OtherEmploymentCheck;
-use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
@@ -139,7 +139,6 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(WorkPattern::class);
     }
 
-<<<<<<< HEAD
     public function nationality()
     {
         return $this->hasOne(Nationality::class);
@@ -153,11 +152,12 @@ class User extends Authenticatable implements JWTSubject
     public function otherEmploymentCheck()
     {
         return $this->hasOne(OtherEmploymentCheck::class);
-=======
+
+    }
+
     public function miscInfo()
     {
         return $this->hasOne(MiscellaneousInformation::class);
->>>>>>> US5.3
     }
 
 }
