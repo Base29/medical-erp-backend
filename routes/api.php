@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -303,5 +304,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
             ->middleware(['permission:can_delete_misc_info']);
+    });
+
+    // Routes for Employment Checks
+    Route::prefix('employment-checks')->group(function () {
+        Route::post('create', [EmploymentCheckController::class, 'create'])
+            ->middleware(['permission:can_create_employment_check']);
     });
 });
