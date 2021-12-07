@@ -5,6 +5,9 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\DbsCheck;
+use App\Models\Nationality;
+use App\Models\OtherEmploymentCheck;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
@@ -133,6 +136,21 @@ class User extends Authenticatable implements JWTSubject
     public function workPatterns()
     {
         return $this->belongsToMany(WorkPattern::class);
+    }
+
+    public function nationality()
+    {
+        return $this->hasOne(Nationality::class);
+    }
+
+    public function dbsCheck()
+    {
+        return $this->hasOne(DbsCheck::class);
+    }
+
+    public function otherEmploymentCheck()
+    {
+        return $this->hasOne(OtherEmploymentCheck::class);
     }
 
 }
