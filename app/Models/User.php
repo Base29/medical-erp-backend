@@ -141,17 +141,17 @@ class User extends Authenticatable implements JWTSubject
 
     public function nationality()
     {
-        return $this->hasOne(Nationality::class);
+        return $this->hasOne(Nationality::class, 'user_id', 'id');
     }
 
     public function dbsCheck()
     {
-        return $this->hasOne(DbsCheck::class);
+        return $this->hasOne(DbsCheck::class, 'user_id', 'id');
     }
 
     public function otherEmploymentCheck()
     {
-        return $this->hasOne(OtherEmploymentCheck::class);
+        return $this->hasOne(OtherEmploymentCheck::class, 'user_id', 'id');
 
     }
 
