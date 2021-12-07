@@ -16,13 +16,13 @@ class CreateDbsChecksTable extends Migration
         Schema::create('dbs_checks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->boolean('is_dbs_required')->default(null)->nullable();
-            $table->boolean('self_declaration_completed')->default(null)->nullable();
-            $table->string('self_declaration_certificate')->nullable();
-            $table->boolean('is_dbs_conducted')->default(null)->nullable();
-            $table->date('dbs_conducted_date')->nullable();
-            $table->date('follow_up_date')->nullable();
-            $table->string('dbs_certificate')->nullable();
+            $table->boolean('is_dbs_required')->default(0);
+            $table->boolean('self_declaration_completed')->default(0);
+            $table->string('self_declaration_certificate');
+            $table->boolean('is_dbs_conducted')->default(0);
+            $table->date('dbs_conducted_date');
+            $table->date('follow_up_date');
+            $table->string('dbs_certificate');
             $table->softDeletes();
             $table->timestamps();
         });
