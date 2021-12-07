@@ -19,7 +19,7 @@ class UpdateService
             $model->save();
             return true;
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,

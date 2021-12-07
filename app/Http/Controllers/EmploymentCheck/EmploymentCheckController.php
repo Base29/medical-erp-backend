@@ -4,6 +4,8 @@ namespace App\Http\Controllers\EmploymentCheck;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentCheck\CreateEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\UpdateEmploymentCheckRequest;
@@ -30,7 +32,7 @@ class EmploymentCheckController extends Controller
             $selfDeclaredCertificateUrl = $request->has('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
 
             // Upload dbs certificate
-            $employmentCheckCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
+            $dbsCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
 
             // Create user nationality
             $employmentCheck = new EmploymentCheck();
@@ -54,7 +56,7 @@ class EmploymentCheckController extends Controller
             $employmentCheck->is_dbs_conducted = $request->is_dbs_conducted;
             $employmentCheck->dbs_conducted_date = $request->dbs_conducted_date;
             $employmentCheck->follow_up_date = $request->follow_up_date;
-            $employmentCheck->dbs_certificate = $employmentCheckCertificateUrl;
+            $employmentCheck->dbs_certificate = $dbsCertificateUrl;
             $employmentCheck->driving_license_number = $request->driving_license_number;
             $employmentCheck->driving_license_country_of_issue = $request->driving_license_country_of_issue;
             $employmentCheck->driving_license_class = $request->driving_license_class;
@@ -111,9 +113,43 @@ class EmploymentCheckController extends Controller
                 'driving_license_date_of_expiry',
             ];
 
-            $request->passport_country_of_issue = 'PAK';
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
 
-            ray($request->all());
+            // Get employment check
+            $employmentCheck = EmploymentCheck::findOrFail($request->employment_check);
+
+            // // DBS self declared certificate folder name
+            // $selfDeclaredCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-self-declared';
+
+            // //DBS certificate folder name
+            // $dbsCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-certificate';
+
+            // // Upload self declared dbs certificate
+            // $selfDeclaredCertificateUrl = $request->has('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
+
+            // // Upload dbs certificate
+            // $dbsCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
+
+            // Update employment check
+            $employmentCheckUpdated = UpdateService::updateModel($employmentCheck, $request->all(), 'employment_check');
+
+            if (!$employmentCheckUpdated) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::customMessage('Something went wrong. Cannot update Employment Check at this moment.'),
+                ]);
+            }
+
+            // Return success response
+            return Response::success([
+                'employment_check' => $employmentCheck->latest('updated_at')->first(),
+            ]);
 
         } catch (\Exception$e) {
 

@@ -310,5 +310,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('employment-checks')->group(function () {
         Route::post('create', [EmploymentCheckController::class, 'create'])
             ->middleware(['permission:can_create_employment_check']);
+
+        Route::post('update', [EmploymentCheckController::class, 'update'])
+            ->middleware(['permission:can_update_employment_check']);
     });
 });
