@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNationalitiesTable extends Migration
+class CreateEmploymentChecksTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,7 +13,7 @@ class CreateNationalitiesTable extends Migration
      */
     public function up()
     {
-        Schema::create('nationalities', function (Blueprint $table) {
+        Schema::create('employment_checks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->string('passport_number')->nullable();
@@ -30,6 +30,17 @@ class CreateNationalitiesTable extends Migration
             $table->date('visa_start_date')->nullable();
             $table->date('visa_expiry_date')->nullable();
             $table->string('restrictions')->nullable();
+            $table->boolean('is_dbs_required')->default(null)->nullable();
+            $table->boolean('self_declaration_completed')->default(null)->nullable();
+            $table->string('self_declaration_certificate')->nullable();
+            $table->boolean('is_dbs_conducted')->default(null)->nullable();
+            $table->date('dbs_conducted_date')->nullable();
+            $table->date('follow_up_date')->nullable();
+            $table->string('dbs_certificate')->nullable();
+            $table->string('driving_license_number')->nullable();
+            $table->string('driving_license_country_of_issue')->nullable();
+            $table->string('driving_license_class')->nullable();
+            $table->date('driving_license_date_of_expiry')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
@@ -42,6 +53,6 @@ class CreateNationalitiesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nationalities');
+        Schema::dropIfExists('employment_checks');
     }
 }
