@@ -16,10 +16,10 @@ class CreateOtherEmploymentChecksTable extends Migration
         Schema::create('other_employment_checks', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->string('driving_license_number');
-            $table->string('driving_license_country_of_issue');
-            $table->string('driving_license_class');
-            $table->date('driving_license_date_of_expiry');
+            $table->string('driving_license_number')->nullable();
+            $table->string('driving_license_country_of_issue')->nullable();
+            $table->string('driving_license_class')->nullable();
+            $table->date('driving_license_date_of_expiry')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

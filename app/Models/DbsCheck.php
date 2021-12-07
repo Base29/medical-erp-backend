@@ -13,10 +13,10 @@ class DbsCheck extends Model
 
     protected $fillable = [
         'user_id',
-        'dbs_required',
+        'is_dbs_required',
         'self_declaration_completed',
         'self_declaration_certificate',
-        'dbs_conducted',
+        'is_dbs_conducted',
         'dbs_conducted_date',
         'follow_up_date',
         'dbs_certificate',
