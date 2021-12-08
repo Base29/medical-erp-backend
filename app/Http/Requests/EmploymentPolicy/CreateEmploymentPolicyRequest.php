@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\EmploymentPolicy;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class CreateEmploymentPolicyRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class CreateEmploymentPolicyRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,15 @@ class CreateEmploymentPolicyRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'user' => 'required|numeric|exists:users,id',
+            'name' => 'required|string',
+            'attachment' => 'required|file|mimes:png,jpg,docx,doc,pdf',
+            'sign_date' => 'required|date|date_format:Y-m-d',
         ];
+    }
+
+    public function failedValidation($validator)
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }
