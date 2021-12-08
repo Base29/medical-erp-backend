@@ -8,9 +8,11 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentCheck\CreateEmploymentCheckRequest;
+use App\Http\Requests\EmploymentCheck\DeleteEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\UpdateEmploymentCheckRequest;
 use App\Models\EmploymentCheck;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class EmploymentCheckController extends Controller
 {
@@ -163,15 +165,21 @@ class EmploymentCheckController extends Controller
     }
 
     // Delete empolyment check
-    public function delete($id)
+    public function delete(DeleteEmploymentCheckRequest $request)
     {
         try {
 
-            // Get employment check
-            $employmentCheck = EmploymentCheck::findOrFail($id);
+            // Get user
+            $user = User::findOrFail($request->user);
 
-            // Delete employment check
-            $employmentCheck->delete();
+            // Assemble user's folder name to be deleted
+            $userFolder = 'employment-check/user-' . $user->id . '/';
+
+            // Delete employment-check folder of user on S3
+            Storage::disk('s3')->deleteDirectory($userFolder);
+
+            // Delete employment check from DB
+            $user->employmentCheck()->delete();
 
             // Return success response
             return Response::success([

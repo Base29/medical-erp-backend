@@ -4,6 +4,7 @@ namespace App\Http\Controllers\MiscellaneousInformation;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
@@ -114,11 +115,19 @@ class MiscellaneousInformationController extends Controller
             // Get user
             $user = User::findOrFail($request->user);
 
-            $userID = 40;
-            $userFolder = 'misc-info/user-' . $userID;
-            ray($userFolder);
+            // Assemble user's folder name to be deleted
+            $userFolder = 'misc-info/user-' . $user->id . '/';
+
+            // Delete misc-info folder of user on S3
             Storage::disk('s3')->deleteDirectory($userFolder);
-            ray(Storage::disk('s3'));
+
+            // Delete misc info
+            $user->miscInfo()->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Misc Info'),
+            ]);
 
         } catch (\Exception$e) {
             return Response::fail([

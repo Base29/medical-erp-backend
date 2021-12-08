@@ -314,7 +314,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('update', [EmploymentCheckController::class, 'update'])
             ->middleware(['permission:can_update_employment_check']);
 
-        Route::delete('delete/{id}', [EmploymentCheckController::class, 'delete'])
+        Route::post('delete', [EmploymentCheckController::class, 'delete'])
             ->middleware(['permission:can_delete_employment_check']);
     });
 });
