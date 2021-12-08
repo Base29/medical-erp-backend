@@ -4,8 +4,11 @@ namespace App\Http\Controllers\EmploymentPolicy;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentPolicy\CreateEmploymentPolicyRequest;
+use App\Http\Requests\EmploymentPolicy\UpdateEmploymentPolicyRequest;
 use App\Models\EmploymentPolicy;
 use App\Models\User;
 
@@ -42,6 +45,51 @@ class EmploymentPolicyController extends Controller
 
         } catch (\Exception$e) {
 
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update employment
+    public function update(UpdateEmploymentPolicyRequest $request)
+    {
+        try {
+
+            // Allowed fields
+            $allowedFields = [
+                'name',
+                'sign_date',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Get employment policy
+            $employmentPolicy = EmploymentPolicy::findOrFail($request->employment_policy);
+
+            // Update employment policy
+            $employmentPolicyUpdated = UpdateService::updateModel($employmentPolicy, $request->all(), 'employment_policy');
+
+            if (!$employmentPolicyUpdated) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::customMessage('Something went wrong. Can not update Employment Policy'),
+                ]);
+            }
+
+            // Return success response
+            return Response::success([
+                'employment-policy' => $employmentPolicy->latest('updated_at')->first(),
+            ]);
+
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),

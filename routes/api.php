@@ -326,5 +326,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('employment-policies')->group(function () {
         Route::post('create', [EmploymentPolicyController::class, 'create'])
             ->middleware(['permission:can_create_employment_policy']);
+
+        Route::post('update', [EmploymentPolicyController::class, 'update'])
+            ->middleware(['permission:can_update_employment_policy']);
     });
 });
