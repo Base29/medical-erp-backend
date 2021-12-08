@@ -29,10 +29,10 @@ class EmploymentCheckController extends Controller
             $dbsCertificateFolder = 'employment-check/user-' . $user->id . '/dbs-certificate';
 
             // Upload self declared dbs certificate
-            $selfDeclaredCertificateUrl = $request->has('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
+            $selfDeclaredCertificateUrl = $request->hasFile('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
 
             // Upload dbs certificate
-            $dbsCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
+            $dbsCertificateUrl = $request->hasFile('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
 
             // Create user nationality
             $employmentCheck = new EmploymentCheck();
@@ -123,6 +123,8 @@ class EmploymentCheckController extends Controller
 
             // Get employment check
             $employmentCheck = EmploymentCheck::findOrFail($request->employment_check);
+
+            //TODO: Update uploaded files yet to be implemented
 
             // // DBS self declared certificate folder name
             // $selfDeclaredCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-self-declared';
