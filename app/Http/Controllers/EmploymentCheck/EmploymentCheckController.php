@@ -9,6 +9,7 @@ use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentCheck\CreateEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\DeleteEmploymentCheckRequest;
+use App\Http\Requests\EmploymentCheck\FetchSingleEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\UpdateEmploymentCheckRequest;
 use App\Models\EmploymentCheck;
 use App\Models\User;
@@ -184,6 +185,27 @@ class EmploymentCheckController extends Controller
             // Return success response
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Employment Check'),
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Get single employment check
+    public function fetchSingle(FetchSingleEmploymentCheckRequest $request)
+    {
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Return response
+            return Response::success([
+                'employment-check' => $user->employmentCheck,
             ]);
 
         } catch (\Exception$e) {
