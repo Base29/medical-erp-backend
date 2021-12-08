@@ -26,7 +26,7 @@ class FileUploadService
 
             return $file_url;
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,

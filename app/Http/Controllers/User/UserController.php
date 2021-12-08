@@ -119,7 +119,7 @@ class UserController extends Controller
                     ->first(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,
@@ -148,7 +148,7 @@ class UserController extends Controller
 
             return Response::success(['message' => ResponseMessage::deleteSuccess('User')]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,
@@ -163,11 +163,13 @@ class UserController extends Controller
         try {
 
             // Fetching all the users from database
-            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')->latest()->paginate(10);
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                ->latest()
+                ->paginate(10);
 
             return Response::success(['users' => $users]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,
@@ -224,7 +226,7 @@ class UserController extends Controller
                 ]);
             }
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,
@@ -243,7 +245,7 @@ class UserController extends Controller
 
             // Get user from database
             $user = User::where('id', $authenticatedUser)
-                ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+                ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
                 ->get();
 
             // Return details of the user
@@ -251,7 +253,7 @@ class UserController extends Controller
                 'user' => $user,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 500,

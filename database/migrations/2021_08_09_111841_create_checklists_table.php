@@ -13,7 +13,7 @@ class CreateChecklistsTable extends Migration
      */
     public function up()
     {
-        Schema::create('checklists', function (Blueprint $table) {
+        Schema::create('check_lists', function (Blueprint $table) {
             $table->id();
             $table->string('name');
             $table->text('notes')->nullable();
