@@ -9,6 +9,7 @@ use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentPolicy\CreateEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\DeleteEmploymentPolicyRequest;
+use App\Http\Requests\EmploymentPolicy\FetchEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\UpdateEmploymentPolicyRequest;
 use App\Models\EmploymentPolicy;
 use App\Models\User;
@@ -119,6 +120,26 @@ class EmploymentPolicyController extends Controller
             // Return success response
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Employment Policies'),
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch employment policies for user
+    public function fetch(FetchEmploymentPolicyRequest $request)
+    {
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            return Response::success([
+                'employment-policies' => $user->employmentPolicies,
             ]);
 
         } catch (\Exception$e) {

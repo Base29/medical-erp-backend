@@ -332,5 +332,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [EmploymentPolicyController::class, 'delete'])
             ->middleware(['permission:can_delete_employment_policy']);
+
+        Route::post('/', [EmploymentPolicyController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_employment_policies']);
     });
 });
