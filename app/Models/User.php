@@ -6,6 +6,7 @@ use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
 use App\Models\EmploymentCheck;
+use App\Models\EmploymentPolicy;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Post;
@@ -145,6 +146,11 @@ class User extends Authenticatable implements JWTSubject
     public function employmentCheck()
     {
         return $this->hasOne(EmploymentCheck::class);
+    }
+
+    public function employmentPolicies()
+    {
+        return $this->hasMany(EmploymentPolicy::class);
     }
 
 }
