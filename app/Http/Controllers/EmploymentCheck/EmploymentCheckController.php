@@ -161,4 +161,28 @@ class EmploymentCheckController extends Controller
             ]);
         }
     }
+
+    // Delete empolyment check
+    public function delete($id)
+    {
+        try {
+
+            // Get employment check
+            $employmentCheck = EmploymentCheck::findOrFail($id);
+
+            // Delete employment check
+            $employmentCheck->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Employment Check'),
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
