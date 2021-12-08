@@ -8,9 +8,11 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentPolicy\CreateEmploymentPolicyRequest;
+use App\Http\Requests\EmploymentPolicy\DeleteEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\UpdateEmploymentPolicyRequest;
 use App\Models\EmploymentPolicy;
 use App\Models\User;
+use Illuminate\Support\Facades\Storage;
 
 class EmploymentPolicyController extends Controller
 {
@@ -87,6 +89,36 @@ class EmploymentPolicyController extends Controller
             // Return success response
             return Response::success([
                 'employment-policy' => $employmentPolicy->latest('updated_at')->first(),
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete employment policy
+    public function delete(DeleteEmploymentPolicyRequest $request)
+    {
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Assemble user's folder name to be deleted
+            $userFolder = 'employment-policies/user-' . $user->id . '/';
+
+            // Delete employment-policies folder of user on S3
+            Storage::disk('s3')->deleteDirectory($userFolder);
+
+            // Delete employment policies from DB
+            $user->employmentPolicies()->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Employment Policies'),
             ]);
 
         } catch (\Exception$e) {
