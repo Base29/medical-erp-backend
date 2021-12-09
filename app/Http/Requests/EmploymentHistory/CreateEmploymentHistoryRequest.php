@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\EmploymentHistory;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class CreateEmploymentHistoryRequest extends FormRequest
 {
@@ -40,5 +42,10 @@ class CreateEmploymentHistoryRequest extends FormRequest
             'responsibilities_duties_desc' => 'required|string|max:500',
             'is_current' => 'required|boolean',
         ];
+    }
+
+    public function failedValidation($validator)
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }
