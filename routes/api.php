@@ -342,5 +342,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('employment-histories')->group(function () {
         Route::post('create', [EmploymentHistoryController::class, 'create'])
             ->middleware(['permission:can_create_employment_history']);
+
+        Route::post('update', [EmploymentHistoryController::class, 'update'])
+            ->middleware(['permission:can_update_employment_history']);
     });
 });
