@@ -153,4 +153,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(EmploymentPolicy::class);
     }
 
+    public function employmentHistories()
+    {
+        return $this->hasMany(EmploymentHistory::class);
+    }
+
 }
