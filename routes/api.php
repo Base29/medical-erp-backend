@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
+use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -319,5 +320,20 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [EmploymentCheckController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_single_employment_check']);
+    });
+
+    // Routes for Employment Policies
+    Route::prefix('employment-policies')->group(function () {
+        Route::post('create', [EmploymentPolicyController::class, 'create'])
+            ->middleware(['permission:can_create_employment_policy']);
+
+        Route::post('update', [EmploymentPolicyController::class, 'update'])
+            ->middleware(['permission:can_update_employment_policy']);
+
+        Route::post('delete', [EmploymentPolicyController::class, 'delete'])
+            ->middleware(['permission:can_delete_employment_policy']);
+
+        Route::post('/', [EmploymentPolicyController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_employment_policies']);
     });
 });
