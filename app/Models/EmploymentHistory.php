@@ -21,9 +21,10 @@ class EmploymentHistory extends Model
         'job_end_date',
         'salary',
         'reporting_to',
-        'notice_period',
+        'period_of_notice',
         'can_contact_referee',
         'reason_for_leaving',
+        'responsibilities_duties_desc',
         'is_current',
     ];
 
