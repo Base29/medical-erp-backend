@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
+use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -335,5 +336,23 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [EmploymentPolicyController::class, 'fetch'])
             ->middleware(['permission:can_fetch_employment_policies']);
+    });
+
+    // Routes for employment history
+    Route::prefix('employment-histories')->group(function () {
+        Route::post('create', [EmploymentHistoryController::class, 'create'])
+            ->middleware(['permission:can_create_employment_history']);
+
+        Route::post('update', [EmploymentHistoryController::class, 'update'])
+            ->middleware(['permission:can_update_employment_history']);
+
+        Route::post('delete', [EmploymentHistoryController::class, 'delete'])
+            ->middleware(['permission:can_delete_employment_history']);
+
+        Route::post('/', [EmploymentHistoryController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_employment_history']);
+
+        Route::post('employment-history', [EmploymentHistoryController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_employment_history']);
     });
 });
