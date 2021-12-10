@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentHistory\CreateEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\DeleteEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\FetchEmploymentHistoryRequest;
+use App\Http\Requests\EmploymentHistory\FetchSingleEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\UpdateEmploymentHistoryRequest;
 use App\Models\EmploymentHistory;
 use App\Models\User;
@@ -163,8 +164,23 @@ class EmploymentHistoryController extends Controller
     }
 
     // Fetch single employment history
-    public function fetchSingle()
+    public function fetchSingle(FetchSingleEmploymentHistoryRequest $request)
     {
-        //
+        try {
+
+            // Get employment history
+            $employmentHistory = EmploymentHistory::where('id', $request->employment_history)->get();
+
+            // Return success response
+            return Response::success([
+                'employment-history' => $employmentHistory,
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }
