@@ -351,5 +351,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [EmploymentHistoryController::class, 'fetch'])
             ->middleware(['permission:can_fetch_employment_history']);
+
+        Route::post('employment-history', [EmploymentHistoryController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_employment_history']);
     });
 });
