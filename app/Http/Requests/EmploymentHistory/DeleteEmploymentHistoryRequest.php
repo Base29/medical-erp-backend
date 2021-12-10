@@ -26,7 +26,7 @@ class DeleteEmploymentHistoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'employment_history' => 'required|numeric|exists:employment_history,id',
+            'employment_history' => 'required|numeric|exists:employment_histories,id',
         ];
     }
 
