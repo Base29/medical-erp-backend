@@ -135,4 +135,10 @@ class EmploymentHistoryController extends Controller
             ]);
         }
     }
+
+    // Fetch all employment experience for a user
+    public function fetch()
+    {
+        //
+    }
 }
