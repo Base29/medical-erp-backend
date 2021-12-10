@@ -348,5 +348,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [EmploymentHistoryController::class, 'delete'])
             ->middleware(['permission:can_delete_employment_history']);
+
+        Route::post('/', [EmploymentHistoryController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_employment_history']);
     });
 });
