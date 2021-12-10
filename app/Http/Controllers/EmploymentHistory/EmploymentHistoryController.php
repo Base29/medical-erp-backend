@@ -7,6 +7,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentHistory\CreateEmploymentHistoryRequest;
+use App\Http\Requests\EmploymentHistory\DeleteEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\UpdateEmploymentHistoryRequest;
 use App\Models\EmploymentHistory;
 use App\Models\User;
@@ -101,6 +102,30 @@ class EmploymentHistoryController extends Controller
             // Return success response
             return Response::success([
                 'employment-history' => $employmentHistory->latest('updated_at')->first(),
+            ]);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete user employment history
+    public function delete(DeleteEmploymentHistoryRequest $request)
+    {
+        try {
+
+            // Get employment history by ID ($request->employment_history)
+            $employmentHistory = EmploymentHistory::findOrFail($request->employment_history);
+
+            // Delete employment history
+            $employmentHistory->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Employment History'),
             ]);
 
         } catch (\Exception$e) {
