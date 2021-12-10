@@ -161,4 +161,10 @@ class EmploymentHistoryController extends Controller
             ]);
         }
     }
+
+    // Fetch single employment history
+    public function fetchSingle()
+    {
+        //
+    }
 }
