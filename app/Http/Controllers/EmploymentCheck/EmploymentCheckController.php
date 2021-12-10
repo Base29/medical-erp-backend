@@ -127,22 +127,27 @@ class EmploymentCheckController extends Controller
             // Get employment check
             $employmentCheck = EmploymentCheck::findOrFail($request->employment_check);
 
-            //TODO: Update uploaded files yet to be implemented
+            // DBS self declared certificate folder name
+            $selfDeclaredCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-self-declared';
 
-            // // DBS self declared certificate folder name
-            // $selfDeclaredCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-self-declared';
+            //DBS certificate folder name
+            $dbsCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-certificate';
 
-            // //DBS certificate folder name
-            // $dbsCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-certificate';
+            // Upload self declared dbs certificate
+            $selfDeclaredCertificateUrl = $request->has('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : $employmentCheck->self_declaration_certificate;
 
-            // // Upload self declared dbs certificate
-            // $selfDeclaredCertificateUrl = $request->has('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
+            // Upload dbs certificate
+            $dbsCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : $employmentCheck->dbs_certificate;
 
-            // // Upload dbs certificate
-            // $dbsCertificateUrl = $request->has('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
+            // Mapping $request->all() to a variable
+            $updateRequestData = $request->all();
+
+            // Overriding values of self_declaration_certificate and dbs_certificate field with the urls of uploaded files.
+            $updateRequestData['self_declaration_certificate'] = $selfDeclaredCertificateUrl;
+            $updateRequestData['dbs_certificate'] = $dbsCertificateUrl;
 
             // Update employment check
-            $employmentCheckUpdated = UpdateService::updateModel($employmentCheck, $request->all(), 'employment_check');
+            $employmentCheckUpdated = UpdateService::updateModel($employmentCheck, $updateRequestData, 'employment_check');
 
             if (!$employmentCheckUpdated) {
                 return Response::fail([
