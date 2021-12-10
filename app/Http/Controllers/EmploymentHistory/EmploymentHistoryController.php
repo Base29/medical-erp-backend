@@ -8,6 +8,7 @@ use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmploymentHistory\CreateEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\DeleteEmploymentHistoryRequest;
+use App\Http\Requests\EmploymentHistory\FetchEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\UpdateEmploymentHistoryRequest;
 use App\Models\EmploymentHistory;
 use App\Models\User;
@@ -137,8 +138,27 @@ class EmploymentHistoryController extends Controller
     }
 
     // Fetch all employment experience for a user
-    public function fetch()
+    public function fetch(FetchEmploymentHistoryRequest $request)
     {
-        //
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Get user's employment histories
+            $employmentHistories = EmploymentHistory::where('user_id', $user->id)->latest()->get();
+
+            // Return success response
+            return Response::success([
+                'employment-histories' => $employmentHistories,
+            ]);
+
+        } catch (\Exception$e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }
