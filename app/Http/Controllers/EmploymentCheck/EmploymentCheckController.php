@@ -139,6 +139,12 @@ class EmploymentCheckController extends Controller
                     // DBS self declared certificate folder name
                     $selfDeclaredCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-self-declared';
 
+                    // // Get path of the old file from the URL saved in the database
+                    // $oldFile = parse_url($employmentCheck->self_declaration_certificate);
+
+                    // // Delete existing file
+                    // Storage::disk('s3')->delete($oldFile['path']);
+
                     // Upload self declared dbs certificate
                     $selfDeclaredCertificateUrl = FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3');
 
@@ -151,6 +157,12 @@ class EmploymentCheckController extends Controller
                 if ($request->hasFile('dbs_certificate')) {
                     //DBS certificate folder name
                     $dbsCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/dbs-certificate';
+
+                    // // Get path of the old file from the URL saved in the database
+                    // $oldFile = parse_url($employmentCheck->dbs_certificate);
+
+                    // // Delete existing file
+                    // Storage::disk('s3')->delete($oldFile['path']);
 
                     // Upload dbs certificate
                     $dbsCertificateUrl = FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3');
