@@ -40,6 +40,7 @@ class CreateMiscellaneousInformationRequest extends FormRequest
             'equipment_provided_policy' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
             'resume' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
             'proof_of_address' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
+            'equipment' => 'array',
         ];
     }
 
