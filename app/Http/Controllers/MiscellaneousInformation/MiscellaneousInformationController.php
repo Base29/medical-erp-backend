@@ -10,6 +10,7 @@ use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationReq
 use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
 use App\Models\Equipment;
+use App\Models\JobSpecification;
 use App\Models\MiscellaneousInformation;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -52,9 +53,12 @@ class MiscellaneousInformationController extends Controller
 
             $proofOfAddressUrl = $request->has('proof_of_address') ? FileUploadService::upload($request->proof_of_address, $folderName, 's3') : null;
 
+            // Get Job Specification
+            $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
+
             // Create misc info
             $miscInfo = new MiscellaneousInformation();
-            $miscInfo->job_description = $request->job_description;
+            $miscInfo->job_description = $jobSpec->title;
             $miscInfo->interview_notes = $request->interview_notes;
             $miscInfo->offer_letter_email = $offerLetterEmailUrl;
             $miscInfo->job_advertisement = $jobAdvertUrl;

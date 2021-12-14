@@ -15,6 +15,12 @@ class CreateJobSpecificationsTable extends Migration
     {
         Schema::create('job_specifications', function (Blueprint $table) {
             $table->id();
+            $table->string('title');
+            $table->string('salary_grade')->nullable();
+            $table->string('location')->nullable();
+            $table->string('total_hours')->nullable();
+            $table->string('job_purpose')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

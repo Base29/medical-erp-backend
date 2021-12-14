@@ -27,7 +27,7 @@ class CreateMiscellaneousInformationRequest extends FormRequest
     {
         return [
             'user' => 'required|numeric|exists:users,id',
-            'job_description' => 'nullable|string',
+            'job_description' => 'nullable|numeric|exists:job_specifications,id',
             'interview_notes' => 'nullable|string|min:0|max:1000',
             'offer_letter_email' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
             'job_advertisement' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
