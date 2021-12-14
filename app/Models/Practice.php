@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Equipment;
 use App\Models\Policy;
 use App\Models\Post;
 use App\Models\Room;
@@ -40,6 +41,11 @@ class Practice extends Model
     public function posts()
     {
         return $this->hasMany(Post::class);
+    }
+
+    public function equipment()
+    {
+        return $this->hasMany(Equipment::class);
     }
 
 }
