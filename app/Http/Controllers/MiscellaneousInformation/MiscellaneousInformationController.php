@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
+use App\Models\Equipment;
+use App\Models\JobSpecification;
 use App\Models\MiscellaneousInformation;
 use App\Models\User;
 use Illuminate\Support\Facades\Storage;
@@ -51,9 +53,12 @@ class MiscellaneousInformationController extends Controller
 
             $proofOfAddressUrl = $request->has('proof_of_address') ? FileUploadService::upload($request->proof_of_address, $folderName, 's3') : null;
 
+            // Get Job Specification
+            $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
+
             // Create misc info
             $miscInfo = new MiscellaneousInformation();
-            $miscInfo->job_description = $request->job_description;
+            $miscInfo->job_description = $jobSpec->title;
             $miscInfo->interview_notes = $request->interview_notes;
             $miscInfo->offer_letter_email = $offerLetterEmailUrl;
             $miscInfo->job_advertisement = $jobAdvertUrl;
@@ -66,6 +71,24 @@ class MiscellaneousInformationController extends Controller
             $miscInfo->equipment_provided_policy = $equipmentProvidedPolicyUrl;
             $miscInfo->resume = $resumeUrl;
             $miscInfo->proof_of_address = $proofOfAddressUrl;
+
+            // Attach user with equipment
+            foreach ($request->equipment as $equipment_id) {
+
+                // Check if the equipment exists with the provided id $equipment_id
+                $equipment = Equipment::find($equipment_id);
+
+                if ($equipment) {
+                    // Check if the equipment is already assigned to the user
+                    $equipmentAlreadyAssigned = $user->equipment->contains('id', $equipment_id);
+
+                    if (!$equipmentAlreadyAssigned) {
+                        // Attach user with the equipment whose ID is provided in the
+                        $user->equipment()->attach($equipment_id);
+                    }
+                }
+
+            }
 
             // Saving misc-info
             $user->miscInfo()->save($miscInfo);
