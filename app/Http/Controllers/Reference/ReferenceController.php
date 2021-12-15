@@ -58,4 +58,10 @@ class ReferenceController extends Controller
             ]);
         }
     }
+
+    // Fetch all user's references
+    public function fetch()
+    {
+        //
+    }
 }
