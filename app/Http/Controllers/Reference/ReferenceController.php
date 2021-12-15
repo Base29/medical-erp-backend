@@ -6,6 +6,7 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reference\CreateReferenceRequest;
+use App\Http\Requests\Reference\FetchReferenceRequest;
 use App\Models\Reference;
 use App\Models\User;
 
@@ -59,9 +60,27 @@ class ReferenceController extends Controller
         }
     }
 
-    // Fetch all user's references
-    public function fetch()
+    // Fetch user's all references
+    public function fetch(FetchReferenceRequest $request)
     {
-        //
+        try {
+
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Get user's references
+            $references = Reference::where('user_id', $user->id)->latest()->get();
+
+            // Return success response
+            return Response::success([
+                'references' => $references,
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Reference;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class FetchReferenceRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class FetchReferenceRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,12 @@ class FetchReferenceRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'user' => 'required|numeric|exists:users,id',
         ];
+    }
+
+    public function failedValidation($validator)
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }
