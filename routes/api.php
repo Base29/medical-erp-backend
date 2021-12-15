@@ -16,6 +16,7 @@ use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Reason\ReasonController;
+use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
@@ -354,5 +355,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('employment-history', [EmploymentHistoryController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_single_employment_history']);
+    });
+
+    // Routes for references
+    Route::prefix('references')->group(function () {
+        Route::post('create', [ReferenceController::class, 'create'])
+            ->middleware(['permission:can_create_reference']);
     });
 });
