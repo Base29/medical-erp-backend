@@ -27,6 +27,7 @@ class CreateReferencesTable extends Migration
             $table->date('end_date')->nullable();
             $table->boolean('can_contact_referee')->default(0);
             $table->string('reference_document')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -69,7 +69,7 @@ class ReferenceController extends Controller
             $user = User::findOrFail($request->user);
 
             // Get user's references
-            $references = Reference::where('user_id', $user->id)->latest()->get();
+            $references = Reference::where('user_id', $user->id)->latest()->paginate(10);
 
             // Return success response
             return Response::success([
