@@ -12,6 +12,7 @@ class MiscellaneousInformation extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'job_description',
         'interview_notes',
         'offer_letter_email',
@@ -25,6 +26,11 @@ class MiscellaneousInformation extends Model
         'equipment_provided_policy',
         'resume',
         'proof_of_address',
+        'equipment',
+    ];
+
+    protected $casts = [
+        'equipment' => 'array',
     ];
 
     public function user()

@@ -73,7 +73,7 @@ class EmploymentCheckController extends Controller
                 'employment_check' => $employmentCheck,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
                 'code' => 500,
@@ -130,8 +130,9 @@ class EmploymentCheckController extends Controller
             // Mapping $request->all() to a variable
             $updateRequestData = $request->all();
 
+            //TODO: File url update functionality needs to be changed/enhanced as done in MiscellaneousInformationController
             // Check if request contains files to upload
-            if ($request->hasFile('self_declaration_certificate') || $request->hasFile('dbs_certificate')) {
+            if ($request->hasAny(['self_declaration_certificate', 'dbs_certificate'])) {
 
                 // If self_declaration_certificate file is provided
                 if ($request->hasFile('self_declaration_certificate')) {
@@ -188,7 +189,7 @@ class EmploymentCheckController extends Controller
                 'employment_check' => $employmentCheck->latest('updated_at')->first(),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
                 'code' => 500,
@@ -219,7 +220,7 @@ class EmploymentCheckController extends Controller
                 'message' => ResponseMessage::deleteSuccess('Employment Check'),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
@@ -240,7 +241,7 @@ class EmploymentCheckController extends Controller
                 'employment-check' => $user->employmentCheck,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
