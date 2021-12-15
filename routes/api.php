@@ -361,5 +361,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('references')->group(function () {
         Route::post('create', [ReferenceController::class, 'create'])
             ->middleware(['permission:can_create_reference']);
+
+        Route::post('/', [ReferenceController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_user_references']);
     });
 });
