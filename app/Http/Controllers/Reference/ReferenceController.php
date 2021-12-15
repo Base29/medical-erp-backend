@@ -30,7 +30,7 @@ class ReferenceController extends Controller
                 $referenceDocUrl = FileUploadService::upload($request->file('reference_document'), $folderPath, 's3');
             }
 
-            // Initiate instance of
+            // Initiate instance of Reference model
             $reference = new Reference();
             $reference->reference_type = $request->reference_type;
             $reference->referee_name = $request->referee_name;

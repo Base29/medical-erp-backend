@@ -37,7 +37,7 @@ class CreateReferenceRequest extends FormRequest
             'start_date' => 'required|date|date_format:Y-m-d',
             'end_date' => 'required|date|date_format:Y-m-d',
             'can_contact_referee' => 'required|boolean',
-            'reference_document' => 'required|file|mimes:png,jpg,pdf,doc,docx|size:2048',
+            'reference_document' => 'required|file|mimes:png,jpg,pdf,doc,docx|max:5000',
         ];
     }
 
