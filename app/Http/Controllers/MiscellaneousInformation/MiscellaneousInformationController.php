@@ -5,10 +5,12 @@ namespace App\Http\Controllers\MiscellaneousInformation;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
+use App\Http\Requests\MiscellaneousInformation\UpdateMiscellaneousInformationRequest;
 use App\Models\Equipment;
 use App\Models\JobSpecification;
 use App\Models\MiscellaneousInformation;
@@ -97,7 +99,7 @@ class MiscellaneousInformationController extends Controller
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
                 'code' => 500,
@@ -122,7 +124,7 @@ class MiscellaneousInformationController extends Controller
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
@@ -152,11 +154,122 @@ class MiscellaneousInformationController extends Controller
                 'message' => ResponseMessage::deleteSuccess('Misc Info'),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 500,
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    // Update misc info
+    public function update(UpdateMiscellaneousInformationRequest $request)
+    {
+        try {
+
+            // Allowed fields
+            $allowedFields = [
+                'job_description',
+                'interview_notes',
+                'offer_letter_email',
+                'job_advertisement',
+                'health_questionnaire',
+                'annual_declaration',
+                'employee_confidentiality_agreement',
+                'employee_privacy_notice',
+                'locker_key_agreement',
+                'is_locker_key_assigned',
+                'equipment_provided_policy',
+                'resume',
+                'proof_of_address',
+                'equipment',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Get Miscellaneous Information
+            $miscInfo = MiscellaneousInformation::findOrFail($request->misc_info);
+
+            // Casting request data to a variable
+            $updateRequestData = $request->all();
+
+            // Check if the request contain the ID of JobSpecification in $request->job_description
+            if ($request->has('job_description')) {
+                // Get Job Specification
+                $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
+
+                // Override the value of $updateDataRequest['job_description'] with $jobSpec->title
+                $updateRequestData['job_description'] = $jobSpec->title;
+            }
+
+            // Fields that contain files
+            $fileFields = [
+                'offer_letter_email',
+                'job_advertisement',
+                'health_questionnaire',
+                'annual_declaration',
+                'employee_confidentiality_agreement',
+                'employee_privacy_notice',
+                'locker_key_agreement',
+                'equipment_provided_policy',
+                'resume',
+                'proof_of_address',
+            ];
+
+            // User's Miscellaneous Information folder name
+            $userMiscInfoFolder = 'misc-info/user-' . $miscInfo->user_id;
+
+            // Checking if request has any files
+            if ($request->hasAny($fileFields)) {
+
+                // Iterating through each file field
+                foreach ($request->allFiles() as $fileField => $value) {
+
+                    // Checking if $fieldFile contains a file
+                    if ($request->hasFile($fileField)) {
+
+                        // Overriding the value of $fileField with the url of uploaded file
+                        $updateRequestData[$fileField] = $this->renderFileUrl($value, $userMiscInfoFolder);
+                    }
+                }
+            }
+
+            // Update Misc Info
+            $miscInfoUpdated = UpdateService::updateModel($miscInfo, $updateRequestData, 'misc_info');
+
+            if (!$miscInfoUpdated) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::customMessage('Something went wrong. Cannot update Misc Info at this time.'),
+                ]);
+            }
+
+            // Return success response
+            return Response::success([
+                'misc-info' => $miscInfo->latest('updated_at')->first(),
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Function for uploading files are returning the url
+    private function renderFileUrl($file, $userMiscInfoFolder)
+    {
+        // Upload employee_privacy_notice
+        $url = FileUploadService::upload($file, $userMiscInfoFolder, 's3');
+
+        // Return URL of the uploaded files
+        return $url;
     }
 }
