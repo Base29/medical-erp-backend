@@ -12,6 +12,7 @@ class Reference extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'user_id',
         'reference_type',
         'referee_name',
         'company_name',
