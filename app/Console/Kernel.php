@@ -24,7 +24,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-        // $schedule->command('inspire')->hourly();
+        $schedule->command('checklist:resetDaily')->dailyAt('03:00')->timezone('Europe/London');
+        $schedule->command('checklist:resetWeekly')->dailyAt('03:00')->timezone('Europe/London');
+        $schedule->command('checklist:resetMonthly')->dailyAt('03:00')->timezone('Europe/London');
+
     }
 
     /**
@@ -34,7 +37,7 @@ class Kernel extends ConsoleKernel
      */
     protected function commands()
     {
-        $this->load(__DIR__.'/Commands');
+        $this->load(__DIR__ . '/Commands');
 
         require base_path('routes/console.php');
     }

@@ -25,4 +25,14 @@ class Room extends Model
     {
         return $this->hasMany(CheckList::class);
     }
+
+    public function updateRoomStatus($id)
+    {
+        // Fetch room
+        $room = Room::where('id', $id)->first();
+
+        // Updating status of the room to 0
+        $room->status = 0;
+        $room->save();
+    }
 }

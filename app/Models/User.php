@@ -4,9 +4,17 @@ namespace App\Models;
 
 use App\Models\Answer;
 use App\Models\Comment;
+use App\Models\ContractSummary;
+use App\Models\EmploymentCheck;
+use App\Models\EmploymentPolicy;
+use App\Models\Equipment;
+use App\Models\MiscellaneousInformation;
+use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
+use App\Models\Profile;
 use App\Models\Signature;
+use App\Models\WorkPattern;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -24,7 +32,6 @@ class User extends Authenticatable implements JWTSubject
      * @var array
      */
     protected $fillable = [
-        'name',
         'email',
         'password',
     ];
@@ -105,6 +112,56 @@ class User extends Authenticatable implements JWTSubject
     public function comments()
     {
         return $this->hasMany(Comment::class);
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->roles->contains('name', 'super_admin');
+    }
+
+    public function profile()
+    {
+        return $this->hasOne(Profile::class, 'user_id', 'id');
+    }
+
+    public function positionSummary()
+    {
+        return $this->hasOne(PositionSummary::class, 'user_id', 'id');
+    }
+
+    public function contractSummary()
+    {
+        return $this->hasOne(ContractSummary::class, 'user_id', 'id');
+    }
+
+    public function workPatterns()
+    {
+        return $this->belongsToMany(WorkPattern::class);
+    }
+
+    public function miscInfo()
+    {
+        return $this->hasOne(MiscellaneousInformation::class);
+    }
+
+    public function employmentCheck()
+    {
+        return $this->hasOne(EmploymentCheck::class);
+    }
+
+    public function employmentPolicies()
+    {
+        return $this->hasMany(EmploymentPolicy::class);
+    }
+
+    public function employmentHistories()
+    {
+        return $this->hasMany(EmploymentHistory::class);
+    }
+
+    public function equipment()
+    {
+        return $this->belongsToMany(Equipment::class);
     }
 
 }

@@ -2,10 +2,13 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\AuthenticateUserRequest;
+use App\Http\Requests\Auth\ResetPasswordLinkRequest;
+use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -15,154 +18,123 @@ use Tymon\JWTAuth\Facades\JWTAuth;
 class AuthController extends Controller
 {
     // Method for Authenticating the user
-    public function login(Request $request)
+    public function login(AuthenticateUserRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-            'password' => 'required',
-        ];
+        try {
+            // Checking if the user exists in the database
+            $user = User::where('email', $request->email)
+                ->with(['profile', 'positionSummary', 'contractSummary', 'roles', 'practices'])
+                ->firstOrFail();
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+            // Check if the user is active
+            if (!$user->is_active) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::userNotActive($user->email),
+                ]);
+            }
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+            if (!$user || !Hash::check($request->password, $user->password)) {
+
+                return Response::fail([
+                    'code' => 401,
+                    'message' => ResponseMessage::invalidCredentials(),
+                ]);
+            }
+
+            // Generating JWT token from provided creds
+            $token = JWTAuth::attempt($request->only('email', 'password'));
+
+            // Adding token to user array
+            Arr::add($user, 'token', $token);
+
+            // Return response
+            return Response::success(['user' => $user]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Checking if the user exists in the database
-        $user = User::where('email', $request->email)->with(['roles', 'practices'])->first();
-
-        if (!$user || !Hash::check($request->password, $user->password)) {
-            return response([
-                'success' => false,
-                'message' => 'Invalid Credentials',
-            ], 401);
-        }
-
-        $user->roles->makeHidden([
-            'pivot',
-            'created_at',
-            'updated_at',
-            'guard_name',
-        ]);
-
-        // Generating JWT token from provided creds
-        $token = JWTAuth::attempt($request->only('email', 'password'));
-
-        // Adding token to user array
-        $userArr = Arr::add($user, 'token', $token);
-
-        // Return response
-        return response([
-            'success' => true,
-            'user' => $userArr,
-        ], 200);
     }
 
     // Method for logging out the user
     public function logout()
     {
         auth()->logout(true);
-        return response([
-            'success' => true,
-            'message' => 'Logged out successfully',
-        ], 200);
+        return Response::success(['message' => ResponseMessage::logout()]);
     }
 
     // Method for resetting password
-    public function reset_password(Request $request)
+    public function resetPassword(ResetPasswordRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'token' => 'required',
-            'password' => 'required|min:8|confirmed',
-            'email' => 'required|email',
-        ];
+        try {
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+            // Initiating password reset
+            $status = Password::reset(
+                $request->only('email', 'password', 'password_confirmation', 'token'),
+                function ($user, $password) {
+                    $user->forceFill([
+                        'password' => Hash::make($password),
+                    ])->setRememberToken(Str::random(60));
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
+                    $user->save();
+                }
+            );
 
-        $status = Password::reset(
-            $request->only('email', 'password', 'password_confirmation', 'token'),
-            function ($user, $password) {
-                $user->forceFill([
-                    'password' => Hash::make($password),
-                ])->setRememberToken(Str::random(60));
-
-                $user->save();
+            // Check if the provided reset token or user is valid
+            if ($status === Password::INVALID_TOKEN || $status === Password::INVALID_USER) {
+                return Response::fail(['message' => ResponseMessage::invalidToken(), 'code' => 401]);
             }
-        );
 
-        return $status === Password::INVALID_TOKEN || $status === Password::INVALID_USER ?
-        response(['success' => false, 'message' => 'Invalid Token or User'], 401) :
-        response(['success' => true, 'message' => 'Password reset successfully'], 200);
+            return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Method for generating reset password link
-    public function generate_reset_password_link(Request $request)
+    public function generateResetPasswordLink(ResetPasswordLinkRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'email' => 'required|email',
-        ];
+        try {
+            Password::sendResetLink($request->only('email'));
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+            return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Check if the user exists
-        $user = User::where('email', $request->only('email'))->first();
-
-        if (!$user) {
-            return response([
-                'success' => false,
-                'message' => 'User not found',
-            ], 404);
-        }
-
-        Password::sendResetLink($request->only('email'));
-
-        return response([
-            'success' => true,
-            'message' => 'Reset password link sent on your email id.',
-        ], 200);
     }
 
     // Method for verifying user token
-    public function verify_token()
+    public function verifyToken()
     {
-        $user = JWTAuth::parseToken()->authenticate();
-        $user_roles = $user->roles
-            ->makeHidden([
-                'pivot',
-                'created_at',
-                'updated_at',
-                'guard_name',
-            ]);
+        try {
 
-        $user_practices = $user->practices
-            ->makeHidden([
-                'pivot',
-                'created_at',
-                'updated_at',
-                'deleted_at',
+            $user = JWTAuth::parseToken()->authenticate();
+
+            // Add token to the response
+            $userWithToken = Arr::add($user->where('id', $user->id)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')->firstOrFail(), 'token', request()->token);
+
+            return Response::success(['user' => $userWithToken]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
-        $user_with_roles = Arr::add($user, 'roles', $user_roles);
-        $user_with_practices = Arr::add($user_with_roles, 'practices', $user_practices);
-        return response([
-            'success' => true,
-            'user' => $user_with_practices,
-        ], 200);
+        }
     }
 }

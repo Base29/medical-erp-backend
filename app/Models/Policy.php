@@ -21,7 +21,7 @@ class Policy extends Model
         'pivot',
     ];
 
-    public function practices()
+    public function practice()
     {
         return $this->belongsTo(Practice::class);
     }

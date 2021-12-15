@@ -2,154 +2,157 @@
 
 namespace App\Http\Controllers\Task;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Task\CreateTaskRequest;
+use App\Http\Requests\Task\UpdateTaskRequest;
 use App\Models\CheckList;
 use App\Models\Task;
-use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class TaskController extends Controller
 {
     // Method for creating a task
-    public function create(Request $request)
+    public function create(CreateTaskRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-            'frequency' => 'required',
-            'checklist' => 'required|numeric',
-        ];
+        try {
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+            // Check if the checklist exists
+            $checklist = CheckList::where('id', $request->checklist)->with('tasks')->firstOrFail();
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+            // Check if the task with same name already exists in the checklist
+            $taskAlreadyExist = $checklist->tasks->contains('name', $request->name);
+
+            if ($taskAlreadyExist) {
+                return Response::fail([
+                    'message' => ResponseMessage::alreadyExists($request->name),
+                    'code' => 409,
+                ]);
+            }
+
+            // Create task
+            $task = new Task();
+            $task->name = $request->name;
+            $task->check_list_id = $checklist->id;
+            $task->frequency = $request->frequency;
+            $task->save();
+
+            return Response::success(['task' => $task]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Check if the checklist exists
-        $checklist = CheckList::where('id', $request->checklist)->with('tasks')->first();
-
-        if (!$checklist) {
-            return response([
-                'success' => false,
-                'message' => 'Checklist not found with the provided id ' . $request->checklist,
-            ], 404);
-        }
-
-        // Check if the task with same name already exists in the checklist
-        $task_already_exist = $checklist->tasks->contains('name', $request->name);
-
-        if ($task_already_exist) {
-            return response([
-                'success' => false,
-                'message' => 'Task with name ' . $request->name . ' already exists in checklist ' . $checklist->name,
-            ], 409);
-        }
-
-        // Create task
-        $task = new Task();
-        $task->name = $request->name;
-        $task->check_list_id = $checklist->id;
-        $task->frequency = $request->frequency;
-        $task->save();
-
-        return response([
-            'success' => true,
-            'task' => $task,
-        ], 200);
     }
 
     // Method for deleting a task
     public function delete($id)
     {
-        // Check if a task exists with a provided $id
-        $task = Task::find($id);
 
-        if (!$task) {
-            return response([
-                'success' => false,
-                'message' => 'Task not found with the provided id ' . $id,
-            ], 404);
-        }
+        try {
 
-        // Delete task
-        $task->delete();
+            // Check if a task exists with a provided $id
+            $task = Task::findOrFail($id);
 
-        return response([
-            'success' => true,
-            'message' => 'Task deleted successfully',
-        ], 200);
-    }
+            if (!$task) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Task', $id, false),
+                    'code' => 404,
+                ]);
+            }
 
-    public function update(Request $request)
-    {
-        // Allowed fields when updating a task
-        $allowed_fields = [
-            'status',
-            'reason',
-            'comment',
-            'manager_comment',
-            'acknowledgement',
-        ];
+            // Delete task
+            $task->delete();
 
-        // Checking if the $request doesn't contain any of the allowed fields
-        if (!$request->hasAny($allowed_fields)) {
-            return response([
-                'success' => false,
-                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
-            ], 400);
-        }
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Task')]);
 
-        // Validation rules
-        $rules = [
-            'status' => 'boolean',
-            'reason' => 'string|nullable',
-            'comment' => 'string|nullable',
-            'manager_comment' => 'string|nullable',
-            'acknowledgement' => 'boolean',
-            'task' => 'required|numeric',
-        ];
+        } catch (\Exception $e) {
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
-
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
-        }
-
-        // Check if the task exists
-        $task = Task::find($request->task);
-
-        if (!$task) {
-            return response([
-                'success' => false,
-                'message' => 'Task with ID ' . $request->task . ' not found',
-            ], 404);
-        }
-
-        // Update task's fields with the ones provided in the $request
-        $task_updated = $this->update_task($request->all(), $task);
-
-        if ($task_updated) {
-            return response([
-                'success' => true,
-                'task' => $task,
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
             ]);
         }
-
     }
 
-    private function update_task($fields, $task)
+    public function update(UpdateTaskRequest $request)
     {
-        foreach ($fields as $field => $value) {
-            if ($field !== 'task') {
-                $task->$field = $value;
+
+        try {
+
+            // Allowed fields when updating a task
+            $allowedFields = [
+                'status',
+                'reason',
+                'comment',
+                'manager_comment',
+                'acknowledgement',
+                'is_processed',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
             }
+
+            // Get Task
+            $task = Task::findOrFail($request->task);
+
+            // Get the time of update of the task
+            $updatedAt = new Carbon($task->updated_at);
+
+            // Get task frequency
+            $taskFrequency = $task->frequency;
+
+            // For monthly tasks $daysPast should be less than $daysForMonthlyTask
+            $daysForMonthlyTask = 30;
+
+            // For weekly tasks $daysPast should be less than $daysForWeeklyTask
+            $daysForWeeklyTask = 7;
+
+            // Get is_processed
+            $isTaskProcessed = $task->is_processed;
+
+            // If the task is not daily
+            if ($isTaskProcessed === 1 && ($taskFrequency === 'Monthly' || $taskFrequency === 'Weekly')) {
+                // Calculating the days past from the date of creation
+                $daysPast = $updatedAt->diffInDays(Carbon::now());
+
+                // Calculating days remaining
+                $daysRemaining = Carbon::now()
+                    ->subDays($taskFrequency === 'Weekly' ? $daysForWeeklyTask : $daysForMonthlyTask)
+                    ->diffInDays($updatedAt);
+
+                if ($daysPast < $daysForMonthlyTask || $daysPast < $daysForWeeklyTask) {
+                    return Response::fail([
+                        'code' => 400,
+                        'message' => ResponseMessage::customMessage('Task cannot be updated at the moment'),
+                    ]);
+                }
+
+            }
+
+            // Update task's fields with the ones provided in the $request
+            $taskUpdated = UpdateService::updateModel($task, $request->all(), 'task');
+
+            if ($taskUpdated) {
+                return Response::success(['task' => $task->latest('updated_at')->first()]);
+            }
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-        $task->save();
-        return true;
     }
 }

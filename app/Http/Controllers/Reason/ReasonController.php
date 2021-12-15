@@ -2,82 +2,81 @@
 
 namespace App\Http\Controllers\Reason;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Reason\CreateReasonRequest;
 use App\Models\Reason;
-use Illuminate\Http\Request;
 
 class ReasonController extends Controller
 {
 
     // Create Reason
-    public function create(Request $request)
+    public function create(CreateReasonRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'reason' => 'required',
-        ];
+        try {
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+            // Create reason
+            $reason = new Reason();
+            $reason->reason = $request->reason;
+            $reason->save();
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+            return Response::success(['reason' => $reason]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Check if the reason exists
-        $reason_exist = Reason::where('reason', $request->reason)->first();
-
-        if ($reason_exist) {
-            return response([
-                'success' => false,
-                'message' => 'Reason ' . $reason_exist->reason . ' already exists',
-            ], 409);
-        }
-
-        // Create reason
-        $reason = new Reason();
-        $reason->reason = $request->reason;
-        $reason->save();
-
-        return response([
-            'success' => true,
-            'reason' => $reason,
-        ], 200);
     }
 
     // Fetch Reasons
     public function fetch()
     {
-        // Reasons
-        $reasons = Reason::paginate(10);
+        try {
 
-        return response([
-            'success' => true,
-            'reasons' => $reasons,
-        ], 200);
+            // Reasons
+            $reasons = Reason::latest()->paginate(10);
+
+            return Response(['reasons' => $reasons]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     // Delete Reasons
     public function delete($id)
     {
-        // Check if the reason exists with the provided ID
-        $reason = Reason::find($id);
+        try {
 
-        if (!$reason) {
-            return response([
-                'success' => false,
-                'message' => 'Reason with ID ' . $id . ' not found',
-            ], 404);
+            // Check if the reason exists with the provided ID
+            $reason = Reason::findOrFail($id);
+
+            if (!$reason) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Reason', $id, false),
+                    'code' => 404,
+                ]);
+            }
+
+            // Delete reason
+            $reason->delete();
+
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Delete reason
-        $reason->delete();
-
-        return response([
-            'success' => true,
-            'message' => 'Reason deleted',
-        ], 200);
     }
 }

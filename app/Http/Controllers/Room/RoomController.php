@@ -2,197 +2,179 @@
 
 namespace App\Http\Controllers\Room;
 
-use App\Helpers\CustomValidation;
+use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Room\CreateRoomRequest;
+use App\Http\Requests\Room\FetchRoomsRequest;
+use App\Http\Requests\Room\UpdateRoomRequest;
 use App\Models\Practice;
 use App\Models\Room;
-use Illuminate\Http\Request;
 
 class RoomController extends Controller
 {
     // Method for creating room
-    public function create(Request $request)
+    public function create(CreateRoomRequest $request)
     {
-        // Validation rules
-        $rules = [
-            'name' => 'required',
-            'practice' => 'required|numeric',
-            'icon' => 'required',
-        ];
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+        try {
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+            // Get Practice
+            $practice = Practice::where('id', $request->practice)->with('rooms')->firstOrFail();
+
+            // Check if the room with the same name already exists within the practice
+            $roomExists = $practice->rooms->contains('name', $request->name);
+
+            if ($roomExists) {
+                return Response::fail([
+                    'message' => ResponseMessage::alreadyExists($request->name),
+                    'code' => 409,
+                ]);
+            }
+
+            // Create room
+            $room = new Room();
+            $room->name = $request->name;
+            $room->practice_id = $request->practice;
+            $room->icon = $request->icon;
+            $room->save();
+
+            return Response::success(['room' => $room->with('practice')->latest()->firstOrFail()]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        // Check if the practice exists
-        $practice = Practice::where('id', $request->practice)->with('rooms')->first();
-
-        if (!$practice) {
-            return response([
-                'success' => false,
-                'message' => 'Practice not found by the provided id ' . $request->practice,
-            ], 404);
-        }
-
-        // Check if the room with the same name already exists within the practice
-        $room_exists = $practice->rooms->contains('name', $request->name);
-
-        if ($room_exists) {
-            return response([
-                'success' => false,
-                'message' => 'Room already exists with the provided name ' . $request->name . ' in practice ' . $practice->practice_name,
-            ], 409);
-        }
-
-        // Create room
-        $room = new Room();
-        $room->name = $request->name;
-        $room->practice_id = $request->practice;
-        $room->icon = $request->icon;
-        $room->save();
-
-        return response([
-            'success' => true,
-            'message' => 'Room ' . $room->name . ' created successfully for practice ' . $practice->practice_name,
-        ], 200);
     }
 
     // Method for deleting room
     public function delete($id)
     {
-        // Check if the room exists with the provided $id
-        $room = Room::find($id);
 
-        if (!$room) {
-            return response([
-                'success' => false,
-                'message' => 'Room not found with the provided id ' . $id,
-            ], 404);
-        }
+        try {
+            // Check if the room exists with the provided $id
+            $room = Room::findOrFail($id);
 
-        $room->delete();
-
-        return response([
-            'success' => true,
-            'message' => 'Room deleted successfully',
-        ], 200);
-    }
-
-    // Method for fetching rooms
-    public function fetch(Request $request)
-    {
-        if ($request->has('practice')) {
-            // Validation rules
-            $rules = [
-                'practice' => 'required|numeric',
-            ];
-
-            // Validation errors
-            $request_errors = CustomValidation::validate_request($rules, $request);
-
-            // Return errors
-            if ($request_errors) {
-                return $request_errors;
-            }
-
-            //Check if the practice exists
-            $practice = Practice::where('id', $request->practice)->first();
-
-            if (!$practice) {
-                return response([
-                    'success' => false,
-                    'message' => 'Practice not found with the provided id ' . $request->practice,
-                ], 404);
-            }
-
-            // Check if the user is assigned to $practice
-            $belongs_to_practice = $practice->users->contains('id', auth()->user()->id);
-
-            if (!$belongs_to_practice) {
-                return response([
-                    'success' => false,
-                    'message' => 'You cannot view the rooms of the practice ' . $practice->practice_name,
+            if (!$room) {
+                return Response::fail([
+                    'message' => ResponseMessage::notFound('Room', $id, false),
+                    'code' => 404,
                 ]);
             }
 
-            // Get rooms for the practice
-            $rooms = Room::where('practice_id', $request->practice)->with('checklists')->paginate(10);
+            $room->delete();
 
-            return response([
-                'success' => true,
-                'rooms' => $rooms,
-            ], 200);
+            return Response::success(['message' => ResponseMessage::deleteSuccess('Room')]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
-
-        //TODO: Allow only Admins to fetch all the rooms regardless of which practice the room belongs to.
-        $rooms = Room::with('checklists')->paginate(10);
-
-        return response([
-            'success' => true,
-            'rooms' => $rooms,
-        ]);
     }
 
-    public function update(Request $request)
+    // Method for fetching rooms
+    public function fetch(FetchRoomsRequest $request)
     {
-        // Allowed fields when updating a task
-        $allowed_fields = [
-            'status',
-            'active',
-        ];
 
-        // Checking if the $request doesn't contain any of the allowed fields
-        if (!$request->hasAny($allowed_fields)) {
-            return response([
-                'success' => false,
-                'message' => 'Update request should contain any of the allowed fields ' . implode("|", $allowed_fields),
-            ], 400);
+        try {
+
+            if ($request->has('practice')) {
+
+                // Get Practice
+                $practice = Practice::where('id', $request->practice)->firstOrFail();
+
+                // Check if the user is assigned to $practice
+                $belongsToPractice = $practice->users->contains('id', auth()->user()->id);
+
+                if (!$belongsToPractice) {
+                    return Response::fail([
+                        'message' => ResponseMessage::customMessage('You cannot view the rooms of the practice ' . $practice->practice_name),
+                        'code' => 409,
+                    ]);
+                }
+
+                // Get rooms for the practice
+                $rooms = Room::where('practice_id', $request->practice)->with('checklists')->latest()->paginate(10);
+
+                return Response::success(['rooms' => $rooms]);
+            }
+
+            // Check if the current user has super_admin role
+            if (!auth()->user()->isSuperAdmin()) {
+                return Response::fail([
+                    'message' => ResponseMessage::customMessage('Only super_admin is allowed to view all rooms'),
+                    'code' => 400,
+                ]);
+            }
+
+            // Return all rooms
+            $rooms = Room::with('checklists')->latest()->paginate(10);
+
+            return Response::success(['rooms' => $rooms]);
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
+    }
 
-        // Validation rules
-        $rules = [
-            'status' => 'boolean',
-            'active' => 'boolean',
-            'room' => 'required|numeric',
-        ];
+    // Update room
+    public function update(UpdateRoomRequest $request)
+    {
 
-        // Validation errors
-        $request_errors = CustomValidation::validate_request($rules, $request);
+        try {
 
-        // Return errors
-        if ($request_errors) {
-            return $request_errors;
+            // Allowed fields when updating a task
+            $allowedFields = [
+                'status',
+                'active',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Get Room
+            $room = Room::findOrFail($request->room);
+
+            // Update Room
+            $roomUpdated = $this->updateRoom($request->all(), $room);
+
+            if ($roomUpdated) {
+                return Response::success(['room' => $room]);
+            }
+
+        } catch (\Exception $e) {
+
+            return Response::fail([
+                'code' => 500,
+                'message' => $e->getMessage(),
+            ]);
         }
+    }
 
-        // Check if the room exists
-        $room = Room::find($request->room);
-
-        if (!$room) {
-            return response([
-                'success' => false,
-                'message' => 'Room with ID ' . $request->room . ' not found',
-            ], 404);
+    // Helper function for updating fields for the room sent through request
+    private function updateRoom($fields, $room)
+    {
+        foreach ($fields as $field => $value) {
+            if ($field !== 'room') {
+                $room->$field = $value;
+            }
         }
-
-        // If status key is being sent
-        if ($request->has('status')) {
-            $room->status = $request->status;
-        }
-
-        // If active key is being sent
-        if ($request->has('active')) {
-            $room->active = $request->active;
-        }
-
         $room->save();
-
-        return response([
-            'success' => true,
-            'room' => $room,
-        ], 200);
+        return true;
     }
 }

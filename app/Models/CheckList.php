@@ -28,4 +28,9 @@ class CheckList extends Model
         return $this->hasMany(Task::class);
     }
 
+    public function activeTasks()
+    {
+        return $this->tasks()->where('is_active', 1);
+    }
+
 }
