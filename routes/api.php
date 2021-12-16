@@ -367,5 +367,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [ReferenceController::class, 'fetch'])
             ->middleware(['permission:can_fetch_user_references']);
+
+        Route::post('delete', [ReferenceController::class, 'delete'])
+            ->middleware(['permission:can_delete_reference']);
     });
 });

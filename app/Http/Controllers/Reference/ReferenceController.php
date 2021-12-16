@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Reference;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reference\CreateReferenceRequest;
 use App\Http\Requests\Reference\DeleteReferenceRequest;
@@ -89,7 +90,17 @@ class ReferenceController extends Controller
     public function delete(DeleteReferenceRequest $request)
     {
         try {
-            //
+            // Get Reference
+            $reference = Reference::findOrFail($request->reference);
+
+            // Delete REference
+            $reference->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Reference'),
+            ]);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
