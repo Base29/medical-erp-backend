@@ -48,10 +48,10 @@ class EmploymentHistoryController extends Controller
                 'employment-history' => $employmentHistory,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -106,9 +106,9 @@ class EmploymentHistoryController extends Controller
                 'employment-history' => $employmentHistory->latest('updated_at')->first(),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -130,9 +130,9 @@ class EmploymentHistoryController extends Controller
                 'message' => ResponseMessage::deleteSuccess('Employment History'),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -154,10 +154,10 @@ class EmploymentHistoryController extends Controller
                 'employment-histories' => $employmentHistories,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -176,9 +176,9 @@ class EmploymentHistoryController extends Controller
                 'employment-history' => $employmentHistory,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }

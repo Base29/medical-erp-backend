@@ -164,4 +164,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->belongsToMany(Equipment::class);
     }
 
+    public function references()
+    {
+        return $this->hasMany(Reference::class);
+    }
+
 }
