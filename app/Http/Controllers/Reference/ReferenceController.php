@@ -83,4 +83,10 @@ class ReferenceController extends Controller
             ]);
         }
     }
+
+    // Delete user reference
+    public function delete()
+    {
+        //
+    }
 }
