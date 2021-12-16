@@ -370,5 +370,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [ReferenceController::class, 'delete'])
             ->middleware(['permission:can_delete_reference']);
+
+        Route::post('update', [ReferenceController::class, 'update'])
+            ->middleware(['permission:can_update_reference']);
     });
 });
