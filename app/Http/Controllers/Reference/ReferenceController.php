@@ -139,7 +139,7 @@ class ReferenceController extends Controller
             }
 
             // Get Reference
-            $reference = Reference::where('id', $request->reference)->get();
+            $reference = Reference::findOrFail($request->reference);
 
             // Casting $request->all() to $updateRequestData
             $updateRequestData = $request->all();
