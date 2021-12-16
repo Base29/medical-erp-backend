@@ -31,7 +31,7 @@ class AnswerController extends Controller
         } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -50,7 +50,7 @@ class AnswerController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -81,7 +81,7 @@ class AnswerController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -117,7 +117,7 @@ class AnswerController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }

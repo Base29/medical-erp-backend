@@ -6,6 +6,7 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reference\CreateReferenceRequest;
+use App\Http\Requests\Reference\DeleteReferenceRequest;
 use App\Http\Requests\Reference\FetchReferenceRequest;
 use App\Models\Reference;
 use App\Models\User;
@@ -54,7 +55,7 @@ class ReferenceController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -78,15 +79,22 @@ class ReferenceController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
     }
 
     // Delete user reference
-    public function delete()
+    public function delete(DeleteReferenceRequest $request)
     {
-        //
+        try {
+            //
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }

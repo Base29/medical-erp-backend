@@ -43,7 +43,7 @@ class SignatureController extends Controller
         } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,7 +63,7 @@ class SignatureController extends Controller
         } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }

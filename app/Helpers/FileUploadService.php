@@ -29,10 +29,10 @@ class FileUploadService
 
             return $file_url;
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
