@@ -374,4 +374,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('update', [ReferenceController::class, 'update'])
             ->middleware(['permission:can_update_reference']);
     });
+
+    // Routes for education
+    Route::prefix('education')->group(function () {
+        Route::post('create', [EducationController::class, 'create'])
+            ->middleware(['permission:can_create_education']);
+    });
 });
