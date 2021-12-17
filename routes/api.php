@@ -383,5 +383,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [EducationController::class, 'fetch'])
             ->middleware(['permission:can_fetch_education']);
+
+        Route::post('delete', [EducationController::class, 'delete'])
+            ->middleware(['permission:can_delete_education']);
     });
 });

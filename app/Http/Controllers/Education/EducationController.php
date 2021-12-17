@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Education;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Education\CreateEducationRequest;
+use App\Http\Requests\Education\DeleteEducationRequest;
 use App\Http\Requests\Education\FetchEducationRequest;
 use App\Models\Education;
 use App\Models\User;
@@ -74,6 +76,30 @@ class EducationController extends Controller
 
         } catch (\Exception $e) {
 
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete education
+    public function delete(DeleteEducationRequest $request)
+    {
+        try {
+
+            // Get education
+            $education = Education::findOrFail($request->education);
+
+            // Delete Education
+            $education->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Education'),
+            ]);
+
+        } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),
