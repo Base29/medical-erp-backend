@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
@@ -379,5 +380,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('education')->group(function () {
         Route::post('create', [EducationController::class, 'create'])
             ->middleware(['permission:can_create_education']);
+
+        Route::post('/', [EducationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_education']);
     });
 });
