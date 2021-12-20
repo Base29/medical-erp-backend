@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\EmploymentPolicy;
+namespace App\Http\Requests\Education;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateEmploymentPolicyRequest extends FormRequest
+class DeleteEducationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,10 +26,7 @@ class CreateEmploymentPolicyRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
-            'name' => 'required|string',
-            'attachment' => 'required|file|mimes:png,jpg,docx,doc,pdf',
-            'sign_date' => 'nullable|date|date_format:Y-m-d',
+            'education' => 'required|numeric|exists:education,id',
         ];
     }
 

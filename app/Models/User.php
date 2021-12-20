@@ -5,7 +5,9 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\Education;
 use App\Models\EmploymentCheck;
+use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
 use App\Models\MiscellaneousInformation;
@@ -94,10 +96,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Signature::class);
     }
 
-    public function signedBy(User $user)
-    {
-        return $this->signatures->contains('user_id', $user->id);
-    }
+    // public function signedBy(User $user)
+    // {
+    //     return $this->signatures->contains('user_id', $user->id);
+    // }
 
     public function posts()
     {
@@ -167,6 +169,11 @@ class User extends Authenticatable implements JWTSubject
     public function references()
     {
         return $this->hasMany(Reference::class);
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class);
     }
 
 }
