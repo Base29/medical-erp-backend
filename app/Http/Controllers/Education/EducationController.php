@@ -134,7 +134,7 @@ class EducationController extends Controller
             }
 
             // Get education
-            $education = Education::fidOrFail($request->education);
+            $education = Education::findOrFail($request->education);
 
             $updateRequestData = $request->all();
 
