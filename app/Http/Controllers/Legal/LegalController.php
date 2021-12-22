@@ -70,24 +70,27 @@ class LegalController extends Controller
             }
 
             // If is_nurse = false then information for GMS if stored in the database
-            $legal->gmc_reference_number = $request->gmc_reference_number;
-            $legal->gp_register_date = $request->gp_register_date;
-            $legal->provisional_registration_date = $request->provisional_registration_date;
-            $legal->full_registration_date = $request->full_registration_date;
+            if (!$request->is_nurse) {
 
-            // Save legal with GMC
-            $user->legal()->save($legal);
+                $legal->gmc_reference_number = $request->gmc_reference_number;
+                $legal->gp_register_date = $request->gp_register_date;
+                $legal->provisional_registration_date = $request->provisional_registration_date;
+                $legal->full_registration_date = $request->full_registration_date;
 
-            // If request has gmc_specialist_registers
-            if ($request->has('gmc_specialist_registers')) {
-                $specialistRegisters = $request->gmc_specialist_registers;
+                // Save legal with GMC
+                $user->legal()->save($legal);
 
-                foreach ($specialistRegisters as $specialistRegister) {
-                    // Instance of GmcSpecialistRegister model
-                    $gmcSpecialistRegister = new GmcSpecialistRegister();
-                    $gmcSpecialistRegister->name = $specialistRegister['name'];
-                    $gmcSpecialistRegister->date = $specialistRegister['date'];
-                    $legal->gmcSpecialistRegisters()->save($gmcSpecialistRegister);
+                // If request has gmc_specialist_registers
+                if ($request->has('gmc_specialist_registers')) {
+                    $specialistRegisters = $request->gmc_specialist_registers;
+
+                    foreach ($specialistRegisters as $specialistRegister) {
+                        // Instance of GmcSpecialistRegister model
+                        $gmcSpecialistRegister = new GmcSpecialistRegister();
+                        $gmcSpecialistRegister->name = $specialistRegister['name'];
+                        $gmcSpecialistRegister->date = $specialistRegister['date'];
+                        $legal->gmcSpecialistRegisters()->save($gmcSpecialistRegister);
+                    }
                 }
             }
 
@@ -111,7 +114,7 @@ class LegalController extends Controller
             $user = User::findOrFail($request->user);
 
             // Get user's legal data
-            $legal = Legal::where('user_id', $user->id)->with('nmcQualifications', 'gmcSpecialistRegisters')->latest()->get();
+            $legal = Legal::where('user_id', $user->id)->with('nmcQualifications', 'gmcSpecialistRegisters')->latest()->first();
 
             // Return success response
             return Response::success([
