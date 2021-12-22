@@ -28,6 +28,17 @@ class CreateLegalRequest extends FormRequest
         return [
             'user' => 'required|numeric|exists:users,id',
             'is_nurse' => 'required|boolean',
+            'name' => 'required|string|exclude_if:is_nurse,true',
+            'location' => 'required|string|exclude_if:is_nurse,true',
+            'expiry_date' => 'required|date|date_format:Y-m-d|exclude_if,is_nurse,true',
+            'registration_status' => 'required|string|exclude_if:is_nurse,true',
+            'register_entry' => 'required|string|exclude_if:is_nurse,true',
+            'nmc_document' => 'required|string|exclude_if:is_nurse,true',
+            'gmc_reference_number' => 'required|string|exclude_if:is_nurse,false',
+            'gp_register_date' => 'required|date|date_format:Y-m-d|exclude_if:is_nurse,false',
+            'specialist_register' => 'required|string|exclude_if:is_nurse,false',
+            'provisional_registration_date' => 'required|date|date_format:Y-m-d|exclude_if:is_nurse,false',
+            'full_registration_date' => 'required|date|date_format:Y-m-d|exclude_if:is_nurse,false',
         ];
     }
 
