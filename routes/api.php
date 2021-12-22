@@ -399,5 +399,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('create', [LegalController::class, 'create'])
             ->middleware(['permission:can_create_legal']);
+
+        Route::post('delete', [LegalController::class, 'delete'])
+            ->middleware(['permission:can_delete_legal']);
     });
 });
