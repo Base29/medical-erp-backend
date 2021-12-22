@@ -28,6 +28,7 @@ class CreateLegalsTable extends Migration
             $table->string('specialist_register');
             $table->date('provisional_registration_date');
             $table->date('full_registration_date');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

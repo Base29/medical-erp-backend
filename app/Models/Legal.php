@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\NmcQualification;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -30,5 +31,10 @@ class Legal extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function nmcQualifications()
+    {
+        return $this->hasMany(NmcQualification::class);
     }
 }
