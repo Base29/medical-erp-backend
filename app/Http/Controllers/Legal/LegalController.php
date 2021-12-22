@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Legal;
 
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Legal\CreateLegalRequest;
+use App\Http\Requests\Legal\DeleteLegalRequest;
 use App\Http\Requests\Legal\FetchLegalRequest;
 use App\Models\GmcSpecialistRegister;
 use App\Models\Legal;
@@ -119,6 +121,28 @@ class LegalController extends Controller
             // Return success response
             return Response::success([
                 'legal' => $legal,
+            ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete Legal
+    public function delete(DeleteLegalRequest $request)
+    {
+        try {
+            // Get legal
+            $legal = Legal::findOrFail($request->legal);
+
+            // Delete Legal
+            $legal->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Legal'),
             ]);
         } catch (\Exception $e) {
             return Response::fail([
