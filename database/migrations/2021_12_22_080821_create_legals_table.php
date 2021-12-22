@@ -22,10 +22,10 @@ class CreateLegalsTable extends Migration
             $table->date('expiry_date')->nullable();
             $table->string('registration_status')->nullable();
             $table->string('register_entry')->nullable();
+            $table->date('register_entry_date')->nullable();
             $table->string('nmc_document')->nullable();
-            $table->string('gms_reference_number')->nullable();
+            $table->string('gmc_reference_number')->nullable();
             $table->date('gp_register_date')->nullable();
-            $table->string('specialist_register')->nullable();
             $table->date('provisional_registration_date')->nullable();
             $table->date('full_registration_date')->nullable();
             $table->softDeletes();

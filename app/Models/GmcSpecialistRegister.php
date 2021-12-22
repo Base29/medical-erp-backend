@@ -7,14 +7,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class NmcQualification extends Model
+class GmcSpecialistRegister extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
         'legal_id',
-        'name',
-        'date',
+        'specialist_register',
+        'specialist_register_date',
     ];
 
     public function legal()

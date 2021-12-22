@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\GmcSpecialistRegister;
 use App\Models\NmcQualification;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,6 +36,11 @@ class Legal extends Model
 
     public function nmcQualifications()
     {
-        return $this->hasMany(NmcQualification::class);
+        return $this->hasMany(NmcQualification::class, 'legal_id', 'id');
+    }
+
+    public function gmcSpecialistRegisters()
+    {
+        return $this->hasMany(GmcSpecialistRegister::class);
     }
 }

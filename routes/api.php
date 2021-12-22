@@ -9,6 +9,7 @@ use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -389,5 +390,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [EducationController::class, 'update'])
             ->middleware(['permission:can_update_education']);
+    });
+
+    // Routes for legal
+    Route::prefix('legals')->group(function () {
+        Route::post('create', [LegalController::class, 'create'])
+            ->middleware(['permission:can_create_legal']);
     });
 });

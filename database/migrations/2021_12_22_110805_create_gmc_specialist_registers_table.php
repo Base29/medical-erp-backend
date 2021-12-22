@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateNmcQualificationsTable extends Migration
+class CreateGmcSpecialistRegistersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,11 +13,11 @@ class CreateNmcQualificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('nmc_qualifications', function (Blueprint $table) {
+        Schema::create('gmc_specialist_registers', function (Blueprint $table) {
             $table->id();
             $table->foreignId('legal_id')->constrained()->cascadeOnDelete();
-            $table->string('name')->nullable();
-            $table->date('date')->nullable();
+            $table->string('name');
+            $table->date('date');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -30,6 +30,6 @@ class CreateNmcQualificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('nmc_qualifications');
+        Schema::dropIfExists('gmc_specialist_registers');
     }
 }
