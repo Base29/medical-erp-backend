@@ -6,6 +6,7 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Legal\CreateLegalRequest;
+use App\Http\Requests\Legal\FetchLegalRequest;
 use App\Models\GmcSpecialistRegister;
 use App\Models\Legal;
 use App\Models\NmcQualification;
@@ -93,6 +94,28 @@ class LegalController extends Controller
             // Return success response
             return Response::success([
                 'legal' => $legal->with('nmcQualifications', 'gmcSpecialistRegisters')->latest()->first(),
+            ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch user's legal
+    public function fetch(FetchLegalRequest $request)
+    {
+        try {
+            // Get user
+            $user = User::findOrFail($request->user);
+
+            // Get user's legal data
+            $legal = Legal::where('user_id', $user->id)->with('nmcQualifications', 'gmcSpecialistRegisters')->latest()->get();
+
+            // Return success response
+            return Response::success([
+                'legal' => $legal,
             ]);
         } catch (\Exception $e) {
             return Response::fail([
