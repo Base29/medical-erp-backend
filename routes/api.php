@@ -394,6 +394,9 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for legal
     Route::prefix('legals')->group(function () {
+        Route::post('/', [LegalController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_user_legal']);
+
         Route::post('create', [LegalController::class, 'create'])
             ->middleware(['permission:can_create_legal']);
     });
