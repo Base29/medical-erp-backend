@@ -10,6 +10,7 @@ use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
+use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Post;
@@ -174,6 +175,11 @@ class User extends Authenticatable implements JWTSubject
     public function education()
     {
         return $this->hasMany(Education::class);
+    }
+
+    public function legal()
+    {
+        return $this->hasOne(Legal::class);
     }
 
 }
