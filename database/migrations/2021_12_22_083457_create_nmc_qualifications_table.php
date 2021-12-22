@@ -16,8 +16,8 @@ class CreateNmcQualificationsTable extends Migration
         Schema::create('nmc_qualifications', function (Blueprint $table) {
             $table->id();
             $table->foreignId('legal_id')->constrained()->cascadeOnDelete();
-            $table->string('qualification');
-            $table->date('qualification_date');
+            $table->string('qualification')->nullable();
+            $table->date('qualification_date')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
