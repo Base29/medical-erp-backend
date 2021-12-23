@@ -21,10 +21,10 @@ class Legal extends Model
         'expiry_date',
         'registration_status',
         'register_entry',
+        'register_entry_date',
         'nmc_document',
         'gmc_reference_number',
         'gp_register_date',
-        'specialist_register',
         'provisional_registration_date',
         'full_registration_date',
     ];

@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Legal;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Legal\CreateLegalRequest;
 use App\Http\Requests\Legal\DeleteLegalRequest;
 use App\Http\Requests\Legal\FetchLegalRequest;
+use App\Http\Requests\Legal\UpdateLegalRequest;
 use App\Models\GmcSpecialistRegister;
 use App\Models\Legal;
 use App\Models\NmcQualification;
@@ -144,6 +146,101 @@ class LegalController extends Controller
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Legal'),
             ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update Legal
+    public function update(UpdateLegalRequest $request)
+    {
+        try {
+
+            // Get legal
+            $legal = Legal::findOrFail($request->legal);
+
+            // Cast update request data to a variable
+            $updateRequestData = null;
+
+            // If is_nurse = true
+            if ($legal->is_nurse) {
+
+                // Allowed fields for NMC
+                $allowedFieldsNmc = [
+                    'is_nurse',
+                    'name',
+                    'location',
+                    'expiry_date',
+                    'registration_status',
+                    'register_entry',
+                    'register_entry_date',
+                    'nmc_document',
+                ];
+
+                // Checking if the $request doesn't contain any of the allowed fields
+                if (!$request->hasAny($allowedFieldsNmc)) {
+                    return Response::fail([
+                        'message' => ResponseMessage::allowedFields($allowedFieldsNmc),
+                        'code' => 400,
+                    ]);
+                }
+
+                $updateRequestData = $request->only($allowedFieldsNmc);
+
+                // Check if request has file $request->nmc_document
+                if ($request->hasFile('nmc_document')) {
+                    // Folder path for NMC Document
+                    $folderPath = 'legal/user-' . $legal->user_id . '/nmc-document';
+
+                    // Upload NMC document and get the file url
+                    $updateRequestData['nmc_document'] = FileUploadService::upload($request->file('nmc_document'), $folderPath, 's3');
+                }
+
+            }
+
+            // If is_nurse = false
+            if (!$legal->is_nurse) {
+
+                // Allowed fields for GMC
+                $allowedFieldsGmc = [
+                    'gmc_reference_number',
+                    'gp_register_date',
+                    'specialist_register',
+                    'provisional_registration_date',
+                    'full_registration_date',
+                ];
+
+                // Checking if the $request doesn't contain any of the allowed fields
+                if (!$request->hasAny($allowedFieldsGmc)) {
+                    return Response::fail([
+                        'message' => ResponseMessage::allowedFields($allowedFieldsGmc),
+                        'code' => 400,
+                    ]);
+                }
+
+                $updateRequestData = $request->only($allowedFieldsGmc);
+
+            }
+
+            // Update legal
+            $legalUpdated = UpdateService::updateModel($legal, $updateRequestData, 'legal');
+
+            // Return fail response if something went wrong while updating
+            if (!$legalUpdated) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::customMessage('Something went wrong while updating Legal.'),
+                ]);
+            }
+
+            // Return success response
+            return Response::success([
+                'legal' => $legal->with('nmcQualifications', 'gmcSpecialistRegisters')->latest('updated_at')->first(),
+            ]);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
