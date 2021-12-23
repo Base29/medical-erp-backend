@@ -43,6 +43,7 @@ class ReferenceController extends Controller
             $reference->relationship = $request->relationship;
             $reference->referee_job_title = $request->referee_job_title;
             $reference->phone_number = $request->phone_number;
+            $reference->referee_email = $request->referee_email;
             $reference->start_date = $request->start_date;
             $reference->end_date = $request->end_date;
             $reference->can_contact_referee = $request->can_contact_referee;
