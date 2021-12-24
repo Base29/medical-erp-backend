@@ -30,6 +30,7 @@ class EmploymentHistoryController extends Controller
             $employmentHistory->address = $request->address;
             $employmentHistory->phone_number = $request->phone_number;
             $employmentHistory->type_of_business = $request->type_of_business;
+            $employmentHistory->job_title = $request->job_title;
             $employmentHistory->job_start_date = $request->job_start_date;
             $employmentHistory->job_end_date = $request->job_end_date;
             $employmentHistory->salary = $request->salary;
