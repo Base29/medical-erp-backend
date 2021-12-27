@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateEmergencyContactRequest extends FormRequest
+class FetchEmergencyContactRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,11 +27,6 @@ class CreateEmergencyContactRequest extends FormRequest
     {
         return [
             'user' => 'required|numeric|exists:users,id',
-            'name' => 'required|string',
-            'relationship' => 'required|string',
-            'primary_phone' => 'required|string',
-            'secondary_phone' => 'required|string',
-            'is_primary' => 'required|boolean',
         ];
     }
 

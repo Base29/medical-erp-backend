@@ -20,6 +20,7 @@ class CreateEmergencyContactsTable extends Migration
             $table->string('relationship')->nullable();
             $table->string('primary_phone')->nullable();
             $table->string('secondary_phone')->nullable();
+            $table->boolean('is_primary')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

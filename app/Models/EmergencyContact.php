@@ -17,6 +17,7 @@ class EmergencyContact extends Model
         'relationship',
         'primary_phone',
         'secondary_phone',
+        'is_primary',
     ];
 
     public function user()
