@@ -6,6 +6,7 @@ use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\Education\EducationController;
+use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
@@ -405,5 +406,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [LegalController::class, 'update'])
             ->middleware(['permission:can_update_legal']);
+    });
+
+    // Routes for emergency contact
+    Route::prefix('emergency-contacts')->group(function () {
+        Route::post('create', [EmergencyContactController::class, 'create'])
+            ->middleware(['permission:can_create_emergency_contact']);
     });
 });
