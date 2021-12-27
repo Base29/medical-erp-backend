@@ -412,5 +412,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('emergency-contacts')->group(function () {
         Route::post('create', [EmergencyContactController::class, 'create'])
             ->middleware(['permission:can_create_emergency_contact']);
+
+        Route::post('/', [EmergencyContactController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_emergency_contact']);
     });
 });
