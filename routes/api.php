@@ -428,5 +428,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('terminations')->group(function () {
         Route::post('create', [TerminationController::class, 'create'])
             ->middleware(['permission:can_create_termination']);
+
+        Route::post('/', [TerminationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_termination']);
     });
 });
