@@ -18,6 +18,7 @@ use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Profile;
 use App\Models\Signature;
+use App\Models\Termination;
 use App\Models\WorkPattern;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -186,6 +187,11 @@ class User extends Authenticatable implements JWTSubject
     public function emergencyContacts()
     {
         return $this->hasMany(EmergencyContact::class);
+    }
+
+    public function termination()
+    {
+        return $this->hasOne(Termination::class);
     }
 
 }
