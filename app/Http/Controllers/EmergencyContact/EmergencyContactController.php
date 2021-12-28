@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\EmergencyContact;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmergencyContact\CreateEmergencyContactRequest;
+use App\Http\Requests\EmergencyContact\DeleteEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\FetchEmergencyContactRequest;
 use App\Models\EmergencyContact;
 use App\Models\User;
@@ -53,6 +55,29 @@ class EmergencyContactController extends Controller
             return Response::success([
                 'emergency-contacts' => $emergencyContacts,
             ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete emergency contact
+    public function delete(DeleteEmergencyContactRequest $request)
+    {
+        try {
+            // Get emergency contact
+            $emergencyContact = EmergencyContact::findOrFail($request->emergency_contact);
+
+            // Delete emergency contact
+            $emergencyContact->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Emergency Contact'),
+            ]);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
