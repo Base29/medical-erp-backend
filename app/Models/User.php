@@ -6,6 +6,7 @@ use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
 use App\Models\Education;
+use App\Models\EmergencyContact;
 use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
@@ -180,6 +181,11 @@ class User extends Authenticatable implements JWTSubject
     public function legal()
     {
         return $this->hasOne(Legal::class);
+    }
+
+    public function emergencyContacts()
+    {
+        return $this->hasMany(EmergencyContact::class);
     }
 
 }
