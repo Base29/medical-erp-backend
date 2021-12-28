@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class DeleteEmergencyContactRequest extends FormRequest
+class UpdateEmergencyContactRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,6 +27,11 @@ class DeleteEmergencyContactRequest extends FormRequest
     {
         return [
             'emergency_contact' => 'required|numeric|exists:emergency_contacts,id',
+            'name' => 'required|string',
+            'relationship' => 'required|string',
+            'primary_phone' => 'required|string',
+            'secondary_phone' => 'required|string',
+            'is_primary' => 'required|boolean',
         ];
     }
 
@@ -34,4 +39,5 @@ class DeleteEmergencyContactRequest extends FormRequest
     {
         throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
+
 }

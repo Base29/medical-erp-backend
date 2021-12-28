@@ -4,10 +4,12 @@ namespace App\Http\Controllers\EmergencyContact;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmergencyContact\CreateEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\DeleteEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\FetchEmergencyContactRequest;
+use App\Http\Requests\EmergencyContact\UpdateEmergencyContactRequest;
 use App\Models\EmergencyContact;
 use App\Models\User;
 
@@ -76,6 +78,54 @@ class EmergencyContactController extends Controller
             // Return success response
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Emergency Contact'),
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update emergency contact
+    public function update(UpdateEmergencyContactRequest $request)
+    {
+        try {
+            // Allowed fields
+            $allowedFields = [
+                'name',
+                'relationship',
+                'primary_phone',
+                'secondary_phone',
+                'is_primary',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$request->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Get emergency contact
+            $emergencyContact = EmergencyContact::findOrFail($request->emergency_contact);
+
+            // Update emergency contact
+            $emergencyContactUpdated = UpdateService::updateModel($emergencyContact, $request->all(), 'emergency_contact');
+
+            // Return failed response in-case update fails
+            if (!$emergencyContactUpdated) {
+                return Response::fail([
+                    'code' => 400,
+                    'message' => ResponseMessage::customMessage('Something went wrong while updating emergency contact'),
+                ]);
+            }
+
+            // Return success response
+            return Response::success([
+                'emergency-contact' => $emergencyContact->latest('updated_at')->first(),
             ]);
 
         } catch (\Exception $e) {
