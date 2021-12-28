@@ -48,7 +48,7 @@ class TerminationController extends Controller
             $user = User::findOrFail($request->user);
 
             // Fetch Termination
-            $termination = Termination::where('user_id', $user->id)->latest()->get();
+            $termination = Termination::where('user_id', $user->id)->latest()->first();
 
             // Return success response
             return Response::success([
