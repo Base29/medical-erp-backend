@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Termination;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class CreateTerminationRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class CreateTerminationRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,16 @@ class CreateTerminationRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'user' => 'required|numeric|exists:users,id',
+            'date' => 'required|date|date_format:Y-m-d',
+            'reason' => 'required|string',
+            'detail' => 'required|string|max:2000',
+            'is_exit_interview_performed' => 'required|boolean',
         ];
+    }
+
+    protected function failedValidation($validator)
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }
