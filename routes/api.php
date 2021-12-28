@@ -415,5 +415,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [EmergencyContactController::class, 'fetch'])
             ->middleware(['permission:can_fetch_emergency_contact']);
+
+        Route::post('update', [EmergencyContactController::class, 'update'])
+            ->middleware(['permission:can_update_emergency_contact']);
+
+        Route::post('delete', [EmergencyContactController::class, 'delete'])
+            ->middleware(['permission:can_delete_emergency_contact']);
     });
 });
