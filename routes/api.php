@@ -24,6 +24,7 @@ use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
+use App\Http\Controllers\Termination\TerminationController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
 use App\Http\Controllers\WorkTiming\WorkTimingController;
@@ -421,5 +422,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [EmergencyContactController::class, 'delete'])
             ->middleware(['permission:can_delete_emergency_contact']);
+    });
+
+    // Routes for termination
+    Route::prefix('terminations')->group(function () {
+        Route::post('create', [TerminationController::class, 'create'])
+            ->middleware(['permission:can_create_termination']);
     });
 });
