@@ -434,5 +434,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [TerminationController::class, 'update'])
             ->middleware(['permission:can_update_termination']);
+
+        Route::post('delete', [TerminationController::class, 'delete'])
+            ->middleware(['permission:can_delete_termination']);
     });
 });
