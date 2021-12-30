@@ -15,6 +15,7 @@ class CreatePersonSpecificationsTable extends Migration
     {
         Schema::create('person_specifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->string('name')->nullable();
             $table->softDeletes();
             $table->timestamps();
