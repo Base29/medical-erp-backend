@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Models\PersonSpecification;
+use App\Models\PersonSpecificationAttribute;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +18,7 @@ class PersonSpecification extends Model
 
     public function personSpecificationAttributes()
     {
-        return $this->hasMany(PersonSpecification::class);
+        return $this->hasMany(PersonSpecificationAttribute::class);
     }
 
     public function practices()
