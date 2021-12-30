@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Equipment;
 use App\Models\JobSpecification;
+use App\Models\PersonSpecification;
 use App\Models\Policy;
 use App\Models\Post;
 use App\Models\Room;
@@ -53,6 +54,11 @@ class Practice extends Model
     public function jobDescriptions()
     {
         return $this->belongsToMany(JobSpecification::class);
+    }
+
+    public function personSpecifications()
+    {
+        return $this->belongsToMany(PersonSpecification::class);
     }
 
 }
