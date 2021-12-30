@@ -17,7 +17,7 @@ class CreatePersonSpecificationsTable extends Migration
             $table->id();
             $table->string('attribute')->nullable();
             $table->string('essential')->nullable();
-            $table->string('desireable')->nullable();
+            $table->string('desirable')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
