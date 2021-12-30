@@ -15,9 +15,7 @@ class CreatePersonSpecificationsTable extends Migration
     {
         Schema::create('person_specifications', function (Blueprint $table) {
             $table->id();
-            $table->string('attribute')->nullable();
-            $table->string('essential')->nullable();
-            $table->string('desirable')->nullable();
+            $table->string('name')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
