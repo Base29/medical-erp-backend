@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Equipment;
+use App\Models\HiringRequest;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Policy;
@@ -59,6 +60,11 @@ class Practice extends Model
     public function personSpecifications()
     {
         return $this->belongsToMany(PersonSpecification::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
     }
 
 }

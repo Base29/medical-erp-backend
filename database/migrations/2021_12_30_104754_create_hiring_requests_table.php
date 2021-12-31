@@ -27,6 +27,7 @@ class CreateHiringRequestsTable extends Migration
             $table->integer('job_specification')->nullable();
             $table->integer('person_specification')->nullable();
             $table->integer('rota_information')->nullable();
+            $table->boolean('is_approved')->default(0);
             $table->softDeletes();
             $table->timestamps();
         });

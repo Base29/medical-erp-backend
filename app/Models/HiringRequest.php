@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Practice;
+use App\Models\WorkPattern;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -29,5 +30,10 @@ class HiringRequest extends Model
     public function practice()
     {
         return $this->belongsTo(Practice::class);
+    }
+
+    public function workPatterns()
+    {
+        return $this->belongsToMany(WorkPattern::class);
     }
 }
