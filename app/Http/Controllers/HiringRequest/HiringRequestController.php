@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HiringRequest\CreateHiringRequest;
+use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
 use App\Models\HiringRequest;
 use App\Models\Practice;
 use App\Models\WorkPattern;
@@ -97,8 +98,21 @@ class HiringRequestController extends Controller
     }
 
     // Fetch hiring request
-    public function fetch()
+    public function fetchSingle(FetchSingleHiringRequest $request)
     {
+        try {
+            // Get hiring request
+            $hiringRequest = HiringRequest::where('id', $request->hiring_request)->with('workPatterns')->get();
 
+            // Return success response
+            return Response::success([
+                'hiring-request' => $hiringRequest,
+            ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 }
