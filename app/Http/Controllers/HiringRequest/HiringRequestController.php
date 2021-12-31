@@ -95,4 +95,10 @@ class HiringRequestController extends Controller
             ]);
         }
     }
+
+    // Fetch hiring request
+    public function fetch()
+    {
+
+    }
 }
