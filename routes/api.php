@@ -10,6 +10,7 @@ use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -437,5 +438,20 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [TerminationController::class, 'delete'])
             ->middleware(['permission:can_delete_termination']);
+    });
+
+    // Routes for hiring request
+    Route::prefix('hiring-requests')->group(function () {
+        Route::post('create', [HiringRequestController::class, 'create'])
+            ->middleware(['permission:can_create_hiring_request']);
+
+        Route::post('/', [HiringRequestController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('update', [HiringRequestController::class, 'update'])
+            ->middleware(['permission:can_update_hiring_request']);
+
+        Route::post('delete', [HiringRequestController::class, 'delete'])
+            ->middleware(['permission:can_delete_hiring_request']);
     });
 });

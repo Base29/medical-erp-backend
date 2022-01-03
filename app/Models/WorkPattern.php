@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
 use App\Models\User;
 use App\Models\WorkTiming;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -16,6 +17,10 @@ class WorkPattern extends Model
         'name',
     ];
 
+    protected $hidden = [
+        'pivot',
+    ];
+
     public function users()
     {
         return $this->belongsToMany(User::class);
@@ -24,5 +29,10 @@ class WorkPattern extends Model
     public function workTimings()
     {
         return $this->hasMany(WorkTiming::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->belongsToMany(HiringRequest::class);
     }
 }
