@@ -447,5 +447,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [HiringRequestController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('update', [HiringRequestController::class, 'update'])
+            ->middleware(['permission:can_update_hiring_request']);
     });
 });
