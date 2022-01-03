@@ -7,6 +7,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HiringRequest\CreateHiringRequest;
+use App\Http\Requests\HiringRequest\DeleteHiringRequest;
 use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
 use App\Http\Requests\HiringRequest\UpdateHiringRequest;
 use App\Models\HiringRequest;
@@ -228,6 +229,28 @@ class HiringRequestController extends Controller
                 'hiring-request' => $hiringRequest->with('workPatterns')->latest('updated_at')->first(),
             ]);
 
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete hiring request
+    public function delete(DeleteHiringRequest $request)
+    {
+        try {
+            // Get hiring request
+            $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+            // Delete hiring request
+            $hiringRequest->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Hiring Request'),
+            ]);
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,

@@ -450,5 +450,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [HiringRequestController::class, 'update'])
             ->middleware(['permission:can_update_hiring_request']);
+
+        Route::post('delete', [HiringRequestController::class, 'delete'])
+            ->middleware(['permission:can_delete_hiring_request']);
     });
 });
