@@ -119,10 +119,10 @@ class UserController extends Controller
                     ->first(),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -148,10 +148,10 @@ class UserController extends Controller
 
             return Response::success(['message' => ResponseMessage::deleteSuccess('User')]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -169,10 +169,10 @@ class UserController extends Controller
 
             return Response::success(['users' => $users]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -226,10 +226,10 @@ class UserController extends Controller
                 ]);
             }
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -253,10 +253,10 @@ class UserController extends Controller
                 'user' => $user,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }

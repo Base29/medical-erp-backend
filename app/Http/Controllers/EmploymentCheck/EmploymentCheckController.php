@@ -28,14 +28,20 @@ class EmploymentCheckController extends Controller
             // DBS self declared certificate folder name
             $selfDeclaredCertificateFolder = 'employment-check/user-' . $user->id . '/dbs-self-declared';
 
-            //DBS certificate folder name
+            // DBS certificate folder name
             $dbsCertificateFolder = 'employment-check/user-' . $user->id . '/dbs-certificate';
+
+            // Right to work
+            $rightToWorkCertificateFolder = 'employment-check/user-' . $user->id . '/right-to-work-certificate';
 
             // Upload self declared dbs certificate
             $selfDeclaredCertificateUrl = $request->hasFile('self_declaration_certificate') ? FileUploadService::upload($request->self_declaration_certificate, $selfDeclaredCertificateFolder, 's3') : null;
 
             // Upload dbs certificate
             $dbsCertificateUrl = $request->hasFile('dbs_certificate') ? FileUploadService::upload($request->dbs_certificate, $dbsCertificateFolder, 's3') : null;
+
+            // Upload right to work certificate
+            $rightToWorkCertificateUrl = $request->hasFile('right_to_work_certificate') ? FileUploadService::upload($request->right_to_work_certificate, $rightToWorkCertificateFolder, 's3') : null;
 
             // Create user nationality
             $employmentCheck = new EmploymentCheck();
@@ -44,6 +50,7 @@ class EmploymentCheckController extends Controller
             $employmentCheck->passport_date_of_expiry = $request->passport_date_of_expiry;
             $employmentCheck->is_uk_citizen = $request->is_uk_citizen;
             $employmentCheck->right_to_work_status = $request->right_to_work_status;
+            $employmentCheck->right_to_work_certificate = $rightToWorkCertificateUrl;
             $employmentCheck->share_code = $request->share_code;
             $employmentCheck->date_issued = $request->date_issued;
             $employmentCheck->date_checked = $request->date_checked;
@@ -60,6 +67,7 @@ class EmploymentCheckController extends Controller
             $employmentCheck->dbs_conducted_date = $request->dbs_conducted_date;
             $employmentCheck->follow_up_date = $request->follow_up_date;
             $employmentCheck->dbs_certificate = $dbsCertificateUrl;
+            $employmentCheck->dbs_certificate_number = $request->dbs_certificate_number;
             $employmentCheck->driving_license_number = $request->driving_license_number;
             $employmentCheck->driving_license_country_of_issue = $request->driving_license_country_of_issue;
             $employmentCheck->driving_license_class = $request->driving_license_class;
@@ -76,7 +84,7 @@ class EmploymentCheckController extends Controller
         } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -94,6 +102,7 @@ class EmploymentCheckController extends Controller
                 'passport_date_of_expiry',
                 'is_uk_citizen',
                 'right_to_work_status',
+                'right_to_work_certificate',
                 'share_code',
                 'date_issued',
                 'date_checked',
@@ -110,6 +119,7 @@ class EmploymentCheckController extends Controller
                 'dbs_conducted_date',
                 'follow_up_date',
                 'dbs_certificate',
+                'dbs_certificate_number',
                 'driving_license_number',
                 'driving_license_country_of_issue',
                 'driving_license_class',
@@ -132,7 +142,7 @@ class EmploymentCheckController extends Controller
 
             //TODO: File url update functionality needs to be changed/enhanced as done in MiscellaneousInformationController
             // Check if request contains files to upload
-            if ($request->hasAny(['self_declaration_certificate', 'dbs_certificate'])) {
+            if ($request->hasAny(['self_declaration_certificate', 'dbs_certificate', 'right_to_work_certificate'])) {
 
                 // If self_declaration_certificate file is provided
                 if ($request->hasFile('self_declaration_certificate')) {
@@ -172,6 +182,18 @@ class EmploymentCheckController extends Controller
                     $updateRequestData['dbs_certificate'] = $dbsCertificateUrl;
                 }
 
+                // If right_to_work_certificate file is provided
+                if ($request->hasFile('right_to_work_certificate')) {
+                    // Right to work certificate folder name
+                    $rightToWorkCertificateFolder = 'employment-check/user-' . $employmentCheck->user_id . '/right-to-work-certificate';
+
+                    // Upload Right to work certificate
+                    $rightToWorkCertificateUrl = FileUploadService::upload($request->right_to_work_certificate, $rightToWorkCertificateFolder, 's3');
+
+                    // Overriding values of right_to_work_certificate field with the urls of uploaded files.
+                    $updateRequestData['right_to_work_certificate'] = $rightToWorkCertificateUrl;
+                }
+
             }
 
             // Update employment check
@@ -192,7 +214,7 @@ class EmploymentCheckController extends Controller
         } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -222,7 +244,7 @@ class EmploymentCheckController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -243,7 +265,7 @@ class EmploymentCheckController extends Controller
 
         } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }

@@ -5,9 +5,13 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\Education\EducationController;
+use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\HiringRequest\HiringRequestController;
+use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -16,10 +20,12 @@ use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Profile\ProfileController;
 use App\Http\Controllers\Reason\ReasonController;
+use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Role\RoleController;
 use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
+use App\Http\Controllers\Termination\TerminationController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
 use App\Http\Controllers\WorkTiming\WorkTimingController;
@@ -357,5 +363,95 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('employment-history', [EmploymentHistoryController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_single_employment_history']);
+    });
+
+    // Routes for references
+    Route::prefix('references')->group(function () {
+        Route::post('create', [ReferenceController::class, 'create'])
+            ->middleware(['permission:can_create_reference']);
+
+        Route::post('/', [ReferenceController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_user_references']);
+
+        Route::post('delete', [ReferenceController::class, 'delete'])
+            ->middleware(['permission:can_delete_reference']);
+
+        Route::post('update', [ReferenceController::class, 'update'])
+            ->middleware(['permission:can_update_reference']);
+    });
+
+    // Routes for education
+    Route::prefix('education')->group(function () {
+        Route::post('create', [EducationController::class, 'create'])
+            ->middleware(['permission:can_create_education']);
+
+        Route::post('/', [EducationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_education']);
+
+        Route::post('delete', [EducationController::class, 'delete'])
+            ->middleware(['permission:can_delete_education']);
+
+        Route::post('update', [EducationController::class, 'update'])
+            ->middleware(['permission:can_update_education']);
+    });
+
+    // Routes for legal
+    Route::prefix('legals')->group(function () {
+        Route::post('/', [LegalController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_user_legal']);
+
+        Route::post('create', [LegalController::class, 'create'])
+            ->middleware(['permission:can_create_legal']);
+
+        Route::post('delete', [LegalController::class, 'delete'])
+            ->middleware(['permission:can_delete_legal']);
+
+        Route::post('update', [LegalController::class, 'update'])
+            ->middleware(['permission:can_update_legal']);
+    });
+
+    // Routes for emergency contact
+    Route::prefix('emergency-contacts')->group(function () {
+        Route::post('create', [EmergencyContactController::class, 'create'])
+            ->middleware(['permission:can_create_emergency_contact']);
+
+        Route::post('/', [EmergencyContactController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_emergency_contact']);
+
+        Route::post('update', [EmergencyContactController::class, 'update'])
+            ->middleware(['permission:can_update_emergency_contact']);
+
+        Route::post('delete', [EmergencyContactController::class, 'delete'])
+            ->middleware(['permission:can_delete_emergency_contact']);
+    });
+
+    // Routes for termination
+    Route::prefix('terminations')->group(function () {
+        Route::post('create', [TerminationController::class, 'create'])
+            ->middleware(['permission:can_create_termination']);
+
+        Route::post('/', [TerminationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_termination']);
+
+        Route::post('update', [TerminationController::class, 'update'])
+            ->middleware(['permission:can_update_termination']);
+
+        Route::post('delete', [TerminationController::class, 'delete'])
+            ->middleware(['permission:can_delete_termination']);
+    });
+
+    // Routes for hiring request
+    Route::prefix('hiring-requests')->group(function () {
+        Route::post('create', [HiringRequestController::class, 'create'])
+            ->middleware(['permission:can_create_hiring_request']);
+
+        Route::post('/', [HiringRequestController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('update', [HiringRequestController::class, 'update'])
+            ->middleware(['permission:can_update_hiring_request']);
+
+        Route::post('delete', [HiringRequestController::class, 'delete'])
+            ->middleware(['permission:can_delete_hiring_request']);
     });
 });

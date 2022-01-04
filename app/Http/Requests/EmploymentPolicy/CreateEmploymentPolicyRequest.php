@@ -29,7 +29,7 @@ class CreateEmploymentPolicyRequest extends FormRequest
             'user' => 'required|numeric|exists:users,id',
             'name' => 'required|string',
             'attachment' => 'required|file|mimes:png,jpg,docx,doc,pdf',
-            'sign_date' => 'required|date|date_format:Y-m-d',
+            'sign_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 

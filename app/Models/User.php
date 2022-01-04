@@ -5,15 +5,20 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\Education;
+use App\Models\EmergencyContact;
 use App\Models\EmploymentCheck;
+use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
+use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Profile;
 use App\Models\Signature;
+use App\Models\Termination;
 use App\Models\WorkPattern;
 use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -94,10 +99,10 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(Signature::class);
     }
 
-    public function signedBy(User $user)
-    {
-        return $this->signatures->contains('user_id', $user->id);
-    }
+    // public function signedBy(User $user)
+    // {
+    //     return $this->signatures->contains('user_id', $user->id);
+    // }
 
     public function posts()
     {
@@ -162,6 +167,31 @@ class User extends Authenticatable implements JWTSubject
     public function equipment()
     {
         return $this->belongsToMany(Equipment::class);
+    }
+
+    public function references()
+    {
+        return $this->hasMany(Reference::class);
+    }
+
+    public function education()
+    {
+        return $this->hasMany(Education::class);
+    }
+
+    public function legal()
+    {
+        return $this->hasOne(Legal::class);
+    }
+
+    public function emergencyContacts()
+    {
+        return $this->hasMany(EmergencyContact::class);
+    }
+
+    public function termination()
+    {
+        return $this->hasOne(Termination::class);
     }
 
 }

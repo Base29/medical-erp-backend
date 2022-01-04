@@ -46,10 +46,10 @@ class EmploymentPolicyController extends Controller
                 'employment-policy' => $employmentPolicy,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -92,9 +92,9 @@ class EmploymentPolicyController extends Controller
                 'employment-policy' => $employmentPolicy->latest('updated_at')->first(),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -122,9 +122,9 @@ class EmploymentPolicyController extends Controller
                 'message' => ResponseMessage::deleteSuccess('Employment Policies'),
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
@@ -142,9 +142,9 @@ class EmploymentPolicyController extends Controller
                 'employment-policies' => $user->employmentPolicies,
             ]);
 
-        } catch (\Exception$e) {
+        } catch (\Exception $e) {
             return Response::fail([
-                'code' => 500,
+                'code' => 400,
                 'message' => $e->getMessage(),
             ]);
         }
