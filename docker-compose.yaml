@@ -1,61 +1,79 @@
-version: "3.8"
+version: '3'
 services:
-  esm_backend:
-    container_name: esm_backend
-    build:
-      context: .
-      dockerfile: ./docker/php/Dockerfile
-    expose:
-      - 9000
-    volumes:
-      - .:/usr/src/app
-      - ./public:/usr/src/app/public
-    depends_on:
-      - esm_db
-    networks:
-      - esm_network
 
-  esm_nginx:
-    container_name: esm_nginx
+  #PHP Service
+  esm:
     build:
       context: .
-      dockerfile: ./docker/nginx/Dockerfile
-    volumes:
-      - ./public:/usr/src/app/public
-    ports:
-      - 8000:80
-    depends_on:
-      - esm_backend
+      dockerfile: Dockerfile
+    image: digitalocean.com/php
+    container_name: esm
+    restart: unless-stopped
+    tty: true
     environment:
-      NGINX_FPM_HOST: esm_backend
-      NGINX_ROOT: /usr/src/app/public
+      SERVICE_NAME: esm
+      SERVICE_TAGS: esm_dev
+    working_dir: /var/www
+    volumes:
+      - ./:/var/www
+      - ./php/local.ini:/usr/local/etc/php/conf.d/local.ini
     networks:
-      - esm_network
+      - esm-network
 
-  esm_db:
-    container_name: esm_db
+  #Nginx Service
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - esm-network
+
+  #MySQL Service
+  db:
     image: mysql:8.0.20
-    restart: always
-    volumes:
-      - ./storage/db-data:/var/lib/mysql
+    container_name: db
+    restart: unless-stopped
+    tty: true
     ports:
-      - 3306:3306
+      - "3307:3306"
     environment:
-      MYSQL_DATABASE: esm
+      MYSQL_DATABASE: doctors_portal
       MYSQL_ROOT_PASSWORD: esmdb2021
       MYSQL_USER: esm
-      MYSQL_PASSWORD: esmdb2021
+      SERVICE_TAGS: esm_dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql/
+      - ./mysql/my.cnf:/etc/mysql/my.cnf
     networks:
-      - esm_network
+      - esm-network
 
-  esm_redis:
-    container_name: esm_redis
-    image: redis:latest
+  # phpmyadmin
+  esm_phpmyadmin:
+    depends_on:
+      - db
+    image: phpmyadmin/phpmyadmin
+    restart: always
     ports:
-      - 6379:6379
+      - '8001:80'
+    environment:
+      PMA_HOST: db
+      MYSQL_ROOT_PASSWORD: password
     networks:
-      - esm_network
+      - esm-network
 
+#Docker Networks
 networks:
-  esm_network:
+  esm-network:
     driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
