@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\Equipment;
 use App\Models\HiringRequest;
+use App\Models\InductionChecklist;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Policy;
@@ -65,6 +66,11 @@ class Practice extends Model
     public function hiringRequests()
     {
         return $this->hasMany(HiringRequest::class);
+    }
+
+    public function inductionChecklists()
+    {
+        return $this->hasMany(InductionChecklist::class);
     }
 
 }
