@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\InductionQuestion;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,5 +21,10 @@ class InductionChecklist extends Model
     public function practice()
     {
         return $this->belongsTo(Practice::class);
+    }
+
+    public function inductionQuestions()
+    {
+        return $this->hasMany(InductionQuestion::class);
     }
 }
