@@ -15,6 +15,8 @@ class CreateInductionQuestionsTable extends Migration
     {
         Schema::create('induction_questions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
+            $table->string('question')->nullable();
             $table->timestamps();
         });
     }

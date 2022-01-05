@@ -15,6 +15,11 @@ class CreateInductionSchedulesTable extends Migration
     {
         Schema::create('induction_schedules', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->date('schedule_date')->nullable();
+            $table->boolean('is_completed')->default(0);
+            $table->date('completed_date')->nullable();
             $table->timestamps();
         });
     }

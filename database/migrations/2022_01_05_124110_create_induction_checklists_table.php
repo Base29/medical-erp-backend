@@ -15,6 +15,9 @@ class CreateInductionChecklistsTable extends Migration
     {
         Schema::create('induction_checklists', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained()->cascadeOnDelete();
+            $table->string('name')->nullable();
             $table->timestamps();
         });
     }
