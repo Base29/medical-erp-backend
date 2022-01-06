@@ -8,6 +8,7 @@ services:
       dockerfile: Dockerfile
     image: cloudsigma.com/php
     container_name: app
+    # command: bash -c "/usr/local/bin/wait-for-it db:3307"
     restart: unless-stopped
     tty: true
     environment:
@@ -17,6 +18,8 @@ services:
     volumes:
       - ./:/var/www/html/
       - ./php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+    depends_on:
+      - db
     networks:
       - app-network
  
