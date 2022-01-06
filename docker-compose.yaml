@@ -8,7 +8,6 @@ services:
       dockerfile: Dockerfile
     image: cloudsigma.com/php
     container_name: app
-    # command: bash -c "/usr/local/bin/wait-for-it db:3307"
     restart: unless-stopped
     tty: true
     environment:
@@ -45,7 +44,7 @@ services:
     restart: unless-stopped
     tty: true
     ports:
-      - "3307:3306"
+      - "3306:3306"
     environment:
       MYSQL_DATABASE: doctors_portal
       MYSQL_ROOT_PASSWORD: esmdb2021
@@ -61,7 +60,7 @@ services:
   phpmyadmin:
     depends_on:
       - db
-    image: phpmyadmin/phpmyadmin
+    image: phpmyadmin
     restart: always
     ports:
       - '8001:80'
