@@ -35,14 +35,14 @@ RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local
 
 # Copy existing application directory contents to the working directory
 COPY . /var/www/html
+COPY ./wait-for-it.sh /usr/local/bin/wait-for-it
+RUN chown -R www-data:www-data
+RUN chmod u+x /usr/local/bin/wait-for-it
 
 # Assign permissions of the working directory to the www-data user
 RUN chown -R www-data:www-data \
     /var/www/html/storage \
     /var/www/html/bootstrap/cache
-
-COPY --chown=www-data:www-data ./wait-for-it.sh /usr/local/bin/wait-for-it
-RUN chmod u+x /usr/local/bin/wait-for-it
 # Expose port 9000 and start php-fpm server (for FastCGI Process Manager)
 EXPOSE 9000
 CMD ["php-fpm"]
