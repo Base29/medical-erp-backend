@@ -2,30 +2,30 @@ version: '3.8'
 services:
  
   #PHP Service
-  app:
+  esm-api:
     build:
       context: .
       dockerfile: Dockerfile
     image: cloudsigma.com/php
-    container_name: app
+    container_name: esm-api
     restart: unless-stopped
     tty: true
     environment:
-      SERVICE_NAME: app
+      SERVICE_NAME: esm-api
       SERVICE_TAGS: dev
     working_dir: /var/www/html/
     volumes:
       - ./:/var/www/html/
       - ./docker/php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
     depends_on:
-      - db
+      - esm-db
     networks:
-      - app-network
+      - esm-network
  
   #Nginx Service
-  webserver:
+  esm-webserver:
     image: nginx:alpine
-    container_name: webserver
+    container_name: esm-webserver
     restart: unless-stopped
     tty: true
     ports:
@@ -35,12 +35,12 @@ services:
       - ./:/var/www/html/
       - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
-      - app-network
+      - esm-network
  
   #MySQL Service
-  db:
+  esm-db:
     image: mysql:8.0.20
-    container_name: db
+    container_name: esm-db
     restart: unless-stopped
     tty: true
     ports:
@@ -54,26 +54,26 @@ services:
       - dbdata:/var/lib/mysql
       - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
-      - app-network
+      - esm-network
 
   # phpmyadmin
-  phpmyadmin:
-    container_name: phpmyadmin
+  esm-phpmyadmin:
+    container_name: esm-phpmyadmin
     depends_on:
-      - db
+      - esm-db
     image: phpmyadmin
     restart: always
     ports:
       - '8001:80'
     environment:
-      PMA_HOST: db
+      PMA_HOST: esm-db
       MYSQL_ROOT_PASSWORD: password
     networks:
-      - app-network
+      - esm-network
  
 #Docker Networks
 networks:
-  app-network:
+  esm-network:
     driver: bridge
 #Volumes
 volumes:
