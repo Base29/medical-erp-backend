@@ -16,7 +16,7 @@ services:
     working_dir: /var/www/html/
     volumes:
       - ./:/var/www/html/
-      - ./php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+      - ./docker/php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
     depends_on:
       - db
     networks:
@@ -33,7 +33,7 @@ services:
       - "443:443"
     volumes:
       - ./:/var/www/html/
-      - ./nginx/conf.d/:/etc/nginx/conf.d/
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
     networks:
       - app-network
  
@@ -52,7 +52,7 @@ services:
       SERVICE_NAME: mysql
     volumes:
       - dbdata:/var/lib/mysql
-      - ./mysql/my.cnf:/etc/mysql/my.cnf
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
     networks:
       - app-network
 
