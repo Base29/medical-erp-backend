@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InductionQuestion;
+use App\Models\InductionSchedule;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -26,5 +27,10 @@ class InductionChecklist extends Model
     public function inductionQuestions()
     {
         return $this->hasMany(InductionQuestion::class);
+    }
+
+    public function inductionSchedules()
+    {
+        return $this->hasMany(InductionSchedule::class);
     }
 }
