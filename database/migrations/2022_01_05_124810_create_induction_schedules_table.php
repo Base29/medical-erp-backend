@@ -17,7 +17,15 @@ class CreateInductionSchedulesTable extends Migration
             $table->id();
             $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
-            $table->date('schedule_date')->nullable();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
+            $table->string('duration')->nullable();
+            $table->boolean('is_hq_required')->default(0);
+            $table->integer('hq_staff_role_id')->nullable();
+            $table->integer('hq_staff_id')->nullable();
+            $table->boolean('is_additional_staff_required')->default(0);
+            $table->integer('additional_staff_role_id')->nullable();
+            $table->integer('additional_staff_id')->nullable();
             $table->boolean('is_completed')->default(0);
             $table->date('completed_date')->nullable();
             $table->timestamps();
