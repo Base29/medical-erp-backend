@@ -5,6 +5,7 @@ namespace App\Http\Controllers\InductionChecklist;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionChecklist\CreateInductionChecklistRequest;
+use App\Http\Requests\InductionChecklist\FetchInductionChecklistRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionQuestion;
 use App\Models\Practice;
@@ -52,6 +53,30 @@ class InductionChecklistController extends Controller
             $inductionQuestion = new InductionQuestion();
             $inductionQuestion->question = $question['question'];
             $inductionChecklist->inductionQuestions()->save($inductionQuestion);
+        }
+    }
+
+    // Fetch induction checklists for a practice
+    public function fetch(FetchInductionChecklistRequest $request)
+    {
+        try {
+
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get induction checklists for a practice
+            $inductionChecklists = InductionChecklist::where('practice_id', $practice->id)->latest()->paginate(10);
+
+            // Return success response
+            return Response::success([
+                'induction-checklists' => $inductionChecklists,
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }
