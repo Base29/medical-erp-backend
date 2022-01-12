@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\InductionChecklist;
+namespace App\Http\Requests\InductionQuestion;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateInductionChecklistRequest extends FormRequest
+class CreateInductionQuestionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,10 +26,8 @@ class CreateInductionChecklistRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
-            'role' => 'required|numeric|exists:roles,id',
-            'name' => 'required|string|max:255',
-            'questions' => 'required|array',
+            'induction_checklist_id' => 'required|numeric|exists:induction_checklists,id',
+            'question' => 'required|string|max:2000',
         ];
     }
 
