@@ -160,7 +160,7 @@ class LegalController extends Controller
         try {
 
             // Get legal
-            $legal = Legal::findOrFail($request->legal);
+            $legal = Legal::where('id', $request->legal)->with('nmcQualifications', 'gmcSpecialistRegisters')->first();
 
             // Cast update request data to a variable
             $updateRequestData = null;
@@ -168,9 +168,13 @@ class LegalController extends Controller
             // If is_nurse = true
             if ($legal->is_nurse) {
 
+                // Check if request has gmc nmc qualifications array
+                if ($request->has('nmc_qualifications')) {
+                    $this->updateSubItems($request->nmc_qualifications, 'nmc');
+                }
+
                 // Allowed fields for NMC
                 $allowedFieldsNmc = [
-                    'is_nurse',
                     'name',
                     'location',
                     'expiry_date',
@@ -203,6 +207,11 @@ class LegalController extends Controller
 
             // If is_nurse = false
             if (!$legal->is_nurse) {
+
+                // Check if request has gmc specialist registers array
+                if ($request->has('gmc_specialist_registers')) {
+                    $this->updateSubItems($request->gmc_specialist_registers, 'gmc');
+                }
 
                 // Allowed fields for GMC
                 $allowedFieldsGmc = [
@@ -247,5 +256,36 @@ class LegalController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    // Updating sub items
+    private function updateSubItems($subItems, $tag)
+    {
+
+        // Loop through the $subItems array
+        foreach ($subItems as $subItem) {
+
+            // Allowed fields
+            $allowedFields = [
+                'name',
+                'date',
+            ];
+
+            // Checking if the $request doesn't contain any of the allowed fields
+            if (!$subItem->hasAny($allowedFields)) {
+                return Response::fail([
+                    'message' => ResponseMessage::allowedFields($allowedFields),
+                    'code' => 400,
+                ]);
+            }
+
+            // Get model depending on provided $tag gmc or nmc
+            $model = $tag === 'gmc' ? GmcSpecialistRegister::findOrFail($subItem['id']) : NmcQualification::findOrFail($subItem['id']);
+
+            // Update subitem
+            UpdateService::updateModel($model, $subItem, 'id');
+
+        }
+
     }
 }
