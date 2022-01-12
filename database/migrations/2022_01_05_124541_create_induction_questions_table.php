@@ -17,6 +17,7 @@ class CreateInductionQuestionsTable extends Migration
             $table->id();
             $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
             $table->string('question')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

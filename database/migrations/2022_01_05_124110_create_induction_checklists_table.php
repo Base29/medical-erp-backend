@@ -18,6 +18,7 @@ class CreateInductionChecklistsTable extends Migration
             $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->foreignId('role_id')->constrained()->cascadeOnDelete();
             $table->string('name')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

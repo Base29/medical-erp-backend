@@ -20,6 +20,7 @@ class CreateInductionResultsTable extends Migration
             $table->foreignId('induction_question_id')->constrained()->cascadeOnDelete();
             $table->boolean('completed')->default(0);
             $table->text('comment')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

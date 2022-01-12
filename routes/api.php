@@ -11,6 +11,7 @@ use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
+use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -453,5 +454,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
             ->middleware(['permission:can_delete_hiring_request']);
+    });
+
+    // Routes for induction checklist
+    Route::prefix('induction-checklists')->group(function () {
+        Route::post('create', [InductionChecklistController::class, 'create'])
+            ->middleware(['permission:can_create_induction_checklist']);
     });
 });

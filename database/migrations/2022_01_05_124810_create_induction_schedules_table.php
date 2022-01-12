@@ -28,6 +28,7 @@ class CreateInductionSchedulesTable extends Migration
             $table->integer('additional_staff_id')->nullable();
             $table->boolean('is_completed')->default(0);
             $table->date('completed_date')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
