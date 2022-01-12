@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\InductionQuestion;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
+use App\Models\Role;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -32,5 +33,10 @@ class InductionChecklist extends Model
     public function inductionSchedules()
     {
         return $this->hasMany(InductionSchedule::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }

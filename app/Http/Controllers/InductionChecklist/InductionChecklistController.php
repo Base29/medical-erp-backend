@@ -33,7 +33,9 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
-                'induction-checklist' => $inductionChecklist->with('practice', 'inductionQuestions')->first(),
+                'induction-checklist' => $inductionChecklist->with('practice', 'role', 'inductionQuestions')
+                    ->latest()
+                    ->first(),
             ]);
 
         } catch (\Exception $e) {
@@ -65,7 +67,10 @@ class InductionChecklistController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Get induction checklists for a practice
-            $inductionChecklists = InductionChecklist::where('practice_id', $practice->id)->latest()->paginate(10);
+            $inductionChecklists = InductionChecklist::where('practice_id', $practice->id)
+                ->with('practice', 'role', 'inductionQuestions')
+                ->latest()
+                ->paginate(10);
 
             // Return success response
             return Response::success([
