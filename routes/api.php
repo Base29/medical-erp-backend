@@ -463,5 +463,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [InductionChecklistController::class, 'fetch'])
             ->middleware(['permission:can_fetch_induction_checklists']);
+
+        Route::post('induction-checklist', [InductionChecklistController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_induction_checklist']);
     });
 });

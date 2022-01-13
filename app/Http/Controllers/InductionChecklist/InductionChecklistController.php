@@ -95,7 +95,9 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
-                'induction-checklist' => $inductionChecklist->with('practice', 'role', 'inductionQuestions'),
+                'induction-checklist' => $inductionChecklist->with('practice', 'role', 'inductionQuestions')
+                    ->where('id', $request->induction_checklist)
+                    ->first(),
             ]);
 
         } catch (\Exception $e) {
