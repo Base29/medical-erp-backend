@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionChecklist\CreateInductionChecklistRequest;
 use App\Http\Requests\InductionChecklist\FetchInductionChecklistRequest;
+use App\Http\Requests\InductionChecklist\FetchSingleInductionChecklistRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionQuestion;
 use App\Models\Practice;
@@ -75,6 +76,26 @@ class InductionChecklistController extends Controller
             // Return success response
             return Response::success([
                 'induction-checklists' => $inductionChecklists,
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single induction checklist
+    public function fetchSingle(FetchSingleInductionChecklistRequest $request)
+    {
+        try {
+            // Get induction checklist
+            $inductionChecklist = InductionChecklist::findOrFail($request->induction_checklist);
+
+            // Return success response
+            return Response::success([
+                'induction-checklist' => $inductionChecklist->with('practice', 'role', 'inductionQuestions'),
             ]);
 
         } catch (\Exception $e) {
