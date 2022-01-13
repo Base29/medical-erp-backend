@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\InductionChecklist;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionChecklist\CreateInductionChecklistRequest;
+use App\Http\Requests\InductionChecklist\DeleteInductionChecklistRequest;
 use App\Http\Requests\InductionChecklist\FetchInductionChecklistRequest;
 use App\Http\Requests\InductionChecklist\FetchSingleInductionChecklistRequest;
 use App\Models\InductionChecklist;
@@ -100,6 +102,28 @@ class InductionChecklistController extends Controller
                     ->first(),
             ]);
 
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete induction checklist
+    public function delete(DeleteInductionChecklistRequest $request)
+    {
+        try {
+            // Get induction checklist
+            $inductionChecklist = InductionChecklist::findOrFail($request->induction_checklist);
+
+            // Delete induction checklist
+            $inductionChecklist->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Induction Checklist'),
+            ]);
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
