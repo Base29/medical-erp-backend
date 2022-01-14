@@ -14,6 +14,7 @@ use App\Http\Requests\InductionChecklist\UpdateInductionChecklistRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionQuestion;
 use App\Models\Practice;
+use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Role as ModelsRole;
 
 class InductionChecklistController extends Controller
@@ -171,6 +172,13 @@ class InductionChecklistController extends Controller
                 ]);
             }
 
+            // Return success response
+            return Response::success([
+                'induction-checklist' => $inductionChecklist->with('practice', 'role', 'inductionQuestions')
+                    ->latest('updated_at')
+                    ->first(),
+            ]);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
@@ -191,7 +199,7 @@ class InductionChecklistController extends Controller
                 ];
 
                 // Checking if the $request doesn't contain any of the allowed fields
-                if (!$question->hasAny($allowedFields)) {
+                if (!Arr::hasAny($question, $allowedFields)) {
                     return Response::fail([
                         'message' => ResponseMessage::allowedFields($allowedFields),
                         'code' => 400,

@@ -469,5 +469,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [InductionChecklistController::class, 'delete'])
             ->middleware(['permission:can_delete_induction_checklist']);
+
+        Route::post('update', [InductionChecklistController::class, 'update'])
+            ->middleware(['permission:can_update_induction_checklist']);
     });
 });
