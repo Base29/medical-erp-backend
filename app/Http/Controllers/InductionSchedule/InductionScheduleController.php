@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
+use App\Http\Requests\InductionSchedule\DeleteInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
@@ -84,6 +85,28 @@ class InductionScheduleController extends Controller
                 'induction-schedules' => $inductionSchedules,
             ]);
 
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete induction schedule
+    public function delete(DeleteInductionScheduleRequest $request)
+    {
+        try {
+            // Get induction schedule
+            $inductionSchedule = InductionSchedule::findOrFail($request->induction_schedule);
+
+            // Delete induction schedule
+            $inductionSchedule->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Induction Schedule'),
+            ]);
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,
