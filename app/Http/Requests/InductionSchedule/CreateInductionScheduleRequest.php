@@ -27,6 +27,7 @@ class CreateInductionScheduleRequest extends FormRequest
     {
         return [
             'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
+            'practice' => 'required|numeric|exists:practices,id',
             'user' => 'required|numeric|exists:users,id',
             'date' => 'required|date|date_format:Y-m-d',
             'time' => 'required|date_format:H:i',

@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
+use App\Models\Practice;
 use App\Models\User;
 
 class InductionScheduleController extends Controller
@@ -16,6 +17,9 @@ class InductionScheduleController extends Controller
     {
         try {
 
+            // Get Practice
+            $practice = Practice::findOrFail($request->practice);
+
             // Get user
             $user = User::findOrFail($request->user);
 
@@ -24,6 +28,7 @@ class InductionScheduleController extends Controller
 
             // Instance of InductionSchedule model
             $inductionSchedule = new InductionSchedule();
+            $inductionSchedule->practice_id = $practice->id;
             $inductionSchedule->induction_checklist_id = $inductionChecklist->id;
             $inductionSchedule->date = $request->date;
             $inductionSchedule->time = $request->time;

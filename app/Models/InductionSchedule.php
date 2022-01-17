@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InductionChecklist;
+use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -36,5 +37,10 @@ class InductionSchedule extends Model
     public function inductionChecklist()
     {
         return $this->belongsTo(InductionChecklist::class);
+    }
+
+    public function practice()
+    {
+        return $this->belongsTo(Practice::class);
     }
 }

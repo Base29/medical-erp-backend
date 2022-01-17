@@ -15,6 +15,7 @@ class CreateInductionSchedulesTable extends Migration
     {
         Schema::create('induction_schedules', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date')->nullable();
