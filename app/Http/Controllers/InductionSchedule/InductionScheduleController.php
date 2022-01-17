@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
+use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
@@ -55,6 +56,32 @@ class InductionScheduleController extends Controller
             // Return success response
             return Response::success([
                 'induction-schedule' => $inductionSchedule->with('user', 'practice', 'inductionChecklist.inductionQuestions')->first(),
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch induction schedules belonging to a practice
+    public function fetch(FetchInductionScheduleRequest $request)
+    {
+        try {
+            // Get practice
+            $practice = Practice::fundOrFail($request->practice);
+
+            // Get induction schedules for the $practice
+            $inductionSchedules = InductionSchedule::where('practice_id', $practice->id)
+                ->with('user', 'inductionChecklist.inductionQuestions')
+                ->latest()
+                ->paginate(10);
+
+            // Return success response
+            return Response::success([
+                'induction-schedules' => $inductionSchedules,
             ]);
 
         } catch (\Exception $e) {
