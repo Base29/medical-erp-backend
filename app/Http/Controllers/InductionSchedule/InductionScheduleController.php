@@ -71,11 +71,11 @@ class InductionScheduleController extends Controller
     {
         try {
             // Get practice
-            $practice = Practice::fundOrFail($request->practice);
+            $practice = Practice::findOrFail($request->practice);
 
             // Get induction schedules for the $practice
             $inductionSchedules = InductionSchedule::where('practice_id', $practice->id)
-                ->with('user', 'inductionChecklist.inductionQuestions')
+                ->with('user', 'practice', 'inductionChecklist.inductionQuestions')
                 ->latest()
                 ->paginate(10);
 

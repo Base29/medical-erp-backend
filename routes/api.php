@@ -479,5 +479,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('induction-schedules')->group(function () {
         Route::post('create', [InductionScheduleController::class, 'create'])
             ->middleware(['permission:can_create_induction_schedule']);
+
+        Route::post('/', [InductionScheduleController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_practice_induction_schedules']);
     });
 });
