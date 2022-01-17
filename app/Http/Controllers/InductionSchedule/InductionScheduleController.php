@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\InductionSchedule;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
 use App\Models\InductionChecklist;
@@ -39,6 +40,14 @@ class InductionScheduleController extends Controller
             $inductionSchedule->is_additional_staff_required = $request->is_additional_staff_required;
             $inductionSchedule->additional_staff_role_id = $request->is_additional_staff_required ? $request->additional_staff_role_id : null;
             $inductionSchedule->additional_staff_id = $request->is_additional_staff_required ? $request->additional_staff_id : null;
+
+            // Check if the $user already has a schedule
+            if ($user->inductionAlreadyScheduled()) {
+                return Response::fail([
+                    'code' => 409,
+                    'message' => ResponseMessage::customMessage('User already has a schedule'),
+                ]);
+            }
 
             // Save induction Schedule
             $user->inductionSchedule()->save($inductionSchedule);

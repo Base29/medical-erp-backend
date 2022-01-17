@@ -201,4 +201,14 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(InductionSchedule::class);
     }
 
+    public function inductionAlreadyScheduled()
+    {
+
+        $schedules = InductionSchedule::get();
+
+        $alreadyHasInductionSchedule = $schedules->contains('user_id', $this->id);
+
+        return $alreadyHasInductionSchedule;
+    }
+
 }
