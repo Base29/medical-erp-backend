@@ -26,10 +26,10 @@ class CreateInductionScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'induction_checklist_id' => 'required|numeric|exists:induction_checklists,id',
-            'user_id' => 'required|numeric|exists:users,id',
+            'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
+            'user' => 'required|numeric|exists:users,id',
             'date' => 'required|date|date_format:Y-m-d',
-            'time' => 'required|date|date_format:H:i',
+            'time' => 'required|date_format:H:i',
             'duration' => 'required|string',
             'is_hq_required' => 'required|boolean',
             'hq_staff_role_id' => 'required_if:is_hq_required,1|exists:roles,id',

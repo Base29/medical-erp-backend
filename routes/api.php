@@ -12,6 +12,7 @@ use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
+use App\Http\Controllers\InductionSchedule\InductionScheduleController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -472,5 +473,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('update', [InductionChecklistController::class, 'update'])
             ->middleware(['permission:can_update_induction_checklist']);
+    });
+
+    // Routes for induction schedules
+    Route::prefix('induction-schedules')->group(function () {
+        Route::post('create', [InductionScheduleController::class, 'create'])
+            ->middleware(['permission:can_create_induction_schedule']);
     });
 });
