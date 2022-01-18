@@ -117,8 +117,12 @@ class InductionScheduleController extends Controller
 
     private function mapChecklists($checklists)
     {
-        return collect($checklists)->map(function ($i) {
-            ray($i);
+        return collect($checklists)->map(function ($checklist) {
+            return [
+                'induction_checklist_id' => $checklist['induction_checklist_id'],
+                'is_complete' => $checklist['is_complete'],
+                'completed_date' => $checklist['completed_date'],
+            ];
         });
     }
 }
