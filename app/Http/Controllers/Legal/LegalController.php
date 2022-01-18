@@ -15,6 +15,7 @@ use App\Models\GmcSpecialistRegister;
 use App\Models\Legal;
 use App\Models\NmcQualification;
 use App\Models\User;
+use Illuminate\Support\Arr;
 
 class LegalController extends Controller
 {
@@ -272,7 +273,7 @@ class LegalController extends Controller
             ];
 
             // Checking if the $request doesn't contain any of the allowed fields
-            if (!$subItem->hasAny($allowedFields)) {
+            if (!Arr::hasAny($subItem, $allowedFields)) {
                 return Response::fail([
                     'message' => ResponseMessage::allowedFields($allowedFields),
                     'code' => 400,
