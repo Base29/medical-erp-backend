@@ -17,6 +17,6 @@ class Role extends \Spatie\Permission\Models\Role
 
     public function inductionChecklist()
     {
-        return $this->hasOne(InductionChecklist::class);
+        return $this->hasMany(InductionChecklist::class);
     }
 }

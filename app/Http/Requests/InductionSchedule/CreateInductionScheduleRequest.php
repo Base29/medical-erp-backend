@@ -26,7 +26,6 @@ class CreateInductionScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
             'practice' => 'required|numeric|exists:practices,id',
             'user' => 'required|numeric|exists:users,id',
             'date' => 'required|date|date_format:Y-m-d',
@@ -38,8 +37,7 @@ class CreateInductionScheduleRequest extends FormRequest
             'is_additional_staff_required' => 'required|boolean',
             'additional_staff_role_id' => 'required_if:is_additional_staff_required,1|exists:roles,id',
             'additional_staff_id' => 'required_if:is_additional_staff_required,1|exists:users,id',
-            'is_completed' => 'nullable|boolean',
-            'completed_date' => 'required_if:is_completed,1|date|date_format:Y-m-d',
+            'checklists' => 'required|array',
         ];
     }
 

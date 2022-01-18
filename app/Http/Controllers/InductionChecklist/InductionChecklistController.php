@@ -73,7 +73,7 @@ class InductionChecklistController extends Controller
             $practice = Practice::findOrFail($request->practice);
 
             // Get induction checklists for a practice
-            $inductionChecklists = InductionChecklist::where('practice_id', $practice->id)
+            $inductionChecklists = InductionChecklist::where(['practice_id' => $practice->id, 'role_id' => $request->role])
                 ->with('practice', 'role', 'inductionQuestions')
                 ->latest()
                 ->paginate(10);

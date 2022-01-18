@@ -8,6 +8,7 @@ namespace App\Helpers;
 
 use App\Helpers\Response;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 
 class CustomValidationService
 {
@@ -15,8 +16,13 @@ class CustomValidationService
     public static function error_messages($rules, $validator)
     {
         foreach ($rules as $key => $value) {
+
+            $hasAsterisk = Str::contains($key, '*');
+
+            Str::replace('*', '0', $key);
+
             $errors = $validator->errors();
-            // Return error messages for email
+
             if (Arr::has($errors->messages(), $key)) {
                 return Response::fail([
                     'message' => $errors->messages()[$key][0],

@@ -14,7 +14,6 @@ class InductionSchedule extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'induction_checklist_id',
         'user_id',
         'date',
         'time',
@@ -34,9 +33,9 @@ class InductionSchedule extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function inductionChecklist()
+    public function inductionChecklists()
     {
-        return $this->belongsTo(InductionChecklist::class);
+        return $this->belongsToMany(InductionChecklist::class)->withPivot('is_complete', 'completed_date');
     }
 
     public function practice()

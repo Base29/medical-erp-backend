@@ -16,7 +16,6 @@ class CreateInductionSchedulesTable extends Migration
         Schema::create('induction_schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
-            $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
             $table->date('date')->nullable();
             $table->time('time')->nullable();
@@ -27,8 +26,6 @@ class CreateInductionSchedulesTable extends Migration
             $table->boolean('is_additional_staff_required')->default(0);
             $table->integer('additional_staff_role_id')->nullable();
             $table->integer('additional_staff_id')->nullable();
-            $table->boolean('is_completed')->default(0);
-            $table->date('completed_date')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

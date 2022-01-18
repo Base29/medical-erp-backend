@@ -32,7 +32,7 @@ class InductionChecklist extends Model
 
     public function inductionSchedules()
     {
-        return $this->hasMany(InductionSchedule::class);
+        return $this->belongsToMany(InductionSchedule::class);
     }
 
     public function role()

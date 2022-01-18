@@ -8,7 +8,6 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\DeleteInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
-use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
 use App\Models\User;
@@ -26,13 +25,9 @@ class InductionScheduleController extends Controller
             // Get user
             $user = User::findOrFail($request->user);
 
-            // Get induction checklist
-            $inductionChecklist = InductionChecklist::findOrFail($request->induction_checklist);
-
             // Instance of InductionSchedule model
             $inductionSchedule = new InductionSchedule();
             $inductionSchedule->practice_id = $practice->id;
-            $inductionSchedule->induction_checklist_id = $inductionChecklist->id;
             $inductionSchedule->date = $request->date;
             $inductionSchedule->time = $request->time;
             $inductionSchedule->duration = $request->duration;
@@ -54,9 +49,14 @@ class InductionScheduleController extends Controller
             // Save induction Schedule
             $user->inductionSchedule()->save($inductionSchedule);
 
+            // Save checklists related to induction schedule
+            $inductionSchedule->inductionChecklists()->sync($this->mapChecklists($request->checklists));
+
             // Return success response
             return Response::success([
-                'induction-schedule' => $inductionSchedule->with('user', 'practice', 'inductionChecklist.inductionQuestions')->first(),
+                'induction-schedule' => $inductionSchedule
+                    ->with('user', 'practice', 'inductionChecklists')
+                    ->first(),
             ]);
 
         } catch (\Exception $e) {
@@ -113,5 +113,12 @@ class InductionScheduleController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    private function mapChecklists($checklists)
+    {
+        return collect($checklists)->map(function ($i) {
+            ray($i);
+        });
     }
 }
