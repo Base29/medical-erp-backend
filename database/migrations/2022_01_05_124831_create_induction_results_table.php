@@ -16,6 +16,7 @@ class CreateInductionResultsTable extends Migration
         Schema::create('induction_results', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('induction_schedule_id')->constrained()->cascadeOnDelete();
             $table->foreignId('induction_checklist_id')->constrained()->cascadeOnDelete();
             $table->foreignId('induction_question_id')->constrained()->cascadeOnDelete();
             $table->boolean('completed')->default(0);
