@@ -55,7 +55,7 @@ class InductionScheduleController extends Controller
             // Return success response
             return Response::success([
                 'induction-schedule' => $inductionSchedule
-                    ->with('user', 'practice', 'inductionChecklists')
+                    ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
                     ->first(),
             ]);
 
