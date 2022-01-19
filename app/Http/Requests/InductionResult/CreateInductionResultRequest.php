@@ -26,11 +26,9 @@ class CreateInductionResultRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
+            'induction_schedule' => 'required|numeric|exists:induction_schedules,id',
             'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
-            'induction_question' => 'required|numeric|exists:induction_questions,id',
-            'completed' => 'required|boolean',
-            'comment' => 'nullable|string',
+            'questions' => 'required|array',
         ];
     }
 

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InductionQuestion;
+use App\Models\InductionResult;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
 use App\Models\Role;
@@ -38,5 +39,29 @@ class InductionChecklist extends Model
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function inductionResults()
+    {
+        return $this->hasMany(InductionResult::class);
+    }
+
+    public function belongsToChecklist($questionId)
+    {
+        return $this->inductionQuestions->contains('id', $questionId);
+    }
+
+    public function resultAlreadyGenerated($userId)
+    {
+        $totalQuestions = count($this->inductionQuestions);
+        $completedQuestions = collect($this->inductionResults)
+            ->where('completed', 1)
+            ->where('user_id', $userId)
+            ->count();
+
+        if ($totalQuestions === $completedQuestions) {
+
+            return true;
+        }
     }
 }

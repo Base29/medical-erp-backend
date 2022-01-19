@@ -76,7 +76,7 @@ class InductionScheduleController extends Controller
 
             // Get induction schedules for the $practice
             $inductionSchedules = InductionSchedule::where('practice_id', $practice->id)
-                ->with('user', 'practice', 'inductionChecklist.inductionQuestions')
+                ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
                 ->latest()
                 ->paginate(10);
 

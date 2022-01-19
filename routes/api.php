@@ -12,6 +12,7 @@ use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
+use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
@@ -482,5 +483,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [InductionScheduleController::class, 'fetch'])
             ->middleware(['permission:can_fetch_practice_induction_schedules']);
+    });
+
+    // Routes for induction results
+    Route::prefix('induction-results')->group(function () {
+        Route::post('create', [InductionResultController::class, 'create'])
+            ->middleware(['permission:can_create_induction_result']);
     });
 });

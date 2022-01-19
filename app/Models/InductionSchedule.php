@@ -42,4 +42,10 @@ class InductionSchedule extends Model
     {
         return $this->belongsTo(Practice::class);
     }
+
+    public function belongsToSchedule($id)
+    {
+        return $this->inductionChecklists->contains('id', $id);
+
+    }
 }
