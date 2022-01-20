@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Department;
 use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionChecklist;
@@ -77,5 +78,10 @@ class Practice extends Model
     public function inductionSchedules()
     {
         return $this->hasMany(InductionSchedule::class);
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(Department::class);
     }
 }
