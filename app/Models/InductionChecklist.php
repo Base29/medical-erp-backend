@@ -53,15 +53,19 @@ class InductionChecklist extends Model
 
     public function resultAlreadyGenerated($userId)
     {
-        $totalQuestions = count($this->inductionQuestions);
-        $completedQuestions = collect($this->inductionResults)
-            ->where('completed', 1)
-            ->where('user_id', $userId)
-            ->count();
 
-        if ($totalQuestions === $completedQuestions) {
+        //TODO: Below logic have to be refined after refinement.
+        // $totalQuestions = count($this->inductionQuestions);
+        // $completedQuestions = collect($this->inductionResults)
+        //     ->where('completed', 1)
+        //     ->where('user_id', $userId)
+        //     ->count();
 
-            return true;
-        }
+        // if ($totalQuestions === $completedQuestions) {
+
+        //     return true;
+        // }
+
+        return $this->inductionResults->contains('user_id', $userId);
     }
 }
