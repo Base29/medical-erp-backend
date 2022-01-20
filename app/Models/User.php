@@ -11,12 +11,14 @@ use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
+use App\Models\InductionSchedule;
 use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
 use App\Models\Profile;
+use App\Models\Reference;
 use App\Models\Signature;
 use App\Models\Termination;
 use App\Models\WorkPattern;
@@ -192,6 +194,21 @@ class User extends Authenticatable implements JWTSubject
     public function termination()
     {
         return $this->hasOne(Termination::class);
+    }
+
+    public function inductionSchedule()
+    {
+        return $this->hasOne(InductionSchedule::class);
+    }
+
+    public function inductionAlreadyScheduled()
+    {
+
+        $schedules = InductionSchedule::get();
+
+        $alreadyHasInductionSchedule = $schedules->contains('user_id', $this->id);
+
+        return $alreadyHasInductionSchedule;
     }
 
 }

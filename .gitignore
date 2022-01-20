@@ -18,3 +18,4 @@ package-lock.json
 yarn.lock
 upload-esm-backend.sh
 .DS_Store
+/.vscode*
