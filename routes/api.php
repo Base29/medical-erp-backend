@@ -497,7 +497,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [DepartmentController::class, 'create'])
             ->middleware(['permission:can_create_department']);
 
-        Route::post('fetch', [DepartmentController::class, 'fetch'])
+        Route::post('/', [DepartmentController::class, 'fetch'])
             ->middleware(['permission:can_fetch_department']);
 
         Route::post('delete', [DepartmentController::class, 'delete'])

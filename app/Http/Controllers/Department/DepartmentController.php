@@ -49,8 +49,9 @@ class DepartmentController extends Controller
 
             // Get Departments
             $departments = Department::where('practice_id', $practice->id)
+                ->with('practice')
                 ->latest()
-                ->paginate(10);
+                ->get();
 
             // Return success response
             return Response::success([
