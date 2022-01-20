@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Department;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Department\CreateDepartmentRequest;
+use App\Http\Requests\Department\DeleteDepartmentRequest;
 use App\Http\Requests\Department\FetchDepartmentRequest;
 use App\Models\Department;
 use App\Models\Practice;
@@ -53,6 +55,29 @@ class DepartmentController extends Controller
             // Return success response
             return Response::success([
                 'departments' => $departments,
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete department
+    public function delete(DeleteDepartmentRequest $request)
+    {
+        try {
+            // Get department
+            $department = Department::findOrFail($request->department);
+
+            // Delete Department
+            $department->delete();
+
+            // Return success response
+            return Response::success([
+                'message' => ResponseMessage::deleteSuccess('Department'),
             ]);
 
         } catch (\Exception $e) {
