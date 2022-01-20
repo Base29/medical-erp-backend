@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Department;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Department\CreateDepartmentRequest;
+use App\Http\Requests\Department\FetchDepartmentRequest;
 use App\Models\Department;
 use App\Models\Practice;
 
@@ -27,6 +28,31 @@ class DepartmentController extends Controller
             // Return success response
             return Response::success([
                 'department' => $department->with('practice')->latest()->first(),
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch department by practice
+    public function fetch(FetchDepartmentRequest $request)
+    {
+        try {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get Departments
+            $departments = Department::where('practice_id', $practice->id)
+                ->latest()
+                ->paginate(10);
+
+            // Return success response
+            return Response::success([
+                'departments' => $departments,
             ]);
 
         } catch (\Exception $e) {
