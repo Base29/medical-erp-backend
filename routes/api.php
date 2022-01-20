@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
@@ -489,5 +490,17 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('induction-results')->group(function () {
         Route::post('create', [InductionResultController::class, 'create'])
             ->middleware(['permission:can_create_induction_result']);
+    });
+
+    // Routes for departments
+    Route::prefix('departments')->group(function () {
+        Route::post('create', [DepartmentController::class, 'create'])
+            ->middleware(['permission:can_create_department']);
+
+        Route::post('fetch', [DepartmentController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_department']);
+
+        Route::post('delete', [DepartmentController::class, 'delete'])
+            ->middleware(['permission:can_delete_department']);
     });
 });
