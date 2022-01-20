@@ -11,6 +11,9 @@ use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
+use App\Http\Controllers\InductionChecklist\InductionChecklistController;
+use App\Http\Controllers\InductionResult\InductionResultController;
+use App\Http\Controllers\InductionSchedule\InductionScheduleController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -453,5 +456,38 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
             ->middleware(['permission:can_delete_hiring_request']);
+    });
+
+    // Routes for induction checklist
+    Route::prefix('induction-checklists')->group(function () {
+        Route::post('create', [InductionChecklistController::class, 'create'])
+            ->middleware(['permission:can_create_induction_checklist']);
+
+        Route::post('/', [InductionChecklistController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_induction_checklists']);
+
+        Route::post('induction-checklist', [InductionChecklistController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_induction_checklist']);
+
+        Route::post('delete', [InductionChecklistController::class, 'delete'])
+            ->middleware(['permission:can_delete_induction_checklist']);
+
+        Route::post('update', [InductionChecklistController::class, 'update'])
+            ->middleware(['permission:can_update_induction_checklist']);
+    });
+
+    // Routes for induction schedules
+    Route::prefix('induction-schedules')->group(function () {
+        Route::post('create', [InductionScheduleController::class, 'create'])
+            ->middleware(['permission:can_create_induction_schedule']);
+
+        Route::post('/', [InductionScheduleController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_practice_induction_schedules']);
+    });
+
+    // Routes for induction results
+    Route::prefix('induction-results')->group(function () {
+        Route::post('create', [InductionResultController::class, 'create'])
+            ->middleware(['permission:can_create_induction_result']);
     });
 });
