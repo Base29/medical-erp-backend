@@ -19,8 +19,8 @@ class JobSpecification extends Model
         'job_purpose',
     ];
 
-    public function practices()
+    public function practice()
     {
-        return $this->belongsToMany(Practice::class);
+        return $this->belongsTo(Practice::class);
     }
 }

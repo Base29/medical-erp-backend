@@ -15,6 +15,7 @@ class CreateJobSpecificationsTable extends Migration
     {
         Schema::create('job_specifications', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->string('title');
             $table->string('salary_grade')->nullable();
             $table->string('location')->nullable();

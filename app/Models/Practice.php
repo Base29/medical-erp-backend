@@ -55,11 +55,6 @@ class Practice extends Model
         return $this->hasMany(Equipment::class);
     }
 
-    public function jobDescriptions()
-    {
-        return $this->belongsToMany(JobSpecification::class);
-    }
-
     public function personSpecifications()
     {
         return $this->belongsToMany(PersonSpecification::class);
@@ -83,5 +78,10 @@ class Practice extends Model
     public function departments()
     {
         return $this->hasMany(Department::class);
+    }
+
+    public function jobSpecifications()
+    {
+        return $this->hasMany(JobSpecification::class);
     }
 }

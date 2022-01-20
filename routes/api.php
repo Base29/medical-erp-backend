@@ -15,6 +15,7 @@ use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
+use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -502,5 +503,17 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [DepartmentController::class, 'delete'])
             ->middleware(['permission:can_delete_department']);
+    });
+
+    // Routes for job specifications
+    Route::prefix('job-specifications')->group(function () {
+        Route::post('create', [JobSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_job_specification']);
+
+        Route::post('/', [JobSpecificationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_job_specification']);
+
+        Route::post('delete', [JobSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_job_specification']);
     });
 });
