@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Department;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class CreateDepartmentRequest extends FormRequest
 {
@@ -13,7 +15,7 @@ class CreateDepartmentRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -24,7 +26,13 @@ class CreateDepartmentRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'practice' => 'required|numeric|exists:practices,id',
+            'name' => 'required|string|max:50',
         ];
+    }
+
+    public function failedValidation($validator)
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
     }
 }
