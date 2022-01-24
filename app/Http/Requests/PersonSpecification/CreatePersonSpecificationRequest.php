@@ -27,7 +27,7 @@ class CreatePersonSpecificationRequest extends FormRequest
     {
         return [
             'practice' => 'required|numeric|exists:practices,id',
-            'name' => 'required|string|max:50|unique:person_specifications,name',
+            'name' => 'required|string|max:50',
             'person_attributes' => 'required|array',
         ];
     }
