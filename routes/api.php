@@ -525,5 +525,8 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [PersonSpecificationController::class, 'fetch'])
             ->middleware(['permission:can_fetch_person_specification']);
+
+        Route::post('delete', [PersonSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_person_specification']);
     });
 });
