@@ -7,16 +7,13 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class JobSpecification extends Model
+class Department extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'title',
-        'salary_grade',
-        'location',
-        'total_hours',
-        'job_purpose',
+        'practice_id',
+        'name',
     ];
 
     public function practice()

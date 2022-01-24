@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
@@ -14,9 +15,11 @@ use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
+use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
+use App\Http\Controllers\PersonSpecification\PersonSpecificationController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
@@ -489,5 +492,41 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('induction-results')->group(function () {
         Route::post('create', [InductionResultController::class, 'create'])
             ->middleware(['permission:can_create_induction_result']);
+    });
+
+    // Routes for departments
+    Route::prefix('departments')->group(function () {
+        Route::post('create', [DepartmentController::class, 'create'])
+            ->middleware(['permission:can_create_department']);
+
+        Route::post('/', [DepartmentController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_department']);
+
+        Route::post('delete', [DepartmentController::class, 'delete'])
+            ->middleware(['permission:can_delete_department']);
+    });
+
+    // Routes for job specifications
+    Route::prefix('job-specifications')->group(function () {
+        Route::post('create', [JobSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_job_specification']);
+
+        Route::post('/', [JobSpecificationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_job_specification']);
+
+        Route::post('delete', [JobSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_job_specification']);
+    });
+
+    // Routes for person specifications
+    Route::prefix('person-specifications')->group(function () {
+        Route::post('create', [PersonSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_person_specification']);
+
+        Route::post('/', [PersonSpecificationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_person_specification']);
+
+        Route::post('delete', [PersonSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_person_specification']);
     });
 });

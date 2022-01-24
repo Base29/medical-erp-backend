@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Department;
 use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionChecklist;
@@ -54,14 +55,9 @@ class Practice extends Model
         return $this->hasMany(Equipment::class);
     }
 
-    public function jobDescriptions()
-    {
-        return $this->belongsToMany(JobSpecification::class);
-    }
-
     public function personSpecifications()
     {
-        return $this->belongsToMany(PersonSpecification::class);
+        return $this->hasMany(PersonSpecification::class);
     }
 
     public function hiringRequests()
@@ -77,5 +73,15 @@ class Practice extends Model
     public function inductionSchedules()
     {
         return $this->hasMany(InductionSchedule::class);
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(Department::class);
+    }
+
+    public function jobSpecifications()
+    {
+        return $this->hasMany(JobSpecification::class);
     }
 }

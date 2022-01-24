@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateJobSpecificationsTable extends Migration
+class CreateDepartmentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,13 +13,10 @@ class CreateJobSpecificationsTable extends Migration
      */
     public function up()
     {
-        Schema::create('job_specifications', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
-            $table->string('salary_grade')->nullable();
-            $table->string('location')->nullable();
-            $table->string('total_hours')->nullable();
-            $table->string('job_purpose')->nullable();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -32,6 +29,6 @@ class CreateJobSpecificationsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('job_specifications');
+        Schema::dropIfExists('departments');
     }
 }
