@@ -22,7 +22,7 @@ class PersonSpecification extends Model
         return $this->hasMany(PersonSpecificationAttribute::class);
     }
 
-    public function practices()
+    public function practice()
     {
         return $this->belongsTo(Practice::class);
     }

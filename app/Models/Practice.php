@@ -57,7 +57,7 @@ class Practice extends Model
 
     public function personSpecifications()
     {
-        return $this->belongsToMany(PersonSpecification::class);
+        return $this->hasMany(PersonSpecification::class);
     }
 
     public function hiringRequests()

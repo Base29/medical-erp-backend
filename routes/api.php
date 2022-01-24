@@ -19,6 +19,7 @@ use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Permission\PermissionController;
+use App\Http\Controllers\PersonSpecification\PersonSpecificationController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
@@ -515,5 +516,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [JobSpecificationController::class, 'delete'])
             ->middleware(['permission:can_delete_job_specification']);
+    });
+
+    // Routes for person specifications
+    Route::prefix('person-specifications')->group(function () {
+        Route::post('create', [PersonSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_person_specification']);
     });
 });
