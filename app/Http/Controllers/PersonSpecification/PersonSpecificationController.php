@@ -5,6 +5,7 @@ namespace App\Http\Controllers\PersonSpecification;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonSpecification\CreatePersonSpecificationRequest;
+use App\Http\Requests\PersonSpecification\FetchPersonSpecificationRequest;
 use App\Models\PersonSpecification;
 use App\Models\PersonSpecificationAttribute;
 use App\Models\Practice;
@@ -42,6 +43,32 @@ class PersonSpecificationController extends Controller
                 'person-specification' => $personSpecification->with('personSpecificationAttributes', 'practice')
                     ->latest()
                     ->first(),
+            ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch person specification
+    public function fetch(FetchPersonSpecificationRequest $request)
+    {
+        try {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get person specifications for $practice
+            $personSpecifications = PersonSpecification::where('practice_id', $practice->id)
+                ->with('personSpecificationAttributes', 'practice')
+                ->latest()
+                ->get();
+
+            // Return success response
+            return Response::success([
+                'person-specifications' => $personSpecifications,
             ]);
 
         } catch (\Exception $e) {
