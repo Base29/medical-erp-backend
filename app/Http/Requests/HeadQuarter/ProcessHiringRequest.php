@@ -27,11 +27,16 @@ class ProcessHiringRequest extends FormRequest
     {
         return [
             'hiring_request' => 'required|numeric|exists:hiring_requests,id',
-            'is_approved' => 'nullable|boolean',
-            'is_declined' => 'nullable|boolean',
-            'is_escalated' => 'nullable|boolean',
+            'status' => 'required|string',
             'decision_reason' => 'nullable|string|max:100',
             'decision_comment' => 'nullable|string|max:1000',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'status.required' => 'Select either of the status APPROVED|ESCALATED|DECLINED',
         ];
     }
 

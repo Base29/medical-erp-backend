@@ -17,9 +17,7 @@ class HiringRequestController extends Controller
         try {
             // Allowed fields
             $allowedFields = [
-                'is_approved',
-                'is_declined',
-                'is_escalated',
+                'status',
                 'decision_reason',
                 'decision_comment',
             ];

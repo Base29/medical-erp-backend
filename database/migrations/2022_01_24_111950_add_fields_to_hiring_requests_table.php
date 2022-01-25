@@ -14,10 +14,10 @@ class AddFieldsToHiringRequestsTable extends Migration
     public function up()
     {
         Schema::table('hiring_requests', function (Blueprint $table) {
-            $table->boolean('is_declined')->default(0)->after('is_approved');
-            $table->boolean('is_escalated')->default(0)->after('is_declined');
-            $table->string('decision_reason')->nullable()->after('is_escalated');
+            $table->string('status')->nullable()->after('rota_information');
+            $table->string('decision_reason')->nullable()->after('status');
             $table->text('decision_comment')->nullable()->after('decision_reason');
+            $table->dropColumn('is_approved');
         });
     }
 
@@ -29,10 +29,10 @@ class AddFieldsToHiringRequestsTable extends Migration
     public function down()
     {
         Schema::table('hiring_requests', function (Blueprint $table) {
-            $table->dropColumn('is_declined');
-            $table->dropColumn('is_escalated');
+            $table->dropColumn('status');
             $table->dropColumn('decision_reason');
             $table->dropColumn('decision_comment');
+            $table->boolean('is_approved')->default(0)->after('rota_information');
         });
     }
 }
