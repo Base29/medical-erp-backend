@@ -11,6 +11,7 @@ use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\HeadQuarter\HiringRequestController as HeadQuarterHiringRequestController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
@@ -528,5 +529,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [PersonSpecificationController::class, 'delete'])
             ->middleware(['permission:can_delete_person_specification']);
+    });
+
+    // Routes for HQ
+    Route::prefix('hq')->group(function () {
+        Route::post('hiring-request', [HeadQuarterHiringRequestController::class, 'processHiringRequest'])
+            ->middleware(['permission:can_process_hiring_request']);
     });
 });

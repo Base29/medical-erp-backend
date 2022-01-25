@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Requests\HQ;
+namespace App\Http\Requests\HeadQuarter;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;

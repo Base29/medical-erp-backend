@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Controllers\HQ;
+namespace App\Http\Controllers\HeadQuarter;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\HQ\ProcessHiringRequest;
+use App\Http\Requests\HeadQuarter\ProcessHiringRequest;
 use App\Models\HiringRequest;
 
 class HiringRequestController extends Controller
