@@ -271,11 +271,28 @@ class HiringRequestController extends Controller
             $hiringRequests = HiringRequest::where('practice_id', $practice->id)
                 ->with('practice', 'workPatterns.workTimings')
                 ->latest()
-                ->get();
+                ->paginate(10);
+
+            // Casting $hiringRequests to $results and converting the object to array
+            $results = $hiringRequests->toArray();
+
+            // Getting count of approved hiring requests
+            $approved = $this->processCount($practice->id, 'status', 'approved');
+
+            // Getting count of declined hiring requests
+            $declined = $this->processCount($practice->id, 'status', 'declined');
+
+            // Getting count of escalated hiring requests
+            $escalated = $this->processCount($practice->id, 'status', 'escalated');
+
+            // Adding extra meta to response $results
+            $results['approvedCount'] = $approved;
+            $results['declinedCount'] = $declined;
+            $results['escalatedCount'] = $escalated;
 
             // Return success response
             return Response::success([
-                'hiring-requests' => $hiringRequests,
+                'hiring-requests' => $results,
             ]);
 
         } catch (\Exception $e) {
@@ -284,5 +301,11 @@ class HiringRequestController extends Controller
                 'message' => $e->getMessage(),
             ]);
         }
+    }
+
+    // Process count
+    private function processCount($practiceId, $column, $value)
+    {
+        return HiringRequest::where(['practice_id' => $practiceId, $column => $value])->count();
     }
 }
