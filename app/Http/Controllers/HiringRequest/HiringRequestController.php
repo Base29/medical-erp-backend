@@ -8,6 +8,7 @@ use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HiringRequest\CreateHiringRequest;
 use App\Http\Requests\HiringRequest\DeleteHiringRequest;
+use App\Http\Requests\HiringRequest\FetchHiringRequest;
 use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
 use App\Http\Requests\HiringRequest\UpdateHiringRequest;
 use App\Models\HiringRequest;
@@ -251,6 +252,32 @@ class HiringRequestController extends Controller
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Hiring Request'),
             ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch all hiring request for practice
+    public function fetch(FetchHiringRequest $request)
+    {
+        try {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get hiring requests
+            $hiringRequests = HiringRequest::where('practice_id', $practice->id)
+                ->with('practice', 'workPatterns.workTimings')
+                ->latest()
+                ->get();
+
+            // Return success response
+            return Response::success([
+                'hiring-requests' => $hiringRequests,
+            ]);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,

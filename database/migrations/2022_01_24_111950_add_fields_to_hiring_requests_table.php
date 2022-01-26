@@ -17,7 +17,7 @@ class AddFieldsToHiringRequestsTable extends Migration
             $table->string('status')->nullable()->after('rota_information');
             $table->string('decision_reason')->nullable()->after('status');
             $table->text('decision_comment')->nullable()->after('decision_reason');
-            $table->dropColumn('is_approved');
+
         });
     }
 
@@ -32,7 +32,6 @@ class AddFieldsToHiringRequestsTable extends Migration
             $table->dropColumn('status');
             $table->dropColumn('decision_reason');
             $table->dropColumn('decision_comment');
-            $table->boolean('is_approved')->default(0)->after('rota_information');
         });
     }
 }
