@@ -12,11 +12,13 @@ use App\Services\AuthService\AuthService;
 
 class AuthController extends Controller
 {
+    // Local variable
     protected $authService;
 
     // Constructor
     public function __construct(AuthService $authService)
     {
+        // Inject service
         $this->authService = $authService;
     }
 
@@ -24,7 +26,7 @@ class AuthController extends Controller
     public function login(AuthenticateUserRequest $request)
     {
         try {
-            // Authenticate user
+            // Authenticate user service
             $user = $this->authService->authenticate($request);
 
             // Return response
@@ -42,6 +44,7 @@ class AuthController extends Controller
     // Method for logging out the user
     public function logout()
     {
+        // Logout service
         $this->authService->logout();
         return Response::success(['message' => ResponseMessage::logout()]);
     }
@@ -50,6 +53,8 @@ class AuthController extends Controller
     public function resetPassword(ResetPasswordRequest $request)
     {
         try {
+
+            // Reset password service
             $this->authService->resetPassword($request);
 
             return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
@@ -67,6 +72,8 @@ class AuthController extends Controller
     public function generateResetPasswordLink(ResetPasswordLinkRequest $request)
     {
         try {
+
+            // Reset password link service
             $this->authService->resetPasswordLink($request);
 
             return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
@@ -85,6 +92,7 @@ class AuthController extends Controller
     {
         try {
 
+            // Verify token service
             $userWithToken = $this->authService->verifyToken();
 
             return Response::success(['user' => $userWithToken]);
