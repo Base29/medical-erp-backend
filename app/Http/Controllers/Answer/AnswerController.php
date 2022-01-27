@@ -9,23 +9,29 @@ use App\Http\Requests\Answer\CreateAnswerRequest;
 use App\Http\Requests\Answer\FetchAnswersRequest;
 use App\Http\Requests\Answer\UpdateAnswerRequest;
 use App\Models\Answer;
-use App\Models\Post;
+use App\Services\AnswerService\AnswerService;
 use Exception;
 
 class AnswerController extends Controller
 {
+    // Local variable
+    protected $answerService;
+
+    // Constructor
+    public function __construct(AnswerService $answerService)
+    {
+        $this->answerService = $answerService;
+    }
+
+    // Create
     public function create(CreateAnswerRequest $request)
     {
         try {
-            // Check if the post exist
-            $post = Post::findOrFail($request->post);
 
-            // Create answer for the post
-            $answer = new Answer();
-            $answer->answer = $request->answer;
-            $answer->user_id = auth()->user()->id;
-            $post->answers()->save($answer);
+            // Create answer service
+            $answer = $this->answerService->createAnswer($request);
 
+            // Return response
             return Response::success(['answer' => $answer->with('user')->latest('id')->first()]);
 
         } catch (\Exception $e) {
@@ -41,11 +47,10 @@ class AnswerController extends Controller
     public function fetch(FetchAnswersRequest $request)
     {
         try {
-            // Check if the post exist
-            $post = Post::findOrFail($request->post);
+            // Fetch answers service
+            $answers = $this->answerService->fetchAllAnswers($request);
 
-            // Fetch answers for post
-            $answers = Answer::where('post_id', $post->id)->with('post', 'user')->latest()->paginate(10);
+            // Return success response
             return Response::success(['post_answers' => $answers]);
 
         } catch (\Exception $e) {
@@ -61,23 +66,13 @@ class AnswerController extends Controller
     {
 
         try {
-            // Fetch the answer
-            $answer = Answer::where('id', $request->answer_id)->with('post', 'user')->firstOrFail();
+            // Update answer service
+            $answer = $this->answerService->updateAnswer($request);
 
-            // Check if the user updating the answer is the author of the answer
-            $ownedByUser = $answer->ownedBy(auth()->user());
-
-            if (!$ownedByUser) {
-                return Response::fail([
-                    'message' => ResponseMessage::notAllowedToUpdate('answer'),
-                    'code' => 400,
-                ]);
-            }
-
-            // Update answer
-            $answer->update(['answer' => $request->answer]);
-
-            return Response::success(['answer' => $answer->with('post', 'user')->latest('updated_at')->first()]);
+            // Return success response
+            return Response::success([
+                'answer' => $answer,
+            ]);
 
         } catch (\Exception $e) {
             return Response::fail([
@@ -90,29 +85,11 @@ class AnswerController extends Controller
     public function delete($id)
     {
         try {
-            // Check if answer exist with the provided ID
-            $answer = Answer::findOrFail($id);
 
-            if (!$answer) {
-                return Response::fail([
-                    'message' => ResponseMessage::notFound('Answer', $id, false),
-                    'code' => 404,
-                ]);
-            }
+            // Delete answer service
+            $this->answerService->deleteAnswer($id);
 
-            // Check if the user updating the answer is the author of the answer
-            $ownedByUser = $answer->ownedBy(auth()->user());
-
-            if (!$ownedByUser) {
-                return Response::fail([
-                    'message' => ResponseMessage::notAllowedToDelete('answer'),
-                    'code' => 400,
-                ]);
-            }
-
-            // Delete the answer
-            $answer->delete();
-
+            // Return success response
             return Response::success(['message' => ResponseMessage::deleteSuccess('Answer')]);
 
         } catch (\Exception $e) {

@@ -33,7 +33,7 @@ class PostController extends Controller
 
             if (!$userBelongsToPractice) {
                 return Response::fail([
-                    'message' => ResponseMessage::notBelongTo(auth()->user()->name, $practice->practice_name),
+                    'message' => ResponseMessage::notBelongTo(auth()->user()->email, $practice->practice_name),
                     'code' => 409,
                 ]);
             }

@@ -83,7 +83,6 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-
         return $hiringRequest->with('workPatterns')->latest()->first();
     }
 }

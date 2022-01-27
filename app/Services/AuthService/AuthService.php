@@ -6,7 +6,6 @@
 
 namespace App\Services\AuthService;
 
-use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\User;
 use Illuminate\Support\Arr;
@@ -27,18 +26,11 @@ class AuthService
 
         // Check if the user is active
         if (!$user->is_active) {
-            return Response::fail([
-                'code' => 400,
-                'message' => ResponseMessage::userNotActive($user->email),
-            ]);
+            throw new \Exception(ResponseMessage::userNotActive($user->email));
         }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-
-            return Response::fail([
-                'code' => 401,
-                'message' => ResponseMessage::invalidCredentials(),
-            ]);
+            throw new \Exception(ResponseMessage::invalidCredentials());
         }
 
         // Generating JWT token from provided creds
