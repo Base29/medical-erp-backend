@@ -4,7 +4,7 @@
  * Answer Service
  */
 
-namespace App\Services\AnswerService;
+namespace App\Services\Answer;
 
 use App\Helpers\ResponseMessage;
 use App\Models\Answer;

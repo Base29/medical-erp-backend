@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\AuthenticateUserRequest;
 use App\Http\Requests\Auth\ResetPasswordLinkRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
-use App\Services\AuthService\AuthService;
+use App\Services\Auth\AuthService;
 
 class AuthController extends Controller
 {

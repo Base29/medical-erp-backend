@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Checklist\CreateChecklistRequest;
 use App\Http\Requests\Checklist\FetchChecklistRequest;
 use App\Models\CheckList;
-use App\Services\ChecklistService\ChecklistService;
+use App\Services\Checklist\ChecklistService;
 
 class CheckListController extends Controller
 {

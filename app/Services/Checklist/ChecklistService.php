@@ -4,7 +4,7 @@
  * Checklist Service
  */
 
-namespace App\Services\ChecklistService;
+namespace App\Services\Checklist;
 
 use App\Helpers\ResponseMessage;
 use App\Models\CheckList;

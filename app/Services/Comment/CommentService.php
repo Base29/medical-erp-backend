@@ -4,7 +4,7 @@
  * Comment Service
  */
 
-namespace App\Services\CommentService;
+namespace App\Services\Comment;
 
 use App\Helpers\ResponseMessage;
 use App\Models\Comment;

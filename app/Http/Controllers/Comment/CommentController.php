@@ -8,8 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Comment\CreateCommentRequest;
 use App\Http\Requests\Comment\FetchCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
-use App\Models\Comment;
-use App\Services\CommentService\CommentService;
+use App\Services\Comment\CommentService;
 
 class CommentController extends Controller
 {

@@ -4,7 +4,7 @@
  * Service for Authentication
  */
 
-namespace App\Services\AuthService;
+namespace App\Services\Auth;
 
 use App\Helpers\ResponseMessage;
 use App\Models\User;

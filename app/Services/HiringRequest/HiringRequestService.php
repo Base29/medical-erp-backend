@@ -4,10 +4,9 @@
  *
  */
 
-namespace App\Services\HiringRequestService;
+namespace App\Services\HiringRequest;
 
 use App\Helpers\ResponseMessage;
-use App\Http\Requests\HiringRequest\CreateHiringRequest;
 use App\Models\HiringRequest;
 use App\Models\Practice;
 use App\Models\WorkPattern;

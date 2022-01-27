@@ -8,9 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Answer\CreateAnswerRequest;
 use App\Http\Requests\Answer\FetchAnswersRequest;
 use App\Http\Requests\Answer\UpdateAnswerRequest;
-use App\Models\Answer;
-use App\Services\AnswerService\AnswerService;
-use Exception;
+use App\Services\Answer\AnswerService;
 
 class AnswerController extends Controller
 {
