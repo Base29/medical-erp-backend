@@ -9,27 +9,31 @@ use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\DeleteDepartmentRequest;
 use App\Http\Requests\Department\FetchDepartmentRequest;
 use App\Models\Department;
-use App\Models\Practice;
+use App\Services\Department\DepartmentService;
 
 class DepartmentController extends Controller
 {
+    // Local variable
+    protected $departmentService;
+
+    // Constructor
+    public function __construct(DepartmentService $departmentService)
+    {
+        // Inject service
+        $this->departmentService = $departmentService;
+    }
+
     // Create department
     public function create(CreateDepartmentRequest $request)
     {
         try {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
 
-            // Instance of Department model
-            $department = new Department();
-            $department->name = $request->name;
-
-            // Save department
-            $practice->departments()->save($department);
+            // Create department service
+            $department = $this->departmentService->createDepartment($request);
 
             // Return success response
             return Response::success([
-                'department' => $department->with('practice')->latest()->first(),
+                'department' => $department,
             ]);
 
         } catch (\Exception $e) {
@@ -44,14 +48,8 @@ class DepartmentController extends Controller
     public function fetch(FetchDepartmentRequest $request)
     {
         try {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get Departments
-            $departments = Department::where('practice_id', $practice->id)
-                ->with('practice')
-                ->latest()
-                ->get();
+            // Fetch departments service
+            $departments = $this->departmentService->fetchDepartments($request);
 
             // Return success response
             return Response::success([
@@ -70,11 +68,9 @@ class DepartmentController extends Controller
     public function delete(DeleteDepartmentRequest $request)
     {
         try {
-            // Get department
-            $department = Department::findOrFail($request->department);
 
-            // Delete Department
-            $department->delete();
+            // Delete department service
+            $this->departmentService->deleteDepartment($request);
 
             // Return success response
             return Response::success([
