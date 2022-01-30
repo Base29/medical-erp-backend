@@ -3,46 +3,33 @@
 namespace App\Http\Controllers\HeadQuarter;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
-use App\Helpers\UpdateService;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HeadQuarter\ProcessHiringRequest;
-use App\Models\HiringRequest;
+use App\Services\HeadQuarter\HeadQuarterService;
 
 class HiringRequestController extends Controller
 {
+
+    // Local variable
+    protected $headQuarterService;
+
+    // Constructor
+    public function __construct(HeadQuarterService $headQuarterService)
+    {
+        // Inject service
+        $this->headQuarterService = $headQuarterService;
+    }
+
     // Process hiring request
     public function processHiringRequest(ProcessHiringRequest $request)
     {
         try {
-            // Allowed fields
-            $allowedFields = [
-                'status',
-                'decision_reason',
-                'decision_comment',
-            ];
-
-            // Checking if the $request doesn't contain any of the allowed fields
-            if (!$request->hasAny($allowedFields)) {
-                throw new \Exception(ResponseMessage::allowedFields($allowedFields));
-            }
-
-            // Get hiring request
-            $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
-
             // Process hiring request
-            $hiringRequestProcessed = UpdateService::updateModel($hiringRequest, $request->all(), 'hiring_request');
-
-            // Throw exception if processing failed
-            if (!$hiringRequestProcessed) {
-                throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot process hiring request at the moment'));
-            }
+            $hiringRequest = $this->headQuarterService->processHiringRequest($request);
 
             // Return success response
             return Response::success([
-                'hiring-request' => $hiringRequest->with('workPatterns.workTimings', 'practice')
-                    ->latest('updated_at')
-                    ->first(),
+                'hiring-request' => $hiringRequest,
             ]);
 
         } catch (\Exception $e) {

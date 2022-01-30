@@ -9,54 +9,31 @@ use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\DeleteInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
 use App\Models\InductionSchedule;
-use App\Models\Practice;
-use App\Models\User;
+use App\Services\InductionSchedule\InductionScheduleService;
 
 class InductionScheduleController extends Controller
 {
+    // Local variable
+    protected $inductionScheduleService;
+
+    // Constructor
+    public function __construct(InductionScheduleService $inductionScheduleService)
+    {
+        // Inject service
+        $this->inductionScheduleService = $inductionScheduleService;
+    }
+
     // Create induction schedule
     public function create(CreateInductionScheduleRequest $request)
     {
         try {
 
-            // Get Practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get user
-            $user = User::findOrFail($request->user);
-
-            // Instance of InductionSchedule model
-            $inductionSchedule = new InductionSchedule();
-            $inductionSchedule->practice_id = $practice->id;
-            $inductionSchedule->date = $request->date;
-            $inductionSchedule->time = $request->time;
-            $inductionSchedule->duration = $request->duration;
-            $inductionSchedule->is_hq_required = $request->is_hq_required;
-            $inductionSchedule->hq_staff_role_id = $request->is_hq_required ? $request->hq_staff_role_id : null;
-            $inductionSchedule->hq_staff_id = $request->is_hq_required ? $request->hq_staff_id : null;
-            $inductionSchedule->is_additional_staff_required = $request->is_additional_staff_required;
-            $inductionSchedule->additional_staff_role_id = $request->is_additional_staff_required ? $request->additional_staff_role_id : null;
-            $inductionSchedule->additional_staff_id = $request->is_additional_staff_required ? $request->additional_staff_id : null;
-
-            // Check if the $user already has a schedule
-            if ($user->inductionAlreadyScheduled()) {
-                return Response::fail([
-                    'code' => 409,
-                    'message' => ResponseMessage::customMessage('User already has a schedule'),
-                ]);
-            }
-
-            // Save induction Schedule
-            $user->inductionSchedule()->save($inductionSchedule);
-
-            // Save checklists related to induction schedule
-            $inductionSchedule->inductionChecklists()->sync($this->mapChecklists($request->checklists));
+            // Create induction schedule
+            $inductionSchedule = $this->inductionScheduleService->createInductionSchedule($request);
 
             // Return success response
             return Response::success([
-                'induction-schedule' => $inductionSchedule
-                    ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
-                    ->first(),
+                'induction-schedule' => $inductionSchedule,
             ]);
 
         } catch (\Exception $e) {
@@ -71,14 +48,9 @@ class InductionScheduleController extends Controller
     public function fetch(FetchInductionScheduleRequest $request)
     {
         try {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
 
-            // Get induction schedules for the $practice
-            $inductionSchedules = InductionSchedule::where('practice_id', $practice->id)
-                ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
-                ->latest()
-                ->paginate(10);
+            // Fetch induction schedule
+            $inductionSchedules = $this->inductionScheduleService->fetchInductionSchedules($request);
 
             // Return success response
             return Response::success([
@@ -97,11 +69,9 @@ class InductionScheduleController extends Controller
     public function delete(DeleteInductionScheduleRequest $request)
     {
         try {
-            // Get induction schedule
-            $inductionSchedule = InductionSchedule::findOrFail($request->induction_schedule);
 
             // Delete induction schedule
-            $inductionSchedule->delete();
+            $this->inductionScheduleService->deleteInductionSchedule($request);
 
             // Return success response
             return Response::success([
@@ -115,14 +85,4 @@ class InductionScheduleController extends Controller
         }
     }
 
-    private function mapChecklists($checklists)
-    {
-        return collect($checklists)->map(function ($checklist) {
-            return [
-                'induction_checklist_id' => $checklist['induction_checklist_id'],
-                'is_complete' => $checklist['is_complete'],
-                'completed_date' => $checklist['completed_date'],
-            ];
-        });
-    }
 }

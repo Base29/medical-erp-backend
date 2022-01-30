@@ -2,25 +2,31 @@
 
 namespace App\Http\Controllers\Policy;
 
-use App\Helpers\FileUploadService;
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Policy\CreatePolicyRequest;
 use App\Models\Policy;
-use App\Models\Practice;
+use App\Services\Policy\PolicyService;
 
 class PolicyController extends Controller
 {
+    // Local variable
+    protected $policyService;
+
+    // Constructor
+    public function __construct(PolicyService $policyService)
+    {
+        // Inject service
+        $this->policyService = $policyService;
+    }
+
     // Method for fetching policies
     public function fetch()
     {
         try {
 
-            // Fetching policies
-            $policies = Policy::with('signatures.user')->latest()->get();
-
-            return Response::success(['policies' => $policies]);
+            // Fetch policies
+            return $this->policyService->fetchPolicies();
 
         } catch (\Exception $e) {
 
@@ -35,21 +41,8 @@ class PolicyController extends Controller
     {
 
         try {
-
-            // Check if the practice exists
-            $practice = Practice::findOrFail($request->practice);
-
-            // Upload policy document
-            $attachmentUrl = FileUploadService::upload($request->file('attachment'), 'policies', 's3');
-
-            // Create Policy
-            $policy = new Policy();
-            $policy->name = $request->name;
-            $policy->attachment = $attachmentUrl;
-            $policy->practice_id = $practice->id;
-            $policy->save();
-
-            return Response::success(['policy' => $policy]);
+            // Create policy
+            return $this->policyService->createPolicy($request);
 
         } catch (\Exception $e) {
 
@@ -65,20 +58,8 @@ class PolicyController extends Controller
 
         try {
 
-            // Check if practice exists
-            $policy = Policy::findOrFail($id);
-
-            if (!$policy) {
-                return Response::fail([
-                    'message' => ResponseMessage::notFound('Policy', $id, false),
-                    'code' => 404,
-                ]);
-            }
-
-            // Deleting practice
-            $policy->delete();
-
-            return Response::success(['message' => ResponseMessage::deleteSuccess('Policy')]);
+            // Delete policy
+            return $this->policyService->deletePolicy($id);
 
         } catch (\Exception $e) {
 
