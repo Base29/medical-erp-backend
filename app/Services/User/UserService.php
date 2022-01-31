@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\ContractSummary;
+use App\Models\HiringRequest;
 use App\Models\PositionSummary;
 use App\Models\Profile;
 use App\Models\User;
@@ -26,11 +27,15 @@ class UserService
                 'contract_type',
                 'contract_start_date',
                 'contracted_hours_per_week',
+                'hiring_request',
             ];
 
             if (!$request->hasAny($requiredFields)) {
                 throw new \Exception(ResponseMessage::customMessage('Candidate must have all the required fields ' . implode(' | ', $requiredFields)));
             }
+
+            // Get hiring request
+            $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
         }
 
         // Check if the user is not a candidate so the password field is required
@@ -68,6 +73,7 @@ class UserService
         $profile->gender = $request->is_candidate ? $request->gender : null;
         $profile->mobile_phone = $request->is_candidate ? $request->mobile_phone : null;
         $profile->primary_role = $request->is_candidate ? $request->job_title : null;
+        $profile->hiring_request_id = $request->is_candidate ? $hiringRequest->id : null;
         $user->profile()->save($profile);
 
         // Create position summary
@@ -102,7 +108,7 @@ class UserService
 
         return Response::success([
             'user' => $user
-                ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+                ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices')
                 ->latest()
                 ->first(),
         ]);
@@ -128,7 +134,7 @@ class UserService
     public function fetchUsers()
     {
         // Fetching all the users from database
-        $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+        $users = User::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
             ->latest()
             ->paginate(10);
 
@@ -169,7 +175,7 @@ class UserService
         UpdateService::updateModel($profile, $request->all(), 'user');
 
         return Response::success([
-            'user' => $user::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+            'user' => $user::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices')
                 ->latest('updated_at')
                 ->first(),
         ]);
@@ -184,7 +190,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
             ->get();
 
         // Return details of the user

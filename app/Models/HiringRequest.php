@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
+use App\Models\Profile;
 use App\Models\WorkPattern;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -47,5 +48,10 @@ class HiringRequest extends Model
     public function personSpecification()
     {
         return $this->belongsTo(PersonSpecification::class);
+    }
+
+    public function profiles()
+    {
+        return $this->hasMany(Profile::class);
     }
 }

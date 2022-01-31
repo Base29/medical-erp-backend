@@ -91,7 +91,7 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
             ->latest()
             ->first();
     }
@@ -101,7 +101,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
             ->get();
     }
 
@@ -182,7 +182,7 @@ class HiringRequestService
 
             // Return success response
             return $hiringRequest->where('id', $request->rota_information)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
                 ->get();
 
         }
@@ -196,7 +196,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
             ->latest('updated_at')
             ->first();
     }
@@ -219,7 +219,7 @@ class HiringRequestService
 
         // Get hiring requests
         $hiringRequests = HiringRequest::where('practice_id', $practice->id)
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
             ->latest()
             ->paginate(10);
 
