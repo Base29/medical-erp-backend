@@ -9,6 +9,8 @@ namespace App\Services\HiringRequest;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
+use App\Models\JobSpecification;
+use App\Models\PersonSpecification;
 use App\Models\Practice;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
@@ -18,9 +20,15 @@ class HiringRequestService
     // Hiring Request Create
     public function createHiringRequest($request)
     {
-        ray($request);
+
         // Get practice
         $practice = Practice::findOrFail($request->practice);
+
+        // Get job specification
+        $jobSpecification = JobSpecification::findOrFail($request->job_specification);
+
+        // Get person specification
+        $personSpecification = PersonSpecification::findOrFail($request->person_specification);
 
         // Get work pattern
         $workPattern = WorkPattern::find($request->rota_information);
@@ -73,8 +81,8 @@ class HiringRequestService
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
         $hiringRequest->comment = $request->comment;
-        $hiringRequest->job_specification = $request->job_specification;
-        $hiringRequest->person_specification = $request->person_specification;
+        $hiringRequest->job_specification_id = $jobSpecification->id;
+        $hiringRequest->person_specification_id = $personSpecification->id;
 
         // Save hiring request
         $practice->hiringRequests()->save($hiringRequest);
@@ -83,14 +91,18 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('workPatterns')->latest()->first();
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+            ->latest()
+            ->first();
     }
 
     // Fetch single hiring request
     public function fetchSingleHiringRequest($request)
     {
         // Get hiring request
-        return HiringRequest::where('id', $request->hiring_request)->with('workPatterns')->get();
+        return HiringRequest::where('id', $request->hiring_request)
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+            ->get();
     }
 
     // Update hiring request
@@ -106,8 +118,6 @@ class HiringRequestService
             'starting_salary',
             'reason_for_recruitment',
             'comment',
-            'job_specification',
-            'person_specification',
             'rota_information',
         ];
 
@@ -171,7 +181,9 @@ class HiringRequestService
             $hiringRequest->workPatterns()->attach($workPatternId);
 
             // Return success response
-            return $hiringRequest->where('id', $request->rota_information)->with('workPatterns')->get();
+            return $hiringRequest->where('id', $request->rota_information)
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+                ->get();
 
         }
 
@@ -184,7 +196,9 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('workPatterns')->latest('updated_at')->first();
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
+            ->latest('updated_at')
+            ->first();
     }
 
     // Delete hiring request
@@ -205,7 +219,7 @@ class HiringRequestService
 
         // Get hiring requests
         $hiringRequests = HiringRequest::where('practice_id', $practice->id)
-            ->with('practice', 'workPatterns.workTimings')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification')
             ->latest()
             ->paginate(10);
 

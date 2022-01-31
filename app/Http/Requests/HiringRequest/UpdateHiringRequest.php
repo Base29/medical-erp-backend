@@ -35,8 +35,6 @@ class UpdateHiringRequest extends FormRequest
             'starting_salary' => 'nullable|string|max:50',
             'reason_for_recruitment' => 'nullable|string|max:60',
             'comment' => 'nullable|string|max:2000',
-            'job_specification' => 'nullable|numeric|exists:job_specifications,id',
-            'person_specification' => 'nullable|numeric|exists:person_specifications,id',
             'rota_information' => 'nullable|numeric',
             'name' => 'nullable|string|unique:work_patterns,name',
             'start_time' => 'nullable|string',

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -22,5 +23,10 @@ class JobSpecification extends Model
     public function practice()
     {
         return $this->belongsTo(Practice::class);
+    }
+
+    public function hiringRequest()
+    {
+        return $this->belongsTo(HiringRequest::class);
     }
 }

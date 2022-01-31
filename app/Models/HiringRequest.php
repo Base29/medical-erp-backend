@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\JobSpecification;
+use App\Models\PersonSpecification;
 use App\Models\Practice;
 use App\Models\WorkPattern;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -35,5 +37,15 @@ class HiringRequest extends Model
     public function workPatterns()
     {
         return $this->belongsToMany(WorkPattern::class);
+    }
+
+    public function jobSpecification()
+    {
+        return $this->hasOne(JobSpecification::class);
+    }
+
+    public function personSpecification()
+    {
+        return $this->hasOne(PersonSpecification::class);
     }
 }
