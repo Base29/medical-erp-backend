@@ -28,8 +28,8 @@ class PersonSpecification extends Model
         return $this->belongsTo(Practice::class);
     }
 
-    public function hiringRequest()
+    public function hiringRequests()
     {
-        return $this->belongsTo(HiringRequest::class);
+        return $this->hasMany(HiringRequest::class);
     }
 }

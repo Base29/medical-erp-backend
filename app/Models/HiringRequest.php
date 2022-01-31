@@ -41,11 +41,11 @@ class HiringRequest extends Model
 
     public function jobSpecification()
     {
-        return $this->hasOne(JobSpecification::class);
+        return $this->belongsTo(JobSpecification::class);
     }
 
     public function personSpecification()
     {
-        return $this->hasOne(PersonSpecification::class);
+        return $this->belongsTo(PersonSpecification::class);
     }
 }
