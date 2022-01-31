@@ -26,7 +26,7 @@ class FetchHiringRequest extends FormRequest
     public function rules()
     {
         return [
-            'hiring_request' => 'required|numeric|exists:hiring_requests,id',
+            'practice' => 'required|numeric|exists:practices,id',
         ];
     }
 

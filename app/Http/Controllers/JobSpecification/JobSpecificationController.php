@@ -9,31 +9,32 @@ use App\Http\Requests\JobSpecification\CreateJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\DeleteJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\FetchJobSpecificationRequest;
 use App\Models\JobSpecification;
-use App\Models\Practice;
+use App\Services\JobSpecification\JobSpecificationService;
 
 class JobSpecificationController extends Controller
 {
+
+    // Local variable
+    protected $jobSpecificationService;
+
+    // Constructor
+    public function __construct(JobSpecificationService $jobSpecificationService)
+    {
+        // Inject service
+        $this->jobSpecificationService = $jobSpecificationService;
+    }
+
     // Create job specification
     public function create(CreateJobSpecificationRequest $request)
     {
         try {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
 
-            // Instance of JobSpecification model
-            $jobSpecification = new JobSpecification();
-            $jobSpecification->title = $request->title;
-            $jobSpecification->salary_grade = $request->salary_grade;
-            $jobSpecification->location = $request->location;
-            $jobSpecification->total_hours = $request->total_hours;
-            $jobSpecification->job_purpose = $request->job_purpose;
-
-            // Save job specification
-            $practice->jobSpecifications()->save($jobSpecification);
+            // Create job specification
+            $jobSpecification = $this->jobSpecificationService->createJobSpecification($request);
 
             // Return success response
             return Response::success([
-                'job-specification' => $jobSpecification->with('practice')->latest()->first(),
+                'job-specification' => $jobSpecification,
             ]);
 
         } catch (\Exception $e) {
@@ -48,13 +49,9 @@ class JobSpecificationController extends Controller
     public function fetch(FetchJobSpecificationRequest $request)
     {
         try {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
 
-            // Get job specifications for $practice
-            $jobSpecifications = JobSpecification::where('practice_id', $practice->id)
-                ->latest()
-                ->get();
+            // Fetch job specification
+            $jobSpecifications = $this->jobSpecificationService->fetchJobSpecifications($request);
 
             // Return success response
             return Response::success([
@@ -73,11 +70,9 @@ class JobSpecificationController extends Controller
     public function delete(DeleteJobSpecificationRequest $request)
     {
         try {
-            // Get Job specification
-            $jobSpecification = JobSpecification::findOrFail($request->job_specification);
 
-            // Delete Job Specification
-            $jobSpecification->delete();
+            // Delete job specification
+            $this->jobSpecificationService->deleteJobSpecification($request);
 
             // Return success response
             return Response::success([

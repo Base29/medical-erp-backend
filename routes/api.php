@@ -11,6 +11,7 @@ use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\HeadQuarter\HiringRequestController as HeadQuarterHiringRequestController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
@@ -451,14 +452,17 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [HiringRequestController::class, 'create'])
             ->middleware(['permission:can_create_hiring_request']);
 
-        Route::post('/', [HiringRequestController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_hiring_request']);
+        Route::post('hiring-request', [HiringRequestController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_hiring_request']);
 
         Route::post('update', [HiringRequestController::class, 'update'])
             ->middleware(['permission:can_update_hiring_request']);
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
             ->middleware(['permission:can_delete_hiring_request']);
+
+        Route::post('/', [HiringRequestController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_hiring_request']);
     });
 
     // Routes for induction checklist
@@ -528,5 +532,11 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [PersonSpecificationController::class, 'delete'])
             ->middleware(['permission:can_delete_person_specification']);
+    });
+
+    // Routes for HQ
+    Route::prefix('hq')->group(function () {
+        Route::post('hiring-request', [HeadQuarterHiringRequestController::class, 'processHiringRequest'])
+            ->middleware(['permission:can_process_hiring_request']);
     });
 });
