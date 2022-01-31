@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -38,5 +39,10 @@ class Profile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function hiringRequest()
+    {
+        return $this->belongsTo(HiringRequest::class);
     }
 }
