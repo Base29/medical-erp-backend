@@ -27,6 +27,7 @@ class FetchHiringRequest extends FormRequest
     {
         return [
             'practice' => 'required|numeric|exists:practices,id',
+            'status' => 'nullable|string',
         ];
     }
 
