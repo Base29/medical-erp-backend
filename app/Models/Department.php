@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,5 +20,10 @@ class Department extends Model
     public function practice()
     {
         return $this->belongsTo(Practice::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
     }
 }

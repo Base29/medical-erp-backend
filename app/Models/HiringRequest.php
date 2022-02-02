@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Department;
 use App\Models\Interview;
 use App\Models\InterviewSchedule;
 use App\Models\JobSpecification;
@@ -22,14 +23,14 @@ class HiringRequest extends Model
         'practice_id',
         'job_title',
         'contract_type',
-        'department',
+        'department_id',
         'reporting_to',
         'start_date',
         'starting_salary',
         'reason_for_recruitment',
         'comment',
-        'job_specification',
-        'person_specification',
+        'job_specification_id',
+        'person_specification_id',
         'rota_information',
     ];
 
@@ -71,5 +72,10 @@ class HiringRequest extends Model
     public function offers()
     {
         return $this->hasMany(Offer::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

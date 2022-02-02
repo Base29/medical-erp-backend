@@ -29,7 +29,7 @@ class CreateHiringRequest extends FormRequest
             'practice' => 'required|numeric|exists:practices,id',
             'job_title' => 'required|string|max:100',
             'contract_type' => 'required|string|max:50',
-            'department' => 'required|string|max:50',
+            'department' => 'required|numeric|exists:departments,id',
             'reporting_to' => 'required|numeric|exists:roles,id',
             'start_date' => 'required|date|date_format:Y-m-d',
             'starting_salary' => 'required|string|max:50',

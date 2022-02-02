@@ -8,6 +8,7 @@ namespace App\Services\HiringRequest;
 
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
+use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
@@ -29,6 +30,9 @@ class HiringRequestService
 
         // Get person specification
         $personSpecification = PersonSpecification::findOrFail($request->person_specification);
+
+        // Get department
+        $department = Department::findOrFail($request->department);
 
         // Get work pattern
         $workPattern = WorkPattern::find($request->rota_information);
@@ -75,7 +79,7 @@ class HiringRequestService
         $hiringRequest = new HiringRequest();
         $hiringRequest->job_title = $request->job_title;
         $hiringRequest->contract_type = $request->contract_type;
-        $hiringRequest->department = $request->department;
+        $hiringRequest->department_id = $department->id;
         $hiringRequest->reporting_to = $request->reporting_to;
         $hiringRequest->start_date = $request->start_date;
         $hiringRequest->starting_salary = $request->starting_salary;
@@ -91,7 +95,7 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
             ->latest()
             ->first();
     }
@@ -101,7 +105,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
             ->get();
     }
 
@@ -112,7 +116,6 @@ class HiringRequestService
         $allowedFields = [
             'job_title',
             'contract_type',
-            'department',
             'reporting_to',
             'start_date',
             'starting_salary',
@@ -182,7 +185,7 @@ class HiringRequestService
 
             // Return success response
             return $hiringRequest->where('id', $request->rota_information)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
                 ->get();
 
         }
@@ -196,7 +199,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
             ->latest('updated_at')
             ->first();
     }
@@ -219,12 +222,16 @@ class HiringRequestService
 
         // Get hiring requests
         $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
             ->latest()
             ->paginate(10);
 
         // Casting $hiringRequests to $results and converting the object to array
         $results = $hiringRequests->toArray();
+
+        /**
+         * Count according to status
+         */
 
         // Getting count of approved hiring requests
         $approved = $this->processCount($practice->id, 'status', 'approved');
@@ -235,10 +242,30 @@ class HiringRequestService
         // Getting count of escalated hiring requests
         $escalated = $this->processCount($practice->id, 'status', 'escalated');
 
+        /**
+         * Count according to contract type
+         */
+
+        // Getting count of permanent contract
+        $permanent = $this->processCount($practice->id, 'contract_type', 'permanent');
+
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount($practice->id, 'contract_type', 'fixed-term');
+
+        // Getting count of casual contract
+        $casual = $this->processCount($practice->id, 'contract_type', 'casual');
+
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount($practice->id, 'contract_type', 'zero-hour');
+
         // Adding extra meta to response $results
-        $results['approvedCount'] = $approved;
-        $results['declinedCount'] = $declined;
-        $results['escalatedCount'] = $escalated;
+        $results['count']['approved'] = $approved;
+        $results['count']['declined'] = $declined;
+        $results['count']['escalated'] = $escalated;
+        $results['count']['permanent'] = $permanent;
+        $results['count']['fixed-term'] = $fixedTerm;
+        $results['count']['casual'] = $casual;
+        $results['count']['zero-hour'] = $zeroHour;
 
         // Return hiring requests
         return $results;
