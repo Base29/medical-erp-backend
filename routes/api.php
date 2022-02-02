@@ -16,6 +16,7 @@ use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
+use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
@@ -538,5 +539,14 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('hq')->group(function () {
         Route::post('hiring-request', [HeadQuarterHiringRequestController::class, 'processHiringRequest'])
             ->middleware(['permission:can_process_hiring_request']);
+    });
+
+    // Routes for interviews
+    Route::prefix('interviews')->group(function () {
+        Route::post('/', [InterviewController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_interviews']);
+
+        Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
+            ->middleware(['permission::can_fetch_interview_schedules']);
     });
 });

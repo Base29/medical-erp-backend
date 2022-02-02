@@ -12,6 +12,7 @@ use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
 use App\Models\InductionSchedule;
+use App\Models\InterviewSchedule;
 use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
@@ -100,11 +101,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Signature::class);
     }
-
-    // public function signedBy(User $user)
-    // {
-    //     return $this->signatures->contains('user_id', $user->id);
-    // }
 
     public function posts()
     {
@@ -209,6 +205,11 @@ class User extends Authenticatable implements JWTSubject
         $alreadyHasInductionSchedule = $schedules->contains('user_id', $this->id);
 
         return $alreadyHasInductionSchedule;
+    }
+
+    public function interviewSchedule()
+    {
+        return $this->hasOne(InterviewSchedule::class);
     }
 
 }
