@@ -545,5 +545,8 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('interviews')->group(function () {
         Route::post('/', [InterviewController::class, 'fetch'])
             ->middleware(['permission:can_fetch_interviews']);
+
+        Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
+            ->middleware(['permission::can_fetch_interview_schedules']);
     });
 });
