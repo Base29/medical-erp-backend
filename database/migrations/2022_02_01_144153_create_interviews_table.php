@@ -15,6 +15,9 @@ class CreateInterviewsTable extends Migration
     {
         Schema::create('interviews', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('hiring_request_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
             $table->timestamps();
         });
     }

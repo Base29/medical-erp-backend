@@ -7,6 +7,7 @@ use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
+use App\Models\Interview;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Policy;
@@ -83,5 +84,10 @@ class Practice extends Model
     public function jobSpecifications()
     {
         return $this->hasMany(JobSpecification::class);
+    }
+
+    public function interviews()
+    {
+        return $this->hasMany(Interview::class);
     }
 }
