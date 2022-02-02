@@ -550,6 +550,6 @@ Route::middleware(['auth:api'])->group(function () {
             ->middleware(['permission:can_fetch_interviews']);
 
         Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
-            ->middleware(['permission::can_fetch_interview_schedules']);
+            ->middleware(['permission:can_fetch_interview_schedules']);
     });
 });
