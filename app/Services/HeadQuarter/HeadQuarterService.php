@@ -1,9 +1,11 @@
 <?php
 namespace App\Services\HeadQuarter;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
+use App\Models\Offer;
 
 class HeadQuarterService
 {
@@ -37,5 +39,19 @@ class HeadQuarterService
         return $hiringRequest->with('workPatterns.workTimings', 'practice')
             ->latest('updated_at')
             ->first();
+    }
+
+    // Fetch all offers
+    public function fetchAllOffers()
+    {
+        // Get Offers
+        $offers = Offer::with('practice', 'hiringRequest', 'user', 'workPattern.workTimings')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'offers' => $offers,
+        ]);
     }
 }
