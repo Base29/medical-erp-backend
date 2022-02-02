@@ -3,19 +3,28 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
+use App\Models\Interview;
 use App\Models\Practice;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Interview extends Model
+class InterviewSchedule extends Model
 {
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'interview_id',
         'practice_id',
         'hiring_request_id',
-        'name',
+        'user_id',
+        'date',
+        'time',
+        'location',
+        'interview_type',
+        'application_status',
+        'is_completed',
     ];
 
     public function practice()
@@ -23,13 +32,18 @@ class Interview extends Model
         return $this->belongsTo(Practice::class);
     }
 
+    public function interview()
+    {
+        return $this->belongsTo(Interview::class);
+    }
+
     public function hiringRequest()
     {
         return $this->belongsTo(HiringRequest::class);
     }
 
-    public function interviewSchedule()
+    public function user()
     {
-        return $this->hasOne(InterviewSchedule::class);
+        return $this->belongsTo(User::class);
     }
 }
