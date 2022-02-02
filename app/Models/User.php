@@ -15,6 +15,7 @@ use App\Models\InductionSchedule;
 use App\Models\InterviewSchedule;
 use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
+use App\Models\Offer;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
@@ -212,4 +213,8 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasOne(InterviewSchedule::class);
     }
 
+    public function offer()
+    {
+        return $this->hasOne(Offer::class);
+    }
 }

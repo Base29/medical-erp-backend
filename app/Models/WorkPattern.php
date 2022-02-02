@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
+use App\Models\Offer;
 use App\Models\User;
 use App\Models\WorkTiming;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -34,5 +35,10 @@ class WorkPattern extends Model
     public function hiringRequests()
     {
         return $this->belongsToMany(HiringRequest::class);
+    }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
     }
 }

@@ -7,7 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HeadQuarter\ProcessHiringRequest;
 use App\Services\HeadQuarter\HeadQuarterService;
 
-class HiringRequestController extends Controller
+class HeadQuarterController extends Controller
 {
 
     // Local variable
@@ -31,6 +31,21 @@ class HiringRequestController extends Controller
             return Response::success([
                 'hiring-request' => $hiringRequest,
             ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch all offers within the system
+    public function fetchOffers()
+    {
+        try {
+            // Fetch Offers
+            return $this->headQuarterService->fetchAllOffers();
 
         } catch (\Exception $e) {
             return Response::fail([

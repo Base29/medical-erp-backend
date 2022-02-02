@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Interview;
 use App\Models\InterviewSchedule;
 use App\Models\JobSpecification;
+use App\Models\Offer;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
 use App\Models\Profile;
@@ -65,5 +66,10 @@ class HiringRequest extends Model
     public function interviewSchedules()
     {
         return $this->hasMany(InterviewSchedule::class);
+    }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
     }
 }

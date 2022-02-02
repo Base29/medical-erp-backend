@@ -11,7 +11,7 @@ use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
-use App\Http\Controllers\HeadQuarter\HiringRequestController as HeadQuarterHiringRequestController;
+use App\Http\Controllers\HeadQuarter\HeadQuarterController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
@@ -537,8 +537,11 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for HQ
     Route::prefix('hq')->group(function () {
-        Route::post('hiring-request', [HeadQuarterHiringRequestController::class, 'processHiringRequest'])
+        Route::post('hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
             ->middleware(['permission:can_process_hiring_request']);
+
+        Route::post('offers', [HeadQuarterController::class, 'fetchOffers'])
+            ->middleware(['permission:can_fetch_offers']);
     });
 
     // Routes for interviews
