@@ -218,7 +218,7 @@ class HiringRequestService
         $practice = Practice::findOrFail($request->practice);
 
         // Get hiring requests
-        $hiringRequests = HiringRequest::where('practice_id', $practice->id)
+        $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
             ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles')
             ->latest()
             ->paginate(10);
