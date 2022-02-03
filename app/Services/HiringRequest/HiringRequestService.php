@@ -217,14 +217,30 @@ class HiringRequestService
     // Fetch Hiring requests
     public function fetchHiringRequests($request)
     {
-        // Get practice
-        $practice = Practice::findOrFail($request->practice);
 
-        // Get hiring requests
-        $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
-            ->latest()
-            ->paginate(10);
+        // Request if the route is not HQ
+        if (!$request->is('api/hq/*')) {
+
+            // Check if the practice id is provided
+            if (!$request->has('practice')) {
+                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
+            }
+
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get hiring requests
+            $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+                ->latest()
+                ->paginate(10);
+        } else {
+            // Get hiring requests
+            $hiringRequests = HiringRequest::where('status', $request->status)
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+                ->latest()
+                ->paginate(10);
+        }
 
         // Casting $hiringRequests to $results and converting the object to array
         $results = $hiringRequests->toArray();
@@ -234,29 +250,29 @@ class HiringRequestService
          */
 
         // Getting count of approved hiring requests
-        $approved = $this->processCount($practice->id, 'status', 'approved');
+        $approved = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'approved', $request);
 
         // Getting count of declined hiring requests
-        $declined = $this->processCount($practice->id, 'status', 'declined');
+        $declined = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'declined', $request);
 
         // Getting count of escalated hiring requests
-        $escalated = $this->processCount($practice->id, 'status', 'escalated');
+        $escalated = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'escalated', $request);
 
         /**
          * Count according to contract type
          */
 
         // Getting count of permanent contract
-        $permanent = $this->processCount($practice->id, 'contract_type', 'permanent');
+        $permanent = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'permanent', $request);
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount($practice->id, 'contract_type', 'fixed-term');
+        $fixedTerm = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'fixed-term', $request);
 
         // Getting count of casual contract
-        $casual = $this->processCount($practice->id, 'contract_type', 'casual');
+        $casual = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'casual', $request);
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount($practice->id, 'contract_type', 'zero-hour');
+        $zeroHour = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'zero-hour', $request);
 
         // Adding extra meta to response $results
         $results['count']['approved'] = $approved;
@@ -272,8 +288,13 @@ class HiringRequestService
     }
 
     // Process count
-    private function processCount($practiceId, $column, $value)
+    private function processCount($practiceId = null, $column, $value, $request)
     {
-        return HiringRequest::where(['practice_id' => $practiceId, $column => $value])->count();
+        if (!$request->is('api/hq/*')) {
+            return HiringRequest::where(['practice_id' => $practiceId, $column => $value])->count();
+        }
+
+        return HiringRequest::where([$column => $value])->count();
+
     }
 }
