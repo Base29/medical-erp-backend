@@ -2,10 +2,10 @@
 
 namespace Database\Seeders;
 
-use App\Models\Answer;
+use App\Models\Post;
 use Illuminate\Database\Seeder;
 
-class AnswerSeeder extends Seeder
+class PostSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,6 +14,6 @@ class AnswerSeeder extends Seeder
      */
     public function run()
     {
-        Answer::factory()->count(51)->create();
+        Post::factory()->count(50)->create();
     }
 }
