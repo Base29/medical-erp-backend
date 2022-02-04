@@ -30,6 +30,7 @@ class ProcessHiringRequest extends FormRequest
             'status' => 'required|string',
             'decision_reason' => 'nullable|string|max:100',
             'decision_comment' => 'nullable|string|max:1000',
+            'progress' => 'required|string',
         ];
     }
 

@@ -17,6 +17,7 @@ class HeadQuarterService
             'status',
             'decision_reason',
             'decision_comment',
+            'progress',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
