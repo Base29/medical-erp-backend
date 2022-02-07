@@ -239,4 +239,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
+    }
 }

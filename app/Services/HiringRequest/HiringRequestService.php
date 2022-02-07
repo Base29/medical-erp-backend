@@ -91,7 +91,7 @@ class HiringRequestService
         $hiringRequest->comment = $request->comment;
         $hiringRequest->job_specification_id = $jobSpecification->id;
         $hiringRequest->person_specification_id = $personSpecification->id;
-
+        $hiringRequest->user_id = auth()->user()->id;
         // Save hiring request
         $practice->hiringRequests()->save($hiringRequest);
 
