@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\Department;
 use App\Models\Education;
 use App\Models\EmergencyContact;
 use App\Models\EmploymentCheck;
@@ -232,5 +233,10 @@ class User extends Authenticatable implements JWTSubject
             return true;
         }
 
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }
