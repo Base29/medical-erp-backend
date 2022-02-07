@@ -24,7 +24,7 @@ class DepartmentService
         $practice->departments()->save($department);
 
         // Return success response
-        return $department->with('practice')->latest()->first();
+        return $department->with('practice', 'users')->latest()->first();
     }
 
     // Fetch departments
@@ -35,7 +35,7 @@ class DepartmentService
 
         // Get Departments
         $departments = Department::where('practice_id', $practice->id)
-            ->with('practice')
+            ->with('practice', 'users')
             ->latest()
             ->get();
 
