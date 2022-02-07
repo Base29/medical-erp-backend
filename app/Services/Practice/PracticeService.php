@@ -60,8 +60,17 @@ class PracticeService
             throw new \Exception(ResponseMessage::alreadyAssigned($user->email, $practice->practice_name));
         }
 
+        // Check if $request has type === 'practice_manager
+        if ($request->type === 'practice_manager') {
+            if ($practice->hasManager()) {
+                throw new \Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
+            }
+        }
+
         // Attach user to practice
-        $user->practices()->attach($practice->id);
+        $user->practices()->attach($practice->id, [
+            'type' => $request->type,
+        ]);
 
         return Response::success(['message' => ResponseMessage::assigned($user->email, $practice->practice_name)]);
     }

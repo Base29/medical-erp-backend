@@ -28,6 +28,7 @@ class AssignPracticeToUserRequest extends FormRequest
         return [
             'email' => 'required|email|exists:users,email',
             'practice' => 'required|numeric|exists:practices,id',
+            'type' => 'required|string',
         ];
     }
 

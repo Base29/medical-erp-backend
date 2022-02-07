@@ -217,4 +217,20 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasOne(Offer::class);
     }
+
+    public function isPracticeManager()
+    {
+        $practiceManager = $this->with('practices')
+            ->whereHas('practices', function ($q) {
+                $q->where('type', 'practice_manager');
+            })
+            ->first();
+
+        if ($practiceManager === null) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
 }

@@ -102,4 +102,19 @@ class Practice extends Model
     {
         return $this->hasMany(Offer::class);
     }
+
+    public function hasManager()
+    {
+        $practiceManager = $this->with('users')
+            ->whereHas('users', function ($q) {
+                $q->where('type', 'practice_manager');
+            })
+            ->first();
+
+        if ($practiceManager === null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
