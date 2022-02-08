@@ -3,6 +3,7 @@ namespace App\Services\Department;
 
 use App\Helpers\Response;
 use App\Models\Department;
+use App\Models\HiringRequest;
 use App\Models\Practice;
 use App\Models\User;
 
@@ -77,5 +78,46 @@ class DepartmentService
                 ->latest('updated_at')
                 ->first(),
         ]);
+    }
+
+    // Fetch single department
+    public function fetchSingleDepartment($request)
+    {
+        // Get department
+        $department = Department::where('id', $request->department)
+            ->with('practice', 'departmentHead', 'users.profile', 'users.positionSummary')
+            ->firstOrFail();
+
+        $result = $department->toArray();
+
+        // Getting count of permanent contract
+        $permanent = $this->processCount($department->id, 'contract_type', 'permanent');
+
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount($department->id, 'contract_type', 'fixed-term');
+
+        // Getting count of casual contract
+        $casual = $this->processCount($department->id, 'contract_type', 'casual');
+
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour', $request);
+
+        $result['count']['permanent'] = $permanent;
+        $result['count']['fixed-term'] = $fixedTerm;
+        $result['count']['casual'] = $casual;
+        $result['count']['zero-hour'] = $zeroHour;
+
+        // Return success response
+        return Response::success([
+            'department' => $result,
+        ]);
+    }
+
+    // Process count
+    private function processCount($departmentId = null, $column, $value)
+    {
+
+        return HiringRequest::where(['department_id' => $departmentId, $column => $value])->count();
+
     }
 }
