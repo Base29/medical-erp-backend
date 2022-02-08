@@ -509,6 +509,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [DepartmentController::class, 'delete'])
             ->middleware(['permission:can_delete_department']);
+
+        Route::post('assign-user', [DepartmentController::class, 'assignUser'])
+            ->middleware(['permission:can_assign_user_to_department']);
     });
 
     // Routes for job specifications

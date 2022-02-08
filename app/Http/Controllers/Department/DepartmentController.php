@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Department;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Department\AssignUserToDepartmentRequest;
 use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\DeleteDepartmentRequest;
 use App\Http\Requests\Department\FetchDepartmentRequest;
@@ -76,6 +77,21 @@ class DepartmentController extends Controller
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Department'),
             ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Assign user to department
+    public function assignUser(AssignUserToDepartmentRequest $request)
+    {
+        try {
+            // Assign user to practice
+            return $this->departmentService->assignUserToDepartment($request);
 
         } catch (\Exception $e) {
             return Response::fail([

@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Department;
 
+use App\Helpers\Response;
 use App\Models\Department;
 use App\Models\Practice;
 use App\Models\User;
@@ -55,5 +56,26 @@ class DepartmentService
 
         // Delete Department
         $department->delete();
+    }
+
+    // Assign user department
+    public function assignUserToDepartment($request)
+    {
+        // Get department
+        $department = Department::findOrFail($request->department);
+
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Add $department->id to $user
+        $user->department_id = $department->id;
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'department')
+                ->latest('updated_at')
+                ->first(),
+        ]);
     }
 }
