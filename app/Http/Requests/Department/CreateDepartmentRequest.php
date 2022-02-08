@@ -28,6 +28,7 @@ class CreateDepartmentRequest extends FormRequest
         return [
             'practice' => 'required|numeric|exists:practices,id',
             'name' => 'required|string|max:50',
+            'department_head' => 'required|numeric|exists:users,id',
         ];
     }
 

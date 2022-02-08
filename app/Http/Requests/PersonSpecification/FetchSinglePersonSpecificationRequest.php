@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Practice;
+namespace App\Http\Requests\PersonSpecification;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class AssignPracticeToUserRequest extends FormRequest
+class FetchSinglePersonSpecificationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,7 @@ class AssignPracticeToUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'practice' => 'required|numeric|exists:practices,id',
-            'type' => 'required|string',
+            'person_specification' => 'required|numeric|exists:person_specifications,id',
         ];
     }
 

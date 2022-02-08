@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\ContractSummary;
+use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\PositionSummary;
 use App\Models\Profile;
@@ -28,6 +29,7 @@ class UserService
                 'contract_start_date',
                 'contracted_hours_per_week',
                 'hiring_request',
+                'department',
             ];
 
             if (!$request->hasAny($requiredFields)) {
@@ -36,6 +38,9 @@ class UserService
 
             // Get hiring request
             $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+            // Get Department
+            $department = Department::findOrFail($request->department);
         }
 
         // Check if the user is not a candidate so the password field is required
@@ -64,6 +69,7 @@ class UserService
         $user->password = Hash::make($request->is_candidate ? $random : $request->password);
         $user->is_active = $request->is_candidate ? 0 : 1;
         $user->is_candidate = $request->is_candidate ? $request->is_candidate : 0;
+        $user->department_id = $request->is_candidate ? $department->id : null;
         $user->save();
 
         // Create profile for the user

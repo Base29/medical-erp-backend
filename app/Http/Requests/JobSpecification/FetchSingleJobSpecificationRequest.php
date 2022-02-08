@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Practice;
+namespace App\Http\Requests\JobSpecification;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class AssignPracticeToUserRequest extends FormRequest
+class FetchSingleJobSpecificationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,7 @@ class AssignPracticeToUserRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'required|email|exists:users,email',
-            'practice' => 'required|numeric|exists:practices,id',
-            'type' => 'required|string',
+            'job_specification' => 'required|numeric|exists:job_specifications,id',
         ];
     }
 

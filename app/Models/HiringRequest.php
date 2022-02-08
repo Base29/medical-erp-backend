@@ -10,6 +10,7 @@ use App\Models\Offer;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
 use App\Models\Profile;
+use App\Models\User;
 use App\Models\WorkPattern;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -77,5 +78,10 @@ class HiringRequest extends Model
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

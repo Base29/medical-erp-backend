@@ -5,6 +5,7 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\Department;
 use App\Models\Education;
 use App\Models\EmergencyContact;
 use App\Models\EmploymentCheck;
@@ -216,5 +217,31 @@ class User extends Authenticatable implements JWTSubject
     public function offer()
     {
         return $this->hasOne(Offer::class);
+    }
+
+    public function isPracticeManager()
+    {
+        $practiceManager = $this->with('practices')
+            ->whereHas('practices', function ($q) {
+                $q->where('type', 'practice_manager');
+            })
+            ->first();
+
+        if ($practiceManager === null) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
     }
 }
