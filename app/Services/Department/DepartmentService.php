@@ -41,7 +41,7 @@ class DepartmentService
 
         // Get Departments
         $departments = Department::where('practice_id', $practice->id)
-            ->with('practice', 'users', 'departmentHead')
+            ->with('practice', 'departmentHead', 'users.profile', 'users.positionSummary')
             ->latest()
             ->get();
 
