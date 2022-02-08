@@ -80,7 +80,7 @@ class PersonSpecificationService
     {
         // Get job specification
         $personSpecification = PersonSpecification::where('id', $request->person_specification)
-            ->with('practice')
+            ->with('practice', 'personSpecificationAttributes')
             ->firstOrFail();
 
         // Return success response

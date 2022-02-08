@@ -99,7 +99,7 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
             ->latest()
             ->first();
     }
@@ -109,7 +109,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
             ->get();
     }
 
@@ -189,7 +189,7 @@ class HiringRequestService
 
             // Return success response
             return $hiringRequest->where('id', $request->rota_information)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
                 ->get();
 
         }
@@ -203,7 +203,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
             ->latest('updated_at')
             ->first();
     }
@@ -235,13 +235,13 @@ class HiringRequestService
 
             // Get hiring requests
             $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get hiring requests
             $hiringRequests = HiringRequest::where('status', $request->status)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
                 ->latest()
                 ->paginate(10);
         }
