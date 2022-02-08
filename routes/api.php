@@ -521,6 +521,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('delete', [JobSpecificationController::class, 'delete'])
             ->middleware(['permission:can_delete_job_specification']);
+
+        Route::post('job-specification', [JobSpecificationController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_job_specification']);
     });
 
     // Routes for person specifications

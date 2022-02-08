@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\JobSpecification\CreateJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\DeleteJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\FetchJobSpecificationRequest;
+use App\Http\Requests\JobSpecification\FetchSingleJobSpecificationRequest;
 use App\Models\JobSpecification;
 use App\Services\JobSpecification\JobSpecificationService;
 
@@ -78,6 +79,21 @@ class JobSpecificationController extends Controller
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Job Specification'),
             ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single job specification
+    public function fetchSingle(FetchSingleJobSpecificationRequest $request)
+    {
+        try {
+            // Single job specification
+            return $this->jobSpecificationService->fetchSingleJobSpecification($request);
 
         } catch (\Exception $e) {
             return Response::fail([

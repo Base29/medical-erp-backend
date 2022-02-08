@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\JobSpecification;
 
+use App\Helpers\Response;
 use App\Models\JobSpecification;
 use App\Models\Practice;
 
@@ -47,5 +48,18 @@ class JobSpecificationService
 
         // Delete Job Specification
         $jobSpecification->delete();
+    }
+
+    public function fetchSingleJobSpecification($request)
+    {
+        // Get job specification
+        $jobSpecification = JobSpecification::where('id', $request->job_specification)
+            ->with('practice')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'job-specification' => $jobSpecification,
+        ]);
     }
 }
