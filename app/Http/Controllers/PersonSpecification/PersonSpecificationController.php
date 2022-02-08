@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PersonSpecification\CreatePersonSpecificationRequest;
 use App\Http\Requests\PersonSpecification\DeletePersonSpecificationRequest;
 use App\Http\Requests\PersonSpecification\FetchPersonSpecificationRequest;
+use App\Http\Requests\PersonSpecification\FetchSinglePersonSpecificationRequest;
 use App\Services\PersonSpecification\PersonSpecificationService;
 
 class PersonSpecificationController extends Controller
@@ -59,6 +60,21 @@ class PersonSpecificationController extends Controller
         try {
             // Delete person specification
             return $this->personSpecificationService->deletePersonSpecification($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single Person specification
+    public function fetchSingle(FetchSinglePersonSpecificationRequest $request)
+    {
+        try {
+            // Fetch single person specification
+            return $this->personSpecificationService->fetchSinglePersonSpecification($request);
 
         } catch (\Exception $e) {
             return Response::fail([

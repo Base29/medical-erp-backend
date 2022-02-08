@@ -74,4 +74,18 @@ class PersonSpecificationService
             'message' => ResponseMessage::deleteSuccess('Person Specification'),
         ]);
     }
+
+    // Fetch single person specification
+    public function fetchSinglePersonSpecification($request)
+    {
+        // Get job specification
+        $personSpecification = PersonSpecification::where('id', $request->person_specification)
+            ->with('practice')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'person-specification' => $personSpecification,
+        ]);
+    }
 }
