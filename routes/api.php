@@ -512,6 +512,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('assign-user', [DepartmentController::class, 'assignUser'])
             ->middleware(['permission:can_assign_user_to_department']);
+
+        Route::post('department', [DepartmentController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_department']);
     });
 
     // Routes for job specifications
