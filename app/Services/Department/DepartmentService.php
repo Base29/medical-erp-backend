@@ -3,6 +3,7 @@ namespace App\Services\Department;
 
 use App\Models\Department;
 use App\Models\Practice;
+use App\Models\User;
 
 /**
  * Department Service
@@ -16,9 +17,13 @@ class DepartmentService
         // Get practice
         $practice = Practice::findOrFail($request->practice);
 
+        // Get user for department head
+        $departmentHead = User::findOrFail($request->department_head);
+
         // Instance of Department model
         $department = new Department();
         $department->name = $request->name;
+        $department->user_id = $departmentHead->id;
 
         // Save department
         $practice->departments()->save($department);
@@ -35,7 +40,7 @@ class DepartmentService
 
         // Get Departments
         $departments = Department::where('practice_id', $practice->id)
-            ->with('practice', 'users')
+            ->with('practice', 'users', 'departmentHead')
             ->latest()
             ->get();
 
