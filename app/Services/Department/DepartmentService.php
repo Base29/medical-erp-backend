@@ -85,7 +85,7 @@ class DepartmentService
     {
         // Get department
         $department = Department::where('id', $request->department)
-            ->with('practice', 'departmentHead', 'users.profile', 'users.positionSummary')
+            ->with('practice', 'departmentHead.profile', 'users.profile', 'users.positionSummary')
             ->firstOrFail();
 
         $result = $department->toArray();
