@@ -3,7 +3,7 @@
 namespace App\Models;
 
 use App\Models\InterviewPolicy;
-use App\Models\QuestionOption;
+use App\Models\InterviewQuestionOption;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -25,6 +25,6 @@ class InterviewQuestion extends Model
 
     public function options()
     {
-        return $this->hasMany(QuestionOption::class);
+        return $this->hasMany(InterviewQuestionOption::class);
     }
 }

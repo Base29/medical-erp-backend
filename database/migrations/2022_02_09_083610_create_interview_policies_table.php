@@ -15,6 +15,9 @@ class CreateInterviewPoliciesTable extends Migration
     {
         Schema::create('interview_policies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('role_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
             $table->timestamps();
         });
     }

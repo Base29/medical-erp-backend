@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateQuestionOptionsTable extends Migration
+class CreateInterviewQuestionOptionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class CreateQuestionOptionsTable extends Migration
      */
     public function up()
     {
-        Schema::create('question_options', function (Blueprint $table) {
+        Schema::create('interview_question_options', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('interview_question_id')->constrained()->cascadeOnDelete();
+            $table->text('option');
             $table->timestamps();
         });
     }
@@ -26,6 +28,6 @@ class CreateQuestionOptionsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('question_options');
+        Schema::dropIfExists('interview_question_options');
     }
 }

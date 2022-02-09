@@ -15,6 +15,9 @@ class CreateInterviewQuestionsTable extends Migration
     {
         Schema::create('interview_questions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('interview_policy_id')->constrained()->cascadeOnDelete();
+            $table->string('type');
+            $table->text('question');
             $table->timestamps();
         });
     }
