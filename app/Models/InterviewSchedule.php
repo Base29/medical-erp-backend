@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Models\HiringRequest;
 use App\Models\Interview;
+use App\Models\InterviewPolicy;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -45,5 +46,10 @@ class InterviewSchedule extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function interviewPolicy()
+    {
+        return $this->belongsTo(InterviewPolicy::class);
     }
 }
