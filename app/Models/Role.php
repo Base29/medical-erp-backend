@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\InductionChecklist;
+use App\Models\InterviewPolicy;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends \Spatie\Permission\Models\Role
@@ -18,5 +19,10 @@ class Role extends \Spatie\Permission\Models\Role
     public function inductionChecklist()
     {
         return $this->hasMany(InductionChecklist::class);
+    }
+
+    public function interviewPolicy()
+    {
+        return $this->hasOne(InterviewPolicy::class);
     }
 }

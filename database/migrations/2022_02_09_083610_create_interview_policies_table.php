@@ -18,6 +18,7 @@ class CreateInterviewPoliciesTable extends Migration
             $table->foreignId('practice_id')->constrained()->cascadeOnDelete();
             $table->foreignId('role_id')->constrained()->cascadeOnDelete();
             $table->string('name');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

@@ -17,6 +17,7 @@ class CreateInterviewQuestionOptionsTable extends Migration
             $table->id();
             $table->foreignId('interview_question_id')->constrained()->cascadeOnDelete();
             $table->text('option');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

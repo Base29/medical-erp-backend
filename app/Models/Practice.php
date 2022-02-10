@@ -8,6 +8,7 @@ use App\Models\HiringRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
 use App\Models\Interview;
+use App\Models\InterviewPolicy;
 use App\Models\InterviewSchedule;
 use App\Models\JobSpecification;
 use App\Models\Offer;
@@ -116,5 +117,10 @@ class Practice extends Model
         } else {
             return true;
         }
+    }
+
+    public function interviewPolicies()
+    {
+        return $this->hasMany(InterviewPolicy::class);
     }
 }

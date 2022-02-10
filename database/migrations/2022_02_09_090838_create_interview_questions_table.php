@@ -18,6 +18,7 @@ class CreateInterviewQuestionsTable extends Migration
             $table->foreignId('interview_policy_id')->constrained()->cascadeOnDelete();
             $table->string('type');
             $table->text('question');
+            $table->softDeletes();
             $table->timestamps();
         });
     }
