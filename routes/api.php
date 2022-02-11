@@ -16,6 +16,7 @@ use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
+use App\Http\Controllers\InterviewPolicy\InterviewPolicyController;
 use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
@@ -566,5 +567,19 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
             ->middleware(['permission:can_fetch_interview_schedules']);
+    });
+
+    // Routes for interviews
+    Route::prefix('interviews')->group(function () {
+        Route::prefix('interview-policies')->group(function () {
+            Route::post('create', [InterviewPolicyController::class, 'create'])
+                ->middleware(['permission:can_create_interview_policy']);
+
+            Route::post('/', [InterviewPolicyController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_interview_policies']);
+
+            Route::post('interview-policy', [InterviewPolicyController::class, 'fetchSingle'])
+                ->middleware(['permission:can_fetch_single_interview_policy']);
+        });
     });
 });
