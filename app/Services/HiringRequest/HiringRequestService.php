@@ -13,9 +13,9 @@ use App\Models\HiringRequest;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
+use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
-use Spatie\Permission\Models\Role;
 
 class HiringRequestService
 {
@@ -36,7 +36,7 @@ class HiringRequestService
         $department = Department::findOrFail($request->department);
 
         // Get role
-        $role = Role::FindOrFail($request->reporting_to);
+        $reportingTo = User::findOrFail($request->reporting_to);
 
         // Get work pattern
         $workPattern = WorkPattern::find($request->rota_information);
@@ -84,7 +84,7 @@ class HiringRequestService
         $hiringRequest->job_title = $request->job_title;
         $hiringRequest->contract_type = $request->contract_type;
         $hiringRequest->department_id = $department->id;
-        $hiringRequest->reporting_to = $role->name;
+        $hiringRequest->reporting_to = $reportingTo->id;
         $hiringRequest->start_date = $request->start_date;
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
