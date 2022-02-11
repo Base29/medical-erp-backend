@@ -76,4 +76,23 @@ class InterviewPolicyService
             $interviewQuestion->options()->save($interviewQuestionOption);
         }
     }
+
+    // Fetch all interview policies belongs to a practice
+    public function fetchAllInterviewPolicies($request)
+    {
+        // Get practice
+        $practice = Practice::findOrFail($request->practice);
+
+        // Get all interview policies
+        $interviewPolicies = InterviewPolicy::where('practice_id', $practice->id)
+            ->with('interviewQuestions.options', 'practice', 'role')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'interview-policies' => $interviewPolicies,
+        ]);
+
+    }
 }

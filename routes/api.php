@@ -574,6 +574,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('interview-policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])
                 ->middleware(['permission:can_create_interview_policy']);
+
+            Route::post('/', [InterviewPolicyController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_interview_policies']);
         });
     });
 });
