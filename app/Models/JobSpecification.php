@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
+use App\Models\JobResponsibility;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -28,5 +29,10 @@ class JobSpecification extends Model
     public function hiringRequests()
     {
         return $this->hasMany(HiringRequest::class);
+    }
+
+    public function responsibilities()
+    {
+        return $this->hasMany(JobResponsibility::class);
     }
 }
