@@ -95,4 +95,18 @@ class InterviewPolicyService
         ]);
 
     }
+
+    // Fetch single interview policy
+    public function fetchSingleInterviewPolicy($request)
+    {
+        // Get interview policy
+        $interviewPolicy = InterviewPolicy::where('id', $request->interview_policy)
+            ->with('interviewQuestions.options', 'practice', 'role')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'interview-policy' => $interviewPolicy,
+        ]);
+    }
 }
