@@ -25,4 +25,9 @@ class Role extends \Spatie\Permission\Models\Role
     {
         return $this->hasOne(InterviewPolicy::class);
     }
+
+    public function hasInterviewPolicy()
+    {
+        return InterviewPolicy::where('role_id', $this->id)->first();
+    }
 }

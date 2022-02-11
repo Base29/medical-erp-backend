@@ -2,11 +2,12 @@
 namespace App\Services\InterviewPolicy;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewQuestion;
 use App\Models\InterviewQuestionOption;
 use App\Models\Practice;
-use Spatie\Permission\Models\Role;
+use App\Models\Role;
 
 class InterviewPolicyService
 {
@@ -18,6 +19,10 @@ class InterviewPolicyService
 
         // Get role
         $role = Role::findOrFail($request->role);
+
+        if ($role->hasInterviewPolicy()) {
+            throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a interview policy'));
+        }
 
         // Instance of InterviewPolicy
         $interviewPolicy = new InterviewPolicy();
