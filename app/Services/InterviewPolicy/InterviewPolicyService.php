@@ -109,4 +109,19 @@ class InterviewPolicyService
             'interview-policy' => $interviewPolicy,
         ]);
     }
+
+    // Delete interview policy
+    public function deleteInterviewPolicy($request)
+    {
+        // Get interview policy
+        $interviewPolicy = InterviewPolicy::findOrFail($request->interview_policy);
+
+        // Delete interview policy
+        $interviewPolicy->delete();
+
+        // Return success response
+        return Response::success([
+            'message' => ResponseMessage::deleteSuccess('Interview Policy'),
+        ]);
+    }
 }
