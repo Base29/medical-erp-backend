@@ -2,6 +2,7 @@
 namespace App\Services\JobSpecification;
 
 use App\Helpers\Response;
+use App\Models\JobResponsibility;
 use App\Models\JobSpecification;
 use App\Models\Practice;
 
@@ -24,8 +25,11 @@ class JobSpecificationService
         // Save job specification
         $practice->jobSpecifications()->save($jobSpecification);
 
+        // Save responsibilities
+        $this->saveResponsibilities($request->responsibilities, $jobSpecification);
+
         // Return success response
-        return $jobSpecification->with('practice')->latest()->first();
+        return $jobSpecification->with('practice', 'responsibilities')->latest()->first();
     }
 
     // Fetch job specifications
@@ -36,6 +40,7 @@ class JobSpecificationService
 
         // Get job specifications for $practice
         return JobSpecification::where('practice_id', $practice->id)
+            ->with('practice', 'responsibilities')
             ->latest()
             ->get();
     }
@@ -54,12 +59,25 @@ class JobSpecificationService
     {
         // Get job specification
         $jobSpecification = JobSpecification::where('id', $request->job_specification)
-            ->with('practice')
+            ->with('practice', 'responsibilities')
             ->firstOrFail();
 
         // Return success response
         return Response::success([
             'job-specification' => $jobSpecification,
         ]);
+    }
+
+    // Save responsibilities
+    private function saveResponsibilities($responsibilities, $jobSpecification)
+    {
+        foreach ($responsibilities as $responsibility) {
+            // Instance of JobResponsibility
+            $jobResponsibility = new JobResponsibility();
+            $jobResponsibility->responsibility = $responsibility['responsibility'];
+
+            // Save responsibility
+            $jobSpecification->responsibilities()->save($jobResponsibility);
+        }
     }
 }

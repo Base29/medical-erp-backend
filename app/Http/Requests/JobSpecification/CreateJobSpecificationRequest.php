@@ -32,6 +32,8 @@ class CreateJobSpecificationRequest extends FormRequest
             'location' => 'nullable|string|max:100',
             'total_hours' => 'nullable|string|max:50',
             'job_purpose' => 'nullable|string|max:1000',
+            'responsibilities' => 'required|array',
+            'responsibilities.*.responsibility' => 'required|string|max:500',
         ];
     }
 
