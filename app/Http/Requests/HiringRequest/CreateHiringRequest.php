@@ -30,7 +30,7 @@ class CreateHiringRequest extends FormRequest
             'job_title' => 'required|string|max:100',
             'contract_type' => 'required|string|max:50',
             'department' => 'required|numeric|exists:departments,id',
-            'reporting_to' => 'required|numeric|exists:roles,id',
+            'reporting_to' => 'required|numeric|exists:users,id',
             'start_date' => 'required|date|date_format:Y-m-d',
             'starting_salary' => 'required|string|max:50',
             'reason_for_recruitment' => 'required|string|max:60',
