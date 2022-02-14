@@ -9,6 +9,7 @@ use App\Models\InterviewPolicy;
 use App\Models\InterviewSchedule;
 use App\Models\Practice;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 
 class InterviewService
 {
@@ -31,14 +32,15 @@ class InterviewService
     }
 
     // Fetch interview schedules for a practice
-    public function fetchInterviewSchedules($request)
+    public function fetchUpcomingInterviewSchedules($request)
     {
         // Get practice
         $practice = Practice::findOrFail($request->practice);
 
         // Get $practice interview schedules
         $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
-            ->with('practice', 'interview', 'user', 'hiringRequest')
+            ->where('date', '>', Carbon::now())
+            ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
             ->latest()
             ->paginate(10);
 

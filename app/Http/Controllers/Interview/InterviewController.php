@@ -37,11 +37,11 @@ class InterviewController extends Controller
     }
 
     // Fetch practice interview schedules
-    public function interviewSchedules(FetchInterviewSchedulesRequest $request)
+    public function upcomingInterviews(FetchInterviewSchedulesRequest $request)
     {
         try {
             // Fetch practice interview schedules
-            return $this->interviewService->fetchInterviewSchedules($request);
+            return $this->interviewService->fetchUpcomingInterviewSchedules($request);
 
         } catch (\Exception $e) {
             return Response::fail([

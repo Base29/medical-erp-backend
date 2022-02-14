@@ -571,8 +571,8 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_create_interview_schedule']);
         });
 
-        // Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
-        //     ->middleware(['permission:can_fetch_interview_schedules']);
+        Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
+            ->middleware(['permission:can_fetch_upcoming_interviews']);
 
         // Routes for interview policies
         Route::prefix('policies')->group(function () {
