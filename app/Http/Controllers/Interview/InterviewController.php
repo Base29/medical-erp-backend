@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Interview;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\InterviewSchedule\CreateInterviewScheduleRequest;
 use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
 use App\Services\Interview\InterviewService;
@@ -41,6 +42,21 @@ class InterviewController extends Controller
         try {
             // Fetch practice interview schedules
             return $this->interviewService->fetchInterviewSchedules($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Create
+    public function create(CreateInterviewScheduleRequest $request)
+    {
+        try {
+            // Create interview schedule service
+            return $this->interviewService->createInterviewSchedule($request);
 
         } catch (\Exception $e) {
             return Response::fail([
