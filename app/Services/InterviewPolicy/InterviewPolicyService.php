@@ -49,6 +49,7 @@ class InterviewPolicyService
             // Instance of InterviewQuestion
             $interviewQuestion = new InterviewQuestion();
             $interviewQuestion->type = $question['type'];
+            $interviewQuestion->head = $question['head'];
             $interviewQuestion->question = $question['question'];
 
             // Save question
