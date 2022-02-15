@@ -2,6 +2,7 @@
 namespace App\Services\Interview;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\Interview;
@@ -107,6 +108,21 @@ class InterviewService
             'interview' => $interviewSchedule->with('practice', 'department.departmentHead.profile', 'user.profile', 'hiringRequest')
                 ->latest('updated_at')
                 ->first(),
+        ]);
+    }
+
+    // Delete interview schedule
+    public function deleteInterviewSchedule($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->id);
+
+        // Delete interview schedule
+        $interviewSchedule->delete();
+
+        // Return success response
+        return Response::success([
+            'message' => ResponseMessage::deleteSuccess('Interview Schedule'),
         ]);
     }
 }

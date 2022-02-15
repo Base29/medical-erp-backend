@@ -36,6 +36,7 @@ class InterviewPolicyService
         // Return success response
         return Response::success([
             'interview-policy' => $interviewPolicy->with('interviewQuestions.options', 'role', 'practice')
+                ->latest()
                 ->first(),
         ]);
 
