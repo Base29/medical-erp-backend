@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\Department;
 use App\Models\HiringRequest;
-use App\Models\Interview;
 use App\Models\InterviewPolicy;
 use App\Models\Practice;
 use App\Models\User;
@@ -16,7 +16,7 @@ class InterviewSchedule extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'interview_id',
+        'interview_policy_id',
         'practice_id',
         'hiring_request_id',
         'user_id',
@@ -33,10 +33,10 @@ class InterviewSchedule extends Model
         return $this->belongsTo(Practice::class);
     }
 
-    public function interview()
-    {
-        return $this->belongsTo(Interview::class);
-    }
+    // public function interview()
+    // {
+    //     return $this->belongsTo(Interview::class);
+    // }
 
     public function hiringRequest()
     {
@@ -51,5 +51,10 @@ class InterviewSchedule extends Model
     public function interviewPolicy()
     {
         return $this->belongsTo(InterviewPolicy::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
     }
 }

@@ -36,6 +36,7 @@ class InterviewPolicyService
         // Return success response
         return Response::success([
             'interview-policy' => $interviewPolicy->with('interviewQuestions.options', 'role', 'practice')
+                ->latest()
                 ->first(),
         ]);
 
@@ -49,6 +50,7 @@ class InterviewPolicyService
             // Instance of InterviewQuestion
             $interviewQuestion = new InterviewQuestion();
             $interviewQuestion->type = $question['type'];
+            $interviewQuestion->head = $question['head'];
             $interviewQuestion->question = $question['question'];
 
             // Save question

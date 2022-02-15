@@ -562,23 +562,27 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for interviews
     Route::prefix('interviews')->group(function () {
-        Route::post('/', [InterviewController::class, 'fetch'])
+        Route::post('/', [InterviewController::class, 'upcomingInterviews'])
             ->middleware(['permission:can_fetch_interviews']);
 
-        Route::post('schedules', [InterviewController::class, 'interviewSchedules'])
-            ->middleware(['permission:can_fetch_interview_schedules']);
-    });
+        Route::post('update', [InterviewController::class, 'update'])
+            ->middleware(['permission:can_update_interview']);
 
-    // Routes for interviews
-    Route::prefix('interviews')->group(function () {
-        Route::prefix('interview-policies')->group(function () {
+        Route::post('delete', [InterviewController::class, 'delete'])
+            ->middleware(['permission:can_delete_interview']);
+
+        Route::post('create', [InterviewController::class, 'create'])
+            ->middleware(['permission:can_create_interview']);
+
+        // Routes for interview policies
+        Route::prefix('policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])
                 ->middleware(['permission:can_create_interview_policy']);
 
             Route::post('/', [InterviewPolicyController::class, 'fetch'])
                 ->middleware(['permission:can_fetch_interview_policies']);
 
-            Route::post('interview-policy', [InterviewPolicyController::class, 'fetchSingle'])
+            Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
                 ->middleware(['permission:can_fetch_single_interview_policy']);
         });
     });

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
+use App\Models\InterviewSchedule;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -36,5 +37,10 @@ class Department extends Model
     public function departmentHead()
     {
         return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
+    public function interviewSchedules()
+    {
+        return $this->hasMany(InterviewSchedule::class);
     }
 }
