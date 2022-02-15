@@ -91,4 +91,22 @@ class InterviewService
         ]);
 
     }
+
+    // Update interview
+    public function updateInterviewSchedule($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // Update is_completed field for $interviewSchedule
+        $interviewSchedule->is_completed = $request->is_completed;
+        $interviewSchedule->save();
+
+        // Return success response
+        return Response::success([
+            'interview' => $interviewSchedule->with('practice', 'department.departmentHead.profile', 'user.profile', 'hiringRequest')
+                ->latest('updated_at')
+                ->first(),
+        ]);
+    }
 }
