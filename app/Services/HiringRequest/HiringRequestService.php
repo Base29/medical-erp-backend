@@ -6,10 +6,13 @@
 
 namespace App\Services\HiringRequest;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
+use App\Models\Applicant;
 use App\Models\Department;
 use App\Models\HiringRequest;
+use App\Models\HiringRequestPosting;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
@@ -99,7 +102,8 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
+            ->withCount('applicants')
             ->latest()
             ->first();
     }
@@ -109,7 +113,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+            ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
             ->get();
     }
 
@@ -126,6 +130,7 @@ class HiringRequestService
             'reason_for_recruitment',
             'comment',
             'rota_information',
+            'is_live',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -189,7 +194,7 @@ class HiringRequestService
 
             // Return success response
             return $hiringRequest->where('id', $request->rota_information)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
                 ->get();
 
         }
@@ -203,7 +208,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+        return $hiringRequest->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
             ->latest('updated_at')
             ->first();
     }
@@ -235,13 +240,14 @@ class HiringRequestService
 
             // Get hiring requests
             $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
+                ->withCount('applicants')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get hiring requests
             $hiringRequests = HiringRequest::where('status', $request->status)
-                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department')
+                ->with('practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
                 ->latest()
                 ->paginate(10);
         }
@@ -300,5 +306,50 @@ class HiringRequestService
 
         return HiringRequest::where([$column => $value])->count();
 
+    }
+
+    // Add applicant to hiring request
+    public function addApplicantToHiringRequest($request)
+    {
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Instance of Applicant
+        $applicant = new Applicant();
+        $applicant->hiring_request_id = $hiringRequest->id;
+        $applicant->user_id = $user->id;
+
+        // Save applicant
+        $applicant->save();
+
+        // Return success response
+        return Response::success([
+            'applicant' => $applicant->with('profile', 'vacancy')->latest()->first(),
+        ]);
+    }
+
+    // Create hiring request posting
+    public function createHiringRequestPosting($request)
+    {
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Instance of HiringRequestPosting
+        $hiringRequestPosting = new HiringRequestPosting();
+        $hiringRequestPosting->site_name = $request->site_name;
+        $hiringRequestPosting->post_date = $request->post_date;
+        $hiringRequestPosting->end_date = $request->end_date;
+        $hiringRequestPosting->link = $request->link;
+
+        // Save
+        $hiringRequest->hiringRequestPostings()->save($hiringRequestPosting);
+
+        // Return success response
+        return Response::success([
+            'postings' => $hiringRequestPosting,
+        ]);
     }
 }

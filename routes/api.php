@@ -465,6 +465,14 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [HiringRequestController::class, 'fetch'])
             ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('add-applicant', [HiringRequestController::class, 'addApplicant'])
+            ->middleware(['permission:can_add_applicant']);
+
+        Route::prefix('postings')->group(function () {
+            Route::post('create', [HiringRequestController::class, 'createPostings'])
+                ->middleware(['permission:can_create_posting']);
+        });
     });
 
     // Routes for induction checklist
