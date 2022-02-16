@@ -15,16 +15,30 @@ use Illuminate\Support\Carbon;
 class InterviewService
 {
     // Fetch all of practice's interviews
-    public function fetchPracticeInterviews($request)
+    public function fetchAllInterviews($request)
     {
-        // Get practice
-        $practice = Practice::findOrFail($request->practice);
+        if (!$request->is('api/hq/*')) {
 
-        // Get $practice interviews
-        $interviews = Interview::where('practice_id', $practice->id)
-            ->with('practice')
-            ->latest()
-            ->paginate(10);
+            // Check if the practice id is provided
+            if (!$request->has('practice')) {
+                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
+            }
+
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get $practice interviews
+            $interviews = Interview::where('practice_id', $practice->id)
+                ->with('practice')
+                ->latest()
+                ->paginate(10);
+
+        } else {
+            // Get $practice interviews
+            $interviews = Interview::with('practice')
+                ->latest()
+                ->paginate(10);
+        }
 
         // Return success response
         return Response::success([
@@ -35,15 +49,28 @@ class InterviewService
     // Fetch interview schedules for a practice
     public function fetchUpcomingInterviewSchedules($request)
     {
-        // Get practice
-        $practice = Practice::findOrFail($request->practice);
+        if (!$request->is('api/hq/*')) {
+            // Check if the practice id is provided
+            if (!$request->has('practice')) {
+                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
+            }
 
-        // Get $practice interview schedules
-        $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
-            ->where('date', '>', Carbon::now())
-            ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
-            ->latest()
-            ->paginate(10);
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get $practice interview schedules
+            $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
+                ->where('date', '>', Carbon::now())
+                ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
+                ->latest()
+                ->paginate(10);
+        } else {
+            // Get $practice interview schedules
+            $interviewSchedules = InterviewSchedule::where('date', '>', Carbon::now())
+                ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
+                ->latest()
+                ->paginate(10);
+        }
 
         // Return success response
         return Response::success([

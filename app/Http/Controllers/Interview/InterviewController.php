@@ -28,7 +28,7 @@ class InterviewController extends Controller
     {
         try {
             // Fetch practice interview
-            return $this->interviewService->fetchPracticeInterviews($request);
+            return $this->interviewService->fetchAllInterviews($request);
 
         } catch (\Exception $e) {
             return Response::fail([

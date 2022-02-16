@@ -566,6 +566,15 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('hiring-requests', [HiringRequestController::class, 'fetch'])
             ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::prefix('interviews')->group(function () {
+            Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
+                ->middleware(['permission:can_fetch_upcoming_interviews']);
+
+            Route::post('/', [InterviewController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_all_interviews']);
+        });
+
     });
 
     // Routes for interviews
