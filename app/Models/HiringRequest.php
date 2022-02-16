@@ -84,4 +84,9 @@ class HiringRequest extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function applicants()
+    {
+        return $this->hasMany(Applicant::class);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HiringRequest;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\HiringRequest\AddApplicantToHiringRequest;
 use App\Http\Requests\HiringRequest\CreateHiringRequest;
 use App\Http\Requests\HiringRequest\DeleteHiringRequest;
 use App\Http\Requests\HiringRequest\FetchHiringRequest;
@@ -115,6 +116,21 @@ class HiringRequestController extends Controller
             return Response::success([
                 'hiring-requests' => $hiringRequests,
             ]);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Add applicant
+    public function addApplicant(AddApplicantToHiringRequest $request)
+    {
+        try {
+            // Add applicant to hiring request
+            return $this->hiringRequestService->addApplicantToHiringRequest($request);
 
         } catch (\Exception $e) {
             return Response::fail([

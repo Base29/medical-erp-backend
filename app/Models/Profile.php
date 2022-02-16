@@ -45,4 +45,9 @@ class Profile extends Model
     {
         return $this->belongsTo(HiringRequest::class);
     }
+
+    public function applicant()
+    {
+        return $this->belongsTo(Applicant::class, 'user_id', 'user_id');
+    }
 }

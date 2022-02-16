@@ -465,6 +465,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [HiringRequestController::class, 'fetch'])
             ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('add-applicant', [HiringRequestController::class, 'addApplicant'])
+            ->middleware(['permission:can_add_applicant']);
     });
 
     // Routes for induction checklist
