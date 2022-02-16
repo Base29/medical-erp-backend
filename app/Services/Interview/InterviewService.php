@@ -28,14 +28,14 @@ class InterviewService
             $practice = Practice::findOrFail($request->practice);
 
             // Get $practice interviews
-            $interviews = Interview::where('practice_id', $practice->id)
-                ->with('practice')
+            $interviews = InterviewSchedule::where('practice_id', $practice->id)
+                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
 
         } else {
             // Get $practice interviews
-            $interviews = Interview::with('practice')
+            $interviews = InterviewSchedule::with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         }
@@ -61,13 +61,13 @@ class InterviewService
             // Get $practice interview schedules
             $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
                 ->where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
+                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get $practice interview schedules
             $interviewSchedules = InterviewSchedule::where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicy', 'user', 'hiringRequest')
+                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         }
