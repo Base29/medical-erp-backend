@@ -12,6 +12,7 @@ use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\Department;
 use App\Models\HiringRequest;
+use App\Models\HiringRequestPosting;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
@@ -129,6 +130,7 @@ class HiringRequestService
             'reason_for_recruitment',
             'comment',
             'rota_information',
+            'is_live',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -326,6 +328,28 @@ class HiringRequestService
         // Return success response
         return Response::success([
             'applicant' => $applicant->with('profile', 'vacancy')->latest()->first(),
+        ]);
+    }
+
+    // Create hiring request posting
+    public function createHiringRequestPosting($request)
+    {
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Instance of HiringRequestPosting
+        $hiringRequestPosting = new HiringRequestPosting();
+        $hiringRequestPosting->site_name = $request->site_name;
+        $hiringRequestPosting->post_date = $request->post_date;
+        $hiringRequestPosting->end_date = $request->end_date;
+        $hiringRequestPosting->link = $request->link;
+
+        // Save
+        $hiringRequest->hiringRequestPostings()->save($hiringRequestPosting);
+
+        // Return success response
+        return Response::success([
+            'postings' => $hiringRequestPosting,
         ]);
     }
 }

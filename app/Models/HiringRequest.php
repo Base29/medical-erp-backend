@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use App\Models\Applicant;
 use App\Models\Department;
+use App\Models\HiringRequestPosting;
 use App\Models\Interview;
 use App\Models\InterviewSchedule;
 use App\Models\JobSpecification;
@@ -88,5 +90,10 @@ class HiringRequest extends Model
     public function applicants()
     {
         return $this->hasMany(Applicant::class);
+    }
+
+    public function hiringRequestPostings()
+    {
+        return $this->hasMany(HiringRequestPosting::class);
     }
 }
