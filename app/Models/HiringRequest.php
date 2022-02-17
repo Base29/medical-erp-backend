@@ -96,4 +96,9 @@ class HiringRequest extends Model
     {
         return $this->hasMany(HiringRequestPosting::class);
     }
+
+    public function applicationManager()
+    {
+        return $this->belongsTo(User::class, 'application_manager', 'id');
+    }
 }

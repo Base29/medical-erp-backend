@@ -12,7 +12,6 @@ use App\Http\Requests\HiringRequest\DeleteHiringRequest;
 use App\Http\Requests\HiringRequest\FetchHiringRequest;
 use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
 use App\Http\Requests\HiringRequest\UpdateHiringRequest;
-use App\Models\HiringRequest;
 use App\Services\HiringRequest\HiringRequestService;
 
 class HiringRequestController extends Controller

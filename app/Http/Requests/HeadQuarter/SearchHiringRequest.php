@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Practice;
+namespace App\Http\Requests\HeadQuarter;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class CreatePracticeRequest extends FormRequest
+class SearchHiringRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,15 +27,18 @@ class CreatePracticeRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice_manager' => 'required|numeric|exists:users,id',
-            'name' => 'required|unique:practices,practice_name',
+            'field' => [
+                'required',
+                Rule::in(['application_manager', 'is_live', 'job_title', 'status', 'progress', 'contract_type']),
+            ],
+            'search_term' => 'required',
         ];
     }
 
     public function messages()
     {
         return [
-            'name.unique' => 'Practice with name ' . request()->name . ' already exists',
+            'field.in' => 'You can only filter results by these fields application_manager|is_live|job_title|status|progress|contract_type',
         ];
     }
 

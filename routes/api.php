@@ -558,14 +558,19 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for HQ
     Route::prefix('hq')->group(function () {
-        Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
-            ->middleware(['permission:can_process_hiring_request']);
+        Route::prefix('hiring-requests')->group(function () {
+            Route::post('/', [HiringRequestController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_hiring_request']);
+
+            Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
+                ->middleware(['permission:can_process_hiring_request']);
+
+            Route::post('search', [HeadQuarterController::class, 'search'])
+                ->middleware(['permission:can_search_hiring_requests']);
+        });
 
         Route::post('offers', [HeadQuarterController::class, 'fetchOffers'])
             ->middleware(['permission:can_fetch_offers']);
-
-        Route::post('hiring-requests', [HiringRequestController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_hiring_request']);
 
         Route::prefix('interviews')->group(function () {
             Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])

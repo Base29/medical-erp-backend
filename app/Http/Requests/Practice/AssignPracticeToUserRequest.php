@@ -4,6 +4,7 @@ namespace App\Http\Requests\Practice;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class AssignPracticeToUserRequest extends FormRequest
@@ -28,7 +29,17 @@ class AssignPracticeToUserRequest extends FormRequest
         return [
             'email' => 'required|email|exists:users,email',
             'practice' => 'required|numeric|exists:practices,id',
-            'type' => 'required|string',
+            'type' => [
+                'nullable',
+                Rule::in(['user', 'practice-manager']),
+            ],
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'type.in' => 'The :attribute is invalid. It should be one of user|practice-manager',
         ];
     }
 
