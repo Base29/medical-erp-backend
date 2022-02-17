@@ -26,6 +26,7 @@ class CreatePracticeRequest extends FormRequest
     public function rules()
     {
         return [
+            'practice_manager' => 'required|numeric|exists:users,id',
             'name' => 'required|unique:practices,practice_name',
         ];
     }

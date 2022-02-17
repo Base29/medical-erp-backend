@@ -30,7 +30,7 @@ class AssignPracticeToUserRequest extends FormRequest
             'email' => 'required|email|exists:users,email',
             'practice' => 'required|numeric|exists:practices,id',
             'type' => [
-                'required',
+                'nullable',
                 Rule::in(['user', 'practice-manager']),
             ],
         ];

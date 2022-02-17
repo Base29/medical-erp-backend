@@ -11,9 +11,13 @@ class PracticeService
     // Create practice
     public function createPractice($request)
     {
+        // Get user
+        $practiceManager = User::findOrFail($request->practice_manager);
+
         // Create practice with the provided name
         $practice = new Practice();
         $practice->practice_name = $request->name;
+        $practice->user_id = $practiceManager->id;
         $practice->save();
 
         return Response::success(['practice' => $practice]);
@@ -60,16 +64,16 @@ class PracticeService
             throw new \Exception(ResponseMessage::alreadyAssigned($user->email, $practice->practice_name));
         }
 
-        // Check if $request has type === 'practice_manager
-        if ($request->type === 'practice-manager') {
-            if ($practice->hasManager()) {
-                throw new \Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
-            }
-        }
+        // // Check if $request has type === 'practice_manager
+        // if ($request->type === 'practice-manager') {
+        //     if ($practice->hasManager()) {
+        //         throw new \Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
+        //     }
+        // }
 
         // Attach user to practice
         $user->practices()->attach($practice->id, [
-            'type' => $request->type,
+            'type' => 'user',
         ]);
 
         return Response::success(['message' => ResponseMessage::assigned($user->email, $practice->practice_name)]);
