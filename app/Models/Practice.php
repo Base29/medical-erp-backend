@@ -123,4 +123,9 @@ class Practice extends Model
     {
         return $this->hasMany(InterviewPolicy::class);
     }
+
+    public function practiceManager()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
 }

@@ -43,7 +43,7 @@ class PracticeService
     public function fetchPractices()
     {
         // Fetch practices
-        $practices = Practice::with('policies', 'users.profile')->latest()->paginate(10);
+        $practices = Practice::with('policies', 'users.profile', 'practiceManager.profile')->latest()->paginate(10);
 
         return Response::success(['practices' => $practices]);
     }
