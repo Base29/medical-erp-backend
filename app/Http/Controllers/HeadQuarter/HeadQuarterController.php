@@ -5,6 +5,7 @@ namespace App\Http\Controllers\HeadQuarter;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\HeadQuarter\ProcessHiringRequest;
+use App\Http\Requests\HeadQuarter\SearchHiringRequest;
 use App\Services\HeadQuarter\HeadQuarterService;
 
 class HeadQuarterController extends Controller
@@ -46,6 +47,21 @@ class HeadQuarterController extends Controller
         try {
             // Fetch Offers
             return $this->headQuarterService->fetchAllOffers();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Search
+    public function search(SearchHiringRequest $request)
+    {
+        try {
+            // Search hiring request service
+            return $this->headQuarterService->searchHiringRequest($request);
 
         } catch (\Exception $e) {
             return Response::fail([

@@ -352,10 +352,4 @@ class HiringRequestService
             'postings' => $hiringRequestPosting,
         ]);
     }
-
-    // Search hiring request
-    public function searchHiringRequest($request)
-    {
-        //
-    }
 }

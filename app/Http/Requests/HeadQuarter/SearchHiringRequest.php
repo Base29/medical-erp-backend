@@ -1,9 +1,10 @@
 <?php
 
-namespace App\Http\Requests\HiringRequest;
+namespace App\Http\Requests\HeadQuarter;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class SearchHiringRequest extends FormRequest
@@ -26,9 +27,18 @@ class SearchHiringRequest extends FormRequest
     public function rules()
     {
         return [
-            'filter' => 'required|string',
-            'search_term' => 'required|string',
+            'field' => [
+                'required',
+                Rule::in(['application_manager', 'is_live', 'job_title', 'status', 'progress', 'contract_type']),
+            ],
+            'search_term' => 'required',
+        ];
+    }
 
+    public function messages()
+    {
+        return [
+            'field.in' => 'You can only filter results by these fields application_manager|is_live|job_title|status|progress|contract_type',
         ];
     }
 

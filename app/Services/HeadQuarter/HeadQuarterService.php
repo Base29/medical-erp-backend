@@ -55,4 +55,20 @@ class HeadQuarterService
             'offers' => $offers,
         ]);
     }
+
+    // Search hiring requests
+    public function searchHiringRequest($request)
+    {
+
+        // Search results
+        $results = HiringRequest::where($request->field, 'LIKE', '%' . $request->search_term . '%')
+            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
+            ->latest()
+            ->paginate(10);
+
+        // Return search results
+        return Response::success([
+            'search-results' => $results,
+        ]);
+    }
 }
