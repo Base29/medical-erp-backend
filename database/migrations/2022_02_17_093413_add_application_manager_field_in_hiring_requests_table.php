@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddUserIdToHiringRequestsTable extends Migration
+class AddApplicationManagerFieldInHiringRequestsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,13 @@ class AddUserIdToHiringRequestsTable extends Migration
     public function up()
     {
         Schema::table('hiring_requests', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->after('department_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('application_manager')
+                ->nullable()
+                ->after('person_specification_id')
+                ->references('id')
+                ->on('users')
+                ->constrained()
+                ->cascadeOnDelete();
         });
     }
 
@@ -26,7 +32,7 @@ class AddUserIdToHiringRequestsTable extends Migration
     public function down()
     {
         Schema::table('hiring_requests', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('user_id');
+            $table->dropConstrainedForeignId('application_manager');
         });
     }
 }

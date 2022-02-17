@@ -126,6 +126,6 @@ class Practice extends Model
 
     public function practiceManager()
     {
-        return $this->belongsTo(User::class, 'user_id', 'id');
+        return $this->belongsTo(User::class, 'practice_manager', 'id');
     }
 }

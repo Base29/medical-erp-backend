@@ -14,7 +14,13 @@ class AddUserIdToPracticesTable extends Migration
     public function up()
     {
         Schema::table('practices', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->after('id')->constrained()->cascadeOnDelete();
+            $table->foreignId('practice_manager')
+                ->nullable()
+                ->after('id')
+                ->references('id')
+                ->on('users')
+                ->constrained()
+                ->cascadeOnDelete();
         });
     }
 
