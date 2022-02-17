@@ -108,7 +108,7 @@ class Practice extends Model
     {
         $practiceManager = $this->with('users')
             ->whereHas('users', function ($q) {
-                $q->where('type', 'practice_manager');
+                $q->where('type', 'practice-manager');
             })
             ->first();
 

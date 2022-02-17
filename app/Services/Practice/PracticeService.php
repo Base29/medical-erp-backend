@@ -39,7 +39,7 @@ class PracticeService
     public function fetchPractices()
     {
         // Fetch practices
-        $practices = Practice::with('policies')->latest()->paginate(10);
+        $practices = Practice::with('policies', 'users.profile')->latest()->paginate(10);
 
         return Response::success(['practices' => $practices]);
     }
@@ -61,7 +61,7 @@ class PracticeService
         }
 
         // Check if $request has type === 'practice_manager
-        if ($request->type === 'practice_manager') {
+        if ($request->type === 'practice-manager') {
             if ($practice->hasManager()) {
                 throw new \Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
             }

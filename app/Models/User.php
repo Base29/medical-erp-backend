@@ -223,7 +223,7 @@ class User extends Authenticatable implements JWTSubject
     {
         $practiceManager = $this->with('practices')
             ->whereHas('practices', function ($q) {
-                $q->where('type', 'practice_manager');
+                $q->where('type', 'practice-manager');
             })
             ->first();
 
