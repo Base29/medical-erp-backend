@@ -101,4 +101,18 @@ class OfferService
             'message' => ResponseMessage::deleteSuccess('Offer ' . $offer->id),
         ]);
     }
+
+    public function fetchSingleOffer($request)
+    {
+        // Get offer
+        $offer = Offer::where('id', $request->offer)
+            ->with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'offer' => $offer,
+        ]);
+
+    }
 }

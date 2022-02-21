@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Offer\CreateOfferRequest;
 use App\Http\Requests\Offer\DeleteOfferRequest;
+use App\Http\Requests\Offer\FetchSingleOfferRequest;
 use App\Http\Requests\Offer\UpdateOfferRequest;
 use App\Services\Offer\OfferService;
 
@@ -57,6 +58,21 @@ class OfferController extends Controller
         try {
             // Delete offer service
             return $this->offerService->deleteOffer($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single
+    public function fetchSingle(FetchSingleOfferRequest $request)
+    {
+        try {
+            // Fetch single offer service
+            return $this->offerService->fetchSingleOffer($request);
 
         } catch (\Exception $e) {
             return Response::fail([

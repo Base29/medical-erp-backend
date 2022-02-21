@@ -582,6 +582,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('delete', [OfferController::class, 'delete'])
                 ->middleware(['permission:can_delete_offer']);
+
+            Route::post('offer', [OfferController::class, 'fetchSingle'])
+                ->middleware(['permission:can_fetch_single_offer']);
         });
 
         Route::prefix('interviews')->group(function () {
