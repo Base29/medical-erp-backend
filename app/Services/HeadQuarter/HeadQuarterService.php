@@ -46,7 +46,7 @@ class HeadQuarterService
     public function fetchAllOffers()
     {
         // Get Offers
-        $offers = Offer::with('practice', 'hiringRequest', 'user', 'workPattern.workTimings')
+        $offers = Offer::with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
             ->latest()
             ->paginate(10);
 

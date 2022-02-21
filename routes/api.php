@@ -21,6 +21,7 @@ use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
+use App\Http\Controllers\Offer\OfferController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\PersonSpecification\PersonSpecificationController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -569,8 +570,19 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_search_hiring_requests']);
         });
 
-        Route::post('offers', [HeadQuarterController::class, 'fetchOffers'])
-            ->middleware(['permission:can_fetch_offers']);
+        Route::prefix('offers')->group(function () {
+            Route::post('create', [OfferController::class, 'create'])
+                ->middleware(['permission:can_create_offer']);
+
+            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
+                ->middleware(['permission:can_fetch_offers']);
+
+            Route::post('update', [OfferController::class, 'update'])
+                ->middleware(['permission:can_update_offer']);
+
+            Route::post('delete', [OfferController::class, 'delete'])
+                ->middleware(['permission:can_delete_offer']);
+        });
 
         Route::prefix('interviews')->group(function () {
             Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
