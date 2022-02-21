@@ -2,6 +2,7 @@
 namespace App\Services\Offer;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\Practice;
@@ -25,6 +26,10 @@ class OfferService
         // Get work pattern
         $workPattern = WorkPattern::findOrFail($request->work_pattern);
 
+        // Check if user already has a offer
+        if ($hiringRequest->alreadyHasOffer($user->id)) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already has a offer for vacancy ' . $hiringRequest->id));
+        }
         // Instance of Offer
         $offer = new Offer();
         $offer->practice_id = $practice->id;

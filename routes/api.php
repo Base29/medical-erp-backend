@@ -474,11 +474,6 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [HiringRequestController::class, 'createPostings'])
                 ->middleware(['permission:can_create_posting']);
         });
-
-        Route::prefix('offers')->group(function () {
-            Route::post('create', [OfferController::class, 'create'])
-                ->middleware(['permission:can_create_offer']);
-        });
     });
 
     // Routes for induction checklist
@@ -575,8 +570,13 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_search_hiring_requests']);
         });
 
-        Route::post('offers', [HeadQuarterController::class, 'fetchOffers'])
-            ->middleware(['permission:can_fetch_offers']);
+        Route::prefix('offers')->group(function () {
+            Route::post('create', [OfferController::class, 'create'])
+                ->middleware(['permission:can_create_offer']);
+
+            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
+                ->middleware(['permission:can_fetch_offers']);
+        });
 
         Route::prefix('interviews')->group(function () {
             Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])

@@ -101,4 +101,9 @@ class HiringRequest extends Model
     {
         return $this->belongsTo(User::class, 'application_manager', 'id');
     }
+
+    public function alreadyHasOffer($userId)
+    {
+        return $this->offers->contains('user_id', $userId);
+    }
 }
