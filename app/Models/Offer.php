@@ -15,10 +15,12 @@ class Offer extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
+        'practice_id',
         'hiring_request_id',
         'user_id',
         'work_pattern_id',
         'status',
+        'amount',
     ];
 
     public function hiringRequest()

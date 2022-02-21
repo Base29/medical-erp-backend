@@ -21,6 +21,7 @@ use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
+use App\Http\Controllers\Offer\OfferController;
 use App\Http\Controllers\Permission\PermissionController;
 use App\Http\Controllers\PersonSpecification\PersonSpecificationController;
 use App\Http\Controllers\Policy\PolicyController;
@@ -472,6 +473,11 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('postings')->group(function () {
             Route::post('create', [HiringRequestController::class, 'createPostings'])
                 ->middleware(['permission:can_create_posting']);
+        });
+
+        Route::prefix('offers')->group(function () {
+            Route::post('create', [OfferController::class, 'create'])
+                ->middleware(['permission:can_create_offer']);
         });
     });
 
