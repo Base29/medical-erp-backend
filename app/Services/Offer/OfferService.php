@@ -57,6 +57,7 @@ class OfferService
         $allowedFields = [
             'status',
             'amount',
+            'work_pattern_id',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -66,6 +67,9 @@ class OfferService
 
         // Get offer
         $offer = Offer::findOrFail($request->offer);
+
+        // Get work pattern
+        $workPattern = WorkPattern::findOrFail($request->work_pattern_id);
 
         // Update offer
         $offerUpdated = UpdateService::updateModel($offer, $request->all(), 'offer');

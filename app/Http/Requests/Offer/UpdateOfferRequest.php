@@ -33,6 +33,7 @@ class UpdateOfferRequest extends FormRequest
                 Rule::in(['made', 'accepted', 'rejected']),
             ],
             'amount' => 'nullable|string|max:10',
+            'work_pattern_id' => 'nullable|numeric|exists:work_patterns,id',
         ];
     }
 
