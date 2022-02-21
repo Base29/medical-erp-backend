@@ -3,6 +3,7 @@ namespace App\Services\Offer;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\Practice;
@@ -47,5 +48,38 @@ class OfferService
                 ->latest()
                 ->first(),
         ]);
+    }
+
+    // Update offer
+    public function updateOffer($request)
+    {
+        // Allowed fields
+        $allowedFields = [
+            'status',
+            'amount',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowedFields)) {
+            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+        }
+
+        // Get offer
+        $offer = Offer::findOrFail($request->offer);
+
+        // Update offer
+        $offerUpdated = UpdateService::updateModel($offer, $request->all(), 'offer');
+
+        if (!$offerUpdated) {
+            throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id));
+        }
+
+        // Return success response
+        return Response::success([
+            'offer' => $offer->with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
+                ->latest('updated_at')
+                ->first(),
+        ]);
+
     }
 }

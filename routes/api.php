@@ -576,6 +576,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
                 ->middleware(['permission:can_fetch_offers']);
+
+            Route::post('update', [OfferController::class, 'update'])
+                ->middleware(['permission:can_update_offer']);
         });
 
         Route::prefix('interviews')->group(function () {
