@@ -82,4 +82,19 @@ class OfferService
         ]);
 
     }
+
+    // Delete offer
+    public function deleteOffer($request)
+    {
+        // Ger offer
+        $offer = Offer::findOrFail($request->offer);
+
+        // Delete offer
+        $offer->delete();
+
+        // Return success response
+        return Response::success([
+            'message' => ResponseMessage::deleteSuccess('Offer ' . $offer->id),
+        ]);
+    }
 }

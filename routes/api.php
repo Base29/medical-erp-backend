@@ -579,6 +579,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('update', [OfferController::class, 'update'])
                 ->middleware(['permission:can_update_offer']);
+
+            Route::post('delete', [OfferController::class, 'delete'])
+                ->middleware(['permission:can_delete_offer']);
         });
 
         Route::prefix('interviews')->group(function () {

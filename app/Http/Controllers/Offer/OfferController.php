@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Offer;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Offer\CreateOfferRequest;
+use App\Http\Requests\Offer\DeleteOfferRequest;
 use App\Http\Requests\Offer\UpdateOfferRequest;
 use App\Services\Offer\OfferService;
 
@@ -41,6 +42,21 @@ class OfferController extends Controller
         try {
             // Update offer service
             return $this->offerService->updateOffer($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete
+    public function delete(DeleteOfferRequest $request)
+    {
+        try {
+            // Delete offer service
+            return $this->offerService->deleteOffer($request);
 
         } catch (\Exception $e) {
             return Response::fail([
