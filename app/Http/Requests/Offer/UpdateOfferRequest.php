@@ -30,10 +30,17 @@ class UpdateOfferRequest extends FormRequest
             'offer' => 'required|numeric|exists:offers,id',
             'status' => [
                 'nullable',
-                Rule::in(['made', 'accepted', 'rejected']),
+                Rule::in(['made', 'accepted', 'declined', 'revised']),
             ],
             'amount' => 'nullable|string|max:10',
             'work_pattern_id' => 'nullable|numeric|exists:work_patterns,id',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'status.in' => 'The :attribute is invalid. :attribute can only be made|accepted|declined|revised',
         ];
     }
 
