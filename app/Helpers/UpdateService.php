@@ -12,7 +12,6 @@ class UpdateService
     {
 
         try {
-            ray($fields);
             foreach ($fields as $field => $value) {
                 if ($field !== $excludeField) {
                     $model->$field = $value;

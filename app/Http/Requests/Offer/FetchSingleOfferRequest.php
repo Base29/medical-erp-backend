@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests\Offer;
 
+use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\ValidationException;
 
 class FetchSingleOfferRequest extends FormRequest
 {

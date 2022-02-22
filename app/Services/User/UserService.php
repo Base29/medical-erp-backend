@@ -140,7 +140,7 @@ class UserService
     public function fetchUsers()
     {
         // Fetching all the users from database
-        $users = User::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+        $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
             ->latest()
             ->paginate(10);
 
@@ -176,12 +176,12 @@ class UserService
         $user = User::findOrFail($request->user);
 
         // Get profile for the user
-        $profile = Profile::where('user_id', $user->id)->get();
+        $profile = Profile::where('user_id', $user->id)->firstOrFail();
 
         UpdateService::updateModel($profile, $request->all(), 'user');
 
         return Response::success([
-            'user' => $user::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices')
+            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices')
                 ->latest('updated_at')
                 ->first(),
         ]);
