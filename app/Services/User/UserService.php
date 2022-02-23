@@ -6,9 +6,14 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\ContractSummary;
 use App\Models\Department;
+use App\Models\Education;
+use App\Models\EmploymentHistory;
 use App\Models\HiringRequest;
+use App\Models\Legal;
+use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Profile;
+use App\Models\Reference;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -97,6 +102,31 @@ class UserService
         $contractSummary->contract_start_date = $request->is_candidate ? $request->contract_start_date : null;
         $contractSummary->contracted_hours_per_week = $request->is_candidate ? $request->contracted_hours_per_week : null;
         $user->contractSummary()->save($contractSummary);
+
+        // Create misc info
+        $miscInfo = new MiscellaneousInformation();
+        $miscInfo->job_description = null;
+        $user->miscInfo()->save($miscInfo);
+
+        // Create education
+        $education = new Education();
+        $education->institution = null;
+        $user->education()->save($education);
+
+        // Create employment history
+        $employmentHistory = new EmploymentHistory();
+        $employmentHistory->employer_name = null;
+        $user->employmentHistories()->save($employmentHistory);
+
+        // Create reference
+        $reference = new Reference();
+        $reference->reference_type = null;
+        $user->references()->save($reference);
+
+        // Create legal
+        $legal = new Legal();
+        $legal->name = null;
+        $user->legal()->save($legal);
 
         // Assigning role(s) if user being created is a candidate
         if ($request->is_candidate) {

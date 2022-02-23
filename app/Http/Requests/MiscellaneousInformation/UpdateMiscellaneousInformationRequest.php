@@ -27,7 +27,7 @@ class UpdateMiscellaneousInformationRequest extends FormRequest
     {
         return [
             'misc_info' => 'required|numeric|exists:miscellaneous_information,id',
-            'job_description' => 'nullable|numeric|exists:job_specifications,id',
+            'job_specification' => 'nullable|numeric|exists:job_specifications,id',
             'interview_notes' => 'nullable|string|min:0|max:1000',
             'offer_letter_email' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
             'job_advertisement' => 'nullable|file|mimes:doc,docx,pdf,xls,xlsx',
