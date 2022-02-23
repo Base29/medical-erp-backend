@@ -113,7 +113,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile')
+            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user')
             ->get();
     }
 
