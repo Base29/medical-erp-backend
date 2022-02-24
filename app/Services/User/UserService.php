@@ -4,6 +4,7 @@ namespace App\Services\User;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
+use App\Models\Applicant;
 use App\Models\ContractSummary;
 use App\Models\Department;
 use App\Models\Education;
@@ -127,6 +128,17 @@ class UserService
         $legal = new Legal();
         $legal->name = null;
         $user->legal()->save($legal);
+
+        // Add user as a applicant to the hiring request
+        if ($hiringRequest) {
+            // Instance of Applicant
+            $applicant = new Applicant();
+            $applicant->hiring_request_id = $hiringRequest->id;
+            $applicant->user_id = $user->id;
+
+            // Save applicant
+            $applicant->save();
+        }
 
         // Assigning role(s) if user being created is a candidate
         if ($request->is_candidate) {
