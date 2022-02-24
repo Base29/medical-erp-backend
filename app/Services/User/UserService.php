@@ -105,7 +105,7 @@ class UserService
 
         // Create misc info
         $miscInfo = new MiscellaneousInformation();
-        $miscInfo->job_description = null;
+        $miscInfo->job_specification = null;
         $user->miscInfo()->save($miscInfo);
 
         // Create education
