@@ -239,7 +239,21 @@ class UserService
         // Get user from database
         $user = User::where('id', $authenticatedUser)
             ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
-            ->get();
+            ->firstOrFail();
+
+        // Return details of the user
+        return Response::success([
+            'user' => $user,
+        ]);
+    }
+
+    // Fetch single user
+    public function fetchSingleUser($request)
+    {
+        // Get user from database
+        $user = User::where('id', $request->user)
+            ->with('profile.applicant', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->firstOrFail();
 
         // Return details of the user
         return Response::success([

@@ -116,6 +116,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', [UserController::class, 'fetch']);
 
             Route::post('update', [UserController::class, 'update']);
+
+            Route::post('user', [UserController::class, 'fetchSingle']);
         });
 
     // Endpoint for fetching individual user profile
