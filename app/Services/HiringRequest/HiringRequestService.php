@@ -352,4 +352,22 @@ class HiringRequestService
             'postings' => $hiringRequestPosting,
         ]);
     }
+
+    // Fetch all applicants
+    public function fetchAllApplicants($request)
+    {
+        $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Applicants of $hiringRequest
+        $applicants = Applicant::where('hiring_request_id', $hiringRequest->id)
+            ->with('profile.user')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'applicants' => $applicants,
+        ]);
+
+    }
 }
