@@ -356,6 +356,7 @@ class HiringRequestService
     // Fetch all applicants
     public function fetchAllApplicants($request)
     {
+        // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
         // Applicants of $hiringRequest
@@ -367,6 +368,24 @@ class HiringRequestService
         // Return success response
         return Response::success([
             'applicants' => $applicants,
+        ]);
+
+    }
+
+    // Fetch postings
+    public function fetchAllPostings($request)
+    {
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Get hiring request postings
+        $postings = HiringRequestPosting::where('hiring_request_id', $hiringRequest->id)
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'postings' => $postings,
         ]);
 
     }

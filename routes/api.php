@@ -478,6 +478,10 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('postings')->group(function () {
             Route::post('create', [HiringRequestController::class, 'createPostings'])
                 ->middleware(['permission:can_create_posting']);
+
+            Route::post('/', [HiringRequestController::class, 'fetchPostings'])
+                ->middleware(['permission:can_fetch_postings']);
+
         });
     });
 
