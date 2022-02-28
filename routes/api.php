@@ -116,6 +116,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', [UserController::class, 'fetch']);
 
             Route::post('update', [UserController::class, 'update']);
+
+            Route::post('user', [UserController::class, 'fetchSingle']);
         });
 
     // Endpoint for fetching individual user profile
@@ -470,9 +472,16 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('add-applicant', [HiringRequestController::class, 'addApplicant'])
             ->middleware(['permission:can_add_applicant']);
 
+        Route::post('applicants', [HiringRequestController::class, 'fetchApplicants'])
+            ->middleware(['permission:can_fetch_applicants']);
+
         Route::prefix('postings')->group(function () {
             Route::post('create', [HiringRequestController::class, 'createPostings'])
                 ->middleware(['permission:can_create_posting']);
+
+            Route::post('/', [HiringRequestController::class, 'fetchPostings'])
+                ->middleware(['permission:can_fetch_postings']);
+
         });
     });
 
