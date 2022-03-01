@@ -46,11 +46,11 @@ class MiscInfoService
         $proofOfAddressUrl = $request->has('proof_of_address') ? FileUploadService::upload($request->proof_of_address, $folderName, 's3') : null;
 
         // Get Job Specification
-        $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
+        $jobSpec = JobSpecification::where('id', $request->job_specification)->firstOrFail();
 
         // Create misc info
         $miscInfo = new MiscellaneousInformation();
-        $miscInfo->job_description = $jobSpec->title;
+        $miscInfo->job_specification = $jobSpec->title;
         $miscInfo->interview_notes = $request->interview_notes;
         $miscInfo->offer_letter_email = $offerLetterEmailUrl;
         $miscInfo->job_advertisement = $jobAdvertUrl;
