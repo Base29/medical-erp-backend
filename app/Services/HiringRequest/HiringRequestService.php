@@ -381,7 +381,7 @@ class HiringRequestService
         // Get hiring request postings
         $postings = HiringRequestPosting::where('hiring_request_id', $hiringRequest->id)
             ->latest()
-            ->paginate(10);
+            ->get();
 
         // Return success response
         return Response::success([
