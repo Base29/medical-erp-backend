@@ -155,7 +155,7 @@ class MiscInfoService
         // Check if the request contain the ID of JobSpecification in $request->job_description
         if ($request->has('job_specification')) {
             // Get Job Specification
-            $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
+            $jobSpec = JobSpecification::where('id', $request->job_specification)->firstOrFail();
 
             // Override the value of $updateDataRequest['job_description'] with $jobSpec->title
             $updateRequestData['job_specification'] = $jobSpec->title;
@@ -201,7 +201,7 @@ class MiscInfoService
         }
 
         // Return success response
-        return $miscInfo->latest('updated_at')->first();
+        return $miscInfo->latest('updated_at')->latest()->first();
     }
 
     // Function for uploading files are returning the url
