@@ -125,7 +125,7 @@ class MiscInfoService
     {
         // Allowed fields
         $allowedFields = [
-            'job_description',
+            'job_specification',
             'interview_notes',
             'offer_letter_email',
             'job_advertisement',
@@ -153,12 +153,12 @@ class MiscInfoService
         $updateRequestData = $request->all();
 
         // Check if the request contain the ID of JobSpecification in $request->job_description
-        if ($request->has('job_description')) {
+        if ($request->has('job_specification')) {
             // Get Job Specification
             $jobSpec = JobSpecification::where('id', $request->job_description)->firstOrFail();
 
             // Override the value of $updateDataRequest['job_description'] with $jobSpec->title
-            $updateRequestData['job_description'] = $jobSpec->title;
+            $updateRequestData['job_specification'] = $jobSpec->title;
         }
 
         // Fields that contain files
