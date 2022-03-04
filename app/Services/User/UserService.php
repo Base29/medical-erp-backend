@@ -7,14 +7,10 @@ use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\ContractSummary;
 use App\Models\Department;
-use App\Models\Education;
-use App\Models\EmploymentHistory;
 use App\Models\HiringRequest;
-use App\Models\Legal;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Profile;
-use App\Models\Reference;
 use App\Models\User;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -109,25 +105,25 @@ class UserService
         $miscInfo->job_specification = null;
         $user->miscInfo()->save($miscInfo);
 
-        // Create education
-        $education = new Education();
-        $education->institution = null;
-        $user->education()->save($education);
+        // // Create education
+        // $education = new Education();
+        // $education->institution = null;
+        // $user->education()->save($education);
 
-        // Create employment history
-        $employmentHistory = new EmploymentHistory();
-        $employmentHistory->employer_name = null;
-        $user->employmentHistories()->save($employmentHistory);
+        // // Create employment history
+        // $employmentHistory = new EmploymentHistory();
+        // $employmentHistory->employer_name = null;
+        // $user->employmentHistories()->save($employmentHistory);
 
-        // Create reference
-        $reference = new Reference();
-        $reference->reference_type = null;
-        $user->references()->save($reference);
+        // // Create reference
+        // $reference = new Reference();
+        // $reference->reference_type = null;
+        // $user->references()->save($reference);
 
-        // Create legal
-        $legal = new Legal();
-        $legal->name = null;
-        $user->legal()->save($legal);
+        // // Create legal
+        // $legal = new Legal();
+        // $legal->name = null;
+        // $user->legal()->save($legal);
 
         // Add user as a applicant to the hiring request
         if ($hiringRequest) {
