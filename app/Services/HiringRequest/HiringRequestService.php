@@ -361,7 +361,7 @@ class HiringRequestService
 
         // Applicants of $hiringRequest
         $applicants = Applicant::where('hiring_request_id', $hiringRequest->id)
-            ->with('profile.user')
+            ->with('profile.user.offer')
             ->latest()
             ->paginate(10);
 

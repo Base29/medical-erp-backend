@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
+use App\Models\Profile;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
