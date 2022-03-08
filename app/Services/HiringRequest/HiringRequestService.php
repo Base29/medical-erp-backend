@@ -39,7 +39,7 @@ class HiringRequestService
         $department = Department::findOrFail($request->department);
 
         // Get role
-        $reportingTo = User::findOrFail($request->reporting_to);
+        $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
 
         // Get work pattern
         $workPattern = WorkPattern::find($request->rota_information);
@@ -87,7 +87,7 @@ class HiringRequestService
         $hiringRequest->job_title = $request->job_title;
         $hiringRequest->contract_type = $request->contract_type;
         $hiringRequest->department_id = $department->id;
-        $hiringRequest->reporting_to = $reportingTo->id;
+        $hiringRequest->reporting_to = $reportingTo->profile->first_name . ' ' . $reportingTo->profile->last_name;
         $hiringRequest->start_date = $request->start_date;
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
