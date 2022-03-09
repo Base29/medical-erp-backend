@@ -102,7 +102,7 @@ class HiringRequestService
         $hiringRequest->workPatterns()->attach($workPatternId);
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'hiringRequestPostings')
+        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
             ->withCount('applicants')
             ->latest()
             ->first();
@@ -113,7 +113,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user', 'hiringRequestPostings')
+            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
             ->get();
     }
 
@@ -194,7 +194,7 @@ class HiringRequestService
 
             // Return success response
             return $hiringRequest->where('id', $request->rota_information)
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'hiringRequestPostings')
+                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
                 ->get();
 
         }
@@ -208,7 +208,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'hiringRequestPostings')
+        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
             ->latest('updated_at')
             ->first();
     }
@@ -240,14 +240,14 @@ class HiringRequestService
 
             // Get hiring requests
             $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'hiringRequestPostings')
+                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
                 ->withCount('applicants')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get hiring requests
             $hiringRequests = HiringRequest::where('status', $request->status)
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'hiringRequestPostings')
+                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
                 ->latest()
                 ->paginate(10);
         }
