@@ -129,8 +129,10 @@ class HiringRequestService
             'starting_salary',
             'reason_for_recruitment',
             'comment',
-            'rota_information',
             'is_live',
+            'job_specification_id',
+            'person_specification_id',
+            'department_id',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -141,66 +143,101 @@ class HiringRequestService
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
-        // If updating only work pattern
-        if ($request->has('rota_information')) {
-            // Get work pattern
-            $workPattern = WorkPattern::find($request->rota_information);
+        // Cast $request->all() to variable
+        $updateRequestData = $request->all();
 
-            // If work pattern doesn't exist with the provided $request->rota_information
-            if (!$workPattern) {
-                throw new \Exception(ResponseMessage::customMessage('Work Pattern with the provided id ' . $request->rota_information . ' not found. Please provide correct work pattern id or create a new work pattern'));
-            }
+        // Check if $request->reporting_to exists
+        if ($request->has('reporting_to')) {
+            // Get Reporting to user
+            $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
 
-            // Cast id of $workPattern to a variable
-            $workPatternId = $workPattern ? $workPattern->id : null;
-
-            // If $workPattern is false
-            if (!$workPattern) {
-
-                // Fields required for creating a new work pattern
-                $requiredFields = [
-                    'name',
-                    'start_time',
-                    'end_time',
-                    'break_time',
-                    'repeat_days',
-                ];
-
-                // Checking if the $request doesn't contain any of the allowed fields
-                if (!$request->has($requiredFields)) {
-                    throw new \Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)));
-                }
-
-                // Create work pattern
-                $workPattern = new WorkPattern();
-                $workPattern->name = $request->name;
-                $workPattern->save();
-
-                // Create Work Timing
-                $workTiming = new WorkTiming();
-                $workTiming->work_pattern_id = $workPattern->id;
-                $workTiming->start_time = $request->start_time;
-                $workTiming->end_time = $request->end_time;
-                $workTiming->break_time = $request->break_time;
-                $workTiming->repeat_days = $request->repeat_days;
-                $workPattern->workTimings()->save($workTiming);
-
-                $workPatternId = $workPattern->id;
-
-            }
-
-            // Attach work pattern with the hiring request
-            $hiringRequest->workPatterns()->attach($workPatternId);
-
-            // Return success response
-            return $hiringRequest->where('id', $request->rota_information)
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-                ->get();
-
+            $updateRequestData['reporting_to'] = $reportingTo->profile->first_name . ' ' . $reportingTo->profile->last_name;
         }
 
+        // Check if $request->job_specification exists
+        if ($request->has('job_specification_id')) {
+            // Get job specification
+            $jobSpecification = JobSpecification::findOrFail($request->job_specification_id);
+
+            $updateRequestData['job_specification_id'] = $jobSpecification->id;
+        }
+
+        // Check if $request->person_specification exists
+        if ($request->has('person_specification_id')) {
+            // Get person specification
+            $personSpecification = PersonSpecification::findOrFail($request->person_specification_id);
+
+            $updateRequestData['person_specification_id'] = $personSpecification->id;
+        }
+
+        // Check if $request->department exists
+        if ($request->has('department_id')) {
+            // Get department
+            $department = Department::findOrFail($request->department_id);
+
+            $updateRequestData['department_id'] = $department->id;
+        }
+
+        // // If updating only work pattern
+        // if ($request->has('rota_information')) {
+        //     // Get work pattern
+        //     $workPattern = WorkPattern::find($request->rota_information);
+
+        //     // If work pattern doesn't exist with the provided $request->rota_information
+        //     if (!$workPattern) {
+        //         throw new \Exception(ResponseMessage::customMessage('Work Pattern with the provided id ' . $request->rota_information . ' not found. Please provide correct work pattern id or create a new work pattern'));
+        //     }
+
+        //     // Cast id of $workPattern to a variable
+        //     $workPatternId = $workPattern ? $workPattern->id : null;
+
+        //     // If $workPattern is false
+        //     if (!$workPattern) {
+
+        //         // Fields required for creating a new work pattern
+        //         $requiredFields = [
+        //             'name',
+        //             'start_time',
+        //             'end_time',
+        //             'break_time',
+        //             'repeat_days',
+        //         ];
+
+        //         // Checking if the $request doesn't contain any of the allowed fields
+        //         if (!$request->has($requiredFields)) {
+        //             throw new \Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)));
+        //         }
+
+        //         // Create work pattern
+        //         $workPattern = new WorkPattern();
+        //         $workPattern->name = $request->name;
+        //         $workPattern->save();
+
+        //         // Create Work Timing
+        //         $workTiming = new WorkTiming();
+        //         $workTiming->work_pattern_id = $workPattern->id;
+        //         $workTiming->start_time = $request->start_time;
+        //         $workTiming->end_time = $request->end_time;
+        //         $workTiming->break_time = $request->break_time;
+        //         $workTiming->repeat_days = $request->repeat_days;
+        //         $workPattern->workTimings()->save($workTiming);
+
+        //         $workPatternId = $workPattern->id;
+
+        //     }
+
+        //     // Attach work pattern with the hiring request
+        //     $hiringRequest->workPatterns()->attach($workPatternId);
+
+        //     // Return success response
+        //     return $hiringRequest->where('id', $request->rota_information)
+        //         ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+        //         ->get();
+
+        // }
+
         // Update hiring request except work pattern
-        $hiringRequestUpdated = UpdateService::updateModel($hiringRequest, $request->all(), 'hiring_request');
+        $hiringRequestUpdated = UpdateService::updateModel($hiringRequest, $updateRequestData, 'hiring_request');
 
         // Return fail response
         if (!$hiringRequestUpdated) {
