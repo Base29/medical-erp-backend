@@ -105,6 +105,8 @@ class InterviewService
         $interviewSchedule->location = $request->location;
         $interviewSchedule->interview_type = $request->interview_type;
         $interviewSchedule->application_status = $request->application_status;
+        $interviewSchedule->additional_staff = $request->additional_staff;
+        $interviewSchedule->hq_staff = $request->hq_staff;
 
         // Save interview schedule
         $practice->interviewSchedules()->save($interviewSchedule);

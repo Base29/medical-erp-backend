@@ -43,6 +43,8 @@ class CreateInterviewScheduleRequest extends FormRequest
                 'required',
                 Rule::in(['first-interview', 'second-interview', 'final-interview']),
             ],
+            'addtional_staff' => 'nullable|numeric|exists:users,id',
+            'hq_staff' => 'nullable|numeric|exists:users,id',
         ];
     }
 
