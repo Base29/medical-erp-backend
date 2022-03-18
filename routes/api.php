@@ -113,7 +113,7 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::delete('delete/{id}', [UserController::class, 'delete']);
 
-            Route::get('/', [UserController::class, 'fetch']);
+            Route::post('/', [UserController::class, 'fetch']);
 
             Route::post('update', [UserController::class, 'update']);
 

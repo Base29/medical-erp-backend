@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
+use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -57,12 +58,11 @@ class UserController extends Controller
     }
 
     // Method for fetching users
-    public function fetch()
+    public function fetch(FetchUsersRequest $request)
     {
         try {
-
             // Fetch users
-            return $this->userService->fetchUsers();
+            return $this->userService->fetchUsers($request);
 
         } catch (\Exception $e) {
 
