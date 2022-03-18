@@ -86,13 +86,11 @@ class InterviewService
 
         // Get user
         $user = User::findOrFail($request->user);
-
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
         // Get Interview policy
-        $interviewPolicy = InterviewPolicy::findOrFail($request->interview_policy);
-
+        $interviewPolicy = InterviewPolicy::where('role_id', $user->roles[0]->id)->firstOrFail();
         // Get department
         $department = Department::findOrFail($request->department);
 
