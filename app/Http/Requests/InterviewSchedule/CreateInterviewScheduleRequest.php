@@ -34,7 +34,7 @@ class CreateInterviewScheduleRequest extends FormRequest
             'department' => 'required|numeric|exists:departments,id',
             'date' => 'required|date|date_format:Y-m-d',
             'time' => 'required|date_format:H:i',
-            'location' => 'required|string|max:500',
+            'location' => 'nullable|string|max:500',
             'interview_type' => [
                 'required',
                 Rule::in(['physical-interview', 'digital-interview']),
@@ -43,6 +43,8 @@ class CreateInterviewScheduleRequest extends FormRequest
                 'required',
                 Rule::in(['first-interview', 'second-interview', 'final-interview']),
             ],
+            'addtional_staff' => 'nullable|numeric|exists:users,id',
+            'hq_staff' => 'nullable|numeric|exists:users,id',
         ];
     }
 

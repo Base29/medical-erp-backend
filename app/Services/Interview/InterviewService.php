@@ -86,13 +86,11 @@ class InterviewService
 
         // Get user
         $user = User::findOrFail($request->user);
-
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
         // Get Interview policy
-        $interviewPolicy = InterviewPolicy::findOrFail($request->interview_policy);
-
+        $interviewPolicy = InterviewPolicy::where('role_id', $user->roles[0]->id)->firstOrFail();
         // Get department
         $department = Department::findOrFail($request->department);
 
@@ -107,6 +105,8 @@ class InterviewService
         $interviewSchedule->location = $request->location;
         $interviewSchedule->interview_type = $request->interview_type;
         $interviewSchedule->application_status = $request->application_status;
+        $interviewSchedule->additional_staff = $request->additional_staff;
+        $interviewSchedule->hq_staff = $request->hq_staff;
 
         // Save interview schedule
         $practice->interviewSchedules()->save($interviewSchedule);

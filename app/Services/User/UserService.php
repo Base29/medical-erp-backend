@@ -175,12 +175,42 @@ class UserService
     }
 
     // Fetch users
-    public function fetchUsers()
+    public function fetchUsers($request)
     {
-        // Fetching all the users from database
-        $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
-            ->latest()
-            ->paginate(10);
+
+        // Check if $request->filter exists
+        if ($request->has('filter')) {
+
+            if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
+                // Filter users by mobile_phone or last_name
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                    ->whereHas('profile', function ($q) {
+                        $q->where(request()->filter, request()->value);
+                    })
+                    ->latest()
+                    ->paginate(10);
+            } elseif ($request->filter === 'email') {
+                // Filter users by email
+                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                    ->latest()
+                    ->paginate(10);
+
+            } elseif ($request->filter === 'role') {
+                // Filter users by role
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                    ->whereHas('roles', function ($q) {
+                        $q->where('id', request()->value);
+                    })
+                    ->latest()
+                    ->paginate(10);
+            }
+
+        } else {
+            // Fetching all the users from database
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                ->latest()
+                ->paginate(10);
+        }
 
         return Response::success(['users' => $users]);
     }
