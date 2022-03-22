@@ -107,6 +107,12 @@ class ResponseMessage
         return 'Update request should contain any of the allowed fields ' . implode("|", $allowedFields);
     }
 
+    // Message for allowed fields
+    public static function allowedFilters($allowedFilters)
+    {
+        return 'Search request should contain any of the allowed filters ' . implode("|", $allowedFilters);
+    }
+
     // Message for not public
     public static function notPublic($model)
     {
