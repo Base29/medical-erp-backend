@@ -181,6 +181,21 @@ class UserService
         // Check if $request->filter exists
         if ($request->has('filter')) {
 
+            // Allowed search filters
+            $allowedFilters = [
+                'mobile_phone',
+                'last_name',
+                'email',
+                'role',
+            ];
+
+            // Check if $request->filter === $allowedFilters
+            $filterIsAllowed = in_array($request->filter, $allowedFilters);
+
+            if (!$filterIsAllowed) {
+                throw new \Exception(ResponseMessage::allowedFilters($allowedFilters));
+            }
+
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
                 $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
