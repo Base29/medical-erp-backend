@@ -15,6 +15,26 @@ class CreateLocumSessionsTable extends Migration
     {
         Schema::create('locum_sessions', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice')
+                ->nullable()
+                ->references('id')
+                ->on('practices')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('role')
+                ->nullable()
+                ->references('id')
+                ->on('roles')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->integer('quantity')->nullable();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->integer('rate')->nullable();
+            $table->string('unit')->nullable();
+            $table->string('location')->nullable();
             $table->timestamps();
         });
     }
