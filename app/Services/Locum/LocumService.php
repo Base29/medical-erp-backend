@@ -19,7 +19,7 @@ class LocumService
 
         // Instance of LocumSession
         $locumSession = new LocumSession();
-        $locumSession->practice = $practice->id;
+        $locumSession->practice_id = $practice->id;
         $locumSession->quantity = $request->quantity;
         $locumSession->start_date = $request->start_date;
         $locumSession->end_date = $request->end_date;
@@ -30,11 +30,11 @@ class LocumService
         $locumSession->location = $request->location;
 
         // Save $locumSession
-        $role->locumSessions->save($locumSession);
+        $role->locumSessions()->save($locumSession);
 
         // Return success response
         return Response::success([
-            'locum-session' => $locumSession->latest()->first(),
+            'locum-session' => $locumSession->with('practice', 'role')->latest()->first(),
         ]);
     }
 }

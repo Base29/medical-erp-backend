@@ -15,16 +15,12 @@ class CreateLocumSessionsTable extends Migration
     {
         Schema::create('locum_sessions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('practice')
+            $table->foreignId('practice_id')
                 ->nullable()
-                ->references('id')
-                ->on('practices')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->foreignId('role')
+            $table->foreignId('role_id')
                 ->nullable()
-                ->references('id')
-                ->on('roles')
                 ->constrained()
                 ->cascadeOnDelete();
             $table->integer('quantity')->nullable();
