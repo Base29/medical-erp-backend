@@ -30,4 +30,9 @@ class Role extends \Spatie\Permission\Models\Role
     {
         return InterviewPolicy::where('role_id', $this->id)->first();
     }
+
+    public function locumSessions()
+    {
+        return $this->hasMany(LocumSession::class);
+    }
 }

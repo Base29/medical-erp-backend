@@ -35,6 +35,7 @@ class CreateLocumSessionsTable extends Migration
             $table->integer('rate')->nullable();
             $table->string('unit')->nullable();
             $table->string('location')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }
