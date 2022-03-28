@@ -27,7 +27,7 @@ class CreateInterviewScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'interview_policy' => 'required|numeric|exists:interview_policies,id',
+            'interview_policy' => 'nullable|numeric|exists:interview_policies,id',
             'practice' => 'required|numeric|exists:practices,id',
             'hiring_request' => 'required|numeric|exists:hiring_requests,id',
             'user' => 'required|numeric|exists:users,id',
