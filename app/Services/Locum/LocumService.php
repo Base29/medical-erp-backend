@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Models\LocumSession;
 use App\Models\Practice;
 use App\Models\Role;
+use App\Models\User;
 
 class LocumService
 {
@@ -36,5 +37,17 @@ class LocumService
         return Response::success([
             'locum-session' => $locumSession->with('practice', 'role')->latest()->first(),
         ]);
+    }
+
+    // Assign hired users to locum sessions
+    public function addLocumToSession($request)
+    {
+        // Get locum session
+        $locumSession = LocumSession::findOrFail($request->locum_session);
+
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check to red
     }
 }
