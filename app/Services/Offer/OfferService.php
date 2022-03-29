@@ -68,8 +68,8 @@ class OfferService
         // Get offer
         $offer = Offer::findOrFail($request->offer);
 
-        // Get work pattern
-        $workPattern = WorkPattern::findOrFail($request->work_pattern_id);
+        // // Get work pattern
+        // $workPattern = WorkPattern::findOrFail($request->work_pattern_id);
 
         // Update offer
         $offerUpdated = UpdateService::updateModel($offer, $request->all(), 'offer');
