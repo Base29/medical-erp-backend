@@ -80,4 +80,29 @@ class LocumService
         // Return success response
         return Response::success(['message' => ResponseMessage::assigned($user->email, $locumSession->name)]);
     }
+
+    // Remove user from locum session
+    public function removeLocumFromSession($request)
+    {
+        // Get locum session
+        $locumSession = LocumSession::findOrFail($request->locum_session);
+
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check if the user is already assigned to the locum session
+        if (!$locumSession->userAlreadyAssignedToSession($user->id)) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' not assigned to locum session'));
+        }
+
+        // Remove user from a locum session
+        $locumSession->users()->detach($user->id);
+
+        // Change $user->is_locum === true
+        $user->is_locum = 0;
+        $user->save();
+
+        // Return success response
+        return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);
+    }
 }

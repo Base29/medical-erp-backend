@@ -618,6 +618,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('add-locum', [LocumController::class, 'assignUser'])
                     ->middleware(['permission:can_assign_user_to_session']);
+
+                Route::post('remove-locum', [LocumController::class, 'removeUser'])
+                    ->middleware(['permission:can_remove_user_from_session']);
             });
         });
     });
