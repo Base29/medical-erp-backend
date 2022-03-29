@@ -615,6 +615,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::prefix('sessions')->group(function () {
                 Route::post('create', [LocumController::class, 'create'])
                     ->middleware(['permission:can_create_locum_session']);
+
+                Route::post('add-locum', [LocumController::class, 'assignUser'])
+                    ->middleware(['permission:can_assign_user_to_session']);
             });
         });
     });

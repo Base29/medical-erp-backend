@@ -15,6 +15,7 @@ class CreateLocumSessionsTable extends Migration
     {
         Schema::create('locum_sessions', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->nullable();
             $table->foreignId('practice_id')
                 ->nullable()
                 ->constrained()

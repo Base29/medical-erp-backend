@@ -4,10 +4,9 @@ namespace App\Http\Requests\Locum;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class CreateLocumSessionRequest extends FormRequest
+class AssignUserToLocumSessionRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,17 +26,8 @@ class CreateLocumSessionRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
-            'role' => 'required|numeric|exists:roles,id',
-            'name' => 'required|string',
-            'quantity' => 'required|numeric',
-            'start_date' => 'required|date|date_format:Y-m-d',
-            'end_date' => 'required|date|date_format:Y-m-d',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
-            'rate' => 'required|numeric',
-            'unit' => ['required', Rule::in(['hourly', 'weekly', 'monthly'])],
-            'location' => 'required|string',
+            'locum_session' => 'required|numeric|exists:locum_sessions,id',
+            'user' => 'required|numeric|exists:users,id',
         ];
     }
 
