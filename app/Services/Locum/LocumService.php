@@ -105,4 +105,33 @@ class LocumService
         // Return success response
         return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);
     }
+
+    // Fetch All Sessions
+    public function fetchAllSessions($request)
+    {
+        // If $request->practice is available
+        if ($request->has('practice')) {
+
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get sessions
+            $locumSessions = LocumSession::where('practice_id', $practice->id)
+                ->with('practice', 'role', 'users.profile')
+                ->latest()
+                ->paginate(10);
+
+        } else {
+
+            // Get sessions
+            $locumSessions = LocumSession::with('practice', 'role', 'users.profile')
+                ->latest()
+                ->paginate(10);
+        }
+
+        // Return success response
+        return Response::success([
+            'locum-sessions' => $locumSessions,
+        ]);
+    }
 }

@@ -621,6 +621,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('remove-locum', [LocumController::class, 'removeUser'])
                     ->middleware(['permission:can_remove_user_from_session']);
+
+                Route::post('/', [LocumController::class, 'fetch'])
+                    ->middleware(['permission:can_fetch_locum_sessions']);
             });
         });
     });
