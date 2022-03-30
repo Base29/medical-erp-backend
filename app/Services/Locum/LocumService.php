@@ -134,4 +134,19 @@ class LocumService
             'locum-sessions' => $locumSessions,
         ]);
     }
+
+    // Fetch single locum session
+    public function fetchSingleLocumSession($request)
+    {
+        // Get locum session
+        $locumSession = LocumSession::where('id', $request->locum_session)
+            ->with('practice', 'role', 'users.profile')
+            ->latest()
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'locum-session' => $locumSession,
+        ]);
+    }
 }

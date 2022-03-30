@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Locum\AssignUserToLocumSessionRequest;
 use App\Http\Requests\Locum\CreateLocumSessionRequest;
 use App\Http\Requests\Locum\FetchLocumSessionsRequest;
+use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Services\Locum\LocumService;
 
@@ -75,6 +76,21 @@ class LocumController extends Controller
         try {
             // Fetch all locum session service
             return $this->locumService->fetchAllSessions($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single locum session
+    public function fetchSingle(FetchSingleLocumSessionRequest $request)
+    {
+        try {
+            // Fetch single locum session service
+            return $this->locumService->fetchSingleLocumSession($request);
 
         } catch (\Exception $e) {
             return Response::fail([

@@ -624,6 +624,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('/', [LocumController::class, 'fetch'])
                     ->middleware(['permission:can_fetch_locum_sessions']);
+
+                Route::post('locum-session', [LocumController::class, 'fetchSingle'])
+                    ->middleware(['permission:can_fetch_single_locum_session']);
             });
         });
     });
