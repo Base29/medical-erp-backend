@@ -39,7 +39,8 @@ class AddFieldsToInterviewSchedulesTable extends Migration
     public function down()
     {
         Schema::table('interview_schedules', function (Blueprint $table) {
-            //
+            $table->dropConstrainedForeignId('additional_staff');
+            $table->dropConstrainedForeignId('hq_staff');
         });
     }
 }

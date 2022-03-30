@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class MakeStatusFieldNullableInOffersTable extends Migration
+class CreateLocumSessionUserTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class MakeStatusFieldNullableInOffersTable extends Migration
      */
     public function up()
     {
-        Schema::table('offers', function (Blueprint $table) {
-            $table->string('status')->nullable()->change();
+        Schema::create('locum_session_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('locum_session_id')->constrained()->cascadeOnDelete();
+            $table->foreignId('user_id')->constrained()->cascadeOnDelete();
         });
     }
 
@@ -25,8 +27,6 @@ class MakeStatusFieldNullableInOffersTable extends Migration
      */
     public function down()
     {
-        Schema::table('offers', function (Blueprint $table) {
-            $table->string('status')->default('made')->nullable(false)->change();
-        });
+        Schema::dropIfExists('locum_session_user');
     }
 }

@@ -187,6 +187,10 @@ class UserService
                 'last_name',
                 'email',
                 'role',
+                'is_active',
+                'is_candidate',
+                'is_hired',
+                'is_locum',
             ];
 
             // Check if $request->filter === $allowedFilters
@@ -204,7 +208,7 @@ class UserService
                     })
                     ->latest()
                     ->paginate(10);
-            } elseif ($request->filter === 'email') {
+            } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
                 $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
                     ->latest()

@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class MakeStatusFieldNullableInOffersTable extends Migration
+class AddIsLocumFieldToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,8 @@ class MakeStatusFieldNullableInOffersTable extends Migration
      */
     public function up()
     {
-        Schema::table('offers', function (Blueprint $table) {
-            $table->string('status')->nullable()->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_locum')->after('is_hired')->nullable();
         });
     }
 
@@ -25,8 +25,8 @@ class MakeStatusFieldNullableInOffersTable extends Migration
      */
     public function down()
     {
-        Schema::table('offers', function (Blueprint $table) {
-            $table->string('status')->default('made')->nullable(false)->change();
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('is_locum');
         });
     }
 }

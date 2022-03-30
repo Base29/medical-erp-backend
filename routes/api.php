@@ -20,6 +20,7 @@ use App\Http\Controllers\InterviewPolicy\InterviewPolicyController;
 use App\Http\Controllers\Interview\InterviewController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
+use App\Http\Controllers\Locum\LocumController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
 use App\Http\Controllers\Offer\OfferController;
 use App\Http\Controllers\Permission\PermissionController;
@@ -604,6 +605,33 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_fetch_all_interviews']);
         });
 
+    });
+
+    // Routes for RE
+    Route::prefix('re')->group(function () {
+        // Route for Locum
+        Route::prefix('locums')->group(function () {
+            // Route for sessions
+            Route::prefix('sessions')->group(function () {
+                Route::post('create', [LocumController::class, 'create'])
+                    ->middleware(['permission:can_create_locum_session']);
+
+                Route::post('add-locum', [LocumController::class, 'assignUser'])
+                    ->middleware(['permission:can_assign_user_to_session']);
+
+                Route::post('remove-locum', [LocumController::class, 'removeUser'])
+                    ->middleware(['permission:can_remove_user_from_session']);
+
+                Route::post('/', [LocumController::class, 'fetch'])
+                    ->middleware(['permission:can_fetch_locum_sessions']);
+
+                Route::post('locum-session', [LocumController::class, 'fetchSingle'])
+                    ->middleware(['permission:can_fetch_single_locum_session']);
+
+                Route::post('delete', [LocumController::class, 'delete'])
+                    ->middleware(['permission:can_delete_locum_session']);
+            });
+        });
     });
 
     // Routes for interviews

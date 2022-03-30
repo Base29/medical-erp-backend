@@ -12,9 +12,11 @@ use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
+use App\Models\HiringRequest;
 use App\Models\InductionSchedule;
 use App\Models\InterviewSchedule;
 use App\Models\Legal;
+use App\Models\LocumSession;
 use App\Models\MiscellaneousInformation;
 use App\Models\Offer;
 use App\Models\PositionSummary;
@@ -243,5 +245,10 @@ class User extends Authenticatable implements JWTSubject
     public function hiringRequests()
     {
         return $this->hasMany(HiringRequest::class);
+    }
+
+    public function locumSessions()
+    {
+        return $this->belongsToMany(LocumSession::class);
     }
 }

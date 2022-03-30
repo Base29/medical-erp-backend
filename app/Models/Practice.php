@@ -128,4 +128,9 @@ class Practice extends Model
     {
         return $this->belongsTo(User::class, 'practice_manager', 'id');
     }
+
+    public function locumSessions()
+    {
+        return $this->hasMany(LocumSession::class);
+    }
 }
