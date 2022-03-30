@@ -154,7 +154,7 @@ class LocumService
     public function deleteLocumSession($request)
     {
         // Get locum session
-        $locumSession = LocumSession::findOrFail();
+        $locumSession = LocumSession::findOrFail($request->locum_session);
 
         // Delete locum session
         $locumSession->delete();
