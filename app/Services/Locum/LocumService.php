@@ -149,4 +149,19 @@ class LocumService
             'locum-session' => $locumSession,
         ]);
     }
+
+    // Delete locum session
+    public function deleteLocumSession($request)
+    {
+        // Get locum session
+        $locumSession = LocumSession::findOrFail();
+
+        // Delete locum session
+        $locumSession->delete();
+
+        // Return success response
+        return Response::success([
+            'message' => ResponseMessage::deleteSuccess('Locum Session ' . $locumSession->id),
+        ]);
+    }
 }
