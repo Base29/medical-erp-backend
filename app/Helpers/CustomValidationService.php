@@ -8,7 +8,6 @@ namespace App\Helpers;
 
 use App\Helpers\Response;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Str;
 
 class CustomValidationService
 {
@@ -17,15 +16,19 @@ class CustomValidationService
     {
         foreach ($rules as $key => $value) {
 
-            $hasAsterisk = Str::contains($key, '*');
-
-            Str::replace('*', '0', $key);
-
             $errors = $validator->errors();
 
-            if (Arr::has($errors->messages(), $key)) {
+            // Keys
+            $keys = [];
+
+            // Extract keys
+            foreach ($errors->messages() as $key => $value) {
+                array_push($keys, $key);
+            }
+
+            if (Arr::has($errors->messages(), $keys[0])) {
                 return Response::fail([
-                    'message' => $errors->messages()[$key][0],
+                    'message' => $errors->messages()[$keys[0]][0],
                     'code' => 422,
                 ]);
             }

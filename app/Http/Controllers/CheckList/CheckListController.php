@@ -3,40 +3,32 @@
 namespace App\Http\Controllers\CheckList;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Checklist\CreateChecklistRequest;
 use App\Http\Requests\Checklist\FetchChecklistRequest;
 use App\Models\CheckList;
-use App\Models\Room;
+use App\Services\Checklist\ChecklistService;
 
 class CheckListController extends Controller
 {
+    // Local variable
+    protected $checklistService;
+
+    // Constructor
+    public function __construct(ChecklistService $checklistService)
+    {
+        // Inject service
+        $this->checklistService = $checklistService;
+    }
+
     // Method for creating check list
     public function create(CreateChecklistRequest $request)
     {
         try {
+            // Create checklist service
+            $checklist = $this->checklistService->createChecklist($request);
 
-            // Fetch room
-            $room = Room::where('id', $request->room)->first();
-
-            // Check if the checklist with same name exists for the provided room
-            $checklistExists = $room->checkLists->contains('name', $request->name);
-
-            if ($checklistExists) {
-                return Response::fail([
-                    'message' => ResponseMessage::alreadyExists('Checklist'),
-                    'code' => 409,
-                ]);
-            }
-
-            // Create Checklist
-            $checklist = new CheckList();
-            $checklist->name = $request->name;
-            $checklist->room_id = $room->id;
-            $checklist->notes = $request->notes;
-            $checklist->save();
-
+            // Return success response
             return Response::success(['checklist' => $checklist]);
 
         } catch (\Exception $e) {
@@ -52,8 +44,10 @@ class CheckListController extends Controller
     {
         try {
 
-            $checklists = CheckList::where('room_id', $request->room)->with('activeTasks')->latest()->first();
+            // Fetch checlists service
+            $checklists = $this->checklistService->fetchChecklists($request);
 
+            // Return success response
             return Response::success(['checklists' => $checklists]);
 
         } catch (\Exception $e) {

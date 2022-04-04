@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
+use App\Models\JobResponsibility;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,8 +21,18 @@ class JobSpecification extends Model
         'job_purpose',
     ];
 
-    public function practices()
+    public function practice()
     {
-        return $this->belongsToMany(Practice::class);
+        return $this->belongsTo(Practice::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
+    }
+
+    public function responsibilities()
+    {
+        return $this->hasMany(JobResponsibility::class);
     }
 }

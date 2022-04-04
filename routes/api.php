@@ -5,18 +5,26 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
 use App\Http\Controllers\ContractSummary\ContractSummaryController;
+use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmergencyContact\EmergencyContactController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
+use App\Http\Controllers\HeadQuarter\HeadQuarterController;
 use App\Http\Controllers\HiringRequest\HiringRequestController;
 use App\Http\Controllers\InductionChecklist\InductionChecklistController;
 use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
+use App\Http\Controllers\InterviewPolicy\InterviewPolicyController;
+use App\Http\Controllers\Interview\InterviewController;
+use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
+use App\Http\Controllers\Locum\LocumController;
 use App\Http\Controllers\MiscellaneousInformation\MiscellaneousInformationController;
+use App\Http\Controllers\Offer\OfferController;
 use App\Http\Controllers\Permission\PermissionController;
+use App\Http\Controllers\PersonSpecification\PersonSpecificationController;
 use App\Http\Controllers\Policy\PolicyController;
 use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
@@ -106,9 +114,11 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::delete('delete/{id}', [UserController::class, 'delete']);
 
-            Route::get('/', [UserController::class, 'fetch']);
+            Route::post('/', [UserController::class, 'fetch']);
 
             Route::post('update', [UserController::class, 'update']);
+
+            Route::post('user', [UserController::class, 'fetchSingle']);
         });
 
     // Endpoint for fetching individual user profile
@@ -448,14 +458,32 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [HiringRequestController::class, 'create'])
             ->middleware(['permission:can_create_hiring_request']);
 
-        Route::post('/', [HiringRequestController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_hiring_request']);
+        Route::post('hiring-request', [HiringRequestController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_hiring_request']);
 
         Route::post('update', [HiringRequestController::class, 'update'])
             ->middleware(['permission:can_update_hiring_request']);
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
             ->middleware(['permission:can_delete_hiring_request']);
+
+        Route::post('/', [HiringRequestController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_hiring_request']);
+
+        Route::post('add-applicant', [HiringRequestController::class, 'addApplicant'])
+            ->middleware(['permission:can_add_applicant']);
+
+        Route::post('applicants', [HiringRequestController::class, 'fetchApplicants'])
+            ->middleware(['permission:can_fetch_applicants']);
+
+        Route::prefix('postings')->group(function () {
+            Route::post('create', [HiringRequestController::class, 'createPostings'])
+                ->middleware(['permission:can_create_posting']);
+
+            Route::post('/', [HiringRequestController::class, 'fetchPostings'])
+                ->middleware(['permission:can_fetch_postings']);
+
+        });
     });
 
     // Routes for induction checklist
@@ -489,5 +517,147 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('induction-results')->group(function () {
         Route::post('create', [InductionResultController::class, 'create'])
             ->middleware(['permission:can_create_induction_result']);
+    });
+
+    // Routes for departments
+    Route::prefix('departments')->group(function () {
+        Route::post('create', [DepartmentController::class, 'create'])
+            ->middleware(['permission:can_create_department']);
+
+        Route::post('/', [DepartmentController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_department']);
+
+        Route::post('delete', [DepartmentController::class, 'delete'])
+            ->middleware(['permission:can_delete_department']);
+
+        Route::post('assign-user', [DepartmentController::class, 'assignUser'])
+            ->middleware(['permission:can_assign_user_to_department']);
+
+        Route::post('department', [DepartmentController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_department']);
+    });
+
+    // Routes for job specifications
+    Route::prefix('job-specifications')->group(function () {
+        Route::post('create', [JobSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_job_specification']);
+
+        Route::post('/', [JobSpecificationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_job_specification']);
+
+        Route::post('delete', [JobSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_job_specification']);
+
+        Route::post('job-specification', [JobSpecificationController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_job_specification']);
+    });
+
+    // Routes for person specifications
+    Route::prefix('person-specifications')->group(function () {
+        Route::post('create', [PersonSpecificationController::class, 'create'])
+            ->middleware(['permission:can_create_person_specification']);
+
+        Route::post('/', [PersonSpecificationController::class, 'fetch'])
+            ->middleware(['permission:can_fetch_person_specification']);
+
+        Route::post('delete', [PersonSpecificationController::class, 'delete'])
+            ->middleware(['permission:can_delete_person_specification']);
+
+        Route::post('person-specification', [PersonSpecificationController::class, 'fetchSingle'])
+            ->middleware(['permission:can_fetch_single_person_specification']);
+    });
+
+    // Routes for HQ
+    Route::prefix('hq')->group(function () {
+        Route::prefix('hiring-requests')->group(function () {
+            Route::post('/', [HiringRequestController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_hiring_request']);
+
+            Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
+                ->middleware(['permission:can_process_hiring_request']);
+
+            Route::post('search', [HeadQuarterController::class, 'search'])
+                ->middleware(['permission:can_search_hiring_requests']);
+        });
+
+        Route::prefix('offers')->group(function () {
+            Route::post('create', [OfferController::class, 'create'])
+                ->middleware(['permission:can_create_offer']);
+
+            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
+                ->middleware(['permission:can_fetch_offers']);
+
+            Route::post('update', [OfferController::class, 'update'])
+                ->middleware(['permission:can_update_offer']);
+
+            Route::post('delete', [OfferController::class, 'delete'])
+                ->middleware(['permission:can_delete_offer']);
+
+            Route::post('offer', [OfferController::class, 'fetchSingle'])
+                ->middleware(['permission:can_fetch_single_offer']);
+        });
+
+        Route::prefix('interviews')->group(function () {
+            Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
+                ->middleware(['permission:can_fetch_upcoming_interviews']);
+
+            Route::post('/', [InterviewController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_all_interviews']);
+        });
+
+    });
+
+    // Routes for RE
+    Route::prefix('re')->group(function () {
+        // Route for Locum
+        Route::prefix('locums')->group(function () {
+            // Route for sessions
+            Route::prefix('sessions')->group(function () {
+                Route::post('create', [LocumController::class, 'create'])
+                    ->middleware(['permission:can_create_locum_session']);
+
+                Route::post('add-locum', [LocumController::class, 'assignUser'])
+                    ->middleware(['permission:can_assign_user_to_session']);
+
+                Route::post('remove-locum', [LocumController::class, 'removeUser'])
+                    ->middleware(['permission:can_remove_user_from_session']);
+
+                Route::post('/', [LocumController::class, 'fetch'])
+                    ->middleware(['permission:can_fetch_locum_sessions']);
+
+                Route::post('locum-session', [LocumController::class, 'fetchSingle'])
+                    ->middleware(['permission:can_fetch_single_locum_session']);
+
+                Route::post('delete', [LocumController::class, 'delete'])
+                    ->middleware(['permission:can_delete_locum_session']);
+            });
+        });
+    });
+
+    // Routes for interviews
+    Route::prefix('interviews')->group(function () {
+        Route::post('/', [InterviewController::class, 'upcomingInterviews'])
+            ->middleware(['permission:can_fetch_interviews']);
+
+        Route::post('update', [InterviewController::class, 'update'])
+            ->middleware(['permission:can_update_interview']);
+
+        Route::post('delete', [InterviewController::class, 'delete'])
+            ->middleware(['permission:can_delete_interview']);
+
+        Route::post('create', [InterviewController::class, 'create'])
+            ->middleware(['permission:can_create_interview']);
+
+        // Routes for interview policies
+        Route::prefix('policies')->group(function () {
+            Route::post('create', [InterviewPolicyController::class, 'create'])
+                ->middleware(['permission:can_create_interview_policy']);
+
+            Route::post('/', [InterviewPolicyController::class, 'fetch'])
+                ->middleware(['permission:can_fetch_interview_policies']);
+
+            Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
+                ->middleware(['permission:can_fetch_single_interview_policy']);
+        });
     });
 });

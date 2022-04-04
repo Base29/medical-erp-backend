@@ -39,6 +39,8 @@ class CreateUserRequest extends FormRequest
             'contract_start_date' => 'nullable|date|date_format:Y-m-d',
             'contracted_hours_per_week' => 'nullable|string',
             'additional_roles' => 'nullable|array',
+            'hiring_request' => 'required_if:is_candidate,1|numeric|exists:hiring_requests,id',
+            'department' => 'required_if:is_candidate,1|numeric|exists:departments,id',
         ];
     }
 

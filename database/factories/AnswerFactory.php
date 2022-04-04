@@ -22,8 +22,8 @@ class AnswerFactory extends Factory
     public function definition()
     {
         return [
-            'post_id' => 1,
-            'user_id' => 6,
+            'post_id' => $this->faker->biasedNumberBetween(1, 51),
+            'user_id' => $this->faker->biasedNumberBetween(6, 26),
             'answer' => $this->faker->paragraph(3, true),
         ];
     }

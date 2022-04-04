@@ -2,11 +2,16 @@
 
 namespace App\Models;
 
+use App\Models\Department;
 use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionChecklist;
 use App\Models\InductionSchedule;
+use App\Models\Interview;
+use App\Models\InterviewPolicy;
+use App\Models\InterviewSchedule;
 use App\Models\JobSpecification;
+use App\Models\Offer;
 use App\Models\PersonSpecification;
 use App\Models\Policy;
 use App\Models\Post;
@@ -54,14 +59,9 @@ class Practice extends Model
         return $this->hasMany(Equipment::class);
     }
 
-    public function jobDescriptions()
-    {
-        return $this->belongsToMany(JobSpecification::class);
-    }
-
     public function personSpecifications()
     {
-        return $this->belongsToMany(PersonSpecification::class);
+        return $this->hasMany(PersonSpecification::class);
     }
 
     public function hiringRequests()
@@ -77,5 +77,60 @@ class Practice extends Model
     public function inductionSchedules()
     {
         return $this->hasMany(InductionSchedule::class);
+    }
+
+    public function departments()
+    {
+        return $this->hasMany(Department::class);
+    }
+
+    public function jobSpecifications()
+    {
+        return $this->hasMany(JobSpecification::class);
+    }
+
+    public function interviews()
+    {
+        return $this->hasMany(Interview::class);
+    }
+
+    public function interviewSchedules()
+    {
+        return $this->hasMany(InterviewSchedule::class);
+    }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    public function hasManager()
+    {
+        $practiceManager = $this->with('users')
+            ->whereHas('users', function ($q) {
+                $q->where('type', 'practice-manager');
+            })
+            ->first();
+
+        if ($practiceManager === null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    public function interviewPolicies()
+    {
+        return $this->hasMany(InterviewPolicy::class);
+    }
+
+    public function practiceManager()
+    {
+        return $this->belongsTo(User::class, 'practice_manager', 'id');
+    }
+
+    public function locumSessions()
+    {
+        return $this->hasMany(LocumSession::class);
     }
 }

@@ -5,15 +5,20 @@ namespace App\Models;
 use App\Models\Answer;
 use App\Models\Comment;
 use App\Models\ContractSummary;
+use App\Models\Department;
 use App\Models\Education;
 use App\Models\EmergencyContact;
 use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
 use App\Models\Equipment;
+use App\Models\HiringRequest;
 use App\Models\InductionSchedule;
+use App\Models\InterviewSchedule;
 use App\Models\Legal;
+use App\Models\LocumSession;
 use App\Models\MiscellaneousInformation;
+use App\Models\Offer;
 use App\Models\PositionSummary;
 use App\Models\Post;
 use App\Models\Practice;
@@ -100,11 +105,6 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(Signature::class);
     }
-
-    // public function signedBy(User $user)
-    // {
-    //     return $this->signatures->contains('user_id', $user->id);
-    // }
 
     public function posts()
     {
@@ -211,4 +211,44 @@ class User extends Authenticatable implements JWTSubject
         return $alreadyHasInductionSchedule;
     }
 
+    public function interviewSchedule()
+    {
+        return $this->hasOne(InterviewSchedule::class);
+    }
+
+    public function offer()
+    {
+        return $this->hasOne(Offer::class);
+    }
+
+    public function isPracticeManager()
+    {
+        $practiceManager = $this->with('practices')
+            ->whereHas('practices', function ($q) {
+                $q->where('type', 'practice-manager');
+            })
+            ->first();
+
+        if ($practiceManager === null) {
+            return false;
+        } else {
+            return true;
+        }
+
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
+    }
+
+    public function locumSessions()
+    {
+        return $this->belongsToMany(LocumSession::class);
+    }
 }

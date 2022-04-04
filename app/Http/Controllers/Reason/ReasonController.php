@@ -3,13 +3,23 @@
 namespace App\Http\Controllers\Reason;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reason\CreateReasonRequest;
 use App\Models\Reason;
+use App\Services\Reason\ReasonService;
 
 class ReasonController extends Controller
 {
+
+    // Local variable
+    protected $reasonService;
+
+    // Constructor
+    public function __construct(ReasonService $reasonService)
+    {
+        // Inject service
+        $this->reasonService = $reasonService;
+    }
 
     // Create Reason
     public function create(CreateReasonRequest $request)
@@ -17,11 +27,7 @@ class ReasonController extends Controller
         try {
 
             // Create reason
-            $reason = new Reason();
-            $reason->reason = $request->reason;
-            $reason->save();
-
-            return Response::success(['reason' => $reason]);
+            return $this->reasonService->createReason($request);
 
         } catch (\Exception $e) {
 
@@ -37,10 +43,8 @@ class ReasonController extends Controller
     {
         try {
 
-            // Reasons
-            $reasons = Reason::latest()->paginate(10);
-
-            return Response(['reasons' => $reasons]);
+            // Fetch reasons
+            return $this->reasonService->fetchReasons();
 
         } catch (\Exception $e) {
 
@@ -56,20 +60,8 @@ class ReasonController extends Controller
     {
         try {
 
-            // Check if the reason exists with the provided ID
-            $reason = Reason::findOrFail($id);
-
-            if (!$reason) {
-                return Response::fail([
-                    'message' => ResponseMessage::notFound('Reason', $id, false),
-                    'code' => 404,
-                ]);
-            }
-
             // Delete reason
-            $reason->delete();
-
-            return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
+            return $this->reasonService->deleteReason($id);
 
         } catch (\Exception $e) {
 

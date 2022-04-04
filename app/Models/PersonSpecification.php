@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\HiringRequest;
 use App\Models\PersonSpecificationAttribute;
 use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,8 +23,13 @@ class PersonSpecification extends Model
         return $this->hasMany(PersonSpecificationAttribute::class);
     }
 
-    public function practices()
+    public function practice()
     {
         return $this->belongsTo(Practice::class);
+    }
+
+    public function hiringRequests()
+    {
+        return $this->hasMany(HiringRequest::class);
     }
 }

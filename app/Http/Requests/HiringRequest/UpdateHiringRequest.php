@@ -29,20 +29,19 @@ class UpdateHiringRequest extends FormRequest
             'hiring_request' => 'required|numeric|exists:hiring_requests,id',
             'job_title' => 'nullable|string|max:100',
             'contract_type' => 'nullable|string|max:50',
-            'department' => 'nullable|string|max:50',
+            'department' => 'nullable|numeric|exists:departments,id',
             'reporting_to' => 'nullable|numeric|exists:roles,id',
             'start_date' => 'nullable|date|date_format:Y-m-d',
             'starting_salary' => 'nullable|string|max:50',
             'reason_for_recruitment' => 'nullable|string|max:60',
             'comment' => 'nullable|string|max:2000',
-            'job_specification' => 'nullable|numeric|exists:job_specifications,id',
-            'person_specification' => 'nullable|numeric|exists:person_specifications,id',
-            'rota_information' => 'nullable|numeric',
             'name' => 'nullable|string|unique:work_patterns,name',
             'start_time' => 'nullable|string',
             'end_time' => 'nullable|string',
             'break_time' => 'nullable|numeric',
             'repeat_days' => 'nullable|array',
+            'job_specification' => 'nullable|numeric|exists:job_specifications,id',
+            'person_specification' => 'nullable|numeric|exists:person_specifications,id',
         ];
     }
 
