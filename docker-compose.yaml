@@ -1,0 +1,81 @@
+version: '3.8'
+services:
+ 
+  #PHP Service
+  esm-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cloudsigma.com/php
+    container_name: esm-api
+    restart: unless-stopped
+    tty: true
+    environment:
+      SERVICE_NAME: esm-api
+      SERVICE_TAGS: dev
+    working_dir: /var/www/html/
+    volumes:
+      - ./:/var/www/html/
+      - ./docker/php/laravel.ini:/usr/local/etc/php/conf.d/laravel.ini
+    depends_on:
+      - esm-db
+    networks:
+      - esm-network
+ 
+  #Nginx Service
+  esm-webserver:
+    image: nginx:alpine
+    container_name: esm-webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "8000:80"
+      - "443:443"
+    volumes:
+      - ./:/var/www/html/
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    networks:
+      - esm-network
+ 
+  #MySQL Service
+  esm-db:
+    image: mysql:8.0.20
+    container_name: esm-db
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: doctors_portal
+      MYSQL_ROOT_PASSWORD: esmdb2021
+      SERVICE_TAGS: dev
+      SERVICE_NAME: mysql
+    volumes:
+      - dbdata:/var/lib/mysql
+      - ./docker/mysql/my.cnf:/etc/mysql/my.cnf
+    networks:
+      - esm-network
+
+  # phpmyadmin
+  esm-phpmyadmin:
+    container_name: esm-phpmyadmin
+    depends_on:
+      - esm-db
+    image: phpmyadmin
+    restart: always
+    ports:
+      - '8001:80'
+    environment:
+      PMA_HOST: esm-db
+      MYSQL_ROOT_PASSWORD: password
+    networks:
+      - esm-network
+ 
+#Docker Networks
+networks:
+  esm-network:
+    driver: bridge
+#Volumes
+volumes:
+  dbdata:
+    driver: local
