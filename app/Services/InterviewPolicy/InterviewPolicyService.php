@@ -80,30 +80,37 @@ class InterviewPolicyService
     }
 
     // Fetch all interview policies belongs to a practice
-    public function fetchAllInterviewPolicies($request)
+    public function fetchAllInterviewPolicies()
     {
-        // Check if $request->has(practice)
-        if ($request->has('practice')) {
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
 
-            // Get all interview policies of $practice
-            $interviewPolicies = InterviewPolicy::where('practice_id', $practice->id)
-                ->with('interviewQuestions.options', 'practice', 'role')
-                ->latest()
-                ->paginate(10);
-        } else {
-            // Get all interview policies
-            $interviewPolicies = InterviewPolicy::with('interviewQuestions.options', 'practice', 'role')
-                ->latest()
-                ->paginate(10);
-        }
+        // Get all interview policies
+        $interviewPolicies = InterviewPolicy::with('interviewQuestions.options', 'practice', 'role')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
             'interview-policies' => $interviewPolicies,
         ]);
 
+    }
+
+    // Fetch interview policies for a practice
+    public function fetchPracticeInterviewPolicies($request)
+    {
+        // Get practice
+        $practice = Practice::findOrFail($request->practice);
+
+        // Get all interview policies of $practice
+        $interviewPolicies = InterviewPolicy::where('practice_id', $practice->id)
+            ->with('interviewQuestions.options', 'practice', 'role')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'interview-policies' => $interviewPolicies,
+        ]);
     }
 
     // Fetch single interview policy

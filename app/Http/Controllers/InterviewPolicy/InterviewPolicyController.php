@@ -38,11 +38,26 @@ class InterviewPolicyController extends Controller
     }
 
     // Fetch All
-    public function fetch(FetchAllInterviewPolicyRequest $request)
+    public function fetch()
     {
         try {
             // Fetch all interview policies service
-            return $this->interviewPolicyService->fetchAllInterviewPolicies($request);
+            return $this->interviewPolicyService->fetchAllInterviewPolicies();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch practice interview policies
+    public function fetchAllPracticeInterviewPolicies(FetchAllInterviewPolicyRequest $request)
+    {
+        try {
+            // Fetch all interview policies of a practice
+            return $this->interviewPolicyService->fetchPracticeInterviewPolicies($request);
 
         } catch (\Exception $e) {
             return Response::fail([
