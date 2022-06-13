@@ -27,7 +27,7 @@ class CreateInterviewPolicyRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
+            'practice' => 'nullable|numeric|exists:practices,id',
             'role' => 'required|numeric|exists:roles,id',
             'name' => 'required|string|max:100',
             'questions' => 'required|array',
