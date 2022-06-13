@@ -15,7 +15,7 @@ class InterviewPolicyService
     public function createInterviewPolicy($request)
     {
         // Get practice
-        $practice = Practice::findOrFail($request->practice);
+        // $practice = Practice::findOrFail($request->practice);
 
         // Get role
         $role = Role::findOrFail($request->role);
@@ -28,7 +28,7 @@ class InterviewPolicyService
         $interviewPolicy = new InterviewPolicy();
         $interviewPolicy->role_id = $role->id;
         $interviewPolicy->name = $request->name;
-        $practice->interviewPolicies()->save($interviewPolicy);
+        $interviewPolicy->save();
 
         // Save questions for $interviewPolicy
         $this->saveQuestions($request->questions, $interviewPolicy);
