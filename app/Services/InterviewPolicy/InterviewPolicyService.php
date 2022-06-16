@@ -3,6 +3,7 @@ namespace App\Services\InterviewPolicy;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewQuestion;
 use App\Models\InterviewQuestionOption;
@@ -140,5 +141,87 @@ class InterviewPolicyService
         return Response::success([
             'message' => ResponseMessage::deleteSuccess('Interview Policy'),
         ]);
+    }
+
+    // Update interview policy
+    public function updateInterviewPolicy($request)
+    {
+
+        // Allowed Fields
+        $allowedFields = [
+            'name',
+            'role',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowedFields)) {
+            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+        }
+
+        // Get interview policy
+        $interviewPolicy = InterviewPolicy::findOrFail($request->interview_policy);
+
+        // Update interview policy
+        $interviewPolicyUpdated = UpdateService::updateModel($interviewPolicy, $request->all(), 'interview_policy');
+
+        // Return response if update fails
+        if (!$interviewPolicyUpdated) {
+            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Interview Policy'));
+        }
+
+        // Return success response
+        return Response::success([
+            'interview-policy' => $interviewPolicy->with('role', 'interviewQuestions.options')
+                ->latest('updated_at')
+                ->first(),
+        ]);
+    }
+
+    // Update interview policy questions
+    public function updateQuestion($request)
+    {
+
+        // Allowed fields
+        $allowedFields = [
+            'question',
+            'type',
+        ];
+
+        // Checking if the $request doesn't contain any of the allowed fields
+        if (!$request->hasAny($allowedFields)) {
+            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+        }
+
+        // Get interview question
+        $interviewQuestion = InterviewQuestion::findOrFail($request->question_id);
+
+        // Update subitem
+        UpdateService::updateModel($interviewQuestion, $request->all(), 'question_id');
+
+        // Check if the type of the question is updated to descriptive
+        if ($interviewQuestion->type === 'descriptive') {
+            // Get options
+            $options = InterviewQuestionOption::where('interview_question_id', $interviewQuestion->id);
+            $options->delete();
+        }
+
+        // Return success response
+        return Response::success([
+            'interview-question' => $interviewQuestion->with('options')->latest('updated_at')->first(),
+        ]);
+
+    }
+
+    // Update options for questions
+    public function updateOptions($options)
+    {
+        // Iterate through $options array
+        foreach ($options as $option) {
+            // Instance of InterviewQuestionOption
+            $interviewQuestionOption = InterviewQuestionOption::findOrFail($option['id']);
+
+            // Update InterviewQuestionOption
+            UpdateService::updateModel($interviewQuestionOption, $option, 'id');
+        }
     }
 }
