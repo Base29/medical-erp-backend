@@ -648,6 +648,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [InterviewController::class, 'create'])
             ->middleware(['permission:can_create_interview']);
 
+        Route::post('past-interviews', [InterviewController::class, 'pastInterviews'])
+            ->middleware(['permission:can_fetch_interviews']);
+
         // Routes for interview policies
         Route::prefix('policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])
