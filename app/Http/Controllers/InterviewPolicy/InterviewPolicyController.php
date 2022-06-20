@@ -8,6 +8,8 @@ use App\Http\Requests\InterviewPolicy\CreateInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\DeleteInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\FetchAllInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\FetchSingleInterviewPolicyRequest;
+use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyQuestionRequest;
+use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyRequest;
 use App\Services\InterviewPolicy\InterviewPolicyService;
 
 class InterviewPolicyController extends Controller
@@ -89,6 +91,35 @@ class InterviewPolicyController extends Controller
             // Delete interview policy
             return $this->interviewPolicyService->deleteInterviewPolicy($request);
 
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update
+    public function update(UpdateInterviewPolicyRequest $request)
+    {
+        try {
+            // Update Interview Policy
+            return $this->interviewPolicyService->updateInterviewPolicy($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update Interview policy question
+    public function updateInterviewQuestion(UpdateInterviewPolicyQuestionRequest $request)
+    {
+        try {
+            // Update interview policy question
+            return $this->interviewPolicyService->updateQuestion($request);
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,

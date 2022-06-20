@@ -658,6 +658,12 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
                 ->middleware(['permission:can_fetch_single_interview_policy']);
+
+            Route::post('update', [InterviewPolicyController::class, 'update'])
+                ->middleware(['permission:can_update_interview_policy']);
+
+            Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
+                ->middleware(['permission:can_update_interview_policy_question']);
         });
     });
 });
