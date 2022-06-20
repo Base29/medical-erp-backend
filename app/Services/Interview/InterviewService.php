@@ -157,4 +157,20 @@ class InterviewService
             'message' => ResponseMessage::deleteSuccess('Interview Schedule'),
         ]);
     }
+
+    // Fetch past interviews
+    public function fetchPastInterviews($request)
+    {
+
+        // Get past interview schedules
+        $interviewSchedules = InterviewSchedule::where('date', '<', Carbon::now())
+            ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'interview-schedules' => $interviewSchedules,
+        ]);
+    }
 }
