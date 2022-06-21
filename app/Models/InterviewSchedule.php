@@ -62,4 +62,14 @@ class InterviewSchedule extends Model
     {
         return $this->hasMany(InterviewAnswer::class);
     }
+
+    public function adhocQuestions()
+    {
+        return $this->hasMany(AdhocQuestion::class);
+    }
+
+    public function candidateQuestions()
+    {
+        return $this->hasMany(CandidateQuestion::class);
+    }
 }
