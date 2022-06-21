@@ -3,6 +3,7 @@ namespace App\Services\Interview;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Models\AdhocQuestion;
 use App\Models\CandidateQuestion;
 use App\Models\Department;
@@ -136,9 +137,11 @@ class InterviewService
         // Get interview schedule
         $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-        // Update is_completed field for $interviewSchedule
-        $interviewSchedule->is_completed = $request->is_completed;
-        $interviewSchedule->save();
+        // // Update is_completed field for $interviewSchedule
+        // $interviewSchedule->is_completed = $request->is_completed;
+        // $interviewSchedule->save();
+
+        UpdateService::updateModel($interviewSchedule, $request->all(), 'interview');
 
         // Return success response
         return Response::success([
