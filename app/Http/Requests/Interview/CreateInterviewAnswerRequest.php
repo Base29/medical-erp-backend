@@ -26,7 +26,7 @@ class CreateInterviewAnswerRequest extends FormRequest
     public function rules()
     {
         return [
-            'schedule' => 'required|numeric|exists:interview_schedules,id',
+            'interview' => 'required|numeric|exists:interview_schedules,id',
             'question' => 'required|numeric|exists:interview_questions,id',
             'answer' => 'nullable|string',
             'option' => 'nullable|numeric',

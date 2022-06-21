@@ -26,7 +26,7 @@ class CreateAdhocQuestionRequest extends FormRequest
     public function rules()
     {
         return [
-            'schedule' => 'required|numeric|exists:interview_schedules,id',
+            'interview' => 'required|numeric|exists:interview_schedules,id',
             'questions' => 'required|array',
             'questions.*.question' => 'required|string|max:1000',
             'questions.*.answer' => 'required|string|max:1000',

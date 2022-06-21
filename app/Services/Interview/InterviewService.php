@@ -186,7 +186,7 @@ class InterviewService
     public function storeInterviewAnswer($request)
     {
         // Get interview schedule
-        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
         // Get interview question
         $interviewQuestion = InterviewQuestion::findOrFail($request->question);
@@ -278,7 +278,7 @@ class InterviewService
     public function createAdhocQuestions($request)
     {
         // Get interview schedule
-        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
         // Cast $request->questions to variable $questions
         $questions = $request->questions;
@@ -302,7 +302,7 @@ class InterviewService
     public function createCandidateQuestions($request)
     {
         // Get interview schedule
-        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
         // Cast $request->questions to variable $questions
         $questions = $request->questions;
