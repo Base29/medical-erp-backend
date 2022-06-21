@@ -327,11 +327,13 @@ class InterviewService
     public function fetchSingleInterview($request)
     {
         // Get interview schedule
-        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        $interviewSchedule = InterviewSchedule::where('id', $request->interview)
+            ->with('user.profile', 'hiringRequest', 'interviewPolicies.questions.options', 'practice')
+            ->firstOrFail();
 
         // Return success response
         return Response::success([
-            'interview' => $interviewSchedule->with('user.profile', 'hiringRequest', 'interviewPolicies.questions.options', 'practice')->first(),
+            'interview' => $interviewSchedule,
         ]);
     }
 }
