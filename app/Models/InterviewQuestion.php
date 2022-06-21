@@ -27,4 +27,9 @@ class InterviewQuestion extends Model
     {
         return $this->hasMany(InterviewQuestionOption::class);
     }
+
+    public function interviewAnswers()
+    {
+        return $this->hasMany(InterviewAnswer::class);
+    }
 }

@@ -6,11 +6,14 @@ use App\Helpers\ResponseMessage;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\Interview;
+use App\Models\InterviewAnswer;
 use App\Models\InterviewPolicy;
+use App\Models\InterviewQuestion;
 use App\Models\InterviewSchedule;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Str;
 
 class InterviewService
 {
@@ -172,5 +175,98 @@ class InterviewService
         return Response::success([
             'interview-schedules' => $interviewSchedules,
         ]);
+    }
+
+    // Store interview answers
+    public function storeInterviewAnswer($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+
+        // Get interview question
+        $interviewQuestion = InterviewQuestion::findOrFail($request->question);
+
+        /**
+         * Check type of the $interviewQuestion.
+         *
+         * If the type = descriptive then save the text in the answer field of the DB table.
+         * Or if the type = single-choice/multi-choice then save the ID of the option in the option field of the DB table.
+         *
+         * In-case of the type multi-choice loop through the options provided by the frontend and save them separately in the option field of the DB
+         * table.
+         */
+
+        // Get type of $interviewQuestion
+        $questionType = $interviewQuestion->type;
+
+        switch ($questionType) {
+            case 'descriptive':
+                if (!$request->has('answer')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'));
+                }
+
+                if (Str::of($request->answer)->isEmpty) {
+                    throw new \Exception(ResponseMessage::customMessage('answer key should not be empty'));
+                }
+
+                // Initiate instance of InterviewAnswer model
+                $interviewAnswer = new InterviewAnswer();
+
+                $interviewAnswer->schedule = $interviewSchedule->id;
+                $interviewAnswer->question = $interviewQuestion->id;
+                $interviewAnswer->answer = $request->answer;
+                $interviewAnswer->save();
+
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
+
+                break;
+            case 'single-choice':
+                if (!$request->has('option')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
+                }
+
+                // Initiate instance of InterviewAnswer model
+                $interviewAnswer = new InterviewAnswer();
+
+                $interviewAnswer->schedule = $interviewSchedule->id;
+                $interviewAnswer->question = $interviewQuestion->id;
+                $interviewAnswer->option = $request->option;
+                $interviewAnswer->save();
+
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
+
+                break;
+            case 'multi-choice':
+                if (!$request->has('options')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
+                }
+
+                // Cast $request->options to $options
+                $options = $request->options;
+
+                // Loop through $request->assert_options
+                foreach ($options as $option) {
+
+                    // Initiate instance of InterviewAnswer model
+                    $interviewAnswer = new InterviewAnswer();
+
+                    $interviewAnswer->schedule = $interviewSchedule->id;
+                    $interviewAnswer->question = $interviewQuestion->id;
+                    $interviewAnswer->option = $option;
+                    $interviewAnswer->save();
+                }
+
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
+
+                break;
+            default:
+                return true;
+        }
     }
 }
