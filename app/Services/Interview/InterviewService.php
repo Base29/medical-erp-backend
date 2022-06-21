@@ -4,6 +4,7 @@ namespace App\Services\Interview;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\AdhocQuestion;
+use App\Models\CandidateQuestion;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\Interview;
@@ -291,6 +292,29 @@ class InterviewService
 
         return Response::success([
             'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
+        ]);
+    }
+
+    // Create candidate questions
+    public function createCandidateQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+
+        // Cast $request->questions to variable $questions
+        $questions = $request->questions;
+
+        // Loop through $request->questions
+        foreach ($questions as $question) {
+            // Initiate instance of AdhocQuestion model
+            $candidateQuestion = new CandidateQuestion();
+            $candidateQuestion->schedule = $interviewSchedule->id;
+            $candidateQuestion->question = $question['question'];
+            $candidateQuestion->save();
+        }
+
+        return Response::success([
+            'message' => ResponseMessage::customMessage('Candidate Questions saved'),
         ]);
     }
 }

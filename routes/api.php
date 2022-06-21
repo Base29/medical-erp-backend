@@ -672,9 +672,16 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_update_interview_policy_question']);
         });
 
+        // Routes for Adhoc Questions
         Route::prefix('adhoc-questions')->group(function () {
             Route::post('create', [InterviewController::class, 'adhocQuestions'])
                 ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
+        });
+
+        // Routes for candidate questions
+        Route::prefix('candidate-questions')->group(function () {
+            Route::post('create', [InterviewController::class, 'candidateQuestions'])
+                ->middleware(['permission:can_create_candidate_question|can_manage_interview']);
         });
     });
 });
