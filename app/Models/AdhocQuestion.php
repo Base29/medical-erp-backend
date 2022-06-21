@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class InterviewAnswer extends Model
+class AdhocQuestion extends Model
 {
     use HasFactory, SoftDeletes;
 
@@ -14,16 +14,10 @@ class InterviewAnswer extends Model
         'schedule',
         'question',
         'answer',
-        'option',
     ];
 
     public function interviewSchedule()
     {
-        return $this->belongsTo(InterviewSchedule::class);
-    }
-
-    public function interviewQuestion()
-    {
-        return $this->belongsTo(InterviewQuestion::class);
+        return $this->belongsTo(interviewSchedule::class);
     }
 }

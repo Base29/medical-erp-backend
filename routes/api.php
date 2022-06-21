@@ -671,5 +671,10 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
                 ->middleware(['permission:can_update_interview_policy_question']);
         });
+
+        Route::prefix('adhoc-questions')->group(function () {
+            Route::post('create', [InterviewController::class, 'adhocQuestions'])
+                ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
+        });
     });
 });

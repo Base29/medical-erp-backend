@@ -3,6 +3,7 @@ namespace App\Services\Interview;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Models\AdhocQuestion;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\Interview;
@@ -268,5 +269,28 @@ class InterviewService
             default:
                 return true;
         }
+    }
+
+    public function createAdhocQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->schedule);
+
+        // Cast $request->questions to variable $questions
+        $questions = $request->questions;
+
+        // Loop through $request->questions
+        foreach ($questions as $question) {
+            // Initiate instance of AdhocQuestion model
+            $adhocQuestion = new AdhocQuestion();
+            $adhocQuestion->schedule = $interviewSchedule->id;
+            $adhocQuestion->question = $question['question'];
+            $adhocQuestion->answer = $question['answer'];
+            $adhocQuestion->save();
+        }
+
+        return Response::success([
+            'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
+        ]);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Interview;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AdhocQuestion\CreateAdhocQuestionRequest;
 use App\Http\Requests\InterviewSchedule\CreateInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\DeleteInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\UpdateInterviewScheduleRequest;
@@ -119,6 +120,21 @@ class InterviewController extends Controller
         try {
             // Store interview answers
             return $this->interviewService->storeInterviewAnswer($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Create Adhoc Questions
+    public function adhocQuestions(CreateAdhocQuestionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->createAdhocQuestions($request);
 
         } catch (\Exception $e) {
             return Response::fail([
