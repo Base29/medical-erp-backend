@@ -36,7 +36,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
-            'interview-policy' => $interviewPolicy->with('interviewQuestions.options', 'role', 'practice')
+            'interview-policy' => $interviewPolicy->with('questions.options', 'role', 'practice')
                 ->latest()
                 ->first(),
         ]);
@@ -85,7 +85,7 @@ class InterviewPolicyService
     {
 
         // Get all interview policies
-        $interviewPolicies = InterviewPolicy::with('interviewQuestions.options', 'practice', 'role')
+        $interviewPolicies = InterviewPolicy::with('questions.options', 'practice', 'role')
             ->latest()
             ->paginate(10);
 
@@ -104,7 +104,7 @@ class InterviewPolicyService
 
         // Get all interview policies of $practice
         $interviewPolicies = InterviewPolicy::where('practice_id', $practice->id)
-            ->with('interviewQuestions.options', 'practice', 'role')
+            ->with('questions.options', 'practice', 'role')
             ->latest()
             ->paginate(10);
 
@@ -119,7 +119,7 @@ class InterviewPolicyService
     {
         // Get interview policy
         $interviewPolicy = InterviewPolicy::where('id', $request->interview_policy)
-            ->with('interviewQuestions.options', 'practice', 'role')
+            ->with('questions.options', 'practice', 'role')
             ->firstOrFail();
 
         // Return success response
@@ -171,7 +171,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
-            'interview-policy' => $interviewPolicy->with('role', 'interviewQuestions.options')
+            'interview-policy' => $interviewPolicy->with('role', 'questions.options')
                 ->latest('updated_at')
                 ->first(),
         ]);

@@ -654,6 +654,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('answer', [InterviewController::class, 'interviewAnswer'])
             ->middleware(['permission:can_store_interview_answer']);
 
+        Route::post('interview', [InterviewController::class, 'singleInterview'])
+            ->middleware(['permission:can_fetch_single_interview|can_manage_interview']);
+
         // Routes for interview policies
         Route::prefix('policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])

@@ -35,13 +35,13 @@ class InterviewService
 
             // Get $practice interviews
             $interviews = InterviewSchedule::where('practice_id', $practice->id)
-                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
 
         } else {
             // Get $practice interviews
-            $interviews = InterviewSchedule::with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+            $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         }
@@ -67,13 +67,13 @@ class InterviewService
             // Get $practice interview schedules
             $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
                 ->where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get $practice interview schedules
             $interviewSchedules = InterviewSchedule::where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
                 ->latest()
                 ->paginate(10);
         }
@@ -107,7 +107,6 @@ class InterviewService
 
         // Instance of InterviewSchedule
         $interviewSchedule = new InterviewSchedule();
-        $interviewSchedule->interview_policy_id = $interviewPolicy->id;
         $interviewSchedule->user_id = $user->id;
         $interviewSchedule->hiring_request_id = $hiringRequest->id;
         $interviewSchedule->department_id = $department->id;
@@ -122,9 +121,12 @@ class InterviewService
         // Save interview schedule
         $practice->interviewSchedules()->save($interviewSchedule);
 
+        // Attach Interview Policy
+        $interviewSchedule->interviewPolicies()->attach($interviewPolicy->id);
+
         // Return success response
         return Response::success([
-            'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicy', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
+            'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
                 ->latest()
                 ->first(),
         ]);
@@ -172,7 +174,7 @@ class InterviewService
 
         // Get past interview schedules
         $interviewSchedules = InterviewSchedule::where('date', '<', Carbon::now())
-            ->with('practice', 'interviewPolicy', 'user.profile', 'hiringRequest')
+            ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
 
@@ -318,6 +320,18 @@ class InterviewService
 
         return Response::success([
             'message' => ResponseMessage::customMessage('Candidate Questions saved'),
+        ]);
+    }
+
+    // Fetch single interview
+    public function fetchSingleInterview($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // Return success response
+        return Response::success([
+            'interview' => $interviewSchedule->with('user.profile', 'hiringRequest', 'interviewPolicies.questions.options', 'practice')->first(),
         ]);
     }
 }

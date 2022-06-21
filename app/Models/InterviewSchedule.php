@@ -48,9 +48,9 @@ class InterviewSchedule extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function interviewPolicy()
+    public function interviewPolicies()
     {
-        return $this->belongsTo(InterviewPolicy::class);
+        return $this->belongsToMany(InterviewPolicy::class);
     }
 
     public function department()
