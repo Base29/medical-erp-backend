@@ -15,7 +15,7 @@ class CreateInterviewAnswersTable extends Migration
     {
         Schema::create('interview_answers', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('schedule')
+            $table->foreignId('interview')
                 ->references('id')
                 ->on('interview_schedules')
                 ->constrained()

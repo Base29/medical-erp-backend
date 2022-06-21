@@ -15,7 +15,7 @@ class CreateAdhocQuestionsTable extends Migration
     {
         Schema::create('adhoc_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('schedule')
+            $table->foreignId('interview')
                 ->references('id')
                 ->on('interview_schedules')
                 ->constrained()
