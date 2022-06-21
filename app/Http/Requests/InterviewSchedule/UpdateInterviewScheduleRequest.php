@@ -27,7 +27,8 @@ class UpdateInterviewScheduleRequest extends FormRequest
     {
         return [
             'interview' => 'required|numeric|exists:interview_schedules,id',
-            'is_completed' => 'required|boolean',
+            'is_completed' => 'nullable|boolean',
+            'progress' => 'nullable|numeric',
         ];
     }
 
