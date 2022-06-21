@@ -12,6 +12,7 @@ use App\Http\Requests\InterviewSchedule\UpdateInterviewScheduleRequest;
 use App\Http\Requests\Interview\CreateInterviewAnswerRequest;
 use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
+use App\Http\Requests\Interview\FetchSingleInterviewRequest;
 use App\Services\Interview\InterviewService;
 
 class InterviewController extends Controller
@@ -151,6 +152,21 @@ class InterviewController extends Controller
         try {
             // Create candidate questions
             return $this->interviewService->createCandidateQuestions($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single interview
+    public function singleInterview(FetchSingleInterviewRequest $request)
+    {
+        try {
+            // Fetch single interview service
+            return $this->interviewService->fetchSingleInterview($request);
 
         } catch (\Exception $e) {
             return Response::fail([
