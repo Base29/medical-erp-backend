@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InterviewSchedule\CreateInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\DeleteInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\UpdateInterviewScheduleRequest;
+use App\Http\Requests\Interview\CreateInterviewAnswerRequest;
 use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
 use App\Services\Interview\InterviewService;
@@ -103,6 +104,21 @@ class InterviewController extends Controller
         try {
             // Past interview service
             return $this->interviewService->fetchPastInterviews($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Store interview answers
+    public function interviewAnswer(CreateInterviewAnswerRequest $request)
+    {
+        try {
+            // Store interview answers
+            return $this->interviewService->storeInterviewAnswer($request);
 
         } catch (\Exception $e) {
             return Response::fail([

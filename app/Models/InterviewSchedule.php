@@ -57,4 +57,9 @@ class InterviewSchedule extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function interviewAnswers()
+    {
+        return $this->hasMany(InterviewAnswer::class);
+    }
 }
