@@ -217,7 +217,7 @@ class InterviewService
                 // Initiate instance of InterviewAnswer model
                 $interviewAnswer = new InterviewAnswer();
 
-                $interviewAnswer->schedule = $interviewSchedule->id;
+                $interviewAnswer->interview = $interviewSchedule->id;
                 $interviewAnswer->question = $interviewQuestion->id;
                 $interviewAnswer->answer = $request->answer;
                 $interviewAnswer->save();
@@ -235,7 +235,7 @@ class InterviewService
                 // Initiate instance of InterviewAnswer model
                 $interviewAnswer = new InterviewAnswer();
 
-                $interviewAnswer->schedule = $interviewSchedule->id;
+                $interviewAnswer->interview = $interviewSchedule->id;
                 $interviewAnswer->question = $interviewQuestion->id;
                 $interviewAnswer->option = $request->option;
                 $interviewAnswer->save();
@@ -259,7 +259,7 @@ class InterviewService
                     // Initiate instance of InterviewAnswer model
                     $interviewAnswer = new InterviewAnswer();
 
-                    $interviewAnswer->schedule = $interviewSchedule->id;
+                    $interviewAnswer->interview = $interviewSchedule->id;
                     $interviewAnswer->question = $interviewQuestion->id;
                     $interviewAnswer->option = $option;
                     $interviewAnswer->save();
@@ -287,7 +287,7 @@ class InterviewService
         foreach ($questions as $question) {
             // Initiate instance of AdhocQuestion model
             $adhocQuestion = new AdhocQuestion();
-            $adhocQuestion->schedule = $interviewSchedule->id;
+            $adhocQuestion->interview = $interviewSchedule->id;
             $adhocQuestion->question = $question['question'];
             $adhocQuestion->answer = $question['answer'];
             $adhocQuestion->save();
@@ -311,7 +311,7 @@ class InterviewService
         foreach ($questions as $question) {
             // Initiate instance of AdhocQuestion model
             $candidateQuestion = new CandidateQuestion();
-            $candidateQuestion->schedule = $interviewSchedule->id;
+            $candidateQuestion->interview = $interviewSchedule->id;
             $candidateQuestion->question = $question['question'];
             $candidateQuestion->save();
         }
