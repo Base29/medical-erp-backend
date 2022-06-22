@@ -55,7 +55,7 @@ class InterviewPolicyService
             $interviewQuestion->question = $question['question'];
 
             // Save question
-            $interviewPolicy->interviewQuestions()->save($interviewQuestion);
+            $interviewPolicy->questions()->save($interviewQuestion);
 
             // Check if $interviewQuestion is multi-choice or single-choice
             if ($interviewQuestion->type === 'multi-choice' || $interviewQuestion->type === 'single-choice') {
