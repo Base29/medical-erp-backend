@@ -45,6 +45,7 @@ class CreateInterviewScheduleRequest extends FormRequest
             ],
             'additional_staff' => 'nullable|numeric|exists:users,id',
             'hq_staff' => 'nullable|numeric|exists:users,id',
+            'duration' => 'nullable|string|max:50',
         ];
     }
 

@@ -113,6 +113,7 @@ class InterviewService
         $interviewSchedule->date = $request->date;
         $interviewSchedule->time = $request->time;
         $interviewSchedule->location = $request->location;
+        $interviewSchedule->duration = $request->duration;
         $interviewSchedule->interview_type = $request->interview_type;
         $interviewSchedule->application_status = $request->application_status;
         $interviewSchedule->additional_staff = $request->additional_staff;
