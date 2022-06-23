@@ -2,8 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\EmployeeHandbook;
 use App\Models\InductionChecklist;
 use App\Models\InterviewPolicy;
+use App\Models\LocumSession;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Role extends \Spatie\Permission\Models\Role
@@ -34,5 +36,15 @@ class Role extends \Spatie\Permission\Models\Role
     public function locumSessions()
     {
         return $this->hasMany(LocumSession::class);
+    }
+
+    public function handbooks()
+    {
+        return $this->belongsToMany(EmployeeHandbook::class);
+    }
+
+    public function itPolicies()
+    {
+        return $this->belongsToMany(ItPolicy::class);
     }
 }
