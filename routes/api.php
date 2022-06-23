@@ -660,19 +660,22 @@ Route::middleware(['auth:api'])->group(function () {
         // Routes for interview policies
         Route::prefix('policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])
-                ->middleware(['permission:can_create_interview_policy']);
+                ->middleware(['permission:can_create_interview_policy|can_manage_interview_policy']);
 
             Route::post('/', [InterviewPolicyController::class, 'fetch'])
-                ->middleware(['permission:can_fetch_interview_policies']);
+                ->middleware(['permission:can_fetch_interview_policies|can_manage_interview_policy']);
 
             Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
-                ->middleware(['permission:can_fetch_single_interview_policy']);
+                ->middleware(['permission:can_fetch_single_interview_policy|can_manage_interview_policy']);
 
             Route::post('update', [InterviewPolicyController::class, 'update'])
-                ->middleware(['permission:can_update_interview_policy']);
+                ->middleware(['permission:can_update_interview_policy|can_manage_interview_policy']);
 
             Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
-                ->middleware(['permission:can_update_interview_policy_question']);
+                ->middleware(['permission:can_update_interview_policy_question|can_manage_interview_policy']);
+
+            Route::post('delete', [InterviewPolicyController::class, 'delete'])
+                ->middleware(['permission:can_manage_interview_policy|can_delete_interview_policy']);
         });
 
         // Routes for Adhoc Questions
