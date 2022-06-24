@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Interview;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AdhocQuestion\CreateAdhocQuestionRequest;
+use App\Http\Requests\AdhocQuestion\DeleteAdhocQuestionRequest;
+use App\Http\Requests\AdhocQuestion\FetchAdhocQuestionsRequest;
 use App\Http\Requests\CandidateQuestion\CreateCandidateQuestionRequest;
+use App\Http\Requests\CandidateQuestion\DeleteCandidateQuestionRequest;
+use App\Http\Requests\CandidateQuestion\FetchCandidateQuestionsRequest;
 use App\Http\Requests\InterviewSchedule\CreateInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\DeleteInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\UpdateInterviewScheduleRequest;
@@ -167,6 +171,66 @@ class InterviewController extends Controller
         try {
             // Fetch single interview service
             return $this->interviewService->fetchSingleInterview($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch interview adhoc questions
+    public function fetchAdhocQuestions(FetchAdhocQuestionsRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->fetchAdhocQuestions($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch interview adhoc questions
+    public function fetchCandidateQuestions(FetchCandidateQuestionsRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->fetchCandidateQuestions($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete adhoc question
+    public function deleteAdhocQuestion(DeleteAdhocQuestionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->deleteAdhocQuestion($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete adhoc question
+    public function deleteCandidateQuestion(DeleteCandidateQuestionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->deleteCandidateQuestion($request);
 
         } catch (\Exception $e) {
             return Response::fail([
