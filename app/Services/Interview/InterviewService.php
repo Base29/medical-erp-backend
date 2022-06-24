@@ -337,4 +337,64 @@ class InterviewService
             'interview' => $interviewSchedule,
         ]);
     }
+
+    // Fetch adhoc questions
+    public function fetchAdhocQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // AdhocQuestions
+        $adhocQuestions = AdhocQuestion::where('interview', $interviewSchedule->id)->latest()->get();
+
+        // Return success response
+        return Response::success([
+            'adhoc-questions' => $adhocQuestions,
+        ]);
+    }
+
+    // Fetch candidate questions
+    public function fetchCandidateQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // AdhocQuestions
+        $candidateQuestions = CandidateQuestion::where('interview', $interviewSchedule->id)->latest()->get();
+
+        // Return success response
+        return Response::success([
+            'candidate-questions' => $candidateQuestions,
+        ]);
+    }
+
+    // Delete adhoc question
+    public function deleteAdhocQuestion($request)
+    {
+        // Get adhoc question
+        $adhocQuestion = AdhocQuestion::findOrFail($request->adhoc_question);
+
+        // Delete adhoc question
+        $adhocQuestion->delete();
+
+        // Return success response
+        return Response::success([
+            'adhoc-question' => $adhocQuestion,
+        ]);
+    }
+
+    // Delete candidate question
+    public function deleteCandidateQuestion($request)
+    {
+        // Get adhoc question
+        $candidateQuestion = CandidateQuestion::findOrFail($request->candidate_question);
+
+        // Delete adhoc question
+        $candidateQuestion->delete();
+
+        // Return success response
+        return Response::success([
+            'candidate-question' => $candidateQuestion,
+        ]);
+    }
 }

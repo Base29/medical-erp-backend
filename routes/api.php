@@ -682,12 +682,25 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('adhoc-questions')->group(function () {
             Route::post('create', [InterviewController::class, 'adhocQuestions'])
                 ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
+
+            Route::post('/', [InterviewController::class, 'fetchAdhocQuestions'])
+                ->middleware(['permission:can_fetch_adhoc_questions|can_manage_interview']);
+
+            Route::post('delete', [InterviewController::class, 'deleteAdhocQuestion'])
+                ->middleware(['permission:can_delete_adhoc_question|can_manage_interview']);
+
         });
 
         // Routes for candidate questions
         Route::prefix('candidate-questions')->group(function () {
             Route::post('create', [InterviewController::class, 'candidateQuestions'])
                 ->middleware(['permission:can_create_candidate_question|can_manage_interview']);
+
+            Route::post('/', [InterviewController::class, 'fetchCandidateQuestions'])
+                ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
+
+            Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
+                ->middleware(['permission:can_delete_candidate_question']);
         });
     });
 });
