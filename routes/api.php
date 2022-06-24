@@ -8,6 +8,7 @@ use App\Http\Controllers\ContractSummary\ContractSummaryController;
 use App\Http\Controllers\Department\DepartmentController;
 use App\Http\Controllers\Education\EducationController;
 use App\Http\Controllers\EmergencyContact\EmergencyContactController;
+use App\Http\Controllers\EmployeeHandbook\EmployeeHandbookController;
 use App\Http\Controllers\EmploymentCheck\EmploymentCheckController;
 use App\Http\Controllers\EmploymentHistory\EmploymentHistoryController;
 use App\Http\Controllers\EmploymentPolicy\EmploymentPolicyController;
@@ -631,6 +632,12 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('delete', [LocumController::class, 'delete'])
                     ->middleware(['permission:can_delete_locum_session']);
             });
+        });
+
+        // Routes for employee handbook
+        Route::prefix('employee-handbooks')->group(function () {
+            Route::post('create', [EmployeeHandbookController::class, 'create'])
+                ->middleware(['permission:can_manage_employee_handbook']);
         });
     });
 
