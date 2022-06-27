@@ -408,6 +408,7 @@ class InterviewService
 
         // Initiate a instance of InterviewMiscInfo
         $interviewMiscInfo = new InterviewMiscInfo();
+        $interviewMiscInfo->interview = $interviewSchedule->id;
         $interviewMiscInfo->current_salary = $request->current_salary;
         $interviewMiscInfo->expected_salary = $request->expected_salary;
         $interviewMiscInfo->difference = $request->difference;
@@ -422,7 +423,7 @@ class InterviewService
         $interviewMiscInfo->interviewing_elsewhere = $request->interviewing_elsewhere;
         $interviewMiscInfo->salary_notes = $request->salary_notes;
         $interviewMiscInfo->notice_notes = $request->notice_notes;
-        $interviewSchedule->interviewMiscInfo()->save($interviewMiscInfo);
+        $interviewMiscInfo->save();
 
         // Return success response
         return Response::success([
@@ -438,6 +439,7 @@ class InterviewService
 
         // Initiate instance of InterviewScore
         $interviewScore = new InterviewScore();
+        $interviewScore->interview = $interviewSchedule->id;
         $interviewScore->cultural_fit = $request->cultural_fit;
         $interviewScore->career_motivation = $request->career_motivation;
         $interviewScore->social_skills = $request->social_skills;
@@ -445,11 +447,12 @@ class InterviewService
         $interviewScore->technical_skills = $request->technical_skills;
         $interviewScore->leadership_capability = $request->leadership_capability;
         $interviewScore->critical_thinking_problem_solving = $request->critical_thinking_problem_solving;
+        $interviewScore->self_awareness = $request->self_awareness;
         $interviewScore->total = $request->total;
         $interviewScore->remarks = $request->remarks;
 
         // Save interview score
-        $interviewSchedule->interviewScore()->save($interviewScore);
+        $interviewScore->save();
 
         // Return success response
         return Response::success([

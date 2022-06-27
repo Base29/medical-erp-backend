@@ -15,6 +15,12 @@ class CreateInterviewScoresTable extends Migration
     {
         Schema::create('interview_scores', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('interview')
+                ->references('id')
+                ->on('interview_schedules')
+                ->nullable()
+                ->constrained()
+                ->cascadeOnDelete();
             $table->integer('cultural_fit')->nullable();
             $table->integer('career_motivation')->nullable();
             $table->integer('social_skills')->nullable();
