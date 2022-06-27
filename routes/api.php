@@ -664,6 +664,12 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('interview', [InterviewController::class, 'singleInterview'])
             ->middleware(['permission:can_fetch_single_interview|can_manage_interview']);
 
+        Route::post('add-misc-info', [InterviewController::class, 'miscInfo'])
+            ->middleware(['permission:can_create_interview_misc_info|can_manage_interview']);
+
+        Route::post('create-score', [InterviewController::class, 'score'])
+            ->middleware(['permission:can_create_interview_score|can_manage_interview']);
+
         // Routes for interview policies
         Route::prefix('policies')->group(function () {
             Route::post('create', [InterviewPolicyController::class, 'create'])
@@ -689,12 +695,25 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('adhoc-questions')->group(function () {
             Route::post('create', [InterviewController::class, 'adhocQuestions'])
                 ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
+
+            Route::post('/', [InterviewController::class, 'fetchAdhocQuestions'])
+                ->middleware(['permission:can_fetch_adhoc_questions|can_manage_interview']);
+
+            Route::post('delete', [InterviewController::class, 'deleteAdhocQuestion'])
+                ->middleware(['permission:can_delete_adhoc_question|can_manage_interview']);
+
         });
 
         // Routes for candidate questions
         Route::prefix('candidate-questions')->group(function () {
             Route::post('create', [InterviewController::class, 'candidateQuestions'])
                 ->middleware(['permission:can_create_candidate_question|can_manage_interview']);
+
+            Route::post('/', [InterviewController::class, 'fetchCandidateQuestions'])
+                ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
+
+            Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
+                ->middleware(['permission:can_delete_candidate_question']);
         });
     });
 });
