@@ -14,6 +14,8 @@ use App\Http\Requests\InterviewSchedule\CreateInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\DeleteInterviewScheduleRequest;
 use App\Http\Requests\InterviewSchedule\UpdateInterviewScheduleRequest;
 use App\Http\Requests\Interview\CreateInterviewAnswerRequest;
+use App\Http\Requests\Interview\CreateInterviewMiscInfoRequest;
+use App\Http\Requests\Interview\CreateInterviewScoreRequest;
 use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
 use App\Http\Requests\Interview\FetchSingleInterviewRequest;
@@ -231,6 +233,36 @@ class InterviewController extends Controller
         try {
             // Logic here
             return $this->interviewService->deleteCandidateQuestion($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Misc info
+    public function miscInfo(CreateInterviewMiscInfoRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->addMiscInfo($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Score
+    public function score(CreateInterviewScoreRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->interviewService->createInterviewScore($request);
 
         } catch (\Exception $e) {
             return Response::fail([
