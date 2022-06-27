@@ -10,9 +10,11 @@ use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\Interview;
 use App\Models\InterviewAnswer;
+use App\Models\InterviewMiscInfo;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewQuestion;
 use App\Models\InterviewSchedule;
+use App\Models\InterviewScore;
 use App\Models\Practice;
 use App\Models\User;
 use Illuminate\Support\Carbon;
@@ -395,6 +397,63 @@ class InterviewService
         // Return success response
         return Response::success([
             'candidate-question' => $candidateQuestion,
+        ]);
+    }
+
+    // Add interview misc info
+    public function addMiscInfo($request)
+    {
+        // Get interview
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // Initiate a instance of InterviewMiscInfo
+        $interviewMiscInfo = new InterviewMiscInfo();
+        $interviewMiscInfo->current_salary = $request->current_salary;
+        $interviewMiscInfo->expected_salary = $request->expected_salary;
+        $interviewMiscInfo->difference = $request->difference;
+        $interviewMiscInfo->availability = $request->availability;
+        $interviewMiscInfo->available_time = $request->available_time;
+        $interviewMiscInfo->job_type = $request->job_type;
+        $interviewMiscInfo->dbs = $request->dbs;
+        $interviewMiscInfo->dismissals = $request->dismissals;
+        $interviewMiscInfo->given_notice = $request->given_notice;
+        $interviewMiscInfo->notice_start = $request->notice_start;
+        $interviewMiscInfo->notice_duration = $request->notice_duration;
+        $interviewMiscInfo->interviewing_elsewhere = $request->interviewing_elsewhere;
+        $interviewMiscInfo->salary_notes = $request->salary_notes;
+        $interviewMiscInfo->notice_notes = $request->notice_notes;
+        $interviewSchedule->interviewMiscInfo()->save($interviewMiscInfo);
+
+        // Return success response
+        return Response::success([
+            'interview-misc-info' => $interviewMiscInfo,
+        ]);
+    }
+
+    // Create interview score
+    public function createInterviewScore($request)
+    {
+        // Get interview
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+
+        // Initiate instance of InterviewScore
+        $interviewScore = new InterviewScore();
+        $interviewScore->cultural_fit = $request->cultural_fit;
+        $interviewScore->career_motivation = $request->career_motivation;
+        $interviewScore->social_skills = $request->social_skills;
+        $interviewScore->team_work = $request->team_work;
+        $interviewScore->technical_skills = $request->technical_skills;
+        $interviewScore->leadership_capability = $request->leadership_capability;
+        $interviewScore->critical_thinking_problem_solving = $request->critical_thinking_problem_solving;
+        $interviewScore->total = $request->total;
+        $interviewScore->remarks = $request->remarks;
+
+        // Save interview score
+        $interviewSchedule->interviewScore()->save($interviewScore);
+
+        // Return success response
+        return Response::success([
+            'interview-score' => $interviewScore,
         ]);
     }
 }

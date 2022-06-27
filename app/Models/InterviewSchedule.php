@@ -72,4 +72,14 @@ class InterviewSchedule extends Model
     {
         return $this->hasMany(CandidateQuestion::class);
     }
+
+    public function interviewMiscInfo()
+    {
+        return $this->hasOne(InterviewMiscInfo::class);
+    }
+
+    public function interviewScore()
+    {
+        return $this->hasOne(InterviewScore::class);
+    }
 }
