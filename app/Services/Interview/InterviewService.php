@@ -412,7 +412,7 @@ class InterviewService
         $interviewMiscInfo->current_salary = $request->current_salary;
         $interviewMiscInfo->expected_salary = $request->expected_salary;
         $interviewMiscInfo->difference = $request->difference;
-        $interviewMiscInfo->availability = $request->availability;
+        $interviewMiscInfo->availability = implode(',', $request->availability);
         $interviewMiscInfo->available_time = $request->available_time;
         $interviewMiscInfo->job_type = $request->job_type;
         $interviewMiscInfo->dbs = $request->dbs;

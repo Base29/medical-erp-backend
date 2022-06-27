@@ -30,7 +30,7 @@ class CreateInterviewMiscInfoRequest extends FormRequest
             'current_salary' => 'required|string|max:20',
             'expected_salary' => 'required|string|max:20',
             'difference' => 'required|string|max:20',
-            'availability' => 'required|string|max:20',
+            'availability' => 'required|array',
             'available_time' => 'required|string|max:20',
             'job_type' => 'required|string|max:20',
             'dbs' => 'required|string|max:20',
