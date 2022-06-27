@@ -27,6 +27,10 @@ class InterviewMiscInfo extends Model
         'notice_notes',
     ];
 
+    protected $casts = [
+        'availability' => 'array',
+    ];
+
     public function interview()
     {
         return $this->belongsTo(InterviewSchedule::class);
