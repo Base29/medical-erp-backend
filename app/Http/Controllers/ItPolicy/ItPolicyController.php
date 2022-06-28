@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\ItPolicy;
 
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ItPolicy\CreateItPolicyRequest;
 use App\Services\ItPolicy\ItPolicyService;
-use Illuminate\Http\Response;
 
 class ItPolicyController extends Controller
 {

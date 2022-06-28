@@ -13,12 +13,12 @@ class ItPolicyService
         $folderPath = 'it-policies';
 
         // Upload employee handbook
-        $itPolicy = FileUploadService::upload($request->handbook, $folderPath, 's3');
+        $itPolicyUrl = FileUploadService::upload($request->it_policy, $folderPath, 's3');
 
         // Initiate instance of EmployeeHandbook model
         $itPolicy = new ItPolicy();
         $itPolicy->detail = $request->detail;
-        $itPolicy->url = $itPolicy;
+        $itPolicy->url = $itPolicyUrl;
         $itPolicy->save();
 
         // Return success response
