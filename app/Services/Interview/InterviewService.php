@@ -176,8 +176,7 @@ class InterviewService
     {
 
         // Get past interview schedules
-        $interviewSchedules = InterviewSchedule::where('date', '<', Carbon::now())
-            ->where('is_completed', 1)
+        $interviewSchedules = InterviewSchedule::where('is_completed', 1)
             ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
