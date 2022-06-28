@@ -65,21 +65,21 @@ class InterviewSchedule extends Model
 
     public function adhocQuestions()
     {
-        return $this->hasMany(AdhocQuestion::class);
+        return $this->hasMany(AdhocQuestion::class, 'interview', 'id');
     }
 
     public function candidateQuestions()
     {
-        return $this->hasMany(CandidateQuestion::class);
+        return $this->hasMany(CandidateQuestion::class, 'interview', 'id');
     }
 
     public function interviewMiscInfo()
     {
-        return $this->hasOne(InterviewMiscInfo::class);
+        return $this->hasOne(InterviewMiscInfo::class, 'interview', 'id');
     }
 
     public function interviewScore()
     {
-        return $this->hasOne(InterviewScore::class);
+        return $this->hasOne(InterviewScore::class, 'interview', 'id');
     }
 }
