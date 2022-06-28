@@ -146,7 +146,7 @@ class InterviewService
         // $interviewSchedule->is_completed = $request->is_completed;
         // $interviewSchedule->save();
 
-        UpdateService::updateModel($interviewSchedule, $request->all(), 'interview');
+        UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');
 
         // Return success response
         return Response::success([

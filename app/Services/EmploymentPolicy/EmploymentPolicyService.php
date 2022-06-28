@@ -54,7 +54,7 @@ class EmploymentPolicyService
         $employmentPolicy = EmploymentPolicy::findOrFail($request->employment_policy);
 
         // Update employment policy
-        $employmentPolicyUpdated = UpdateService::updateModel($employmentPolicy, $request->all(), 'employment_policy');
+        $employmentPolicyUpdated = UpdateService::updateModel($employmentPolicy, $request->validated(), 'employment_policy');
 
         if (!$employmentPolicyUpdated) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong. Can not update Employment Policy'));

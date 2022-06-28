@@ -37,7 +37,7 @@ class ProfileService
         $profile = Profile::findOrFail($request->profile);
 
         // Update Profile
-        $profileUpdated = UpdateService::updateModel($profile, $request->all(), 'profile');
+        $profileUpdated = UpdateService::updateModel($profile, $request->validated(), 'profile');
 
         if (!$profileUpdated) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update profile at this time'));

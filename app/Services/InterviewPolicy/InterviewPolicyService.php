@@ -162,7 +162,7 @@ class InterviewPolicyService
         $interviewPolicy = InterviewPolicy::findOrFail($request->interview_policy);
 
         // Update interview policy
-        $interviewPolicyUpdated = UpdateService::updateModel($interviewPolicy, $request->all(), 'interview_policy');
+        $interviewPolicyUpdated = UpdateService::updateModel($interviewPolicy, $request->validated(), 'interview_policy');
 
         // Return response if update fails
         if (!$interviewPolicyUpdated) {
@@ -196,7 +196,7 @@ class InterviewPolicyService
         $interviewQuestion = InterviewQuestion::findOrFail($request->question_id);
 
         // Update subitem
-        UpdateService::updateModel($interviewQuestion, $request->all(), 'question_id');
+        UpdateService::updateModel($interviewQuestion, $request->validated(), 'question_id');
 
         // Check if the type of the question is updated to descriptive
         if ($interviewQuestion->type === 'descriptive') {

@@ -87,7 +87,7 @@ class EducationService
         // Get education
         $education = Education::findOrFail($request->education);
 
-        $updateRequestData = $request->all();
+        $updateRequestData = $request->validated();
 
         // Check if request has file $request->certificate
         if ($request->hasFile('certificate')) {

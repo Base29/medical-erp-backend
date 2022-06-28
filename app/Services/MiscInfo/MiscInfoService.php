@@ -150,7 +150,7 @@ class MiscInfoService
         $miscInfo = MiscellaneousInformation::findOrFail($request->misc_info);
 
         // Casting request data to a variable
-        $updateRequestData = $request->all();
+        $updateRequestData = $request->validated();
 
         // Check if the request contain the ID of JobSpecification in $request->job_description
         if ($request->has('job_specification')) {

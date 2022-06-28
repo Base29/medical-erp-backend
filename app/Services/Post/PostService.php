@@ -103,7 +103,7 @@ class PostService
         }
 
         // Update task's fields with the ones provided in the $request
-        UpdateService::updateModel($post, $request->all(), 'post');
+        UpdateService::updateModel($post, $request->validated(), 'post');
 
         return Response::success(['post' => $post->with('user')->latest('updated_at')->first()]);
 

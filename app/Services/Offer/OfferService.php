@@ -72,7 +72,7 @@ class OfferService
         // $workPattern = WorkPattern::findOrFail($request->work_pattern_id);
 
         // Update offer
-        $offerUpdated = UpdateService::updateModel($offer, $request->all(), 'offer');
+        $offerUpdated = UpdateService::updateModel($offer, $request->validated(), 'offer');
 
         if (!$offerUpdated) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id));

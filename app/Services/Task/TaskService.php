@@ -105,7 +105,7 @@ class TaskService
         }
 
         // Update task's fields with the ones provided in the $request
-        UpdateService::updateModel($task, $request->all(), 'task');
+        UpdateService::updateModel($task, $request->validated(), 'task');
 
         // Return success response
         return Response::success(['task' => $task->latest('updated_at')->first()]);

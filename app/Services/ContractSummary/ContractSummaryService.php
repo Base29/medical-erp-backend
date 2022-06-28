@@ -80,7 +80,7 @@ class ContractSummaryService
         // Update contract summary
         UpdateService::updateModel(
             $contractSummary,
-            $request->all(),
+            $request->validated(),
             'contract_summary'
         );
 

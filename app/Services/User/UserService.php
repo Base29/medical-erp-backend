@@ -265,7 +265,7 @@ class UserService
         // Get profile for the user
         $profile = Profile::where('user_id', $user->id)->firstOrFail();
 
-        UpdateService::updateModel($profile, $request->all(), 'user');
+        UpdateService::updateModel($profile, $request->validated(), 'user');
 
         return Response::success([
             'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices')

@@ -105,8 +105,8 @@ class ReferenceService
         // Get Reference
         $reference = Reference::findOrFail($request->reference);
 
-        // Casting $request->all() to $updateRequestData
-        $updateRequestData = $request->all();
+        // Casting $request->validated() to $updateRequestData
+        $updateRequestData = $request->validated();
 
         // Initiate a null variable $referenceDocUrl
         $referenceDocUrl = null;
