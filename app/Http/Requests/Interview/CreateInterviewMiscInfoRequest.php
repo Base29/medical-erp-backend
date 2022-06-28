@@ -27,9 +27,9 @@ class CreateInterviewMiscInfoRequest extends FormRequest
     {
         return [
             'interview' => 'required|numeric|exists:interview_schedules,id',
-            'current_salary' => 'required|string|max:20',
-            'expected_salary' => 'required|string|max:20',
-            'difference' => 'required|string|max:20',
+            'current_salary' => 'required|numeric',
+            'expected_salary' => 'required|numeric',
+            'difference' => 'required|numeric',
             'availability' => 'required|array',
             'available_time' => 'required|string|max:20',
             'job_type' => 'required|string|max:20',

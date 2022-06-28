@@ -331,7 +331,16 @@ class InterviewService
     {
         // Get interview schedule
         $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-            ->with('user.profile', 'hiringRequest', 'interviewPolicies.questions.options', 'practice')
+            ->with(
+                'user.profile',
+                'hiringRequest',
+                'interviewPolicies.questions.options',
+                'practice',
+                'candidateQuestions',
+                'adhocQuestions',
+                'interviewMiscInfo',
+                'interviewScore'
+            )
             ->firstOrFail();
 
         // Return success response
