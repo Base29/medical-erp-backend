@@ -2,8 +2,8 @@
 namespace App\Services\ItPolicy;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Models\ItPolicy;
-use Illuminate\Http\Response;
 
 class ItPolicyService
 {
