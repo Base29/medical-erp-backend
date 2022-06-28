@@ -68,7 +68,7 @@ class EmploymentHistoryService
         $employmentHistory = EmploymentHistory::findOrFail($request->employment_history);
 
         // Update $employmentHistory
-        $employmentHistoryUpdated = UpdateService::updateModel($employmentHistory, $request->all(), 'employment_history');
+        $employmentHistoryUpdated = UpdateService::updateModel($employmentHistory, $request->validated(), 'employment_history');
 
         if (!$employmentHistoryUpdated) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Employment History.'));

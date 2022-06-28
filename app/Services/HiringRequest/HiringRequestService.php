@@ -143,8 +143,8 @@ class HiringRequestService
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
-        // Cast $request->all() to variable
-        $updateRequestData = $request->all();
+        // Cast $request->validated() to variable
+        $updateRequestData = $request->validated();
 
         // Check if $request->reporting_to exists
         if ($request->has('reporting_to')) {

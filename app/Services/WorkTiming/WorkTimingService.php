@@ -28,7 +28,7 @@ class WorkTimingService
         $workTiming = WorkTiming::findOrFail($request->work_timing);
 
         // Update work timing
-        $workTimingUpdated = UpdateService::updateModel($workTiming, $request->all(), 'work_timing');
+        $workTimingUpdated = UpdateService::updateModel($workTiming, $request->validated(), 'work_timing');
 
         if (!$workTimingUpdated) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating Work Timing ' . $workTiming->id));

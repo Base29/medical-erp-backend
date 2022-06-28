@@ -29,7 +29,7 @@ class HeadQuarterService
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
         // Process hiring request
-        $hiringRequestProcessed = UpdateService::updateModel($hiringRequest, $request->all(), 'hiring_request');
+        $hiringRequestProcessed = UpdateService::updateModel($hiringRequest, $request->validated(), 'hiring_request');
 
         // Throw exception if processing failed
         if (!$hiringRequestProcessed) {

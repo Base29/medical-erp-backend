@@ -104,7 +104,7 @@ class InductionChecklistService
         }
 
         // Update induction checklist
-        $inductionChecklistUpdated = UpdateService::updateModel($inductionChecklist, $request->all(), 'induction_checklist');
+        $inductionChecklistUpdated = UpdateService::updateModel($inductionChecklist, $request->validated(), 'induction_checklist');
 
         // Return response if update fails
         if (!$inductionChecklistUpdated) {

@@ -66,7 +66,7 @@ class TerminationService
         $termination = Termination::findOrFail($request->termination);
 
         // Update termination
-        $terminationUpdated = UpdateService::updateModel($termination, $request->all(), 'termination');
+        $terminationUpdated = UpdateService::updateModel($termination, $request->validated(), 'termination');
 
         // Return fail response in-case model is not updated
         if (!$terminationUpdated) {

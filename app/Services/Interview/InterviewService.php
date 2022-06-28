@@ -146,7 +146,7 @@ class InterviewService
         // $interviewSchedule->is_completed = $request->is_completed;
         // $interviewSchedule->save();
 
-        UpdateService::updateModel($interviewSchedule, $request->all(), 'interview');
+        UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');
 
         // Return success response
         return Response::success([
@@ -331,7 +331,16 @@ class InterviewService
     {
         // Get interview schedule
         $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-            ->with('user.profile', 'hiringRequest', 'interviewPolicies.questions.options', 'practice')
+            ->with(
+                'user.profile',
+                'hiringRequest',
+                'interviewPolicies.questions.options',
+                'practice',
+                'candidateQuestions',
+                'adhocQuestions',
+                'interviewMiscInfo',
+                'interviewScore'
+            )
             ->firstOrFail();
 
         // Return success response
