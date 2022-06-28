@@ -3,8 +3,10 @@
 namespace App\Providers;
 
 use App\Models\EmployeeHandbook;
+use App\Models\ItPolicy;
 use App\Models\Practice;
 use App\Observers\EmployeeHandbook\EmployeeHandbookObserver;
+use App\Observers\ItPolicy\ItPolicyObserver;
 use App\Observers\Practice\PracticeObserver;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
@@ -33,5 +35,6 @@ class EventServiceProvider extends ServiceProvider
     {
         Practice::observe(PracticeObserver::class);
         EmployeeHandbook::observe(EmployeeHandbookObserver::class);
+        ItPolicy::observe(ItPolicyObserver::class);
     }
 }

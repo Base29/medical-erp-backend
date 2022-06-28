@@ -19,6 +19,7 @@ use App\Http\Controllers\InductionResult\InductionResultController;
 use App\Http\Controllers\InductionSchedule\InductionScheduleController;
 use App\Http\Controllers\InterviewPolicy\InterviewPolicyController;
 use App\Http\Controllers\Interview\InterviewController;
+use App\Http\Controllers\ItPolicy\ItPolicyController;
 use App\Http\Controllers\JobSpecification\JobSpecificationController;
 use App\Http\Controllers\Legal\LegalController;
 use App\Http\Controllers\Locum\LocumController;
@@ -128,185 +129,185 @@ Route::middleware(['auth:api'])->group(function () {
     // Endpoints for practice operations
     Route::prefix('practices')->group(function () {
         Route::get('/', [PracticeController::class, 'fetch'])
-            ->middleware(['permission:can_view_practices']);
+            ->middleware(['permission:can_view_practices|can_manage_practices']);
 
         Route::post('create', [PracticeController::class, 'create'])
-            ->middleware(['permission:can_create_practice']);
+            ->middleware(['permission:can_create_practice|can_manage_practices']);
 
         Route::delete('delete/{id}', [PracticeController::class, 'delete'])
-            ->middleware(['permission:can_delete_practice']);
+            ->middleware(['permission:can_delete_practice|can_manage_practices']);
 
         Route::post('assign-to-user', [PracticeController::class, 'assignToUser'])
-            ->middleware(['permission:can_assign_practice']);
+            ->middleware(['permission:can_assign_practice|can_manage_practices']);
 
         Route::post('revoke-for-user', [PracticeController::class, 'revokeForUser'])
-            ->middleware(['permission:can_revoke_practice']);
+            ->middleware(['permission:can_revoke_practice|can_manage_practices']);
     });
 
     // Endpoints for policies
     Route::prefix('policies')->group(function () {
         Route::post('/create', [PolicyController::class, 'create'])
-            ->middleware(['permission:can_create_policy']);
+            ->middleware(['permission:can_create_policy|can_manage_policies']);
 
         Route::delete('/delete/{id}', [PolicyController::class, 'delete'])
-            ->middleware(['permission:can_delete-policy']);
+            ->middleware(['permission:can_delete-policy|can_manage_policies']);
 
         Route::get('/', [PolicyController::class, 'fetch'])
-            ->middleware(['permission:can_view_policies']);
+            ->middleware(['permission:can_view_policies|can_manage_policies']);
 
         Route::post('sign-policy', [SignatureController::class, 'signPolicy'])
-            ->middleware(['permission:can_sign_policy']);
+            ->middleware(['permission:can_sign_policy|can_manage_policies']);
     });
 
     // Endpoints for room operations
     Route::prefix('rooms')->group(function () {
         Route::post('/', [RoomController::class, 'fetch'])
-            ->middleware(['permission:can_view_rooms']);
+            ->middleware(['permission:can_view_rooms|can_manage_rooms']);
 
         Route::post('create', [RoomController::class, 'create'])
-            ->middleware(['permission:can_create_room']);
+            ->middleware(['permission:can_create_room|can_manage_rooms']);
 
         Route::delete('delete/{id}', [RoomController::class, 'delete'])
-            ->middleware(['permission:can_delete_room']);
+            ->middleware(['permission:can_delete_room|can_manage_rooms']);
 
         Route::post('update', [RoomController::class, 'update'])
-            ->middleware(['permission:can_update_room']);
+            ->middleware(['permission:can_update_room|can_manage_rooms']);
     });
 
     Route::prefix('reasons')->group(function () {
         Route::get('/', [ReasonController::class, 'fetch'])
-            ->middleware(['permission:can_view_reasons']);
+            ->middleware(['permission:can_view_reasons|can_manage_reasons']);
 
         Route::post('create', [ReasonController::class, 'create'])
-            ->middleware(['permission:can_create_reason']);
+            ->middleware(['permission:can_create_reason|can_manage_reasons']);
 
         Route::delete('delete/{id}', [ReasonController::class, 'delete'])
-            ->middleware(['permission:can_delete_reason']);
+            ->middleware(['permission:can_delete_reason|can_manage_reasons']);
     });
 
     // Endpoints for CheckList Operations
     Route::prefix('checklists')->group(function () {
         Route::post('/', [CheckListController::class, 'fetch'])
-            ->middleware(['permission:can_view_checklists']);
+            ->middleware(['permission:can_view_checklists|can_manage_checklists']);
 
         Route::post('create', [CheckListController::class, 'create'])
-            ->middleware(['permission:can_create_checklist']);
+            ->middleware(['permission:can_create_checklist|can_manage_checklists']);
     });
 
     // Endpoints for Task operations
     Route::prefix('tasks')->group(function () {
         Route::post('update', [TaskController::class, 'update'])
-            ->middleware(['permission:can_update_task']);
+            ->middleware(['permission:can_update_task|can_manage_tasks']);
 
         Route::post('create', [TaskController::class, 'create'])
-            ->middleware(['permission:can_create_task']);
+            ->middleware(['permission:can_create_task|can_manage_tasks']);
 
         Route::delete('delete/{id}', [TaskController::class, 'delete'])
-            ->middleware(['permission:can_delete_task']);
+            ->middleware(['permission:can_delete_task|can_manage_tasks']);
     });
 
     // Routes for cleaner forum (Communication Book)
     Route::prefix('communication-book')->group(function () {
         Route::get('/', [PostController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_posts|can_fetch_communication_book_posts']);
+            ->middleware(['permission:can_fetch_posts|can_fetch_communication_book_posts|can_manage_posts']);
 
         Route::post('me', [PostController::class, 'me'])
-            ->middleware(['permission:can_fetch_own_posts']);
+            ->middleware(['permission:can_fetch_own_posts|can_manage_posts']);
 
         Route::post('create', [PostController::class, 'create'])
-            ->middleware(['permission:can_create_post']);
+            ->middleware(['permission:can_create_post|can_manage_posts']);
 
         Route::delete('delete/{id}', [PostController::class, 'delete'])
-            ->middleware(['permission:can_delete_own_post']);
+            ->middleware(['permission:can_delete_own_post|can_manage_posts']);
 
         Route::post('update', [PostController::class, 'update'])
-            ->middleware(['permission:can_update_post']);
+            ->middleware(['permission:can_update_post|can_manage_posts']);
 
         Route::post('post', [PostController::class, 'fetchSinglePost'])
-            ->middleware(['permission:can_view_post']);
+            ->middleware(['permission:can_view_post|can_manage_posts']);
 
         Route::post('post-view', [PostController::class, 'postView']);
 
         // Routes for answer
         Route::prefix('answers')->group(function () {
             Route::post('create', [AnswerController::class, 'create'])
-                ->middleware(['permission:can_create_answer']);
+                ->middleware(['permission:can_create_answer|can_manage_answers']);
 
             Route::post('/', [AnswerController::class, 'fetch']);
 
             Route::post('update', [AnswerController::class, 'update'])
-                ->middleware(['permission:can_update_answer']);
+                ->middleware(['permission:can_update_answer|can_manage_answers']);
 
             Route::delete('delete/{id}', [AnswerController::class, 'delete'])
-                ->middleware(['permission:can_delete_answer']);
+                ->middleware(['permission:can_delete_answer|can_manage_answers']);
         });
 
         // Routes for comments
         Route::prefix('comments')->group(function () {
             Route::post('create', [CommentController::class, 'create'])
-                ->middleware(['permission:can_create_comment']);
+                ->middleware(['permission:can_create_comment|can_manage_comments']);
 
             Route::post('update', [CommentController::class, 'update'])
-                ->middleware(['permission:can_update_comment']);
+                ->middleware(['permission:can_update_comment|can_manage_comments']);
 
             Route::delete('delete/{id}', [CommentController::class, 'delete'])
-                ->middleware(['permission:can_delete_comment']);
+                ->middleware(['permission:can_delete_comment|can_manage_comments']);
         });
     });
 
     // Routes for signatures
     Route::prefix('signatures')->group(function () {
         Route::get('/', [SignatureController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_signatures']);
+            ->middleware(['permission:can_fetch_signatures|can_manage_signatures']);
     });
 
     // Routes for contract summary
     Route::prefix('contract-summaries')->group(function () {
         Route::post('create', [ContractSummaryController::class, 'create'])
-            ->middleware(['permission:can_create_contract_summary']);
+            ->middleware(['permission:can_create_contract_summary|can_manage_contract_summaries']);
 
         Route::post('update', [ContractSummaryController::class, 'update'])
-            ->middleware(['permission:can_update_contract_summary']);
+            ->middleware(['permission:can_update_contract_summary|can_manage_contract_summaries']);
 
         Route::post('contract-summary', [ContractSummaryController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_contract_summary']);
+            ->middleware(['permission:can_fetch_single_contract_summary|can_manage_contract_summaries']);
 
         Route::delete('delete/{id}', [ContractSummaryController::class, 'delete'])
-            ->middleware(['permission:can_delete_contract_summary']);
+            ->middleware(['permission:can_delete_contract_summary|can_manage_contract_summaries']);
     });
 
     // Routes for position summary
     Route::prefix('position-summaries')->group(function () {
         Route::post('create', [PositionSummaryController::class, 'create'])
-            ->middleware(['permission:can_create_position_summary']);
+            ->middleware(['permission:can_create_position_summary|can_manage_position_summaries']);
 
         Route::post('update', [PositionSummaryController::class, 'update'])
-            ->middleware(['permission:can_update_position_summary']);
+            ->middleware(['permission:can_update_position_summary|can_manage_position_summaries']);
 
-        Route::post('position-summary', [PositionSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_position_summary']);
+        Route::post('position-summary', [PositionSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_position_summary|can_manage_position_summaries']);
 
         Route::delete('delete/{id}', [PositionSummaryController::class, 'delete'])
-            ->middleware(['permission:can_delete_position_summary']);
+            ->middleware(['permission:can_delete_position_summary|can_manage_position_summaries']);
     });
 
     // Routes for work pattern
     Route::prefix('work-patterns')->group(function () {
         Route::post('create', [WorkPatternController::class, 'create'])
-            ->middleware(['permission:can_create_work_pattern']);
+            ->middleware(['permission:can_create_work_pattern|can_manage_work_patterns']);
 
         Route::get('/', [WorkPatternController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_work_patterns']);
+            ->middleware(['permission:can_fetch_work_patterns|can_manage_work_patterns']);
 
         Route::delete('delete/{id}', [WorkPatternController::class, 'delete'])
-            ->middleware(['permission:can_delete_work_pattern']);
+            ->middleware(['permission:can_delete_work_pattern|can_manage_work_patterns']);
     });
 
     Route::prefix('work-timings')->group(function () {
         Route::post('update', [WorkTimingController::class, 'update'])
-            ->middleware(['permission:can_update_work_timing']);
+            ->middleware(['permission:can_update_work_timing|can_manage_work_patterns']);
 
         Route::post('/', [WorkTimingController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_work_patterns']);
+            ->middleware(['permission:can_fetch_work_patterns|can_manage_work_patterns']);
 
     });
 
@@ -314,175 +315,175 @@ Route::middleware(['auth:api'])->group(function () {
     Route::prefix('profiles')->group(function () {
 
         Route::post('update', [ProfileController::class, 'update'])
-            ->middleware(['permission:can_update_profile']);
+            ->middleware(['permission:can_update_profile|can_manage_profiles']);
     });
 
     Route::prefix('misc-info')->group(function () {
         Route::post('create', [MiscellaneousInformationController::class, 'create'])
-            ->middleware(['permission:can_create_misc_info']);
+            ->middleware(['permission:can_create_misc_info|can_manage_misc_info']);
 
         Route::post('/', [MiscellaneousInformationController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_misc_info']);
+            ->middleware(['permission:can_fetch_misc_info|can_manage_misc_info']);
 
         Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
-            ->middleware(['permission:can_delete_misc_info']);
+            ->middleware(['permission:can_delete_misc_info|can_manage_misc_info']);
 
         Route::post('update', [MiscellaneousInformationController::class, 'update'])
-            ->middleware(['permission:can_update_misc_info']);
+            ->middleware(['permission:can_update_misc_info|can_manage_misc_info']);
     });
 
     // Routes for Employment Checks
     Route::prefix('employment-checks')->group(function () {
         Route::post('create', [EmploymentCheckController::class, 'create'])
-            ->middleware(['permission:can_create_employment_check']);
+            ->middleware(['permission:can_create_employment_check|can_manage_employment_checks']);
 
         Route::post('update', [EmploymentCheckController::class, 'update'])
-            ->middleware(['permission:can_update_employment_check']);
+            ->middleware(['permission:can_update_employment_check|can_manage_employment_checks']);
 
         Route::post('delete', [EmploymentCheckController::class, 'delete'])
-            ->middleware(['permission:can_delete_employment_check']);
+            ->middleware(['permission:can_delete_employment_check|can_manage_employment_checks']);
 
         Route::post('/', [EmploymentCheckController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_employment_check']);
+            ->middleware(['permission:can_fetch_single_employment_check|can_manage_employment_checks']);
     });
 
     // Routes for Employment Policies
     Route::prefix('employment-policies')->group(function () {
         Route::post('create', [EmploymentPolicyController::class, 'create'])
-            ->middleware(['permission:can_create_employment_policy']);
+            ->middleware(['permission:can_create_employment_policy|can_manage_employment_policies']);
 
         Route::post('update', [EmploymentPolicyController::class, 'update'])
-            ->middleware(['permission:can_update_employment_policy']);
+            ->middleware(['permission:can_update_employment_policy|can_manage_employment_policies']);
 
         Route::post('delete', [EmploymentPolicyController::class, 'delete'])
-            ->middleware(['permission:can_delete_employment_policy']);
+            ->middleware(['permission:can_delete_employment_policy|can_manage_employment_policies']);
 
         Route::post('/', [EmploymentPolicyController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_employment_policies']);
+            ->middleware(['permission:can_fetch_employment_policies|can_manage_employment_policies']);
     });
 
     // Routes for employment history
     Route::prefix('employment-histories')->group(function () {
         Route::post('create', [EmploymentHistoryController::class, 'create'])
-            ->middleware(['permission:can_create_employment_history']);
+            ->middleware(['permission:can_create_employment_history|can_manage_employment_histories']);
 
         Route::post('update', [EmploymentHistoryController::class, 'update'])
-            ->middleware(['permission:can_update_employment_history']);
+            ->middleware(['permission:can_update_employment_history|can_manage_employment_histories']);
 
         Route::post('delete', [EmploymentHistoryController::class, 'delete'])
-            ->middleware(['permission:can_delete_employment_history']);
+            ->middleware(['permission:can_delete_employment_history|can_manage_employment_histories']);
 
         Route::post('/', [EmploymentHistoryController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_employment_history']);
+            ->middleware(['permission:can_fetch_employment_history|can_manage_employment_histories']);
 
         Route::post('employment-history', [EmploymentHistoryController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_employment_history']);
+            ->middleware(['permission:can_fetch_single_employment_history|can_manage_employment_histories']);
     });
 
     // Routes for references
     Route::prefix('references')->group(function () {
         Route::post('create', [ReferenceController::class, 'create'])
-            ->middleware(['permission:can_create_reference']);
+            ->middleware(['permission:can_create_reference|can_manage_references']);
 
         Route::post('/', [ReferenceController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_user_references']);
+            ->middleware(['permission:can_fetch_user_references|can_manage_references']);
 
         Route::post('delete', [ReferenceController::class, 'delete'])
-            ->middleware(['permission:can_delete_reference']);
+            ->middleware(['permission:can_delete_reference|can_manage_references']);
 
         Route::post('update', [ReferenceController::class, 'update'])
-            ->middleware(['permission:can_update_reference']);
+            ->middleware(['permission:can_update_reference|can_manage_references']);
     });
 
     // Routes for education
     Route::prefix('education')->group(function () {
         Route::post('create', [EducationController::class, 'create'])
-            ->middleware(['permission:can_create_education']);
+            ->middleware(['permission:can_create_education|can_manage_education']);
 
         Route::post('/', [EducationController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_education']);
+            ->middleware(['permission:can_fetch_education|can_manage_education']);
 
         Route::post('delete', [EducationController::class, 'delete'])
-            ->middleware(['permission:can_delete_education']);
+            ->middleware(['permission:can_delete_education|can_manage_education']);
 
         Route::post('update', [EducationController::class, 'update'])
-            ->middleware(['permission:can_update_education']);
+            ->middleware(['permission:can_update_education|can_manage_education']);
     });
 
     // Routes for legal
     Route::prefix('legals')->group(function () {
         Route::post('/', [LegalController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_user_legal']);
+            ->middleware(['permission:can_fetch_user_legal|can_manage_legal']);
 
         Route::post('create', [LegalController::class, 'create'])
-            ->middleware(['permission:can_create_legal']);
+            ->middleware(['permission:can_create_legal|can_manage_legal']);
 
         Route::post('delete', [LegalController::class, 'delete'])
-            ->middleware(['permission:can_delete_legal']);
+            ->middleware(['permission:can_delete_legal|can_manage_legal']);
 
         Route::post('update', [LegalController::class, 'update'])
-            ->middleware(['permission:can_update_legal']);
+            ->middleware(['permission:can_update_legal|can_manage_legal']);
     });
 
     // Routes for emergency contact
     Route::prefix('emergency-contacts')->group(function () {
         Route::post('create', [EmergencyContactController::class, 'create'])
-            ->middleware(['permission:can_create_emergency_contact']);
+            ->middleware(['permission:can_create_emergency_contact|can_manage_emergency_contacts']);
 
         Route::post('/', [EmergencyContactController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_emergency_contact']);
+            ->middleware(['permission:can_fetch_emergency_contact|can_manage_emergency_contacts']);
 
         Route::post('update', [EmergencyContactController::class, 'update'])
-            ->middleware(['permission:can_update_emergency_contact']);
+            ->middleware(['permission:can_update_emergency_contact|can_manage_emergency_contacts']);
 
         Route::post('delete', [EmergencyContactController::class, 'delete'])
-            ->middleware(['permission:can_delete_emergency_contact']);
+            ->middleware(['permission:can_delete_emergency_contact|can_manage_emergency_contacts']);
     });
 
     // Routes for termination
     Route::prefix('terminations')->group(function () {
         Route::post('create', [TerminationController::class, 'create'])
-            ->middleware(['permission:can_create_termination']);
+            ->middleware(['permission:can_create_termination|can_manage_terminations']);
 
         Route::post('/', [TerminationController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_termination']);
+            ->middleware(['permission:can_fetch_termination|can_manage_terminations']);
 
         Route::post('update', [TerminationController::class, 'update'])
-            ->middleware(['permission:can_update_termination']);
+            ->middleware(['permission:can_update_termination|can_manage_terminations']);
 
         Route::post('delete', [TerminationController::class, 'delete'])
-            ->middleware(['permission:can_delete_termination']);
+            ->middleware(['permission:can_delete_termination|can_manage_terminations']);
     });
 
     // Routes for hiring request
     Route::prefix('hiring-requests')->group(function () {
         Route::post('create', [HiringRequestController::class, 'create'])
-            ->middleware(['permission:can_create_hiring_request']);
+            ->middleware(['permission:can_create_hiring_request|can_manage_hiring_requests']);
 
         Route::post('hiring-request', [HiringRequestController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_hiring_request']);
+            ->middleware(['permission:can_fetch_single_hiring_request|can_manage_hiring_requests']);
 
         Route::post('update', [HiringRequestController::class, 'update'])
-            ->middleware(['permission:can_update_hiring_request']);
+            ->middleware(['permission:can_update_hiring_request|can_manage_hiring_requests']);
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
-            ->middleware(['permission:can_delete_hiring_request']);
+            ->middleware(['permission:can_delete_hiring_request|can_manage_hiring_requests']);
 
         Route::post('/', [HiringRequestController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_hiring_request']);
+            ->middleware(['permission:can_fetch_hiring_request|can_manage_hiring_requests']);
 
         Route::post('add-applicant', [HiringRequestController::class, 'addApplicant'])
-            ->middleware(['permission:can_add_applicant']);
+            ->middleware(['permission:can_add_applicant|can_manage_hiring_requests']);
 
         Route::post('applicants', [HiringRequestController::class, 'fetchApplicants'])
-            ->middleware(['permission:can_fetch_applicants']);
+            ->middleware(['permission:can_fetch_applicants|can_manage_hiring_requests']);
 
         Route::prefix('postings')->group(function () {
             Route::post('create', [HiringRequestController::class, 'createPostings'])
-                ->middleware(['permission:can_create_posting']);
+                ->middleware(['permission:can_create_posting|can_manage_postings']);
 
             Route::post('/', [HiringRequestController::class, 'fetchPostings'])
-                ->middleware(['permission:can_fetch_postings']);
+                ->middleware(['permission:can_fetch_postings|can_manage_postings']);
 
         });
     });
@@ -490,120 +491,120 @@ Route::middleware(['auth:api'])->group(function () {
     // Routes for induction checklist
     Route::prefix('induction-checklists')->group(function () {
         Route::post('create', [InductionChecklistController::class, 'create'])
-            ->middleware(['permission:can_create_induction_checklist']);
+            ->middleware(['permission:can_create_induction_checklist|can_manage_inductions']);
 
         Route::post('/', [InductionChecklistController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_induction_checklists']);
+            ->middleware(['permission:can_fetch_induction_checklists|can_manage_inductions']);
 
         Route::post('induction-checklist', [InductionChecklistController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_induction_checklist']);
+            ->middleware(['permission:can_fetch_single_induction_checklist|can_manage_inductions']);
 
         Route::post('delete', [InductionChecklistController::class, 'delete'])
-            ->middleware(['permission:can_delete_induction_checklist']);
+            ->middleware(['permission:can_delete_induction_checklist|can_manage_inductions']);
 
         Route::post('update', [InductionChecklistController::class, 'update'])
-            ->middleware(['permission:can_update_induction_checklist']);
+            ->middleware(['permission:can_update_induction_checklist|can_manage_inductions']);
     });
 
     // Routes for induction schedules
     Route::prefix('induction-schedules')->group(function () {
         Route::post('create', [InductionScheduleController::class, 'create'])
-            ->middleware(['permission:can_create_induction_schedule']);
+            ->middleware(['permission:can_create_induction_schedule|can_manage_inductions']);
 
         Route::post('/', [InductionScheduleController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_practice_induction_schedules']);
+            ->middleware(['permission:can_fetch_practice_induction_schedules|can_manage_inductions']);
     });
 
     // Routes for induction results
     Route::prefix('induction-results')->group(function () {
         Route::post('create', [InductionResultController::class, 'create'])
-            ->middleware(['permission:can_create_induction_result']);
+            ->middleware(['permission:can_create_induction_result|can_manage_inductions']);
     });
 
     // Routes for departments
     Route::prefix('departments')->group(function () {
         Route::post('create', [DepartmentController::class, 'create'])
-            ->middleware(['permission:can_create_department']);
+            ->middleware(['permission:can_create_department|can_manage_departments']);
 
         Route::post('/', [DepartmentController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_department']);
+            ->middleware(['permission:can_fetch_department|can_manage_departments']);
 
         Route::post('delete', [DepartmentController::class, 'delete'])
-            ->middleware(['permission:can_delete_department']);
+            ->middleware(['permission:can_delete_department|can_manage_departments']);
 
         Route::post('assign-user', [DepartmentController::class, 'assignUser'])
-            ->middleware(['permission:can_assign_user_to_department']);
+            ->middleware(['permission:can_assign_user_to_department|can_manage_departments']);
 
         Route::post('department', [DepartmentController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_department']);
+            ->middleware(['permission:can_fetch_single_department|can_manage_departments']);
     });
 
     // Routes for job specifications
     Route::prefix('job-specifications')->group(function () {
         Route::post('create', [JobSpecificationController::class, 'create'])
-            ->middleware(['permission:can_create_job_specification']);
+            ->middleware(['permission:can_create_job_specification|can_manage_job_specifications']);
 
         Route::post('/', [JobSpecificationController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_job_specification']);
+            ->middleware(['permission:can_fetch_job_specification|can_manage_job_specifications']);
 
         Route::post('delete', [JobSpecificationController::class, 'delete'])
-            ->middleware(['permission:can_delete_job_specification']);
+            ->middleware(['permission:can_delete_job_specification|can_manage_job_specifications']);
 
         Route::post('job-specification', [JobSpecificationController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_job_specification']);
+            ->middleware(['permission:can_fetch_single_job_specification|can_manage_job_specifications']);
     });
 
     // Routes for person specifications
     Route::prefix('person-specifications')->group(function () {
         Route::post('create', [PersonSpecificationController::class, 'create'])
-            ->middleware(['permission:can_create_person_specification']);
+            ->middleware(['permission:can_create_person_specification|can_manage_person_specifications']);
 
         Route::post('/', [PersonSpecificationController::class, 'fetch'])
-            ->middleware(['permission:can_fetch_person_specification']);
+            ->middleware(['permission:can_fetch_person_specification|can_manage_person_specifications']);
 
         Route::post('delete', [PersonSpecificationController::class, 'delete'])
-            ->middleware(['permission:can_delete_person_specification']);
+            ->middleware(['permission:can_delete_person_specification|can_manage_person_specifications']);
 
         Route::post('person-specification', [PersonSpecificationController::class, 'fetchSingle'])
-            ->middleware(['permission:can_fetch_single_person_specification']);
+            ->middleware(['permission:can_fetch_single_person_specification|can_manage_person_specifications']);
     });
 
     // Routes for HQ
     Route::prefix('hq')->group(function () {
         Route::prefix('hiring-requests')->group(function () {
             Route::post('/', [HiringRequestController::class, 'fetch'])
-                ->middleware(['permission:can_fetch_hiring_request']);
+                ->middleware(['permission:can_fetch_hiring_request|can_manage_hiring_requests']);
 
             Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
-                ->middleware(['permission:can_process_hiring_request']);
+                ->middleware(['permission:can_process_hiring_request|can_manage_hiring_requests']);
 
             Route::post('search', [HeadQuarterController::class, 'search'])
-                ->middleware(['permission:can_search_hiring_requests']);
+                ->middleware(['permission:can_search_hiring_requests|can_manage_hiring_requests']);
         });
 
         Route::prefix('offers')->group(function () {
             Route::post('create', [OfferController::class, 'create'])
-                ->middleware(['permission:can_create_offer']);
+                ->middleware(['permission:can_create_offer|can_manage_offers']);
 
             Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
-                ->middleware(['permission:can_fetch_offers']);
+                ->middleware(['permission:can_fetch_offers|can_manage_offers']);
 
             Route::post('update', [OfferController::class, 'update'])
-                ->middleware(['permission:can_update_offer']);
+                ->middleware(['permission:can_update_offer|can_manage_offers']);
 
             Route::post('delete', [OfferController::class, 'delete'])
-                ->middleware(['permission:can_delete_offer']);
+                ->middleware(['permission:can_delete_offer|can_manage_offers']);
 
             Route::post('offer', [OfferController::class, 'fetchSingle'])
-                ->middleware(['permission:can_fetch_single_offer']);
+                ->middleware(['permission:can_fetch_single_offer|can_manage_offers']);
         });
 
         Route::prefix('interviews')->group(function () {
             Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
-                ->middleware(['permission:can_fetch_upcoming_interviews']);
+                ->middleware(['permission:can_fetch_upcoming_interviews|can_manage_interview']);
 
             Route::post('/', [InterviewController::class, 'fetch'])
-                ->middleware(['permission:can_fetch_all_interviews']);
+                ->middleware(['permission:can_fetch_all_interviews|can_manage_interview']);
         });
 
     });
@@ -615,51 +616,57 @@ Route::middleware(['auth:api'])->group(function () {
             // Route for sessions
             Route::prefix('sessions')->group(function () {
                 Route::post('create', [LocumController::class, 'create'])
-                    ->middleware(['permission:can_create_locum_session']);
+                    ->middleware(['permission:can_create_locum_session|can_manage_locums']);
 
                 Route::post('add-locum', [LocumController::class, 'assignUser'])
-                    ->middleware(['permission:can_assign_user_to_session']);
+                    ->middleware(['permission:can_assign_user_to_session|can_manage_locums']);
 
                 Route::post('remove-locum', [LocumController::class, 'removeUser'])
-                    ->middleware(['permission:can_remove_user_from_session']);
+                    ->middleware(['permission:can_remove_user_from_session|can_manage_locums']);
 
                 Route::post('/', [LocumController::class, 'fetch'])
-                    ->middleware(['permission:can_fetch_locum_sessions']);
+                    ->middleware(['permission:can_fetch_locum_sessions|can_manage_locums']);
 
                 Route::post('locum-session', [LocumController::class, 'fetchSingle'])
-                    ->middleware(['permission:can_fetch_single_locum_session']);
+                    ->middleware(['permission:can_fetch_single_locum_session|can_manage_locums']);
 
                 Route::post('delete', [LocumController::class, 'delete'])
-                    ->middleware(['permission:can_delete_locum_session']);
+                    ->middleware(['permission:can_delete_locum_session|can_manage_locums']);
             });
         });
 
         // Routes for employee handbook
         Route::prefix('employee-handbooks')->group(function () {
             Route::post('create', [EmployeeHandbookController::class, 'create'])
-                ->middleware(['permission:can_manage_employee_handbook']);
+                ->middleware(['permission:can_manage_employee_handbook|can_create_employee_handbook']);
+        });
+
+        // Routes for it policy
+        Route::prefix('it-policies')->group(function () {
+            Route::post('create', [ItPolicyController::class, 'create'])
+                ->middleware(['permission:can_manage_it_policy|can_create_it_policy']);
         });
     });
 
     // Routes for interviews
     Route::prefix('interviews')->group(function () {
         Route::post('/', [InterviewController::class, 'upcomingInterviews'])
-            ->middleware(['permission:can_fetch_interviews']);
+            ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
 
         Route::post('update', [InterviewController::class, 'update'])
-            ->middleware(['permission:can_update_interview']);
+            ->middleware(['permission:can_update_interview|can_manage_interview']);
 
         Route::post('delete', [InterviewController::class, 'delete'])
-            ->middleware(['permission:can_delete_interview']);
+            ->middleware(['permission:can_delete_interview|can_manage_interview']);
 
         Route::post('create', [InterviewController::class, 'create'])
-            ->middleware(['permission:can_create_interview']);
+            ->middleware(['permission:can_create_interview|can_manage_interview']);
 
         Route::post('past-interviews', [InterviewController::class, 'pastInterviews'])
-            ->middleware(['permission:can_fetch_interviews']);
+            ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
 
         Route::post('answer', [InterviewController::class, 'interviewAnswer'])
-            ->middleware(['permission:can_store_interview_answer']);
+            ->middleware(['permission:can_store_interview_answer|can_manage_interview']);
 
         Route::post('interview', [InterviewController::class, 'singleInterview'])
             ->middleware(['permission:can_fetch_single_interview|can_manage_interview']);
