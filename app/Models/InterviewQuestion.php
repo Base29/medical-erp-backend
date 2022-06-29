@@ -30,6 +30,6 @@ class InterviewQuestion extends Model
 
     public function interviewAnswers()
     {
-        return $this->hasMany(InterviewAnswer::class);
+        return $this->hasMany(InterviewAnswer::class, 'question', 'id');
     }
 }
