@@ -27,4 +27,42 @@ class EmployeeHandbookService
             'employee-handbook' => $employeeHandbook->with('roles')->latest()->first(),
         ]);
     }
+
+    // Fetch all
+    public function fetchEmployeehandbooks()
+    {
+        // Get Employee handbooks
+        $employeeHandbooks = EmployeeHandbook::latest()->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'employee-handbooks' => $employeeHandbooks,
+        ]);
+    }
+
+    public function deleteEmployeeHandbook($request)
+    {
+        // Get employee handbook
+        $employeeHandbook = EmployeeHandbook::findOrFail($request->employee_handbook);
+
+        // Delete
+        $employeeHandbook->delete();
+
+        // Return Response
+        return Response::success([
+            'employee-handbook' => $employeeHandbook,
+        ]);
+    }
+
+    // Fetch single
+    public function fetchSingleEmployeeHandbook($request)
+    {
+        // Get employee handbook
+        $employeeHandbook = EmployeeHandbook::where('id', $request->employee_handbook)->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'employee-handbook' => $employeeHandbook,
+        ]);
+    }
 }

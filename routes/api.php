@@ -611,6 +611,83 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Routes for RE
     Route::prefix('re')->group(function () {
+
+        // Routes for interviews
+        Route::prefix('interviews')->group(function () {
+            Route::post('/', [InterviewController::class, 'upcomingInterviews'])
+                ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
+
+            Route::post('update', [InterviewController::class, 'update'])
+                ->middleware(['permission:can_update_interview|can_manage_interview']);
+
+            Route::post('delete', [InterviewController::class, 'delete'])
+                ->middleware(['permission:can_delete_interview|can_manage_interview']);
+
+            Route::post('create', [InterviewController::class, 'create'])
+                ->middleware(['permission:can_create_interview|can_manage_interview']);
+
+            Route::post('past-interviews', [InterviewController::class, 'pastInterviews'])
+                ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
+
+            Route::post('answer', [InterviewController::class, 'interviewAnswer'])
+                ->middleware(['permission:can_store_interview_answer|can_manage_interview']);
+
+            Route::post('interview', [InterviewController::class, 'singleInterview'])
+                ->middleware(['permission:can_fetch_single_interview|can_manage_interview']);
+
+            Route::post('add-misc-info', [InterviewController::class, 'miscInfo'])
+                ->middleware(['permission:can_create_interview_misc_info|can_manage_interview']);
+
+            Route::post('create-score', [InterviewController::class, 'score'])
+                ->middleware(['permission:can_create_interview_score|can_manage_interview']);
+
+            // Routes for interview policies
+            Route::prefix('policies')->group(function () {
+                Route::post('create', [InterviewPolicyController::class, 'create'])
+                    ->middleware(['permission:can_create_interview_policy|can_manage_interview_policy']);
+
+                Route::post('/', [InterviewPolicyController::class, 'fetch'])
+                    ->middleware(['permission:can_fetch_interview_policies|can_manage_interview_policy']);
+
+                Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
+                    ->middleware(['permission:can_fetch_single_interview_policy|can_manage_interview_policy']);
+
+                Route::post('update', [InterviewPolicyController::class, 'update'])
+                    ->middleware(['permission:can_update_interview_policy|can_manage_interview_policy']);
+
+                Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
+                    ->middleware(['permission:can_update_interview_policy_question|can_manage_interview_policy']);
+
+                Route::post('delete', [InterviewPolicyController::class, 'delete'])
+                    ->middleware(['permission:can_manage_interview_policy|can_delete_interview_policy']);
+            });
+
+            // Routes for Adhoc Questions
+            Route::prefix('adhoc-questions')->group(function () {
+                Route::post('create', [InterviewController::class, 'adhocQuestions'])
+                    ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
+
+                Route::post('/', [InterviewController::class, 'fetchAdhocQuestions'])
+                    ->middleware(['permission:can_fetch_adhoc_questions|can_manage_interview']);
+
+                Route::post('delete', [InterviewController::class, 'deleteAdhocQuestion'])
+                    ->middleware(['permission:can_delete_adhoc_question|can_manage_interview']);
+
+            });
+
+            // Routes for candidate questions
+            Route::prefix('candidate-questions')->group(function () {
+                Route::post('create', [InterviewController::class, 'candidateQuestions'])
+                    ->middleware(['permission:can_create_candidate_question|can_manage_interview']);
+
+                Route::post('/', [InterviewController::class, 'fetchCandidateQuestions'])
+                    ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
+
+                Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
+                    ->middleware(['permission:can_delete_candidate_question']);
+            });
+        });
+
         // Route for Locum
         Route::prefix('locums')->group(function () {
             // Route for sessions
@@ -639,88 +716,29 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('employee-handbooks')->group(function () {
             Route::post('create', [EmployeeHandbookController::class, 'create'])
                 ->middleware(['permission:can_manage_employee_handbook|can_create_employee_handbook']);
+
+            Route::get('/', [EmployeeHandbookController::class, 'fetch'])
+                ->middleware(['permission:can_manage_employee_handbook|can_fetch_all_employee_handbooks']);
+
+            Route::post('delete', [EmployeeHandbookController::class, 'delete'])
+                ->middleware(['permission:can_manage_employee_handbook|can_delete_employee_handbook']);
+
+            Route::post('employee-handbook', [EmployeeHandbookController::class, 'fetchSingle'])
+                ->middleware(['permission:can_manage_employee_handbook|can_fetch_single_employee_handbook']);
+
         });
 
         // Routes for it policy
         Route::prefix('it-policies')->group(function () {
             Route::post('create', [ItPolicyController::class, 'create'])
                 ->middleware(['permission:can_manage_it_policy|can_create_it_policy']);
+
+            Route::get('/', [EmployeeHandbookController::class, 'fetch'])
+                ->middleware(['permission:can_manage_it_policy|can_fetch_all_it_policies']);
+
+            Route::post('delete', [ItPolicyController::class, 'delete'])
+                ->middleware(['permission:can_manage_it_policy|can_delete_it_policy']);
         });
     });
 
-    // Routes for interviews
-    Route::prefix('interviews')->group(function () {
-        Route::post('/', [InterviewController::class, 'upcomingInterviews'])
-            ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
-
-        Route::post('update', [InterviewController::class, 'update'])
-            ->middleware(['permission:can_update_interview|can_manage_interview']);
-
-        Route::post('delete', [InterviewController::class, 'delete'])
-            ->middleware(['permission:can_delete_interview|can_manage_interview']);
-
-        Route::post('create', [InterviewController::class, 'create'])
-            ->middleware(['permission:can_create_interview|can_manage_interview']);
-
-        Route::post('past-interviews', [InterviewController::class, 'pastInterviews'])
-            ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
-
-        Route::post('answer', [InterviewController::class, 'interviewAnswer'])
-            ->middleware(['permission:can_store_interview_answer|can_manage_interview']);
-
-        Route::post('interview', [InterviewController::class, 'singleInterview'])
-            ->middleware(['permission:can_fetch_single_interview|can_manage_interview']);
-
-        Route::post('add-misc-info', [InterviewController::class, 'miscInfo'])
-            ->middleware(['permission:can_create_interview_misc_info|can_manage_interview']);
-
-        Route::post('create-score', [InterviewController::class, 'score'])
-            ->middleware(['permission:can_create_interview_score|can_manage_interview']);
-
-        // Routes for interview policies
-        Route::prefix('policies')->group(function () {
-            Route::post('create', [InterviewPolicyController::class, 'create'])
-                ->middleware(['permission:can_create_interview_policy|can_manage_interview_policy']);
-
-            Route::post('/', [InterviewPolicyController::class, 'fetch'])
-                ->middleware(['permission:can_fetch_interview_policies|can_manage_interview_policy']);
-
-            Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
-                ->middleware(['permission:can_fetch_single_interview_policy|can_manage_interview_policy']);
-
-            Route::post('update', [InterviewPolicyController::class, 'update'])
-                ->middleware(['permission:can_update_interview_policy|can_manage_interview_policy']);
-
-            Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
-                ->middleware(['permission:can_update_interview_policy_question|can_manage_interview_policy']);
-
-            Route::post('delete', [InterviewPolicyController::class, 'delete'])
-                ->middleware(['permission:can_manage_interview_policy|can_delete_interview_policy']);
-        });
-
-        // Routes for Adhoc Questions
-        Route::prefix('adhoc-questions')->group(function () {
-            Route::post('create', [InterviewController::class, 'adhocQuestions'])
-                ->middleware(['permission:can_create_adhoc_question|can_manage_interview']);
-
-            Route::post('/', [InterviewController::class, 'fetchAdhocQuestions'])
-                ->middleware(['permission:can_fetch_adhoc_questions|can_manage_interview']);
-
-            Route::post('delete', [InterviewController::class, 'deleteAdhocQuestion'])
-                ->middleware(['permission:can_delete_adhoc_question|can_manage_interview']);
-
-        });
-
-        // Routes for candidate questions
-        Route::prefix('candidate-questions')->group(function () {
-            Route::post('create', [InterviewController::class, 'candidateQuestions'])
-                ->middleware(['permission:can_create_candidate_question|can_manage_interview']);
-
-            Route::post('/', [InterviewController::class, 'fetchCandidateQuestions'])
-                ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
-
-            Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
-                ->middleware(['permission:can_delete_candidate_question']);
-        });
-    });
 });

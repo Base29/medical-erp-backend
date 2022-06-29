@@ -26,4 +26,42 @@ class ItPolicyService
             'it-policy' => $itPolicy->with('roles')->latest()->first(),
         ]);
     }
+
+    // Fetch all it policies
+    public function fetchItPolicies()
+    {
+        // Get It policies
+        $itPolicies = ItPolicy::latest()->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'it-policies' => $itPolicies,
+        ]);
+    }
+
+    public function deleteItPolicy($request)
+    {
+        // Get employee handbook
+        $itPolicy = ItPolicy::findOrFail($request->it_policy);
+
+        // Delete
+        $itPolicy->delete();
+
+        // Return Response
+        return Response::success([
+            'it-policy' => $itPolicy,
+        ]);
+    }
+
+    // Fetch single
+    public function fetchSingleItPolicy($request)
+    {
+        // Get It Policy
+        $itPolicy = ItPolicy::where('id', $request->it_policy)->firstOrFail();
+
+        // Return response
+        return Response::success([
+            'it-policy' => $itPolicy,
+        ]);
+    }
 }
