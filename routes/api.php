@@ -738,6 +738,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('delete', [ItPolicyController::class, 'delete'])
                 ->middleware(['permission:can_manage_it_policy|can_delete_it_policy']);
+
+            Route::post('it-policy', [ItPolicyController::class, 'fetchSingle'])
+                ->middleware(['permission:can_manage_it_policy|can_fetch_single_it_policy']);
         });
     });
 
