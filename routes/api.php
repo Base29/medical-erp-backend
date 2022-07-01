@@ -733,7 +733,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [ItPolicyController::class, 'create'])
                 ->middleware(['permission:can_manage_it_policy|can_create_it_policy']);
 
-            Route::get('/', [EmployeeHandbookController::class, 'fetch'])
+            Route::get('/', [ItPolicyController::class, 'fetch'])
                 ->middleware(['permission:can_manage_it_policy|can_fetch_all_it_policies']);
 
             Route::post('delete', [ItPolicyController::class, 'delete'])
