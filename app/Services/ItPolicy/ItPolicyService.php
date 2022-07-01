@@ -31,7 +31,7 @@ class ItPolicyService
     public function fetchItPolicies()
     {
         // Get It policies
-        $itPolicies = ItPolicy::latest()->paginate(10);
+        $itPolicies = ItPolicy::with('roles')->latest()->paginate(10);
 
         // Return success response
         return Response::success([
@@ -57,7 +57,9 @@ class ItPolicyService
     public function fetchSingleItPolicy($request)
     {
         // Get It Policy
-        $itPolicy = ItPolicy::where('id', $request->it_policy)->firstOrFail();
+        $itPolicy = ItPolicy::where('id', $request->it_policy)
+            ->with('roles')
+            ->firstOrFail();
 
         // Return response
         return Response::success([

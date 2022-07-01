@@ -26,7 +26,7 @@ class FetchSingleEmployeeHandbookRequest extends FormRequest
     public function rules()
     {
         return [
-            'employee-handbook' => 'required|numeric|exists:employee_handbooks,id',
+            'employee_handbook' => 'required|numeric|exists:employee_handbooks,id',
         ];
     }
 

@@ -67,7 +67,7 @@ class EmployeeHandbookController extends Controller
     }
 
     // Fetch single employee handbook
-    public function fetchSignle(FetchSingleEmployeeHandbookRequest $request)
+    public function fetchSingle(FetchSingleEmployeeHandbookRequest $request)
     {
         try {
             // Logic here

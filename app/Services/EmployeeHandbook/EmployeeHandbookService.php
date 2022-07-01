@@ -32,7 +32,7 @@ class EmployeeHandbookService
     public function fetchEmployeehandbooks()
     {
         // Get Employee handbooks
-        $employeeHandbooks = EmployeeHandbook::latest()->paginate(10);
+        $employeeHandbooks = EmployeeHandbook::with('roles')->latest()->paginate(10);
 
         // Return success response
         return Response::success([
@@ -58,7 +58,9 @@ class EmployeeHandbookService
     public function fetchSingleEmployeeHandbook($request)
     {
         // Get employee handbook
-        $employeeHandbook = EmployeeHandbook::where('id', $request->employee_handbook)->firstOrFail();
+        $employeeHandbook = EmployeeHandbook::where('id', $request->employee_handbook)
+            ->with('roles')
+            ->firstOrFail();
 
         // Return success response
         return Response::success([

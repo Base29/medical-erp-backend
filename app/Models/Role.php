@@ -16,6 +16,7 @@ class Role extends \Spatie\Permission\Models\Role
         'guard_name',
         'created_at',
         'updated_at',
+        'pivot',
     ];
 
     public function inductionChecklist()
