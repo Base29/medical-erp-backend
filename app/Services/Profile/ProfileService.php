@@ -28,6 +28,9 @@ class ProfileService
             'zip_code',
             'nhs_card',
             'nhs_number',
+            'nhs_employment',
+            'nhs_smart_card_number',
+            'tutorial_completed',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
