@@ -48,7 +48,7 @@ class UpdateProfileRequest extends FormRequest
             'nhs_number' => 'string',
             'nhs_employment' => 'nullable|boolean',
             'nhs_smart_card_number' => 'nullable|string',
-            'tutoria_completed' => 'nullable|boolean',
+            'tutorial_completed' => 'nullable|boolean',
         ];
     }
 
