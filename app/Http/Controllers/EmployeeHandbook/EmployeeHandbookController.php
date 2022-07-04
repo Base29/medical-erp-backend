@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EmployeeHandbook\CreateEmployeeHandbookRequest;
 use App\Http\Requests\EmployeeHandbook\DeleteEmployeeHandbookRequest;
 use App\Http\Requests\EmployeeHandbook\FetchSingleEmployeeHandbookRequest;
+use App\Http\Requests\EmployeeHandbook\SignEmployeeHandbookRequest;
 use App\Services\EmployeeHandbook\EmployeeHandbookService;
 
 class EmployeeHandbookController extends Controller
@@ -72,6 +73,21 @@ class EmployeeHandbookController extends Controller
         try {
             // Logic here
             return $this->employeeHandbookService->fetchSingleEmployeeHandbook($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Sign employee handbook
+    public function sign(SignEmployeeHandbookRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->employeeHandbookService->signEmployeeHandbook($request);
 
         } catch (\Exception $e) {
             return Response::fail([

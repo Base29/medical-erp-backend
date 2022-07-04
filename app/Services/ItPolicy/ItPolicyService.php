@@ -4,6 +4,7 @@ namespace App\Services\ItPolicy;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Models\ItPolicy;
+use App\Models\Role;
 
 class ItPolicyService
 {
@@ -64,6 +65,28 @@ class ItPolicyService
         // Return response
         return Response::success([
             'it-policy' => $itPolicy,
+        ]);
+    }
+
+    // Sign It policy
+    public function signItPolicies($request)
+    {
+        // Authenticated user
+        $user = auth()->user();
+
+        // Get role
+        $role = Role::findOrFail($request->role);
+
+        // Cast $role->itPolicies to variable
+        $itPolicies = $role->itPolicies;
+
+        // Loop through it policies and sign them
+        foreach ($itPolicies as $itPolicy) {
+            $itPolicy->signatures()->attach($user->id);
+        }
+
+        return Response::success([
+            'user' => $user->where('id', $user->id)->with('signedItPolicies')->firstOrFail(),
         ]);
     }
 }

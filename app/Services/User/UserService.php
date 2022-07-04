@@ -72,6 +72,7 @@ class UserService
         $user->is_active = $request->is_candidate ? 0 : 1;
         $user->is_candidate = $request->is_candidate ? $request->is_candidate : 0;
         $user->department_id = $request->is_candidate ? $department->id : null;
+        $user->generic_user = $request->generic_user;
         $user->save();
 
         // Create profile for the user

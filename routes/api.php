@@ -123,9 +123,6 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('user', [UserController::class, 'fetchSingle']);
         });
 
-    // Endpoint for fetching individual user profile
-    Route::post('users/me', [UserController::class, 'me'])->middleware(['permission:can_view_own_profile']);
-
     // Endpoints for practice operations
     Route::prefix('practices')->group(function () {
         Route::get('/', [PracticeController::class, 'fetch'])
@@ -741,6 +738,15 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('it-policy', [ItPolicyController::class, 'fetchSingle'])
                 ->middleware(['permission:can_manage_it_policy|can_fetch_single_it_policy']);
+        });
+    });
+
+    // Routes for US
+    Route::prefix('us')->group(function () {
+        Route::prefix('me')->middleware(['permission:can_view_own_profile|can_manage_own_profile'])->group(function () {
+            Route::post('/', [UserController::class, 'me']);
+            Route::post('sign-employee-handbook', [EmployeeHandbookController::class, 'sign']);
+            Route::post('sign-it-policies', [ItPolicyController::class, 'sign']);
         });
     });
 

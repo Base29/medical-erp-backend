@@ -67,4 +67,23 @@ class EmployeeHandbookService
             'employee-handbook' => $employeeHandbook,
         ]);
     }
+
+    // Sign employee handbook
+    public function signEmployeeHandbook($request)
+    {
+        // Get employee handbook
+        $employeeHandbook = EmployeeHandbook::findOrFail($request->employee_handbook);
+
+        $user = auth()->user();
+
+        // Add signature of the authenticated user
+        $employeeHandbook->signatures()->attach($user->id);
+
+        // Return response
+        return Response::success([
+            'employee-handbook' => $employeeHandbook->where('id', $employeeHandbook->id)
+                ->with('signatures.profile')
+                ->firstOrFail(),
+        ]);
+    }
 }

@@ -19,4 +19,9 @@ class ItPolicy extends Model
     {
         return $this->belongsToMany(Role::class);
     }
+
+    public function signatures()
+    {
+        return $this->belongsToMany(User::class);
+    }
 }
