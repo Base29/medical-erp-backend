@@ -8,6 +8,7 @@ use App\Models\ContractSummary;
 use App\Models\Department;
 use App\Models\Education;
 use App\Models\EmergencyContact;
+use App\Models\EmployeeHandbook;
 use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
@@ -250,5 +251,10 @@ class User extends Authenticatable implements JWTSubject
     public function locumSessions()
     {
         return $this->belongsToMany(LocumSession::class);
+    }
+
+    public function signedEmployeeHandbooks()
+    {
+        return $this->belongsToMany(EmployeeHandbook::class);
     }
 }

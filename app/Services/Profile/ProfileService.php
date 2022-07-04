@@ -26,6 +26,8 @@ class ProfileService
             'county',
             'country',
             'zip_code',
+            'nhs_card',
+            'nhs_number',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
