@@ -257,4 +257,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->belongsToMany(EmployeeHandbook::class);
     }
+
+    public function signedItPolicies()
+    {
+        return $this->belongsToMany(ItPolicy::class);
+    }
 }

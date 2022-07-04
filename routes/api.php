@@ -746,6 +746,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('me')->middleware(['permission:can_view_own_profile|can_manage_own_profile'])->group(function () {
             Route::post('/', [UserController::class, 'me']);
             Route::post('sign-employee-handbook', [EmployeeHandbookController::class, 'sign']);
+            Route::post('sign-it-policies', [ItPolicyController::class, 'sign']);
         });
     });
 
