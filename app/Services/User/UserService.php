@@ -12,6 +12,7 @@ use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Profile;
 use App\Models\User;
+use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -304,6 +305,46 @@ class UserService
         // Return details of the user
         return Response::success([
             'user' => $user,
+        ]);
+    }
+
+    // Generate password for candidate
+    public function hireCandidate($request)
+    {
+        // Get user
+        $candidate = User::where('id', $request->candidate)
+            ->with('profile')
+            ->firstOrFail();
+
+        // Check if candidate is hired
+        if (!$candidate->is_candidate) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is not a candidate'));
+        }
+
+        // Check if $candidate is already hired
+        if ($candidate->is_hired) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'));
+        }
+
+        // Generate password
+        $password = Str::random(16);
+
+        // Save user pass and make user active
+        $candidate->password = Hash::make($password);
+        $candidate->is_hired = 1;
+        $candidate->is_active = 1;
+        $candidate->save();
+
+        $credentials = [
+            'email' => $candidate->email,
+            'password' => $password,
+        ];
+
+        $candidate->notify(new WelcomeNewEmployeeNotification($credentials));
+
+        // Return success response
+        return Response::success([
+            'candidate' => $candidate,
         ]);
     }
 }
