@@ -739,6 +739,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('it-policy', [ItPolicyController::class, 'fetchSingle'])
                 ->middleware(['permission:can_manage_it_policy|can_fetch_single_it_policy']);
         });
+
+        // Routes for candidate
+        Route::prefix('candidates')->group(function () {
+            Route::post('hire', [UserController::class, 'hire'])
+                ->middleware('permission:can_manage_candidate');
+        });
     });
 
     // Routes for US
