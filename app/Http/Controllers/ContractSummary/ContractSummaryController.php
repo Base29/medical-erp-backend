@@ -109,4 +109,19 @@ class ContractSummaryController extends Controller
             ]);
         }
     }
+
+    // Sign contract summary
+    public function sign()
+    {
+        try {
+            // Logic here
+            return $this->contractSummaryService->signContractSummary();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
