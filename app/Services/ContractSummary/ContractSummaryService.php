@@ -6,6 +6,7 @@ namespace App\Services\ContractSummary;
  */
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\ContractSummary;
@@ -106,5 +107,30 @@ class ContractSummaryService
         }
 
         $contractSummary->delete();
+    }
+
+    // Sign contract summary
+    public function signContractSummary()
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get contract summary of the $authenticatedUser
+        $contractSummary = ContractSummary::where('user_id', $authenticatedUser->id)
+            ->firstOrFail();
+
+        // Check if $contractSummary is already signed
+        if ($contractSummary->is_signed) {
+            throw new \Exception(ResponseMessage::customMessage('Contract summary ' . $contractSummary->id . ' already signed'));
+        }
+
+        // Update the is_signed column
+        $contractSummary->is_signed = 1;
+        $contractSummary->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $authenticatedUser,
+        ]);
     }
 }
