@@ -335,6 +335,8 @@ class UserService
         $candidate->is_active = 1;
         $candidate->save();
 
+        $candidate->givePermissionTo('can_manage_own_profile');
+
         $credentials = [
             'email' => $candidate->email,
             'password' => $password,
