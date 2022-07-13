@@ -16,6 +16,7 @@ use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionSchedule;
 use App\Models\InterviewSchedule;
+use App\Models\ItPolicy;
 use App\Models\Legal;
 use App\Models\LocumSession;
 use App\Models\MiscellaneousInformation;

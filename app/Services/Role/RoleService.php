@@ -3,8 +3,8 @@ namespace App\Services\Role;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Models\Role;
 use App\Models\User;
-use Spatie\Permission\Models\Role;
 
 class RoleService
 {
@@ -40,7 +40,7 @@ class RoleService
     public function fetchRoles()
     {
         // Fetching roles
-        $roles = Role::with('users')->latest()->get();
+        $roles = Role::with('users', 'itPolicies', 'handbooks')->latest()->get();
 
         return Response::success(['roles' => $roles]);
     }

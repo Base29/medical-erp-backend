@@ -7,8 +7,9 @@ use App\Models\InductionChecklist;
 use App\Models\InterviewPolicy;
 use App\Models\LocumSession;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use \Spatie\Permission\Models\Role as SpatieRole;
 
-class Role extends \Spatie\Permission\Models\Role
+class Role extends SpatieRole
 {
     use HasFactory;
 
