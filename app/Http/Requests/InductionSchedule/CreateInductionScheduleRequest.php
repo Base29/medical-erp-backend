@@ -31,12 +31,12 @@ class CreateInductionScheduleRequest extends FormRequest
             'date' => 'required|date|date_format:Y-m-d',
             'time' => 'required|date_format:H:i',
             'duration' => 'required|string',
-            'is_hq_required' => 'required|boolean',
-            'hq_staff_role_id' => 'required_if:is_hq_required,1|exists:roles,id',
-            'hq_staff_id' => 'required_if:is_hq_required,1|exists:users,id',
-            'is_additional_staff_required' => 'required|boolean',
-            'additional_staff_role_id' => 'required_if:is_additional_staff_required,1|exists:roles,id',
-            'additional_staff_id' => 'required_if:is_additional_staff_required,1|exists:users,id',
+            'is_hq_required' => 'nullable|boolean',
+            'hq_staff_role_id' => 'nullable|exists:roles,id',
+            'hq_staff_id' => 'nullable|exists:users,id',
+            'is_additional_staff_required' => 'nullable|boolean',
+            'additional_staff_role_id' => 'nullable|exists:roles,id',
+            'additional_staff_id' => 'nullable|exists:users,id',
             'checklists' => 'required|array',
         ];
     }
