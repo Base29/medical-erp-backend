@@ -21,7 +21,7 @@ class AuthService
     {
         // Checking if the user exists in the database
         $user = User::where('email', $request->email)
-            ->with(['profile', 'positionSummary', 'contractSummary', 'roles', 'practices'])
+            ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
             ->firstOrFail();
 
         // Check if the user is active
