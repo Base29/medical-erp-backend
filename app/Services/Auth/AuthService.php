@@ -21,7 +21,7 @@ class AuthService
     {
         // Checking if the user exists in the database
         $user = User::where('email', $request->email)
-            ->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')
+            ->with('profile', 'positionSummary', 'contractSummary', 'roles.itPolicies', 'roles.handbooks', 'practices')
             ->firstOrFail();
 
         // Check if the user is active
@@ -82,7 +82,9 @@ class AuthService
         $user = JWTAuth::parseToken()->authenticate();
 
         // Add token to the response
-        $userWithToken = Arr::add($user->where('id', $user->id)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices')->firstOrFail(), 'token', request()->token);
+        $userWithToken = Arr::add($user->where('id', $user->id)
+                ->with('profile', 'positionSummary', 'contractSummary', 'roles.itPolicies', 'roles.handbooks', 'practices')
+                ->firstOrFail(), 'token', request()->token);
 
         return $userWithToken;
     }
