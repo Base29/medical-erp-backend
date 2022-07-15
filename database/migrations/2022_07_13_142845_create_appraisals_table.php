@@ -15,6 +15,32 @@ class CreateAppraisalsTable extends Migration
     {
         Schema::create('appraisals', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('practice')
+                ->references('id')
+                ->on('practices')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('department')
+                ->references('id')
+                ->on('departments')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->foreignId('user')
+                ->references('id')
+                ->on('users')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->date('date')->nullable();
+            $table->time('time')->nullable();
+            $table->string('location')->nullable();
+            $table->string('type')->nullable();
+            $table->string('status')->nullable();
+            $table->boolean('is_completed')->nullable();
+            $table->string('progress')->nullable();
+            $table->integer('additional_staff')->nullable();
+            $table->integer('hq_staff')->nullable();
+            $table->integer('manager_signature')->nullable();
+            $table->softDeletes();
             $table->timestamps();
         });
     }

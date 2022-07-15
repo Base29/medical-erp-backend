@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateAppraisalPoliciesTable extends Migration
+class CreateAppraisalQuestionsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,14 +13,15 @@ class CreateAppraisalPoliciesTable extends Migration
      */
     public function up()
     {
-        Schema::create('appraisal_policies', function (Blueprint $table) {
+        Schema::create('appraisal_questions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('role')
+            $table->foreignId('appraisal_policy')
                 ->references('id')
-                ->on('roles')
+                ->on('appraisal_policies')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('name');
+            $table->string('type');
+            $table->text('question');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -33,6 +34,6 @@ class CreateAppraisalPoliciesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('appraisal_policies');
+        Schema::dropIfExists('appraisal_questions');
     }
 }
