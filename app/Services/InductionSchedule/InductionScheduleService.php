@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\InductionSchedule;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
@@ -80,5 +81,19 @@ class InductionScheduleService
 
         // Delete induction schedule
         $inductionSchedule->delete();
+    }
+
+    // Fetch user induction
+    public function fetchUserInduction($request)
+    {
+        // Get user induction
+        $userInduction = InductionSchedule::where('user_id', $request->user)
+            ->with('inductionChecklists.inductionQuestions')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'user-induction' => $userInduction,
+        ]);
     }
 }
