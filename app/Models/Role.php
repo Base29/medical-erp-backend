@@ -49,4 +49,9 @@ class Role extends SpatieRole
     {
         return $this->belongsToMany(ItPolicy::class);
     }
+
+    public function inductionChecklists()
+    {
+        return $this->hasMany(InductionChecklist::class);
+    }
 }

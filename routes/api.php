@@ -510,6 +510,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('/', [InductionScheduleController::class, 'fetch'])
             ->middleware(['permission:can_fetch_practice_induction_schedules|can_manage_inductions']);
+
+        Route::post('user-induction', [InductionScheduleController::class, 'userInduction'])
+            ->middleware(['permission:can_manage_inductions']);
     });
 
     // Routes for induction results
