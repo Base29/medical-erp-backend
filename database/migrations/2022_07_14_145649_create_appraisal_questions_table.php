@@ -20,6 +20,7 @@ class CreateAppraisalQuestionsTable extends Migration
                 ->on('appraisal_policies')
                 ->constrained()
                 ->cascadeOnDelete();
+            $table->integer('head')->nullable();
             $table->string('type');
             $table->text('question');
             $table->softDeletes();
