@@ -40,7 +40,7 @@ class RoleService
     public function fetchRoles()
     {
         // Fetching roles
-        $roles = Role::with('users', 'itPolicies', 'handbooks')->latest()->get();
+        $roles = Role::with('users', 'itPolicies', 'handbooks', 'inductionChecklists')->latest()->get();
 
         return Response::success(['roles' => $roles]);
     }
