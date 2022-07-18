@@ -75,6 +75,7 @@ class InductionResultService
         $inductionResult->user_id = $inductionSchedule->user_id;
         $inductionResult->induction_schedule_id = $inductionSchedule->id;
         $inductionResult->induction_question_id = $request->question;
+        $inductionResult->comment = $request->comment;
         $inductionResult->completed = $request->completed;
 
         // Save result
