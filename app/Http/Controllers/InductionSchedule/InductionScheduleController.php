@@ -10,6 +10,7 @@ use App\Http\Requests\InductionSchedule\DeleteInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchSingleInductionRequest;
 use App\Http\Requests\InductionSchedule\FetchUserInductionRequest;
+use App\Http\Requests\InductionSchedule\UpdateInductionScheduleRequest;
 use App\Models\InductionSchedule;
 use App\Services\InductionSchedule\InductionScheduleService;
 
@@ -108,6 +109,21 @@ class InductionScheduleController extends Controller
         try {
             // Logic here
             return $this->inductionScheduleService->fetchSingleInduction($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update
+    public function update(UpdateInductionScheduleRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->inductionScheduleService->updateInductionSchedule($request);
 
         } catch (\Exception $e) {
             return Response::fail([
