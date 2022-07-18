@@ -96,4 +96,18 @@ class InductionScheduleService
             'user-induction' => $userInduction,
         ]);
     }
+
+    // Fetch single induction
+    public function fetchSingleInduction($request)
+    {
+        // Get induction
+        $induction = InductionSchedule::where('id', $request->induction)
+            ->with('inductionChecklists.inductionQuestions')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'induction' => $induction,
+        ]);
+    }
 }
