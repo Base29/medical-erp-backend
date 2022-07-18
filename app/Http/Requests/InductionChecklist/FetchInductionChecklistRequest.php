@@ -27,7 +27,7 @@ class FetchInductionChecklistRequest extends FormRequest
     {
         return [
             'practice' => 'required|numeric|exists:practices,id',
-            'role' => 'required|numeric|exists:roles,id',
+            'role' => 'nullable|numeric|exists:roles,id',
         ];
     }
 
