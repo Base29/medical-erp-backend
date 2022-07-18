@@ -26,7 +26,7 @@ class UpdateInductionScheduleRequest extends FormRequest
     public function rules()
     {
         return [
-            'induction_schedule' => 'required|numeric|exists:induction_schedules,id',
+            'induction' => 'required|numeric|exists:induction_schedules,id',
             'date' => 'nullable|date|date_format:Y-m-d',
             'time' => 'nullable|date_format:H:i',
             'duration' => 'nullable|string',
@@ -37,6 +37,7 @@ class UpdateInductionScheduleRequest extends FormRequest
             'additional_staff_role_id' => 'required_if:is_additional_staff_required,1|exists:roles,id',
             'additional_staff_id' => 'required_if:is_additional_staff_required,1|exists:users,id',
             'checklists' => 'nullable|array',
+            'is_completed' => 'nullable|boolean',
         ];
     }
 

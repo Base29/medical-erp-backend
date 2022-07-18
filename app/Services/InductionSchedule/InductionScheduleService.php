@@ -3,6 +3,7 @@ namespace App\Services\InductionSchedule;
 
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
 use App\Models\User;
@@ -108,6 +109,22 @@ class InductionScheduleService
         // Return success response
         return Response::success([
             'induction' => $induction,
+        ]);
+    }
+
+    // Update Induction schedule
+    public function updateInductionSchedule($request)
+    {
+        // Get induction schedule
+        $inductionSchedule = InductionSchedule::findOrFail($request->induction);
+
+        UpdateService::updateModel($inductionSchedule, $request->validated(), 'induction');
+
+        // Return success response
+        return Response::success([
+            'interview' => $inductionSchedule->with('practice', 'user.profile')
+                ->latest('updated_at')
+                ->first(),
         ]);
     }
 }
