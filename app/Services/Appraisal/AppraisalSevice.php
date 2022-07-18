@@ -4,17 +4,60 @@ namespace App\Services\Appraisal;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
+use App\Models\Appraisal;
 use App\Models\AppraisalPolicy;
 use App\Models\AppraisalQuestion;
 use App\Models\AppraisalQuestionOption;
+use App\Models\Department;
 use App\Models\Practice;
 use App\Models\Role;
+use App\Models\User;
 
 class AppraisalService
 {
     public function createAppraisal($request)
     {
-        //
+        $practice = Practice::findOrFail($request->practice);
+
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Get Interview policy
+        $appraisalPolicy = AppraisalPolicy::where('role', $user->roles[0]->id)->firstOrFail();
+
+        if (!$appraisalPolicy) {
+            throw new \Exception(ResponseMessage::customMessage('No appraisal policy associated with role ' . $user->roles[0]->id));
+        }
+
+        // Get department
+        $department = Department::findOrFail($request->department);
+
+        // Instance of InterviewSchedule
+        $appraisal = new Appraisal();
+        $appraisal->user = $user->id;
+        $appraisal->department = $department->id;
+        $appraisal->practice = $practice->id;
+        $appraisal->date = $request->date;
+        $appraisal->time = $request->time;
+        $appraisal->location = $request->location;
+        $appraisal->duration = $request->duration;
+        $appraisal->type = $request->type;
+        $appraisal->status = $request->status;
+        $appraisal->additional_staff = $request->additional_staff;
+        $appraisal->hq_staff = $request->hq_staff;
+
+        // Save Appraisal schedule
+        $appraisal->save();
+
+        // Attach Appraisal Policy
+        $appraisal->appraisalPolicies()->attach($appraisalPolicy->id);
+
+        // Return success response
+        return Response::success([
+            'appraisal' => $appraisal->with('practice', 'appraisalPolicies.questions.options', 'department.departmentHead.profile', 'user.profile')
+                ->latest()
+                ->first(),
+        ]);
     }
 
     // Create appraisal policy
@@ -41,7 +84,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-policy' => $appraisalPolicy->with('questions.options', 'role', 'practice')
+            'appraisal-policy' => $appraisalPolicy->with('questions.options', 'role', 'practice')
                 ->latest()
                 ->first(),
         ]);
@@ -96,7 +139,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-policies' => $appraisalPolicies,
+            'appraisal-policies' => $appraisalPolicies,
         ]);
 
     }
@@ -115,7 +158,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-policies' => $appraisalPolicies,
+            'appraisal-policies' => $appraisalPolicies,
         ]);
     }
 
@@ -129,7 +172,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-policy' => $appraisalPolicy,
+            'appraisal-policy' => $appraisalPolicy,
         ]);
     }
 
@@ -176,7 +219,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-policy' => $appraisalPolicy->with('role', 'questions.options')
+            'appraisal-policy' => $appraisalPolicy->with('role', 'questions.options')
                 ->latest('updated_at')
                 ->first(),
         ]);
@@ -201,12 +244,12 @@ class AppraisalService
         $appraisalQuestion = AppraisalQuestion::findOrFail($request->question_id);
 
         // Update subitem
-        UpdateService::updateModel($appraisalQuestion, $request->validated(), 'question_id');
+        UpdateService::updateModel($appraisalQuestion, $request->validated(), 'question');
 
         // Check if the type of the question is updated to descriptive
         if ($appraisalQuestion->type === 'descriptive') {
             // Get options
-            $options = AppraisalQuestionOption::where('interview_question_id', $appraisalQuestion->id);
+            $options = AppraisalQuestionOption::where('appraisal_question', $appraisalQuestion->id);
             $options->delete();
         }
 

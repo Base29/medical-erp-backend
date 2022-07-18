@@ -39,7 +39,6 @@ class CreateAppraisalsTable extends Migration
             $table->string('progress')->nullable();
             $table->integer('additional_staff')->nullable();
             $table->integer('hq_staff')->nullable();
-            $table->integer('manager_signature')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
