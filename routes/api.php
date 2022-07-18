@@ -171,6 +171,7 @@ Route::middleware(['auth:api'])->group(function () {
             ->middleware(['permission:can_update_room|can_manage_rooms']);
     });
 
+    // Endpoints for reasons
     Route::prefix('reasons')->group(function () {
         Route::get('/', [ReasonController::class, 'fetch'])
             ->middleware(['permission:can_view_reasons|can_manage_reasons']);
@@ -760,6 +761,55 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('sign-employee-handbook', [EmployeeHandbookController::class, 'sign']);
             Route::post('sign-it-policies', [ItPolicyController::class, 'sign']);
             Route::post('sign-contract-summary', [ContractSummaryController::class, 'sign']);
+        });
+    });
+
+    // Endpoints for Manager
+    Route::prefix('ma')->group(function () {
+        // Routes for Appraisals
+        Route::prefix('appraisals')->group(function () {
+            Route::post('/', [AppraisalController::class, 'upcomingAppraisals'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('update', [AppraisalController::class, 'update'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('delete', [AppraisalController::class, 'delete'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('create', [AppraisalController::class, 'create'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('past-appraisals', [AppraisalController::class, 'pastAppraisals'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('answer', [AppraisalController::class, 'appraisalAnswer'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            Route::post('appraisal', [AppraisalController::class, 'singleAppraisal'])
+                ->middleware(['permission:can_manage_appraisal']);
+
+            // Routes for Appraisal policies
+            Route::prefix('policies')->group(function () {
+                Route::post('create', [AppraisalPolicyController::class, 'create'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('/', [AppraisalPolicyController::class, 'fetch'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('policy', [AppraisalPolicyController::class, 'fetchSingle'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('update', [AppraisalPolicyController::class, 'update'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('update-question', [AppraisalPolicyController::class, 'updateAppraisalQuestion'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('delete', [AppraisalPolicyController::class, 'delete'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
+            });
+
         });
     });
 
