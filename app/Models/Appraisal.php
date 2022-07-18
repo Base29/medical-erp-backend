@@ -33,4 +33,9 @@ class Appraisal extends Model
     {
         return $this->belongsTo(Department::class);
     }
+
+    public function appraisalAnswers()
+    {
+        return $this->hasMany(AppraisalAnswer::class);
+    }
 }
