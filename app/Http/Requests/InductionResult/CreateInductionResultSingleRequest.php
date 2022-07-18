@@ -29,6 +29,7 @@ class CreateInductionResultSingleRequest extends FormRequest
             'induction_schedule' => 'required|numeric|exists:induction_schedules,id',
             'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
             'question' => 'required|numeric|exists:induction_questions,id',
+            'comment' => 'nullable|string|max:1000',
             'completed' => 'required|boolean',
         ];
     }
