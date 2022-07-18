@@ -513,6 +513,9 @@ Route::middleware(['auth:api'])->group(function () {
 
         Route::post('user-induction', [InductionScheduleController::class, 'userInduction'])
             ->middleware(['permission:can_manage_inductions']);
+
+        Route::post('induction', [InductionScheduleController::class, 'singleInduction'])
+            ->middleware(['permission:can_manage_inductions']);
     });
 
     // Routes for induction results
