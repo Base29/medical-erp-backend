@@ -55,17 +55,17 @@ class InductionChecklist extends Model
     {
 
         //TODO: Below logic have to be refined after refinement.
-        // $totalQuestions = count($this->inductionQuestions);
-        // $completedQuestions = collect($this->inductionResults)
-        //     ->where('completed', 1)
-        //     ->where('user_id', $userId)
-        //     ->count();
+        $totalQuestions = count($this->inductionQuestions);
+        $completedQuestions = collect($this->inductionResults)
+            ->where('completed', 1)
+            ->where('user_id', $userId)
+            ->count();
 
-        // if ($totalQuestions === $completedQuestions) {
+        if ($totalQuestions === $completedQuestions) {
 
-        //     return true;
-        // }
+            return true;
+        }
 
-        return $this->inductionResults->contains('user_id', $userId);
+        // return $this->inductionResults->contains('user_id', $userId);
     }
 }
