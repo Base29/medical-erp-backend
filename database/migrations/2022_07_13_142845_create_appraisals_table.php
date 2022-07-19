@@ -39,6 +39,9 @@ class CreateAppraisalsTable extends Migration
             $table->string('progress')->nullable();
             $table->integer('additional_staff')->nullable();
             $table->integer('hq_staff')->nullable();
+            $table->boolean('is_rescheduled')->nullable();
+            $table->string('reschedule_reason')->nullable();
+            $table->integer('appraisal_reference')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
