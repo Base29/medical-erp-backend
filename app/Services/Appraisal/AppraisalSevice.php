@@ -66,14 +66,11 @@ class AppraisalService
     // Create appraisal policy
     public function createAppraisalPolicy($request)
     {
-        // Get practice
-        // $practice = Practice::findOrFail($request->practice);
-
         // Get role
         $role = Role::findOrFail($request->role);
 
         if ($role->hasInterviewPolicy()) {
-            throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a interview policy'));
+            throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a appraisal policy'));
         }
 
         // Instance of AppraisalPolicy
@@ -180,7 +177,7 @@ class AppraisalService
     }
 
     // Delete interview policy
-    public function deleteInterviewPolicy($request)
+    public function deleteAppraisalPolicy($request)
     {
         // Get interview policy
         $appraisalPolicy = AppraisalPolicy::findOrFail($request->appraisal_policy);
@@ -388,7 +385,7 @@ class AppraisalService
     }
 
     // Store appraisal answers
-    public function storeInterviewAnswer($request)
+    public function storeAppraisalAnswer($request)
     {
         // Get appraisal
         $appraisal = Appraisal::findOrFail($request->appraisal);
@@ -481,7 +478,7 @@ class AppraisalService
     }
 
     // Fetch single appraisal
-    public function fetchSingleInterview($request)
+    public function fetchSingleAppraisal($request)
     {
         // Get interview schedule
         $appraisal = Appraisal::where('id', $request->interview)

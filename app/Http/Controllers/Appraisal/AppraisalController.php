@@ -4,8 +4,12 @@ namespace App\Http\Controllers\Appraisal;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Appraisal\CreateAppraisalAnswerRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalRequest;
+use App\Http\Requests\Appraisal\DeleteAppraisalRequest;
 use App\Http\Requests\Appraisal\FetchAllAppraisalsRequest;
+use App\Http\Requests\Appraisal\FetchCompletedAppraisalsRequest;
+use App\Http\Requests\Appraisal\FetchSingleAppraisalRequest;
 use App\Http\Requests\Appraisal\FetchUpcomingAppraisalsRequest;
 use App\Http\Requests\Appraisal\UpdateAppraisalRequest;
 use App\Services\Appraisal\AppraisalService;
@@ -73,6 +77,66 @@ class AppraisalController extends Controller
         try {
             // Update appraisal
             return $this->appraisalService->updateAppraisal($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete
+    public function delete(DeleteAppraisalRequest $request)
+    {
+        try {
+            // Delete appraisal
+            return $this->appraisalService->deleteAppraisal($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Completed Appraisals
+    public function completedAppraisals(FetchCompletedAppraisalsRequest $request)
+    {
+        try {
+            // Past appraisal service
+            return $this->appraisalService->fetchCompletedAppraisals($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Store appraisal answers
+    public function appraisalAnswer(CreateAppraisalAnswerRequest $request)
+    {
+        try {
+            // Store appraisal answer
+            return $this->appraisalService->storeAppraisalAnswer($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single appraisal
+    public function singleInterview(FetchSingleAppraisalRequest $request)
+    {
+        try {
+            // Fetch single interview service
+            return $this->appraisalService->fetchSingleAppraisal($request);
 
         } catch (\Exception $e) {
             return Response::fail([
