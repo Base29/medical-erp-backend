@@ -258,7 +258,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'interview-question' => $appraisalQuestion->with('options')->latest('updated_at')->first(),
+            'appraisal-question' => $appraisalQuestion->with('options')->latest('updated_at')->first(),
         ]);
 
     }
@@ -297,7 +297,7 @@ class AppraisalService
 
         } else {
             // Get $practice appraisals
-            $appraisals = Appraisal::with('practice', 'interviewPolicies.questions.options', 'user.profile')
+            $appraisals = Appraisal::with('practice', 'appraisalPolicies.questions.options', 'user.profile')
                 ->latest()
                 ->paginate(10);
         }
@@ -323,13 +323,13 @@ class AppraisalService
             // Get $practice appraisals
             $appraisals = Appraisal::where('practice_id', $practice->id)
                 ->where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile')
+                ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
                 ->latest()
                 ->paginate(10);
         } else {
             // Get $practice appraisals
             $appraisals = Appraisal::where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile')
+                ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
                 ->latest()
                 ->paginate(10);
         }
@@ -377,7 +377,7 @@ class AppraisalService
 
         // Get past interview schedules
         $appraisals = Appraisal::where('is_completed', 1)
-            ->with('practice', 'interviewPolicies.questions.options', 'user.profile')
+            ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
             ->latest()
             ->paginate(10);
 
