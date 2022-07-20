@@ -11,7 +11,7 @@ class AppraisalQuestion extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'appraisal_policy',
+        'policy',
         'type',
         'head',
         'question',
@@ -19,12 +19,12 @@ class AppraisalQuestion extends Model
 
     public function policy()
     {
-        return $this->belongsTo(AppraisalPolicy::class, 'policy', 'id');
+        return $this->belongsTo(AppraisalPolicy::class);
     }
 
     public function options()
     {
-        return $this->hasMany(AppraisalQuestionOption::class, 'option', 'id');
+        return $this->hasMany(AppraisalQuestionOption::class, 'question', 'id');
     }
 
     public function appraisalAnswers()

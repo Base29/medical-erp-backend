@@ -34,6 +34,6 @@ class AppraisalPolicy extends Model
 
     public function questions()
     {
-        return $this->hasMany(AppraisalQuestion::class, 'question', 'id');
+        return $this->hasMany(AppraisalQuestion::class, 'policy', 'id');
     }
 }

@@ -50,8 +50,8 @@ class CreateAppraisalRequest extends FormRequest
     public function messages()
     {
         return [
-            'application_status.in' => 'The status is invalid. It should be one of first-interview|second-interview|final-interview',
-            'interview_type.in' => 'The type is invalid. It should be one of physical-interview|digital-interview',
+            'status.in' => 'The status is invalid. It should be one of first|second|final',
+            'type.in' => 'The type is invalid. It should be one of internal|external|follow-up',
         ];
     }
 

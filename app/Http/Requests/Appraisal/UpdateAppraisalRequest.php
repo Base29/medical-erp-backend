@@ -32,12 +32,14 @@ class UpdateAppraisalRequest extends FormRequest
             'progress' => 'nullable|numeric',
             'is_rescheduled' => 'nullable|boolean',
             'reschedule_reason' => 'nullable|string|max:500',
-            'appraisal_reference' => [
-                Rule::requiredIf(function () {
-                    return request()->is_rescheduled === 1;
-                }),
-                'exists:appraisals,id',
-            ],
+            'appraisal_reference' => 'required_if:is_rescheduled,1|numeric|exists:appraisals,id',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'appraisal_reference.required_if' => 'The appraisal_reference field is required when is_rescheduled = 1',
         ];
     }
 

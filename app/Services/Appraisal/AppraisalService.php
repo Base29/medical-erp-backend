@@ -44,7 +44,6 @@ class AppraisalService
         $appraisal->date = $request->date;
         $appraisal->time = $request->time;
         $appraisal->location = $request->location;
-        $appraisal->duration = $request->duration;
         $appraisal->type = $request->type;
         $appraisal->status = $request->status;
         $appraisal->additional_staff = $request->additional_staff;
@@ -137,7 +136,7 @@ class AppraisalService
     {
 
         // Get all interview policies
-        $appraisalPolicies = AppraisalPolicy::with('role', 'questions')
+        $appraisalPolicies = AppraisalPolicy::with('role', 'questions.options')
             ->latest()
             ->paginate(10);
 

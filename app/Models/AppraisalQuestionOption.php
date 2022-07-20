@@ -12,7 +12,7 @@ class AppraisalQuestionOption extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'appraisal_question',
+        'question',
         'option',
     ];
 
