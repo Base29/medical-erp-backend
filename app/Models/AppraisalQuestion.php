@@ -17,14 +17,14 @@ class AppraisalQuestion extends Model
         'question',
     ];
 
-    public function appraisalPolicy()
+    public function policy()
     {
-        return $this->belongsTo(AppraisalPolicy::class);
+        return $this->belongsTo(AppraisalPolicy::class, 'policy', 'id');
     }
 
     public function options()
     {
-        return $this->hasMany(AppraisalQuestionOption::class);
+        return $this->hasMany(AppraisalQuestionOption::class, 'option', 'id');
     }
 
     public function appraisalAnswers()

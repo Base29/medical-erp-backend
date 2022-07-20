@@ -27,13 +27,13 @@ class AppraisalPolicy extends Model
         return $this->belongsToMany(Appraisal::class);
     }
 
-    public function questions()
-    {
-        return $this->hasMany(AppraisalQuestion::class);
-    }
-
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class, 'role', 'id');
+    }
+
+    public function questions()
+    {
+        return $this->hasMany(AppraisalQuestion::class, 'question', 'id');
     }
 }

@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Answer\AnswerController;
+use App\Http\Controllers\AppraisalPolicy\AppraisalPolicyController;
+use App\Http\Controllers\Appraisal\AppraisalController;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\CheckList\CheckListController;
 use App\Http\Controllers\Comment\CommentController;
@@ -783,7 +785,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [AppraisalController::class, 'create'])
                 ->middleware(['permission:can_manage_appraisal']);
 
-            Route::post('past-appraisals', [AppraisalController::class, 'pastAppraisals'])
+            Route::post('completed-appraisals', [AppraisalController::class, 'completedAppraisals'])
                 ->middleware(['permission:can_manage_appraisal']);
 
             Route::post('answer', [AppraisalController::class, 'appraisalAnswer'])

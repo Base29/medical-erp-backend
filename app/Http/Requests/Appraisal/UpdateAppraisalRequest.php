@@ -4,6 +4,7 @@ namespace App\Http\Requests\Appraisal;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class UpdateAppraisalRequest extends FormRequest
@@ -29,6 +30,14 @@ class UpdateAppraisalRequest extends FormRequest
             'appraisal' => 'required|numeric|exists:appraisals,id',
             'is_completed' => 'nullable|boolean',
             'progress' => 'nullable|numeric',
+            'is_rescheduled' => 'nullable|boolean',
+            'reschedule_reason' => 'nullable|string|max:500',
+            'appraisal_reference' => [
+                Rule::requiredIf(function () {
+                    return request()->is_rescheduled === 1;
+                }),
+                'exists:appraisals,id',
+            ],
         ];
     }
 

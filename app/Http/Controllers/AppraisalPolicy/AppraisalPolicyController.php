@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\AppraisalPolicy;
 
+use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AppraisalPolicy\CreateAppraisalPolicyRequest;
 use App\Http\Requests\AppraisalPolicy\DeleteAppraisalPolicyRequest;
@@ -88,7 +89,7 @@ class AppraisalPolicyController extends Controller
     {
         try {
             // Delete appraisal policy
-            return $this->appraisalService->deleteAppraisalolicy($request);
+            return $this->appraisalService->deleteAppraisalPolicy($request);
 
         } catch (\Exception $e) {
             return Response::fail([

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Interview;
 
 use App\Helpers\Response;

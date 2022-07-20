@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Services\Appraisal;
 
 use App\Helpers\Response;
@@ -25,7 +26,7 @@ class AppraisalService
         // Get user
         $user = User::findOrFail($request->user);
 
-        // Get Interview policy
+        // Get appraisal policy
         $appraisalPolicy = AppraisalPolicy::where('role', $user->roles[0]->id)->firstOrFail();
 
         if (!$appraisalPolicy) {
@@ -35,7 +36,7 @@ class AppraisalService
         // Get department
         $department = Department::findOrFail($request->department);
 
-        // Instance of InterviewSchedule
+        // Instance of Appraisal
         $appraisal = new Appraisal();
         $appraisal->user = $user->id;
         $appraisal->department = $department->id;
@@ -69,22 +70,22 @@ class AppraisalService
         // Get role
         $role = Role::findOrFail($request->role);
 
-        if ($role->hasInterviewPolicy()) {
+        if ($role->hasAppraisalPolicy()) {
             throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a appraisal policy'));
         }
 
         // Instance of AppraisalPolicy
         $appraisalPolicy = new AppraisalPolicy();
-        $appraisalPolicy->role_id = $role->id;
+        $appraisalPolicy->role = $role->id;
         $appraisalPolicy->name = $request->name;
         $appraisalPolicy->save();
 
         // Save questions for $interviewPolicy
-        $this->saveQuestions($request->questions, $appraisalPolicy);
+        $this->saveQuestions($request->questions, $appraisalPolicy->id);
 
         // Return success response
         return Response::success([
-            'appraisal-policy' => $appraisalPolicy->with('questions.options', 'role', 'practice')
+            'appraisal-policy' => $appraisalPolicy->with('questions.options')
                 ->latest()
                 ->first(),
         ]);
@@ -92,39 +93,42 @@ class AppraisalService
     }
 
     // Save questions
-    public function saveQuestions($questions, $appraisalPolicy)
+    public function saveQuestions($questions, $appraisalPolicyId)
     {
         // Iterate through $questions array
         foreach ($questions as $question) {
+
             // Instance of InterviewQuestion
             $appraisalQuestion = new AppraisalQuestion();
+            $appraisalQuestion->policy = $appraisalPolicyId;
             $appraisalQuestion->type = $question['type'];
             $appraisalQuestion->head = $question['head'];
             $appraisalQuestion->question = $question['question'];
 
             // Save question
-            $appraisalPolicy->questions()->save($appraisalQuestion);
+            $appraisalQuestion->save();
 
             // Check if $interviewQuestion is multi-choice or single-choice
             if ($appraisalQuestion->type === 'multi-choice' || $appraisalQuestion->type === 'single-choice') {
                 // Save options for $interviewQuestion
-                $this->saveOptions($question['options'], $appraisalQuestion);
+                $this->saveOptions($question['options'], $appraisalQuestion->id);
             }
 
         }
     }
 
     // Save options for questions
-    public function saveOptions($options, $interviewQuestion)
+    public function saveOptions($options, $appraisalQuestionId)
     {
         // Iterate through $options array
         foreach ($options as $option) {
             // Instance of InterviewQuestionOption
             $appraisalQuestionOption = new AppraisalQuestionOption();
+            $appraisalQuestionOption->question = $appraisalQuestionId;
             $appraisalQuestionOption->option = $option['option'];
 
             // Save InterviewQuestionOption
-            $interviewQuestion->options()->save($appraisalQuestionOption);
+            $appraisalQuestionOption->save();
         }
     }
 
@@ -133,7 +137,7 @@ class AppraisalService
     {
 
         // Get all interview policies
-        $appraisalPolicies = AppraisalPolicy::with('questions.options', 'practice', 'role')
+        $appraisalPolicies = AppraisalPolicy::with('role', 'questions')
             ->latest()
             ->paginate(10);
 
@@ -494,5 +498,4 @@ class AppraisalService
             'appraisal' => $appraisal,
         ]);
     }
-
 }

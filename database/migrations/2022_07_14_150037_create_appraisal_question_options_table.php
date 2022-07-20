@@ -15,7 +15,7 @@ class CreateAppraisalQuestionOptionsTable extends Migration
     {
         Schema::create('appraisal_question_options', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('appraisal_question')
+            $table->foreignId('question')
                 ->references('id')
                 ->on('appraisal_questions')
                 ->constrained()

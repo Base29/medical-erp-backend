@@ -16,8 +16,8 @@ class AppraisalQuestionOption extends Model
         'option',
     ];
 
-    public function appraisalQuestion()
+    public function question()
     {
-        return $this->belongsTo(AppraisalQuestion::class);
+        return $this->belongsTo(AppraisalQuestion::class, 'question', 'id');
     }
 }
