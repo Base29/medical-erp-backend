@@ -34,10 +34,10 @@ class InterviewPolicy extends Model
         return $this->hasMany(InterviewQuestion::class);
     }
 
-    public function interviewPolicy()
-    {
-        return $this->belongsTo(Practice::class);
-    }
+    // public function interviewPolicy()
+    // {
+    //     return $this->belongsTo(Practice::class);
+    // }
 
     public function role()
     {
