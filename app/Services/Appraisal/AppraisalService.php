@@ -27,10 +27,10 @@ class AppraisalService
         $user = User::findOrFail($request->user);
 
         // Get appraisal policy
-        $appraisalPolicy = AppraisalPolicy::where('role', $user->roles[0]->id)->firstOrFail();
+        $appraisalPolicy = AppraisalPolicy::where('role', $user->roles[0]->id)->first();
 
         if (!$appraisalPolicy) {
-            throw new \Exception(ResponseMessage::customMessage('No appraisal policy associated with role ' . $user->roles[0]->id));
+            throw new \Exception(ResponseMessage::customMessage('No appraisal policy associated with role ' . $user->roles[0]->name));
         }
 
         // Get department
