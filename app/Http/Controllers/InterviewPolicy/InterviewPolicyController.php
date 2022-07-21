@@ -134,7 +134,7 @@ class InterviewPolicyController extends Controller
     {
         try {
             // Logic here
-            return $this->appraisalService->fetchRoleAppraisalPolicy($request);
+            return $this->interviewPolicyService->fetchRoleAppraisalPolicy($request);
 
         } catch (\Exception $e) {
             return Response::fail([
