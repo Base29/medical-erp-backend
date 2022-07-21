@@ -813,6 +813,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [AppraisalPolicyController::class, 'delete'])
                     ->middleware(['permission:can_manage_appraisal_policy']);
+
+                Route::post('role', [AppraisalPolicyController::class, 'fetchRolePolicy'])
+                    ->middleware(['permission:can_manage_appraisal_policy']);
             });
 
         });

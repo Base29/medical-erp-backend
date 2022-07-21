@@ -497,4 +497,23 @@ class AppraisalService
             'appraisal' => $appraisal,
         ]);
     }
+
+    // Fetch role appraisal policies belongs to a practice
+    public function fetchRoleAppraisalPolicy($request)
+    {
+
+        // Get Role
+        $role = Role::findOrFail($request->role);
+
+        // Get all interview policies
+        $appraisalPolicy = AppraisalPolicy::where('role', $role->id)->with('role', 'questions.options')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'appraisal-policy' => $appraisalPolicy,
+        ]);
+
+    }
 }
