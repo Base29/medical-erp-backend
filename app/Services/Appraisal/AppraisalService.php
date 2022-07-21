@@ -507,8 +507,7 @@ class AppraisalService
 
         // Get all interview policies
         $appraisalPolicy = AppraisalPolicy::where('role', $role->id)->with('role', 'questions.options')
-            ->latest()
-            ->paginate(10);
+            ->firstOrFail();
 
         // Return success response
         return Response::success([
