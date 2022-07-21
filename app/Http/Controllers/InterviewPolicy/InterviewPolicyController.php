@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InterviewPolicy\CreateInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\DeleteInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\FetchAllInterviewPolicyRequest;
+use App\Http\Requests\InterviewPolicy\FetchRoleInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\FetchSingleInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyQuestionRequest;
 use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyRequest;
@@ -120,6 +121,21 @@ class InterviewPolicyController extends Controller
         try {
             // Update interview policy question
             return $this->interviewPolicyService->updateQuestion($request);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch role appraisal policy
+    public function fetchRolePolicy(FetchRoleInterviewPolicyRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->fetchRoleAppraisalPolicy($request);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,

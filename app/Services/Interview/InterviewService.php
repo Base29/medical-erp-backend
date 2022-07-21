@@ -99,10 +99,10 @@ class InterviewService
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
         // Get Interview policy
-        $interviewPolicy = InterviewPolicy::where('role_id', $user->roles[0]->id)->firstOrFail();
+        $interviewPolicy = InterviewPolicy::where('role_id', $user->roles[0]->id)->first();
 
         if (!$interviewPolicy) {
-            throw new \Exception(ResponseMessage::customMessage('No interview policy associated with role ' . $user->roles[0]->id));
+            throw new \Exception(ResponseMessage::customMessage('No interview policy associated with role ' . $user->roles[0]->name));
         }
 
         // Get department

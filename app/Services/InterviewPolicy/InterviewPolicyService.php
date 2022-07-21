@@ -224,4 +224,22 @@ class InterviewPolicyService
             UpdateService::updateModel($interviewQuestionOption, $option, 'id');
         }
     }
+
+    // Fetch role interview policies belongs to a practice
+    public function fetchRoleAppraisalPolicy($request)
+    {
+
+        // Get Role
+        $role = Role::findOrFail($request->role);
+
+        // Get all interview policies
+        $interviewPolicy = InterviewPolicy::where('role_id', $role->id)->with('role', 'questions.options')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'interview-policy' => $interviewPolicy,
+        ]);
+
+    }
 }

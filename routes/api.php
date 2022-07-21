@@ -669,6 +669,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [InterviewPolicyController::class, 'delete'])
                     ->middleware(['permission:can_manage_interview_policy|can_delete_interview_policy']);
+
+                Route::post('role', [InterviewPolicyController::class, 'fetchRolePolicy'])
+                    ->middleware(['permission:can_manage_interview_policy']);
             });
 
             // Routes for Adhoc Questions

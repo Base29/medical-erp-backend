@@ -484,7 +484,7 @@ class AppraisalService
     public function fetchSingleAppraisal($request)
     {
         // Get interview schedule
-        $appraisal = Appraisal::where('id', $request->interview)
+        $appraisal = Appraisal::where('id', $request->appraisal)
             ->with(
                 'user.profile',
                 'appraisalPolicies.questions.options',
