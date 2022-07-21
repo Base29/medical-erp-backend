@@ -55,8 +55,6 @@ class InductionScheduleService
         return collect($checklists)->map(function ($checklist) {
             return [
                 'induction_checklist_id' => $checklist['induction_checklist_id'],
-                'is_complete' => $checklist['is_complete'],
-                'completed_date' => $checklist['completed_date'],
             ];
         });
     }
