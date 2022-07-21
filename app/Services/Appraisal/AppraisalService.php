@@ -154,7 +154,7 @@ class AppraisalService
         $practice = Practice::findOrFail($request->practice);
 
         // Get all interview policies of $practice
-        $appraisalPolicies = AppraisalPolicy::where('practice_id', $practice->id)
+        $appraisalPolicies = AppraisalPolicy::where('practice', $practice->id)
             ->with('questions.options', 'practice', 'role')
             ->latest()
             ->paginate(10);
@@ -290,7 +290,7 @@ class AppraisalService
             $practice = Practice::findOrFail($request->practice);
 
             // Get $practice appraisals
-            $appraisals = Appraisal::where('practice_id', $practice->id)
+            $appraisals = Appraisal::where('practice', $practice->id)
                 ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
                 ->latest()
                 ->paginate(10);
@@ -321,7 +321,7 @@ class AppraisalService
             $practice = Practice::findOrFail($request->practice);
 
             // Get $practice appraisals
-            $appraisals = Appraisal::where('practice_id', $practice->id)
+            $appraisals = Appraisal::where('practice', $practice->id)
                 ->where('date', '>', Carbon::now())
                 ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
                 ->latest()

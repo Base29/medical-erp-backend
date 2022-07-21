@@ -132,7 +132,7 @@ class AppraisalController extends Controller
     }
 
     // Fetch single appraisal
-    public function singleInterview(FetchSingleAppraisalRequest $request)
+    public function singleAppraisal(FetchSingleAppraisalRequest $request)
     {
         try {
             // Fetch single interview service

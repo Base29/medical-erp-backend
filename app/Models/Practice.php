@@ -136,6 +136,6 @@ class Practice extends Model
 
     public function appraisals()
     {
-        return $this->hasMany(Appraisal::class);
+        return $this->hasMany(Appraisal::class, 'practice', 'id');
     }
 }
