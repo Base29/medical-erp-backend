@@ -32,7 +32,7 @@ class CreateTrainingCourseRequest extends FormRequest
                 'required',
                 Rule::in(['digital', 'physical']),
             ],
-            'frequency' => 'required|string',
+            'frequency' => 'nullable|string',
             'roles' => 'required|array',
             'roles.*.role' => 'required|numeric|exists:roles,id',
         ];

@@ -25,12 +25,12 @@ class TrainingCourseService
 
         // Loop through $roles array
         foreach ($roles as $role):
-            $trainingCourse->roles->attach($role['role']);
+            $trainingCourse->roles()->attach($role['role']);
         endforeach;
 
         // Return success response
         return Response::success([
-            'training-course' => $trainingCourse->with('roles')->first(),
+            'training-course' => $trainingCourse->with('roles')->latest()->first(),
         ]);
     }
 }
