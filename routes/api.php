@@ -41,6 +41,7 @@ use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\Termination\TerminationController;
+use App\Http\Controllers\TrainingCourse\TrainingCourseController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
 use App\Http\Controllers\WorkTiming\WorkTimingController;
@@ -821,6 +822,12 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_manage_appraisal_policy']);
             });
 
+        });
+
+        // Routes for training courses
+        Route::prefix('training-courses')->group(function () {
+            Route::post('create', [TrainingCourseController::class, 'create'])
+                ->middleware(['permission:can_manage_training_course']);
         });
     });
 
