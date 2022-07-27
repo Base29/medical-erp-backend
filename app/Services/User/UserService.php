@@ -204,7 +204,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -212,13 +212,13 @@ class UserService
                     ->paginate(10);
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
-                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->latest()
                     ->paginate(10);
 
             } elseif ($request->filter === 'role') {
                 // Filter users by role
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->whereHas('roles', function ($q) {
                         $q->where('id', request()->value);
                     })
@@ -228,7 +228,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                 ->latest()
                 ->paginate(10);
         }
@@ -270,7 +270,7 @@ class UserService
         UpdateService::updateModel($profile, $request->validated(), 'user');
 
         return Response::success([
-            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices')
+            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices', 'user.workPatterns.workTimings')
                 ->latest('updated_at')
                 ->first(),
         ]);
@@ -285,7 +285,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
             ->firstOrFail();
 
         // Return details of the user
@@ -299,7 +299,7 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with('profile.applicant', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->with('profile.applicant', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
             ->firstOrFail();
 
         // Return details of the user
@@ -326,6 +326,9 @@ class UserService
             throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'));
         }
 
+        // Fetch hiring request
+        $hiringRequest = HiringRequest::where('id', $candidate->profile->hiring_request_id)->firstOrFail();
+
         // Generate password
         $password = Str::random(16);
 
@@ -336,6 +339,7 @@ class UserService
         $candidate->save();
 
         $candidate->givePermissionTo('can_manage_own_profile');
+        $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
 
         $credentials = [
             'email' => $candidate->email,
