@@ -326,6 +326,9 @@ class UserService
             throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'));
         }
 
+        // Fetch hiring request
+        $hiringRequest = HiringRequest::where('id', $candidate->profile->hiring_request_id)->firstOrFail();
+
         // Generate password
         $password = Str::random(16);
 
@@ -336,6 +339,7 @@ class UserService
         $candidate->save();
 
         $candidate->givePermissionTo('can_manage_own_profile');
+        $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
 
         $credentials = [
             'email' => $candidate->email,
