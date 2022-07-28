@@ -26,7 +26,12 @@ class CreateCourseModuleRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'course' => 'required|numeric|exists:training_courses,id',
+            'name' => 'required|string',
+            'duration' => 'required|string',
+            'is_required' => 'required|boolean',
+            'frequency' => 'nullable|string',
+            'reminder' => 'nullable|numeric',
         ];
     }
 
