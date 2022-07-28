@@ -29,7 +29,7 @@ class CreateCourseModuleRequest extends FormRequest
             'course' => 'required|numeric|exists:training_courses,id',
             'name' => 'required|string',
             'duration' => 'required|string',
-            'is_required' => 'required|boolean',
+            'is_required' => 'nullable|boolean',
             'frequency' => 'nullable|string',
             'reminder' => 'nullable|numeric',
         ];

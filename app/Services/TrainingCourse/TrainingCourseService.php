@@ -3,6 +3,7 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
+use App\Models\CourseModule;
 use App\Models\TrainingCourse;
 
 class TrainingCourseService
@@ -31,6 +32,28 @@ class TrainingCourseService
         // Return success response
         return Response::success([
             'training-course' => $trainingCourse->with('roles')->latest()->first(),
+        ]);
+    }
+
+    public function createCourseModule($request)
+    {
+        // Get training course
+        $trainingCourse = TrainingCourse::findOrFail($request->course);
+
+        // Initiate instance of CourseModule
+        $courseModule = new CourseModule();
+        $courseModule->name = $request->name;
+        $courseModule->duration = $request->duration;
+        $courseModule->is_required = $request->is_required;
+        $courseModule->frequency = $request->frequency;
+        $courseModule->reminder = $request->reminder;
+
+        // Save Module
+        $trainingCourse->modules->save($courseModule);
+
+        // Return success response
+        return Response::success([
+            'course-module' => $courseModule,
         ]);
     }
 }
