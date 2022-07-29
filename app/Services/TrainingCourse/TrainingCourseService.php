@@ -4,10 +4,12 @@ namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
 use App\Models\CourseModule;
+use App\Models\ModuleLesson;
 use App\Models\TrainingCourse;
 
 class TrainingCourseService
 {
+    // Create training course
     public function createTrainingCourse($request)
     {
         // Initiate instance of TrainingCourse model
@@ -35,6 +37,7 @@ class TrainingCourseService
         ]);
     }
 
+    // Create module
     public function createCourseModule($request)
     {
         // Get training course
@@ -42,6 +45,7 @@ class TrainingCourseService
 
         // Initiate instance of CourseModule
         $courseModule = new CourseModule();
+        $courseModule->course = $trainingCourse->id;
         $courseModule->name = $request->name;
         $courseModule->duration = $request->duration;
         $courseModule->is_required = $request->is_required;
@@ -49,11 +53,35 @@ class TrainingCourseService
         $courseModule->reminder = $request->reminder;
 
         // Save Module
-        $trainingCourse->modules->save($courseModule);
+        $courseModule->save();
 
         // Return success response
         return Response::success([
             'course-module' => $courseModule,
+        ]);
+    }
+
+    // Create lesson
+    public function createModuleLesson($request)
+    {
+        // Get Course Module
+        $courseModule = CourseModule::findOrFail($request->module);
+
+        // Initiate instance of ModuleLesson
+        $lesson = new ModuleLesson();
+        $lesson->module = $courseModule->id;
+        $lesson->name = $request->name;
+        $lesson->start_date = $request->start_date;
+        $lesson->due_date = $request->due_date;
+        $lesson->description = $request->description;
+        $lesson->url = $request->url;
+
+        // Save lesson
+        $lesson->save();
+
+        // Return success response
+        return Response::success([
+            'lesson' => $lesson,
         ]);
     }
 }
