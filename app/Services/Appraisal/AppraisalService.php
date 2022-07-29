@@ -487,6 +487,7 @@ class AppraisalService
         $appraisal = Appraisal::where('id', $request->appraisal)
             ->with(
                 'user.profile',
+                'user.workPatterns.workTimings',
                 'appraisalPolicies.questions.options',
                 'practice'
             )
