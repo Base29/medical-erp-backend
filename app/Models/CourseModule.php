@@ -24,7 +24,7 @@ class CourseModule extends Model
 
     public function lessons()
     {
-        return $this->hasMany(ModuleLesson::class);
+        return $this->hasMany(ModuleLesson::class, 'module', 'id');
     }
 
     public function course()

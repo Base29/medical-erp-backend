@@ -84,4 +84,16 @@ class TrainingCourseService
             'lesson' => $lesson,
         ]);
     }
+
+    // Fetch Training Courses
+    public function fetchAllTrainingCourses()
+    {
+        // Get training courses
+        $trainingCourses = TrainingCourse::with('modules.lessons')->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'training-courses' => $trainingCourses,
+        ]);
+    }
 }

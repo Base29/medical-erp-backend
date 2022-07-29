@@ -65,4 +65,19 @@ class TrainingCourseController extends Controller
             ]);
         }
     }
+
+    // Fetch All Training Courses
+    public function fetch()
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->fetchAllTrainingCourses();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
