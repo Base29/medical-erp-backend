@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\TrainingCourse\CreateCourseModuleRequest;
 use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
 use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
 
 class TrainingCourseController extends Controller
@@ -72,6 +74,36 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->fetchAllTrainingCourses();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch single course
+    public function singleCourse(FetchSingleTrainingCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->fetchSingleTrainingCourse($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete
+    public function delete(DeleteTrainingCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->deleteTrainingCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([

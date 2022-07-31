@@ -96,4 +96,33 @@ class TrainingCourseService
             'training-courses' => $trainingCourses,
         ]);
     }
+
+    // Fetch single training course
+    public function fetchSingleTrainingCourse($request)
+    {
+        // Get training course
+        $trainingCourse = TrainingCourse::where('id', $request->course)
+            ->with('modules.lessons')
+            ->firstOrFail();
+
+        // Return success request
+        return Response::success([
+            'training-course' => $trainingCourse,
+        ]);
+    }
+
+    // Delete training course(
+    public function deleteTrainingCourse($request)
+    {
+        // Get training course
+        $trainingCourse = TrainingCourse::where('id', $request->course)->with('modules.lessons')->firstOrFail();
+
+        // Delete training course
+        $trainingCourse->delete();
+
+        // Return success response
+        return Response::success([
+            'training-course' => $trainingCourse,
+        ]);
+    }
 }

@@ -832,6 +832,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::get('/', [TrainingCourseController::class, 'fetch'])
                 ->middleware(['permission:can_manage_training_course']);
 
+            Route::post('training-course', [TrainingCourseController::class, 'singleCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('delete', [TrainingCourseController::class, 'delete'])
+                ->middleware(['permission:can_manage_training_course']);
+
             Route::prefix('modules')->group(function () {
                 Route::post('create', [TrainingCourseController::class, 'createModule'])
                     ->middleware(['permission:can_manage_training_course']);
