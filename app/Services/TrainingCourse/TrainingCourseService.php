@@ -3,6 +3,7 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
+use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
 use App\Models\TrainingCourse;
@@ -123,6 +124,21 @@ class TrainingCourseService
         // Return success response
         return Response::success([
             'training-course' => $trainingCourse,
+        ]);
+    }
+
+    // Update training course
+    public function updateTrainingCourse($request)
+    {
+        // Get Training course
+        $trainingCourse = TrainingCourse::where('id', $request->course)->firstOrFail();
+
+        // Update training course
+        UpdateService::updateModel($trainingCourse, $request->validated(), 'course');
+
+        // Return success response
+        return Response::success([
+            'training-course' => $trainingCourse->with('modules.lessons')->latest('updated_at')->first(),
         ]);
     }
 }

@@ -838,6 +838,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('delete', [TrainingCourseController::class, 'delete'])
                 ->middleware(['permission:can_manage_training_course']);
 
+            Route::post('update', [TrainingCourseController::class, 'updateCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
             Route::prefix('modules')->group(function () {
                 Route::post('create', [TrainingCourseController::class, 'createModule'])
                     ->middleware(['permission:can_manage_training_course']);

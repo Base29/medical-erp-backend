@@ -9,6 +9,7 @@ use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
 use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\UpdateTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
 
 class TrainingCourseController extends Controller
@@ -104,6 +105,21 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->deleteTrainingCourse($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update training course
+    public function updateCourse(UpdateTrainingCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->updateTrainingCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([
