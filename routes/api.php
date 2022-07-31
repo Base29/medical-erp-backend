@@ -41,6 +41,7 @@ use App\Http\Controllers\Room\RoomController;
 use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\Termination\TerminationController;
+use App\Http\Controllers\TrainingCourse\TrainingCourseController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
 use App\Http\Controllers\WorkTiming\WorkTimingController;
@@ -821,6 +822,34 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_manage_appraisal_policy']);
             });
 
+        });
+
+        // Routes for training courses
+        Route::prefix('training-courses')->group(function () {
+            Route::post('create', [TrainingCourseController::class, 'create'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::get('/', [TrainingCourseController::class, 'fetch'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('training-course', [TrainingCourseController::class, 'singleCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('delete', [TrainingCourseController::class, 'delete'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('update', [TrainingCourseController::class, 'updateCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::prefix('modules')->group(function () {
+                Route::post('create', [TrainingCourseController::class, 'createModule'])
+                    ->middleware(['permission:can_manage_training_course']);
+
+                Route::prefix('lessons')->group(function () {
+                    Route::post('create', [TrainingCourseController::class, 'createLesson'])
+                        ->middleware(['permission:can_manage_training_course']);
+                });
+            });
         });
     });
 

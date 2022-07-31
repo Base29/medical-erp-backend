@@ -8,6 +8,7 @@ use App\Models\InductionChecklist;
 use App\Models\InterviewPolicy;
 use App\Models\ItPolicy;
 use App\Models\LocumSession;
+use App\Models\TrainingCourse;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use \Spatie\Permission\Models\Role as SpatieRole;
 
@@ -65,5 +66,10 @@ class Role extends SpatieRole
     public function hasAppraisalPolicy()
     {
         return AppraisalPolicy::where('role', $this->id)->first();
+    }
+
+    public function trainingCourses()
+    {
+        return $this->belongsToMany(TrainingCourse::class);
     }
 }
