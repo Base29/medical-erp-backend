@@ -17,6 +17,7 @@ class TrainingCourseService
         // Initiate instance of TrainingCourse model
         $trainingCourse = new TrainingCourse();
         $trainingCourse->name = $request->name;
+        $trainingCourse->description = $request->description;
         $trainingCourse->type = $request->type;
         $trainingCourse->frequency = $request->frequency;
         $trainingCourse->save();

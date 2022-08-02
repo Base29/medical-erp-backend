@@ -17,6 +17,7 @@ class TrainingCourse extends Model
     protected $fillable = [
         'role',
         'name',
+        'description',
         'frequency',
         'type',
     ];
