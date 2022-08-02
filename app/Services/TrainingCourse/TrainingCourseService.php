@@ -7,6 +7,7 @@ use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
 use App\Models\TrainingCourse;
+use App\Models\User;
 
 class TrainingCourseService
 {
@@ -139,6 +140,27 @@ class TrainingCourseService
         // Return success response
         return Response::success([
             'training-course' => $trainingCourse->with('modules.lessons')->latest('updated_at')->first(),
+        ]);
+    }
+
+    // Assign user to course
+    public function enrollUserToCourse($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Cast $request->courses to variable $courses
+        $trainingCourses = $request->courses;
+
+        // Loop through $courses array
+        foreach ($trainingCourses as $trainingCourse):
+            // enroll user to course
+            $user->courses()->attach($trainingCourse['course']);
+        endforeach;
+
+        // Return success
+        return Response::success([
+            'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
         ]);
     }
 }

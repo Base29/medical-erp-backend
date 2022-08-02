@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TrainingCourse;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TrainingCourse\AssignUserToTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\CreateCourseModuleRequest;
 use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
 use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
@@ -120,6 +121,21 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->updateTrainingCourse($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Assign course
+    public function enrollCourse(AssignUserToTrainingCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->enrollUserToCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([
