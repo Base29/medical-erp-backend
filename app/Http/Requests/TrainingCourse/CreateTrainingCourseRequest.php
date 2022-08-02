@@ -28,6 +28,7 @@ class CreateTrainingCourseRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
+            'decription' => 'nullable|string|max:2000',
             'type' => [
                 'required',
                 Rule::in(['digital', 'physical']),
