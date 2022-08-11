@@ -10,6 +10,7 @@ use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
 use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\UnassignUserFromTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UpdateTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
 
@@ -136,6 +137,21 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->enrollUserToCourse($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Unroll user
+    public function unrollUser(UnassignUserFromTrainingCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->unrollUserFromCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([

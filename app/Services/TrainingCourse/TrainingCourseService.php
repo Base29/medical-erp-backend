@@ -164,4 +164,25 @@ class TrainingCourseService
             'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
         ]);
     }
+
+    // Unroll user from course
+    public function unrollUserFromCourse($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Cast $request->courses to variable $courses
+        $trainingCourses = $request->courses;
+
+        // Loop through $courses array
+        foreach ($trainingCourses as $trainingCourse):
+            // enroll user to course
+            $user->courses()->detach($trainingCourse['course']);
+        endforeach;
+
+        // Return success
+        return Response::success([
+            'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
+        ]);
+    }
 }
