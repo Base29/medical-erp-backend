@@ -27,7 +27,7 @@ class TrainingCourse extends Model
         return $this->hasMany(CourseModule::class, 'course', 'id');
     }
 
-    public function users()
+    public function enrolledUsers()
     {
         return $this->belongsToMany(User::class);
     }

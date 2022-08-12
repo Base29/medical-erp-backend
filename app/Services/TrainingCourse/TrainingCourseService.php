@@ -36,7 +36,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
-            'training-course' => $trainingCourse->with('roles')->latest()->first(),
+            'training-course' => $trainingCourse->with('modules.lessons', 'roles', 'enrolledUsers.profile')->latest()->first(),
         ]);
     }
 
@@ -92,7 +92,7 @@ class TrainingCourseService
     public function fetchAllTrainingCourses()
     {
         // Get training courses
-        $trainingCourses = TrainingCourse::with('modules.lessons', 'roles')->paginate(10);
+        $trainingCourses = TrainingCourse::with('modules.lessons', 'roles', 'enrolledUsers.profile')->paginate(10);
 
         // Return success response
         return Response::success([
@@ -105,7 +105,7 @@ class TrainingCourseService
     {
         // Get training course
         $trainingCourse = TrainingCourse::where('id', $request->course)
-            ->with('modules.lessons', 'roles')
+            ->with('modules.lessons', 'roles', 'enrolledUsers.profile')
             ->firstOrFail();
 
         // Return success request
@@ -118,7 +118,7 @@ class TrainingCourseService
     public function deleteTrainingCourse($request)
     {
         // Get training course
-        $trainingCourse = TrainingCourse::where('id', $request->course)->with('modules.lessons', 'roles')->firstOrFail();
+        $trainingCourse = TrainingCourse::where('id', $request->course)->with('modules.lessons', 'roles', 'enrolledUsers.profile')->firstOrFail();
 
         // Delete training course
         $trainingCourse->delete();
@@ -140,7 +140,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
-            'training-course' => $trainingCourse->with('modules.lessons', 'roles')->latest('updated_at')->first(),
+            'training-course' => $trainingCourse->with('modules.lessons', 'roles', 'enrolledUsers.profile')->latest('updated_at')->first(),
         ]);
     }
 
