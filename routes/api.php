@@ -770,6 +770,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('sign-employee-handbook', [EmployeeHandbookController::class, 'sign']);
             Route::post('sign-it-policies', [ItPolicyController::class, 'sign']);
             Route::post('sign-contract-summary', [ContractSummaryController::class, 'sign']);
+            Route::post('update-profile', [ProfileController::class, 'update']);
         });
     });
 

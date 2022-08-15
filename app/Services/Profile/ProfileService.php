@@ -11,6 +11,13 @@ class ProfileService
     // Update profile
     public function updateProfile($request)
     {
+
+        // Check $request route
+        if (!$request->is('api/us/me/*')) {
+            if (!$request->has('profile')) {
+                throw new \Exception(ResponseMessage::customMessage('Profile field is required.'));
+            }
+        }
         // Allowed fields when updating a task
         $allowedFields = [
             'first_name',
@@ -38,8 +45,15 @@ class ProfileService
             throw new \Exception(ResponseMessage::allowedFields($allowedFields));
         }
 
-        // Get profile
-        $profile = Profile::findOrFail($request->profile);
+        // Get authenticated user profile
+        if ($request->is('api/us/me/*')) {
+            $user = auth()->user();
+
+            $profile = $user->profile;
+        } else {
+            // Get profile
+            $profile = Profile::findOrFail($request->profile);
+        }
 
         // Update Profile
         $profileUpdated = UpdateService::updateModel($profile, $request->validated(), 'profile');
