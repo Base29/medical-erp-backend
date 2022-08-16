@@ -27,8 +27,9 @@ class LessonProgressRequest extends FormRequest
     {
         return [
             'lesson' => 'required|numeric|exists:module_lessons,id',
+            'completed_at' => 'required|date|date_format:Y-m-d',
             'is_completed' => 'required|boolean',
-            'completion_evidence' => 'required_if:is_completed,1|file|mimes:png,jpg,pdf|size:2048',
+            'completion_evidence' => 'required_if:is_completed,1|file|mimes:png,jpg,pdf|max:4088',
         ];
     }
 

@@ -380,6 +380,16 @@ class UserService
         // Save progress
         $lessonProgress = new LessonProgress();
         $lessonProgress->lesson = $lesson->id;
+        $lessonProgress->user = $authenticatedUser->id;
+        $lessonProgress->completed_at = $request->completed_at;
+        $lessonProgress->is_completed = $request->is_completed;
+        $lessonProgress->completion_evidence = $completionEvidenceUrl;
+        $lessonProgress->save();
+
+        // Return success response
+        return Response::success([
+            'lesson-progress' => $lessonProgress,
+        ]);
     }
 
     // Fetch user training courses
