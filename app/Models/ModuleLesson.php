@@ -22,7 +22,7 @@ class ModuleLesson extends Model
     public function module()
     {
         return $this->belongsTo(
-            CourseModule::class
+            CourseModule::class, 'module', 'id'
         );
     }
 

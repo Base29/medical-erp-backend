@@ -29,7 +29,7 @@ class CourseModule extends Model
 
     public function course()
     {
-        return $this->belongsTo(TrainingCourse::class);
+        return $this->belongsTo(TrainingCourse::class, 'course', 'id');
     }
 
     public function progress()

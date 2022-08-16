@@ -11,6 +11,7 @@ use App\Models\HiringRequest;
 use App\Models\MiscellaneousInformation;
 use App\Models\PositionSummary;
 use App\Models\Profile;
+use App\Models\TrainingCourse;
 use App\Models\User;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
@@ -351,6 +352,22 @@ class UserService
         // Return success response
         return Response::success([
             'candidate' => $candidate,
+        ]);
+    }
+
+    // Fetch user training courses
+    public function fetchUserTrainingCourses()
+    {
+        // Get user
+        $authenticatedUser = auth()->user()->id;
+
+        // Get user courses
+        $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
+            $q->where('user_id', $authenticatedUser);
+        })->with('modules.lessons')->paginate(10);
+
+        return Response::success([
+            'user-courses' => $userCourses,
         ]);
     }
 }
