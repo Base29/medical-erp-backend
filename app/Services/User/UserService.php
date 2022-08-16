@@ -8,11 +8,13 @@ use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\ContractSummary;
 use App\Models\CourseModule;
+use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\LessonProgress;
 use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
+use App\Models\ModuleProgress;
 use App\Models\PositionSummary;
 use App\Models\Profile;
 use App\Models\TrainingCourse;
@@ -78,7 +80,7 @@ class UserService
         $user->is_active = $request->is_candidate ? 0 : 1;
         $user->is_candidate = $request->is_candidate ? $request->is_candidate : 0;
         $user->department_id = $request->is_candidate ? $department->id : null;
-        $user->generic_user = $request->generic_user;
+        $user->generic_user = $request->generic_user ? $request->generic_user : null;
         $user->save();
 
         // Create profile for the user
@@ -405,6 +407,66 @@ class UserService
 
         return Response::success([
             'user-courses' => $userCourses,
+        ]);
+    }
+
+    // Record module progress
+    public function recordModuleProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Module
+        $module = CourseModule::where('id', $request->module)->with('course')->firstOrFail();
+
+        // Module completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $module->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $moduleProgress = new ModuleProgress();
+        $moduleProgress->module = $module->id;
+        $moduleProgress->user = $authenticatedUser->id;
+        $moduleProgress->completed_at = $request->completed_at;
+        $moduleProgress->is_completed = $request->is_completed;
+        $moduleProgress->completion_evidence = $completionEvidenceUrl;
+        $moduleProgress->save();
+
+        // Return success response
+        return Response::success([
+            'module-progress' => $moduleProgress,
+        ]);
+    }
+
+    // Record course progress
+    public function recordCourseProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Course
+        $course = TrainingCourse::where('id', $request->course)->firstOrFail();
+
+        // Module completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $course->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $courseProgress = new CourseProgress();
+        $courseProgress->course = $course->id;
+        $courseProgress->user = $authenticatedUser->id;
+        $courseProgress->completed_at = $request->completed_at;
+        $courseProgress->is_completed = $request->is_completed;
+        $courseProgress->completion_evidence = $completionEvidenceUrl;
+        $courseProgress->save();
+
+        // Return success response
+        return Response::success([
+            'module-progress' => $courseProgress,
         ]);
     }
 }
