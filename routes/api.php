@@ -772,6 +772,13 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('sign-contract-summary', [ContractSummaryController::class, 'sign']);
             Route::post('update-profile', [ProfileController::class, 'update']);
         });
+
+        // Routes for user's trainings
+        Route::prefix('trainings')->middleware(['permission:can_manage_own_trainings'])->group(function () {
+            Route::prefix('lessons')->group(function () {
+                Route::post('record-progress', [UserController::class, 'recordLesson']);
+            });
+        });
     });
 
     // Endpoints for Manager

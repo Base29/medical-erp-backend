@@ -8,6 +8,7 @@ use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
+use App\Http\Requests\User\LessonProgressRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -129,6 +130,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->hireCandidate($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Record lesson progress
+    public function recordLesson(LessonProgressRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->recordLessonProgress($request);
 
         } catch (\Exception $e) {
             return Response::fail([

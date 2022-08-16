@@ -1,14 +1,18 @@
 <?php
 namespace App\Services\User;
 
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\ContractSummary;
+use App\Models\CourseModule;
 use App\Models\Department;
 use App\Models\HiringRequest;
+use App\Models\LessonProgress;
 use App\Models\MiscellaneousInformation;
+use App\Models\ModuleLesson;
 use App\Models\PositionSummary;
 use App\Models\Profile;
 use App\Models\User;
@@ -352,5 +356,29 @@ class UserService
         return Response::success([
             'candidate' => $candidate,
         ]);
+    }
+
+    // Record lesson progress
+    public function recordLessonProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get lesson
+        $lesson = ModuleLesson::where('id', $request->lesson)->with('module')->firstOrFail();
+
+        // Module
+        $module = CourseModule::where('id', $lesson->module)->with('course')->firstOrFail();
+
+        // Lesson completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $lesson->module . '/lesson-' . $lesson->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $lessonProgress = new LessonProgress();
+        $lessonProgress->lesson = $lesson->id;
+
     }
 }
