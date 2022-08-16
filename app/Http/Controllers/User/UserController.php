@@ -4,10 +4,13 @@ namespace App\Http\Controllers\User;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
+use App\Http\Requests\User\LessonProgressRequest;
+use App\Http\Requests\User\ModuleProgressRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -138,6 +141,20 @@ class UserController extends Controller
         }
     }
 
+    // Record lesson progress
+    public function recordLesson(LessonProgressRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->recordLessonProgress($request);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
     // Fetch user courses
     public function userTrainingCourses()
     {
@@ -145,6 +162,36 @@ class UserController extends Controller
 
             // Logic here
             return $this->userService->fetchUserTrainingCourses();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Record module progress
+    public function recordModule(ModuleProgressRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->recordModuleProgress($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Record course progress
+    public function recordCourse(CourseProgressRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->recordCourseProgress($request);
 
         } catch (\Exception $e) {
             return Response::fail([
