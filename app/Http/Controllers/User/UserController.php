@@ -137,4 +137,20 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch user courses
+    public function userTrainingCourses()
+    {
+        try {
+
+            // Logic here
+            return $this->userService->fetchUserTrainingCourses();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
