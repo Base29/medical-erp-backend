@@ -145,6 +145,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->recordLessonProgress($request);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch user courses
+    public function userTrainingCourses()
+    {
+        try {
+
+            // Logic here
+            return $this->userService->fetchUserTrainingCourses();
 
         } catch (\Exception $e) {
             return Response::fail([

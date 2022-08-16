@@ -773,8 +773,14 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update-profile', [ProfileController::class, 'update']);
         });
 
-        // Routes for user's trainings
+        // Routes for user's training
+
         Route::prefix('trainings')->middleware(['permission:can_manage_own_trainings'])->group(function () {
+            Route::prefix('courses')->group(function () {
+                Route::get('/', [UserController::class, 'userTrainingCourses']);
+
+            });
+
             Route::prefix('lessons')->group(function () {
                 Route::post('record-progress', [UserController::class, 'recordLesson']);
             });

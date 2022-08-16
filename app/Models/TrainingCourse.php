@@ -22,6 +22,10 @@ class TrainingCourse extends Model
         'type',
     ];
 
+    protected $hidden = [
+        'pivot',
+    ];
+
     public function modules()
     {
         return $this->hasMany(CourseModule::class, 'course', 'id');

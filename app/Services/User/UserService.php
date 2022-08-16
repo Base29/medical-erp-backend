@@ -15,6 +15,7 @@ use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
 use App\Models\PositionSummary;
 use App\Models\Profile;
+use App\Models\TrainingCourse;
 use App\Models\User;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
@@ -379,6 +380,21 @@ class UserService
         // Save progress
         $lessonProgress = new LessonProgress();
         $lessonProgress->lesson = $lesson->id;
+    }
 
+    // Fetch user training courses
+    public function fetchUserTrainingCourses()
+    {
+        // Get user
+        $authenticatedUser = auth()->user()->id;
+
+        // Get user courses
+        $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
+            $q->where('user_id', $authenticatedUser);
+        })->with('modules.lessons')->paginate(10);
+
+        return Response::success([
+            'user-courses' => $userCourses,
+        ]);
     }
 }
