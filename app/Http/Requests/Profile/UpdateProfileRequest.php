@@ -26,7 +26,7 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'profile' => 'required|numeric|exists:profiles,id',
+            'profile' => 'nullable|numeric|exists:profiles,id',
             'first_name' => 'string',
             'last_name' => 'string',
             'middle_name' => 'string',
