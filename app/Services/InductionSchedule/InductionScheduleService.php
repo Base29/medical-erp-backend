@@ -45,7 +45,7 @@ class InductionScheduleService
 
         // Return success response
         return $inductionSchedule
-            ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'practice', 'inductionChecklists.inductionQuestions')
             ->first();
     }
 
@@ -67,7 +67,7 @@ class InductionScheduleService
 
         // Get induction schedules for the $practice
         return InductionSchedule::where('practice_id', $practice->id)
-            ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'practice', 'inductionChecklists.inductionQuestions')
             ->latest()
             ->paginate(10);
     }
