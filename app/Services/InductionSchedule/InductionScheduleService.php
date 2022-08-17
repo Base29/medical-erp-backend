@@ -92,7 +92,7 @@ class InductionScheduleService
     {
         // Get user induction
         $userInduction = InductionSchedule::where('user_id', $request->user)
-            ->with('inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'inductionChecklists.inductionQuestions')
             ->firstOrFail();
 
         // Return success response
@@ -106,7 +106,7 @@ class InductionScheduleService
     {
         // Get induction
         $induction = InductionSchedule::where('id', $request->induction)
-            ->with('inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'inductionChecklists.inductionQuestions')
             ->firstOrFail();
 
         // Return success response
