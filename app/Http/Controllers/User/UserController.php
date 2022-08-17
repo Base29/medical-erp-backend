@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CourseProgressRequest;
+use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUsersRequest;
@@ -192,6 +193,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->recordCourseProgress($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // End of module exam
+    public function endOfModuleExam(CreateEndOfModuleExamRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->createEndOfModuleExam($request);
 
         } catch (\Exception $e) {
             return Response::fail([

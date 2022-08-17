@@ -8,6 +8,7 @@ use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\ContractSummary;
 use App\Models\CourseModule;
+use App\Models\CourseModuleExam;
 use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
@@ -467,6 +468,40 @@ class UserService
         // Return success response
         return Response::success([
             'module-progress' => $courseProgress,
+        ]);
+    }
+
+    // Record end of module exam
+    public function createEndOfModuleExam($request)
+    {
+        // Get module
+        $module = CourseModule::findOrFail($request->module);
+
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Initiate instance of CourseModuleExam
+        $moduleExam = new CourseModuleExam();
+        $moduleExam->module = $module->id;
+        $moduleExam->user = $authenticatedUser->id;
+        $moduleExam->type = $request->type;
+        $moduleExam->number_of_questions = $request->number_of_questions;
+        $moduleExam->is_restricted = $request->is_restricted;
+        $moduleExam->duration = $request->duration;
+        $moduleExam->description = $request->description;
+        $moduleExam->url = $request->url;
+        $moduleExam->is_passing_percentage = $request->is_passing_percentage;
+        $moduleExam->passing_percentage = $request->passing_percentage;
+        $moduleExam->is_passed = $request->is_passed;
+        $moduleExam->grade_achieved = $request->grade_achieved;
+        $moduleExam->percentage_achieved = $request->percentage_achieved;
+
+        // Save module exam
+        $moduleExam->save();
+
+        // Return success response
+        return Response::success([
+            'module-exam' => $moduleExam,
         ]);
     }
 }
