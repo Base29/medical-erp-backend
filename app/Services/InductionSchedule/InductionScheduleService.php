@@ -80,6 +80,11 @@ class InductionScheduleService
 
         // Delete induction schedule
         $inductionSchedule->delete();
+
+        // Return success response
+        return Response::success([
+            'induction-schedule' => $inductionSchedule,
+        ]);
     }
 
     // Fetch user induction
