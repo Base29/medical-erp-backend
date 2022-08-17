@@ -283,4 +283,9 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(LessonProgress::class);
     }
+
+    public function endOfModuleExams()
+    {
+        return $this->hasMany(CourseModuleExam::class);
+    }
 }

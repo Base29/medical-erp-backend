@@ -469,4 +469,10 @@ class UserService
             'module-progress' => $courseProgress,
         ]);
     }
+
+    // Record end of module exam
+    public function createEndOfModuleExam($request)
+    {
+        //
+    }
 }

@@ -36,4 +36,9 @@ class CourseModule extends Model
     {
         return $this->hasMany(ModuleProgress::class);
     }
+
+    public function endOfModuleExams()
+    {
+        return $this->hasMany(CourseModuleExam::class);
+    }
 }
