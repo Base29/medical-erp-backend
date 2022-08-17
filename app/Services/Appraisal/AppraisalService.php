@@ -488,6 +488,7 @@ class AppraisalService
             ->with(
                 'user.profile',
                 'user.workPatterns.workTimings',
+                'user.department',
                 'appraisalPolicies.questions.options',
                 'practice'
             )
