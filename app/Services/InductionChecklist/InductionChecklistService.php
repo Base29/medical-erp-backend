@@ -24,6 +24,7 @@ class InductionChecklistService
         // Instance of InductionChecklist model
         $inductionChecklist = new InductionChecklist();
         $inductionChecklist->name = $request->name;
+        $inductionChecklist->description = $request->description;
         $inductionChecklist->role_id = $role->id;
         $practice->inductionChecklists()->save($inductionChecklist);
 
@@ -102,6 +103,7 @@ class InductionChecklistService
         // Allowed fields
         $allowedFields = [
             'name',
+            'description',
             'questions',
         ];
 
