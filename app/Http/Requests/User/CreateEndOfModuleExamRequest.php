@@ -27,18 +27,17 @@ class CreateEndOfModuleExamRequest extends FormRequest
     {
         return [
             'module' => 'required|numeric|exists:course_modules,id',
-            'user' => 'required|numeric|exists:users,id',
             'type' => 'required|string',
             'number_of_questions' => 'required|numeric',
-            'is_restricted',
-            'duration',
-            'description',
-            'url',
-            'is_passing_percentage',
-            'passing_percentage',
-            'is_passed',
-            'grade_achieved',
-            'percentage_achieved',
+            'is_restricted' => 'nullable|boolean',
+            'duration' => 'nullable|string',
+            'description' => 'nullable|string|max:2000',
+            'url' => 'nullable|string',
+            'is_passing_percentage' => 'nullable|boolean',
+            'passing_percentage' => 'required_if:is_passing_percentage,1|numeric',
+            'is_passed' => 'nullable|boolean',
+            'grade_achieved' => 'required_if:is_passed,1|string',
+            'percentage_achieved' => 'required_if:is_passed,1|numeric',
         ];
     }
 
