@@ -490,7 +490,7 @@ class AppraisalService
                 'user.workPatterns.workTimings',
                 'user.department.departmentHead.profile',
                 'appraisalPolicies.questions.options',
-                'practice'
+                'practice.practiceManager.profile'
             )
             ->firstOrFail();
 
