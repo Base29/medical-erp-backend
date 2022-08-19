@@ -26,7 +26,7 @@ class ModuleProgressRequest extends FormRequest
     public function rules()
     {
         return [
-            'module' => 'required|numeric|exists:course_module,id',
+            'module' => 'required|numeric|exists:course_modules,id',
             'completed_at' => 'required|date|date_format:Y-m-d',
             'is_completed' => 'required|boolean',
             'completion_evidence' => 'required_if:is_completed,1|file|mimes:png,jpg,pdf|max:4088',
