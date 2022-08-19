@@ -504,4 +504,26 @@ class UserService
             'module-exam' => $moduleExam,
         ]);
     }
+
+    // Get single enrolled course
+    public function fetchSingleEnrolledCourse($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        $isUserEnrolledToCourse = $authenticatedUser->courses->contains($request->course);
+
+        if (!$isUserEnrolledToCourse) {
+            throw new \Exception(ResponseMessage::customMessage('User is not enrolled to the provided course'));
+        }
+
+        // Get user courses
+        $userCourse = TrainingCourse::where('id', $request->course)
+            ->with('modules.lessons')
+            ->firstOrFail();
+
+        return Response::success([
+            'user-course' => $userCourse,
+        ]);
+    }
 }

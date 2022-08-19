@@ -780,6 +780,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('trainings')->middleware(['permission:can_manage_own_trainings'])->group(function () {
             Route::prefix('courses')->group(function () {
                 Route::get('/', [UserController::class, 'userTrainingCourses']);
+                Route::post('course', [UserController::class, 'singleEnrolledCourse']);
             });
 
             Route::prefix('progress')->group(function () {

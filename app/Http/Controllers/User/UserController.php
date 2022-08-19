@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
@@ -208,6 +209,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->createEndOfModuleExam($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Single enrolled course
+    public function singleEnrolledCourse(FetchSingleEnrolledCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchSingleEnrolledCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([
