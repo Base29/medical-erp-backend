@@ -374,6 +374,14 @@ class UserService
         // Module
         $module = CourseModule::where('id', $lesson->module)->with('course')->firstOrFail();
 
+        // Check if $authenticatedUser already recorded progress
+
+        $lessonProgress = new LessonProgress();
+
+        if ($lessonProgress->alreadyRecordedProgress($lesson->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this lesson'));
+        }
+
         // Lesson completion evidence folder path on S3
         $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $lesson->module . '/lesson-' . $lesson->id;
 
@@ -381,7 +389,6 @@ class UserService
         $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
 
         // Save progress
-        $lessonProgress = new LessonProgress();
         $lessonProgress->lesson = $lesson->id;
         $lessonProgress->user = $authenticatedUser->id;
         $lessonProgress->completed_at = $request->completed_at;
@@ -420,6 +427,13 @@ class UserService
         // Module
         $module = CourseModule::where('id', $request->module)->with('course')->firstOrFail();
 
+        // Check if $authenticatedUser has already recorded progress
+        $moduleProgress = new ModuleProgress();
+
+        if ($moduleProgress->alreadyRecordedProgress($module->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this module'));
+        }
+
         // Module completion evidence folder path on S3
         $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $module->id;
 
@@ -427,7 +441,6 @@ class UserService
         $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
 
         // Save progress
-        $moduleProgress = new ModuleProgress();
         $moduleProgress->module = $module->id;
         $moduleProgress->user = $authenticatedUser->id;
         $moduleProgress->completed_at = $request->completed_at;
@@ -450,6 +463,13 @@ class UserService
         // Course
         $course = TrainingCourse::where('id', $request->course)->firstOrFail();
 
+        // Check if $authenticatedUser has already recorded progress
+        $courseProgress = new CourseProgress();
+
+        if ($courseProgress->alreadyRecordedProgress($course->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this course'));
+        }
+
         // Module completion evidence folder path on S3
         $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $course->id;
 
@@ -457,7 +477,6 @@ class UserService
         $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
 
         // Save progress
-        $courseProgress = new CourseProgress();
         $courseProgress->course = $course->id;
         $courseProgress->user = $authenticatedUser->id;
         $courseProgress->completed_at = $request->completed_at;
@@ -519,11 +538,11 @@ class UserService
 
         // Get user courses
         $userCourse = TrainingCourse::where('id', $request->course)
-            ->with(['modules.lessons', 'modules.progress' => function ($q) use ($authenticatedUser) {
+            ->with(['modules.lessons', 'modules.moduleProgress' => function ($q) use ($authenticatedUser) {
                 $q->where('user', $authenticatedUser->id);
-            }, 'modules.lessons.progress' => function ($q) use ($authenticatedUser) {
+            }, 'modules.lessons.lessonProgress' => function ($q) use ($authenticatedUser) {
                 $q->where('user', $authenticatedUser->id);
-            }, 'progress' => function ($q) use ($authenticatedUser) {
+            }, 'courseProgress' => function ($q) use ($authenticatedUser) {
                 $q->where('user', $authenticatedUser->id);
             }])
             ->firstOrFail();

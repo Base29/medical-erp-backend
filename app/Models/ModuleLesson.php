@@ -26,7 +26,7 @@ class ModuleLesson extends Model
         );
     }
 
-    public function progress()
+    public function lessonProgress()
     {
         return $this->hasMany(LessonProgress::class, 'lesson', 'id');
     }

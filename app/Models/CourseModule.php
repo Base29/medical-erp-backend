@@ -35,7 +35,7 @@ class CourseModule extends Model
         return $this->belongsTo(TrainingCourse::class, 'course', 'id');
     }
 
-    public function progress()
+    public function moduleProgress()
     {
         return $this->hasMany(ModuleProgress::class, 'module', 'id');
     }

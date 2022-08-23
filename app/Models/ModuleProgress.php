@@ -28,4 +28,15 @@ class ModuleProgress extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function alreadyRecordedProgress($moduleId, $userId)
+    {
+        $progressRecorded = $this->where(['module' => $moduleId, 'user' => $userId])->first();
+
+        if ($progressRecorded === null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }

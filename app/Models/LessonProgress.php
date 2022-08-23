@@ -28,4 +28,15 @@ class LessonProgress extends Model
     {
         return $this->belongsTo(User::class);
     }
+
+    public function alreadyRecordedProgress($lessonId, $userId)
+    {
+        $progressRecorded = $this->where(['lesson' => $lessonId, 'user' => $userId])->first();
+
+        if ($progressRecorded === null) {
+            return false;
+        } else {
+            return true;
+        }
+    }
 }
