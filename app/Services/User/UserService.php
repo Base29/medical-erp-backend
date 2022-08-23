@@ -433,6 +433,7 @@ class UserService
         $moduleProgress->completed_at = $request->completed_at;
         $moduleProgress->is_completed = $request->is_completed;
         $moduleProgress->completion_evidence = $completionEvidenceUrl;
+        $moduleProgress->is_exam_required = $request->is_exam_required;
         $moduleProgress->save();
 
         // Return success response

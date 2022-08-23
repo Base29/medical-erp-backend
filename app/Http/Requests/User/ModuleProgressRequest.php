@@ -30,6 +30,7 @@ class ModuleProgressRequest extends FormRequest
             'completed_at' => 'required|date|date_format:Y-m-d',
             'is_completed' => 'required|boolean',
             'completion_evidence' => 'required_if:is_completed,1|file|mimes:png,jpg,pdf|max:4088',
+            'is_exam_required' => 'required|boolean',
         ];
     }
 
