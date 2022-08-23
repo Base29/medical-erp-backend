@@ -38,7 +38,7 @@ class TrainingCourse extends Model
 
     public function progress()
     {
-        return $this->hasMany(CourseProgress::class);
+        return $this->hasMany(CourseProgress::class, 'course', 'id');
     }
 
     public function roles()
