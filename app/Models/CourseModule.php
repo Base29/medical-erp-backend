@@ -22,6 +22,7 @@ class CourseModule extends Model
         'is_required',
         'frequency',
         'reminder',
+        'is_exam_required',
     ];
 
     public function lessons()

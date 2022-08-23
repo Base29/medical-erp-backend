@@ -54,6 +54,7 @@ class TrainingCourseService
         $courseModule->is_required = $request->is_required;
         $courseModule->frequency = $request->frequency;
         $courseModule->reminder = $request->reminder;
+        $courseModule->is_exam_required = $request->is_exam_required;
 
         // Save Module
         $courseModule->save();

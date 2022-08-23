@@ -32,6 +32,7 @@ class CreateCourseModuleRequest extends FormRequest
             'is_required' => 'nullable|boolean',
             'frequency' => 'nullable|string',
             'reminder' => 'nullable|numeric',
+            'is_exam_required' => 'required|boolean',
         ];
     }
 

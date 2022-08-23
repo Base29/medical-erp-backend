@@ -17,7 +17,6 @@ class ModuleProgress extends Model
         'user',
         'completed_at',
         'completion_evidence',
-        'is_exam_required',
     ];
 
     public function modules()
