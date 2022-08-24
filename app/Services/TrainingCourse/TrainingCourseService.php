@@ -93,7 +93,9 @@ class TrainingCourseService
     public function fetchAllTrainingCourses()
     {
         // Get training courses
-        $trainingCourses = TrainingCourse::with('modules.lessons', 'roles', 'enrolledUsers.profile')->paginate(10);
+        $trainingCourses = TrainingCourse::with('modules.lessons', 'roles', 'enrolledUsers.profile')
+            ->withCount('enrolledUsers', 'modules')
+            ->paginate(10);
 
         // Return success response
         return Response::success([
@@ -107,6 +109,7 @@ class TrainingCourseService
         // Get training course
         $trainingCourse = TrainingCourse::where('id', $request->course)
             ->with('modules.lessons', 'roles', 'enrolledUsers.profile')
+            ->withCount('enrolledUsers', 'modules')
             ->firstOrFail();
 
         // Return success request
@@ -141,7 +144,10 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
-            'training-course' => $trainingCourse->with('modules.lessons', 'roles', 'enrolledUsers.profile')->latest('updated_at')->first(),
+            'training-course' => $trainingCourse->with('modules.lessons', 'roles', 'enrolledUsers.profile')
+                ->withCount('enrolledUsers', 'modules')
+                ->latest('updated_at')
+                ->first(),
         ]);
     }
 
