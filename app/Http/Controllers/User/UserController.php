@@ -232,4 +232,19 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch employees
+    public function employees()
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchEmployees();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
