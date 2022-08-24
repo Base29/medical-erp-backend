@@ -411,7 +411,9 @@ class UserService
         // Get user courses
         $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
             $q->where('user_id', $authenticatedUser);
-        })->with('modules.lessons')->paginate(10);
+        })->with(['modules.lessons', 'modules' => function ($q) {
+            $q->withCount('lessons');
+        }])->withCount('modules')->paginate(10);
 
         return Response::success([
             'user-courses' => $userCourses,
@@ -544,7 +546,10 @@ class UserService
                 $q->where('user', $authenticatedUser->id);
             }, 'courseProgress' => function ($q) use ($authenticatedUser) {
                 $q->where('user', $authenticatedUser->id);
+            }, 'modules' => function ($q) {
+                $q->withCount('lessons');
             }])
+            ->withCount('modules')
             ->firstOrFail();
 
         return Response::success([
