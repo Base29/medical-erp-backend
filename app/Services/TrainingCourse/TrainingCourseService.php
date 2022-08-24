@@ -95,7 +95,7 @@ class TrainingCourseService
         // Get training courses
         $trainingCourses = TrainingCourse::with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
             $q->withCount('lessons');
-        }])
+        }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
             ->paginate(10);
 
@@ -112,7 +112,7 @@ class TrainingCourseService
         $trainingCourse = TrainingCourse::where('id', $request->course)
             ->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
                 $q->withCount('lessons');
-            }])
+            }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
             ->firstOrFail();
 
@@ -196,6 +196,45 @@ class TrainingCourseService
         // Return success
         return Response::success([
             'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
+        ]);
+    }
+
+    // Assign course to users
+    public function assignCourseToUsers($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $users = $request->users;
+
+        // Loop through $users array
+        foreach ($users as $user):
+            $course->enrolledUsers()->attach($user['user']);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
+        ]);
+    }
+
+    public function unassignUsersFromCourse($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $users = $request->users;
+
+        // Loop through $users array
+        foreach ($users as $user):
+            $course->enrolledUsers()->detach($user['user']);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
         ]);
     }
 }

@@ -866,6 +866,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('unroll-user', [TrainingCourseController::class, 'unrollCourse'])
                 ->middleware(['permission:can_manage_training_course']);
 
+            Route::post('assign-to-users', [TrainingCourseController::class, 'assignToUsers'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('unassign-users', [TrainingCourseController::class, 'unassignUsers'])
+                ->middleware(['permission:can_manage_training_course']);
+
             Route::prefix('modules')->group(function () {
                 Route::post('create', [TrainingCourseController::class, 'createModule'])
                     ->middleware(['permission:can_manage_training_course']);
