@@ -654,6 +654,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create-score', [InterviewController::class, 'score'])
                 ->middleware(['permission:can_create_interview_score|can_manage_interview']);
 
+            Route::get('all-interviews', [InterviewController::class, 'getAll'])
+                ->middleware(['permission:can_manage_interview']);
+
             // Routes for interview policies
             Route::prefix('policies')->group(function () {
                 Route::post('create', [InterviewPolicyController::class, 'create'])
@@ -864,6 +867,12 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_manage_training_course']);
 
             Route::post('unroll-user', [TrainingCourseController::class, 'unrollCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('assign-to-users', [TrainingCourseController::class, 'assignToUsers'])
+                ->middleware(['permission:can_manage_training_course']);
+
+            Route::post('unassign-users', [TrainingCourseController::class, 'unassignUsers'])
                 ->middleware(['permission:can_manage_training_course']);
 
             Route::prefix('modules')->group(function () {

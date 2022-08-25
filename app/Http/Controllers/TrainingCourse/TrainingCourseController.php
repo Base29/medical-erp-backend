@@ -4,6 +4,7 @@ namespace App\Http\Controllers\TrainingCourse;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\TrainingCourse\AssignCourseToUsersRequest;
 use App\Http\Requests\TrainingCourse\AssignUserToTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\CreateCourseModuleRequest;
 use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
@@ -11,6 +12,7 @@ use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UnassignUserFromTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\UnassignUsersFromCourseRequest;
 use App\Http\Requests\TrainingCourse\UpdateTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
 
@@ -152,6 +154,36 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->unrollUserFromCourse($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Assign course to users
+    public function assignToUsers(AssignCourseToUsersRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->assignCourseToUsers($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Unassign course from users
+    public function unassignUsers(UnassignUsersFromCourseRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->unassignUsersFromCourse($request);
 
         } catch (\Exception $e) {
             return Response::fail([

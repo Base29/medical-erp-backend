@@ -95,7 +95,7 @@ class TrainingCourseService
         // Get training courses
         $trainingCourses = TrainingCourse::with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
             $q->withCount('lessons');
-        }])
+        }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
             ->paginate(10);
 
@@ -112,7 +112,7 @@ class TrainingCourseService
         $trainingCourse = TrainingCourse::where('id', $request->course)
             ->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
                 $q->withCount('lessons');
-            }])
+            }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
             ->firstOrFail();
 
@@ -163,13 +163,42 @@ class TrainingCourseService
         // Get user
         $user = User::findOrFail($request->user);
 
-        // Cast $request->courses to variable $courses
-        $trainingCourses = $request->courses;
+        // Get already assigned courses
+        $alreadyAssignedCourses = $user->courses;
 
-        // Loop through $courses array
-        foreach ($trainingCourses as $trainingCourse):
+        // Initiate empty array for IDs for $alreadyAssignedCourses
+        $alreadyAssignedCoursesIds = [];
+
+        // Extract IDs of already assigned courses
+        foreach ($alreadyAssignedCourses as $alreadyAssignedCourse):
+            array_push($alreadyAssignedCoursesIds, $alreadyAssignedCourse['id']);
+        endforeach;
+
+        // Cast $request->courses to variable $courses
+        $newTrainingCoursesToAssign = $request->courses;
+
+        // Initiate array for new course ids
+        $newTrainingCourseIds = [];
+
+        foreach ($newTrainingCoursesToAssign as $newTrainingCourseToAssign):
+            array_push($newTrainingCourseIds, $newTrainingCourseToAssign['course']);
+        endforeach;
+
+        // Check if $newTrainingCoursesToAssign array contains ids of courses that are already assigned to the user and return new ids
+        $trainingCoursesToBeAssigned = array_diff($newTrainingCourseIds, $alreadyAssignedCoursesIds);
+
+        // Check if id of the already assigned courses are present in the new set of course ids
+        $coursesToBeUnassigned = array_diff($alreadyAssignedCoursesIds, $newTrainingCourseIds);
+
+        // Loop through $coursesToBeUnassigned array and unassign courses
+        foreach ($coursesToBeUnassigned as $courseToBeUnassigned):
+            $user->courses()->detach($courseToBeUnassigned);
+        endforeach;
+
+        // Loop through $trainingCoursesToBeAssigned array and assign courses
+        foreach ($trainingCoursesToBeAssigned as $trainingCourseToBeAssigned):
             // enroll user to course
-            $user->courses()->attach($trainingCourse['course']);
+            $user->courses()->attach($trainingCourseToBeAssigned);
         endforeach;
 
         // Return success
@@ -196,6 +225,75 @@ class TrainingCourseService
         // Return success
         return Response::success([
             'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
+        ]);
+    }
+
+    // Assign course to users
+    public function assignCourseToUsers($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $alreadyEnrolledUsers = $course->enrolledUsers;
+
+        // Initiate empty array for IDs for $alreadyEnrolledUsers
+        $alreadyEnrolledUsersIds = [];
+
+        // Extract IDs of already enrolled users
+        foreach ($alreadyEnrolledUsers as $alreadyEnrolledUser):
+            array_push($alreadyEnrolledUsersIds, $alreadyEnrolledUser['id']);
+        endforeach;
+
+        // Cast $request->users to variable $newUsersToEnroll
+        $newUsersToEnroll = $request->users;
+
+        // Initiate array for new user ids
+        $newUsersIds = [];
+
+        foreach ($newUsersToEnroll as $newUserToEnroll):
+            array_push($newUsersIds, $newUserToEnroll['user']);
+        endforeach;
+
+        // Check if $newUsersToEnroll array contains ids of users that are already enrolled to the course and return new ids
+        $usersToBeEnrolled = array_diff($newUsersIds, $alreadyEnrolledUsersIds);
+
+        // Check if id of the already assigned courses are present in the new set of course ids
+        $usersToBeUnrolled = array_diff($alreadyEnrolledUsersIds, $newUsersIds);
+
+        // Loop through $usersToBeEnrolled array and unassign courses
+        foreach ($usersToBeUnrolled as $userToBeUnrolled):
+            $course->enrolledUsers()->detach($userToBeUnrolled);
+        endforeach;
+
+        // Loop through $trainingCoursesToBeAssigned array and assign courses
+        foreach ($usersToBeEnrolled as $userToBeEnrolled):
+            // enroll user to course
+            $course->enrolledUsers()->attach($userToBeEnrolled);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
+        ]);
+    }
+
+    public function unassignUsersFromCourse($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $users = $request->users;
+
+        // Loop through $users array
+        foreach ($users as $user):
+            $course->enrolledUsers()->detach($user['user']);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
         ]);
     }
 }

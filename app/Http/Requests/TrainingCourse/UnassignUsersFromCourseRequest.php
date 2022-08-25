@@ -4,10 +4,9 @@ namespace App\Http\Requests\TrainingCourse;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class AssignUserToTrainingCourseRequest extends FormRequest
+class UnassignUsersFromCourseRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,16 +26,9 @@ class AssignUserToTrainingCourseRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
-            'courses' => 'required|array',
-            'courses.*.course' => 'required|numeric|exists:training_courses,id',
-        ];
-    }
-
-    public function messages()
-    {
-        return [
-            'courses.*.course.required' => 'course is invalid',
+            'course' => 'required|numeric|exists:training_courses,id',
+            'users' => 'required|array',
+            'users.*.user' => 'required|numeric|exists:users,id',
         ];
     }
 

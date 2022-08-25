@@ -45,4 +45,11 @@ class TrainingCourse extends Model
     {
         return $this->belongsToMany(Role::class);
     }
+
+    public function alreadyAssignedToCourse($user)
+    {
+        dd($user);
+        return in_array($user, $this->enrolledUsers->toArray());
+        // return $this->enrolledUsers->toArray();
+    }
 }

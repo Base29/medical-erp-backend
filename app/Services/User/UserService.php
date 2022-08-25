@@ -571,7 +571,7 @@ class UserService
     {
         // Get hired users
         $employees = User::where('is_hired', 1)
-            ->with(['profile', 'courses.modules.lessons', 'courses' => function ($q) {
+            ->with(['profile', 'department', 'courses.modules.lessons', 'courses' => function ($q) {
                 $q->with(['modules' => function ($q) {
                     $q->withCount('lessons');
                 }])->withCount('modules');
