@@ -3,7 +3,6 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
@@ -164,13 +163,34 @@ class TrainingCourseService
         // Get user
         $user = User::findOrFail($request->user);
 
+        // Get already assigned courses
+        $alreadyAssignedCourses = $user->courses;
+
+        // Initiate empty array for IDs for $alreadyAssignedCourses
+        $alreadyAssignedCoursesIds = [];
+
+        // Extract IDs of already assigned courses
+        foreach ($alreadyAssignedCourses as $alreadyAssignedCourse):
+            array_push($alreadyAssignedCoursesIds, $alreadyAssignedCourse['id']);
+        endforeach;
+
         // Cast $request->courses to variable $courses
-        $trainingCourses = $request->courses;
+        $newTrainingCoursesToAssign = $request->courses;
+
+        // Initiate array for new course ids
+        $newTrainingCourseIds = [];
+
+        foreach ($newTrainingCoursesToAssign as $newTrainingCourseToAssign):
+            array_push($newTrainingCourseIds, $newTrainingCourseToAssign['course']);
+        endforeach;
+
+        // Check if $newTrainingCoursesToAssign array contains ids of courses that are already assigned to the user and return new ids
+        $trainingCoursesToBeAssigned = array_diff($newTrainingCourseIds, $alreadyAssignedCoursesIds);
 
         // Loop through $courses array
-        foreach ($trainingCourses as $trainingCourse):
+        foreach ($trainingCoursesToBeAssigned as $trainingCourseToBeAssigned):
             // enroll user to course
-            $user->courses()->attach($trainingCourse['course']);
+            $user->courses()->attach($trainingCourseToBeAssigned);
         endforeach;
 
         // Return success
@@ -211,12 +231,6 @@ class TrainingCourseService
 
         // Loop through $users array
         foreach ($users as $user):
-            dd($course->alreadyAssignedToCourse($user['user']));
-
-            // Check if the user is already assigned to course
-            if ($course->alreadyAssignedToCourse($users) !== null) {
-                throw new \Exception(ResponseMessage::customMessage('User ' . $course->alreadyAssignedToCourse() . ' already Assigned to course'));
-            }
             $course->enrolledUsers()->attach($user['user']);
         endforeach;
 

@@ -48,6 +48,8 @@ class TrainingCourse extends Model
 
     public function alreadyAssignedToCourse($user)
     {
-        return $this->enrolledUsers->contains($user);
+        dd($user);
+        return in_array($user, $this->enrolledUsers->toArray());
+        // return $this->enrolledUsers->toArray();
     }
 }
