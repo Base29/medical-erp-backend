@@ -45,4 +45,9 @@ class TrainingCourse extends Model
     {
         return $this->belongsToMany(Role::class);
     }
+
+    public function alreadyAssignedToCourse($user)
+    {
+        return $this->enrolledUsers->contains($user);
+    }
 }

@@ -3,6 +3,7 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
@@ -210,6 +211,12 @@ class TrainingCourseService
 
         // Loop through $users array
         foreach ($users as $user):
+            dd($course->alreadyAssignedToCourse($user['user']));
+
+            // Check if the user is already assigned to course
+            if ($course->alreadyAssignedToCourse($users) !== null) {
+                throw new \Exception(ResponseMessage::customMessage('User ' . $course->alreadyAssignedToCourse() . ' already Assigned to course'));
+            }
             $course->enrolledUsers()->attach($user['user']);
         endforeach;
 
