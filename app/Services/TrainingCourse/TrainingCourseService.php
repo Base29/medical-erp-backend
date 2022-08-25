@@ -187,7 +187,15 @@ class TrainingCourseService
         // Check if $newTrainingCoursesToAssign array contains ids of courses that are already assigned to the user and return new ids
         $trainingCoursesToBeAssigned = array_diff($newTrainingCourseIds, $alreadyAssignedCoursesIds);
 
-        // Loop through $courses array
+        // Check if id of the already assigned courses are present in the new set of course ids
+        $coursesToBeUnassigned = array_diff($alreadyAssignedCoursesIds, $newTrainingCourseIds);
+
+        // Loop through $coursesToBeUnassigned array and unassign courses
+        foreach ($coursesToBeUnassigned as $courseToBeUnassigned):
+            $user->courses()->detach($courseToBeUnassigned);
+        endforeach;
+
+        // Loop through $trainingCoursesToBeAssigned array and assign courses
         foreach ($trainingCoursesToBeAssigned as $trainingCourseToBeAssigned):
             // enroll user to course
             $user->courses()->attach($trainingCourseToBeAssigned);
