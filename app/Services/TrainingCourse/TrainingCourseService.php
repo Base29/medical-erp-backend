@@ -235,11 +235,41 @@ class TrainingCourseService
         $course = TrainingCourse::findOrFail($request->course);
 
         // Cast $request->users array to variable
-        $users = $request->users;
+        $alreadyEnrolledUsers = $course->enrolledUsers;
 
-        // Loop through $users array
-        foreach ($users as $user):
-            $course->enrolledUsers()->attach($user['user']);
+        // Initiate empty array for IDs for $alreadyEnrolledUsers
+        $alreadyEnrolledUsersIds = [];
+
+        // Extract IDs of already enrolled users
+        foreach ($alreadyEnrolledUsers as $alreadyEnrolledUser):
+            array_push($alreadyEnrolledUsersIds, $alreadyEnrolledUser['id']);
+        endforeach;
+
+        // Cast $request->users to variable $newUsersToEnroll
+        $newUsersToEnroll = $request->users;
+
+        // Initiate array for new user ids
+        $newUsersIds = [];
+
+        foreach ($newUsersToEnroll as $newUserToEnroll):
+            array_push($newUsersIds, $newUserToEnroll['user']);
+        endforeach;
+
+        // Check if $newUsersToEnroll array contains ids of users that are already enrolled to the course and return new ids
+        $usersToBeEnrolled = array_diff($newUsersIds, $alreadyEnrolledUsersIds);
+
+        // Check if id of the already assigned courses are present in the new set of course ids
+        $usersToBeUnrolled = array_diff($alreadyEnrolledUsersIds, $newUsersIds);
+
+        // Loop through $usersToBeEnrolled array and unassign courses
+        foreach ($usersToBeUnrolled as $userToBeUnrolled):
+            $course->enrolledUsers()->detach($userToBeUnrolled);
+        endforeach;
+
+        // Loop through $trainingCoursesToBeAssigned array and assign courses
+        foreach ($usersToBeEnrolled as $userToBeEnrolled):
+            // enroll user to course
+            $course->enrolledUsers()->attach($userToBeEnrolled);
         endforeach;
 
         // Return success response
