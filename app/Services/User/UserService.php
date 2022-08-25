@@ -307,7 +307,16 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with('profile.applicant', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+            ->with([
+                'profile.applicant',
+                'positionSummary',
+                'contractSummary',
+                'roles',
+                'practices',
+                'employmentCheck',
+                'workPatterns.workTimings',
+                'courses.modules.lessons',
+            ])
             ->firstOrFail();
 
         // Return details of the user
