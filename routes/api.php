@@ -654,6 +654,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create-score', [InterviewController::class, 'score'])
                 ->middleware(['permission:can_create_interview_score|can_manage_interview']);
 
+            Route::get('all-interviews', [InterviewController::class, 'getAll'])
+                ->middleware(['permission:can_manage_interview']);
+
             // Routes for interview policies
             Route::prefix('policies')->group(function () {
                 Route::post('create', [InterviewPolicyController::class, 'create'])

@@ -469,4 +469,18 @@ class InterviewService
             'interview-score' => $interviewScore,
         ]);
     }
+
+    // Get All interviews
+    public function getAllInterviews()
+    {
+        // Get all interviews
+        $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'interviews' => $interviews,
+        ]);
+    }
 }

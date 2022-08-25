@@ -271,4 +271,19 @@ class InterviewController extends Controller
             ]);
         }
     }
+
+    // Get All interviews
+    public function getAll()
+    {
+        try {
+            // Logic here
+            return $this->interviewService->getAllInterviews();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
