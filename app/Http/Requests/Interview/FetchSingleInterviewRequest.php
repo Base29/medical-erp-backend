@@ -27,6 +27,7 @@ class FetchSingleInterviewRequest extends FormRequest
     {
         return [
             'interview' => 'required|numeric|exists:interview_schedules,id',
+            'user' => 'nullable|numeric|exists:users,id',
         ];
     }
 

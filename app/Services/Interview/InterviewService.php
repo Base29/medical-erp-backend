@@ -333,20 +333,40 @@ class InterviewService
     // Fetch single interview
     public function fetchSingleInterview($request)
     {
-        // Get interview schedule
-        $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-            ->with([
-                'user.profile',
-                'hiringRequest',
-                'interviewPolicies.questions.options',
-                'interviewPolicies.questions.interviewAnswers',
-                'practice',
-                'candidateQuestions',
-                'adhocQuestions',
-                'interviewMiscInfo',
-                'interviewScore',
-            ])
-            ->firstOrFail();
+        // Check if $request->user is available
+        if ($request->has('user')) {
+
+            // Get interview with $request->user answers
+            $interviewSchedule = InterviewSchedule::where('id', $request->interview)
+                ->with([
+                    'user.profile',
+                    'hiringRequest',
+                    'interviewPolicies.questions.options',
+                    'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                        $q->where('user', $request->user);
+                    },
+                    'practice',
+                    'candidateQuestions',
+                    'adhocQuestions',
+                    'interviewMiscInfo',
+                    'interviewScore',
+                ])
+                ->firstOrFail();
+        } else {
+            // Get interview
+            $interviewSchedule = InterviewSchedule::where('id', $request->interview)
+                ->with([
+                    'user.profile',
+                    'hiringRequest',
+                    'interviewPolicies.questions.options',
+                    'practice',
+                    'candidateQuestions',
+                    'adhocQuestions',
+                    'interviewMiscInfo',
+                    'interviewScore',
+                ])
+                ->firstOrFail();
+        }
 
         // Return success response
         return Response::success([
