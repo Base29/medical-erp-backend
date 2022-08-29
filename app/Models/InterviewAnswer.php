@@ -26,4 +26,9 @@ class InterviewAnswer extends Model
     {
         return $this->belongsTo(InterviewQuestion::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'user', 'id');
+    }
 }
