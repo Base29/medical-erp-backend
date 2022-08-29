@@ -224,6 +224,7 @@ class InterviewService
                 $interviewAnswer = new InterviewAnswer();
 
                 $interviewAnswer->interview = $interviewSchedule->id;
+                $interviewAnswer->user = $interviewSchedule->user_id;
                 $interviewAnswer->question = $interviewQuestion->id;
                 $interviewAnswer->answer = $request->answer;
                 $interviewAnswer->save();
@@ -242,6 +243,7 @@ class InterviewService
                 $interviewAnswer = new InterviewAnswer();
 
                 $interviewAnswer->interview = $interviewSchedule->id;
+                $interviewAnswer->user = $interviewSchedule->user_id;
                 $interviewAnswer->question = $interviewQuestion->id;
                 $interviewAnswer->option = $request->option;
                 $interviewAnswer->save();
@@ -266,6 +268,7 @@ class InterviewService
                     $interviewAnswer = new InterviewAnswer();
 
                     $interviewAnswer->interview = $interviewSchedule->id;
+                    $interviewAnswer->user = $interviewSchedule->user_id;
                     $interviewAnswer->question = $interviewQuestion->id;
                     $interviewAnswer->option = $option;
                     $interviewAnswer->save();
@@ -332,16 +335,17 @@ class InterviewService
     {
         // Get interview schedule
         $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-            ->with(
+            ->with([
                 'user.profile',
                 'hiringRequest',
                 'interviewPolicies.questions.options',
+                'interviewPolicies.questions.interviewAnswers',
                 'practice',
                 'candidateQuestions',
                 'adhocQuestions',
                 'interviewMiscInfo',
-                'interviewScore'
-            )
+                'interviewScore',
+            ])
             ->firstOrFail();
 
         // Return success response
