@@ -438,30 +438,76 @@ class HiringRequestService
         // Get type of $request->value
         $valueType = gettype($request->value);
 
+        // Filter with integer as a value
+        $filtersWithIntValue = [
+            'role',
+            'location',
+            'manager',
+            'department',
+        ];
+
         // Filter
         $filter = $request->filter;
 
         // Check if $request has role or location filter
-        if ($filter === 'role' || $filter === 'location') {
+        if (in_array($filter, $filtersWithIntValue)) {
 
             // Check the type of $request->value is integer
             if ($valueType !== 'integer') {
                 throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'));
             }
 
-            // Get vacancies filtered by role or location
-            //TODO: Add logic to get the hiring requests by role or location
+            if ($filter === 'role') {
 
-        }
+                // Check if role exists
+                $role = Role::findOrFail($request->value);
 
-        // Check if $request has manager filter
-        if ($filter === 'manager') {
-
-            // Check if the type of $valueType is a string
-            if ($valueType !== 'string') {
-                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'));
+                // Getting vacancies filtered by $role->id
+                $filteredVacancies = $this->filteredSearchResults('role', $role->id);
             }
+
+            if ($filter === 'location') {
+
+                // Check if practice exists
+                $location = Practice::findOrFail($request->value);
+
+                // Getting vacancies filtered by $location->id
+                $filteredVacancies = $this->filteredSearchResults('practice_id', $location->id);
+            }
+
+            if ($filter === 'manager') {
+
+                // Check if the application manager exists
+                $applicationManager = User::findOrFail($request->value);
+
+                // Getting vacancies filtered by $applicationManager->id
+                $filteredVacancies = $this->filteredSearchResults('application_manager', $applicationManager->id);
+            }
+
+            if ($filter === 'department') {
+
+                // Check if the department exists
+                $department = Department::findOrFail($request->value);
+
+                // Getting vacancies filtered by department
+                $filteredVacancies = $this->filteredSearchResults('department_id', $department->id);
+
+            }
+
         }
 
+        // Return success response
+        return Response::success([
+            'filtered-vacancies' => $filteredVacancies,
+        ]);
+
+    }
+
+    private function filteredSearchResults($filter, $value)
+    {
+        return HiringRequest::where($filter, $value)
+            ->with('applicants.profile')
+            ->latest()
+            ->paginate(10);
     }
 }

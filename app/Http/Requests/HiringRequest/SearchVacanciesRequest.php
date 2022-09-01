@@ -29,7 +29,18 @@ class SearchVacanciesRequest extends FormRequest
         return [
             'filter' => [
                 'required',
-                Rule::in(['role', 'location', 'manager']),
+                Rule::in([
+                    'role',
+                    'location',
+                    'manager',
+                    'department',
+                    'job_specification',
+                    'person_specification',
+                    'contract_type',
+                    'reporting_to',
+                    'status',
+                    'progress',
+                ]),
             ],
             'value' => 'required',
         ];
