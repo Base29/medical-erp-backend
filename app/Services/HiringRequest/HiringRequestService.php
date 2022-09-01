@@ -16,6 +16,7 @@ use App\Models\HiringRequestPosting;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
@@ -37,6 +38,9 @@ class HiringRequestService
 
         // Get department
         $department = Department::findOrFail($request->department);
+
+        // Get role
+        $role = Role::where('name', $request->job_title)->firstOrFail();
 
         // Get role
         $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
@@ -85,6 +89,7 @@ class HiringRequestService
         // Instance of HiringRequest
         $hiringRequest = new HiringRequest();
         $hiringRequest->job_title = $request->job_title;
+        $hiringRequest->role = $role->id;
         $hiringRequest->contract_type = $request->contract_type;
         $hiringRequest->department_id = $department->id;
         $hiringRequest->reporting_to = $reportingTo->profile->first_name . ' ' . $reportingTo->profile->last_name;
@@ -424,6 +429,39 @@ class HiringRequestService
         return Response::success([
             'postings' => $postings,
         ]);
+
+    }
+
+    // Search Hiring Request
+    public function searchVacancies($request)
+    {
+        // Get type of $request->value
+        $valueType = gettype($request->value);
+
+        // Filter
+        $filter = $request->filter;
+
+        // Check if $request has role or location filter
+        if ($filter === 'role' || $filter === 'location') {
+
+            // Check the type of $request->value is integer
+            if ($valueType !== 'integer') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'));
+            }
+
+            // Get vacancies filtered by role or location
+            //TODO: Add logic to get the hiring requests by role or location
+
+        }
+
+        // Check if $request has manager filter
+        if ($filter === 'manager') {
+
+            // Check if the type of $valueType is a string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'));
+            }
+        }
 
     }
 }

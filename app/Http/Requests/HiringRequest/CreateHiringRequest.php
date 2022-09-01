@@ -27,7 +27,7 @@ class CreateHiringRequest extends FormRequest
     {
         return [
             'practice' => 'required|numeric|exists:practices,id',
-            'job_title' => 'required|string|max:100',
+            'job_title' => 'required|string|exists:roles,name',
             'contract_type' => 'required|string|max:50',
             'department' => 'required|numeric|exists:departments,id',
             'reporting_to' => 'required|numeric|exists:users,id',
@@ -43,6 +43,13 @@ class CreateHiringRequest extends FormRequest
             'end_time' => 'nullable|string',
             'break_time' => 'nullable|numeric',
             'repeat_days' => 'nullable|array',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'job_title.exists' => 'The job_title field should correspond to a role in the system. The ' . request()->job_title . ' is not a valid role.',
         ];
     }
 

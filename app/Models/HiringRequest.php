@@ -12,6 +12,7 @@ use App\Models\Offer;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
 use App\Models\Profile;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -105,5 +106,10 @@ class HiringRequest extends Model
     public function alreadyHasOffer($userId)
     {
         return $this->offers->contains('user_id', $userId);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
     }
 }
