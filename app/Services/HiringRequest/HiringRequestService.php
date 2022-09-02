@@ -438,63 +438,146 @@ class HiringRequestService
         // Get type of $request->value
         $valueType = gettype($request->value);
 
-        // Filter with integer as a value
+        /**
+         * Filter with integer as a value
+         * Add new filters which will be searching using ID to the below $filtersWithIntValue array
+         */
         $filtersWithIntValue = [
             'role',
             'location',
             'manager',
             'department',
+            'job_specification',
+            'person_specification',
+        ];
+
+        /**
+         * Filter with string as a value
+         * Add new filters which will be searching using string to the below $filtersWithStringValue array
+         */
+        $filtersWithStringValue = [
+            'contract_type',
+            'status',
+            'progress',
         ];
 
         // Filter
         $filter = $request->filter;
 
-        // Check if $request has role or location filter
-        if (in_array($filter, $filtersWithIntValue)) {
+        // Check if $filter is in $filtersWithIntValue array
+        if (in_array($filter, $filtersWithIntValue)):
 
             // Check the type of $request->value is integer
             if ($valueType !== 'integer') {
                 throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'));
             }
 
-            if ($filter === 'role') {
+            // Switch statement according to $filter
+            switch ($filter) {
 
-                // Check if role exists
-                $role = Role::findOrFail($request->value);
+                case 'role':
+                    // Check if role exists
+                    $role = Role::findOrFail($request->value);
 
-                // Getting vacancies filtered by $role->id
-                $filteredVacancies = $this->filteredSearchResults('role', $role->id);
+                    // Getting vacancies filtered by $role->id
+                    $filteredVacancies = $this->filteredSearchResults('role', $role->id);
+
+                    break;
+
+                case 'location':
+                    // Check if practice exists
+                    $location = Practice::findOrFail($request->value);
+
+                    // Getting vacancies filtered by $location->id
+                    $filteredVacancies = $this->filteredSearchResults('practice_id', $location->id);
+
+                    break;
+
+                case 'manager':
+                    // Check if the application manager exists
+                    $applicationManager = User::findOrFail($request->value);
+
+                    // Getting vacancies filtered by $applicationManager->id
+                    $filteredVacancies = $this->filteredSearchResults('application_manager', $applicationManager->id);
+
+                    break;
+
+                case 'department':
+                    // Check if the department exists
+                    $department = Department::findOrFail($request->value);
+
+                    // Getting vacancies filtered by department
+                    $filteredVacancies = $this->filteredSearchResults('department_id', $department->id);
+
+                    break;
+
+                case 'job_specification':
+                    // Check if job specification exists
+                    $jobSpecification = JobSpecification::findOrFail($request->value);
+
+                    // Getting vacancies filtered by job spcifications
+                    $filteredVacancies = $this->filteredSearchResults('job_specification_id', $jobSpecification->id);
+
+                    break;
+
+                case 'person_specification':
+                    // Check if person specification exists
+                    $personSpecification = PersonSpecification::findOrFail($request->value);
+
+                    // Getting vacancies filtered by person specification
+                    $filteredVacancies = $this->filteredSearchResults('person_specification_id', $personSpecification->id);
+
+                    break;
+
+                case 'reporting_to':
+                    // Check if reporting to user exists
+                    $reportingTo = User::findOrFail($request->value);
+
+                    // Get vacancies filtered by reporting to
+                    $filteredVacancies = $this->filteredSearchResults('reporting_to', $reportingTo->id);
+
+                    break;
+
+                default:
+                    return false;
             }
 
-            if ($filter === 'location') {
+        endif;
 
-                // Check if practice exists
-                $location = Practice::findOrFail($request->value);
+        // Check if $filter is in $filtersWithStringValue array
 
-                // Getting vacancies filtered by $location->id
-                $filteredVacancies = $this->filteredSearchResults('practice_id', $location->id);
+        if (in_array($filter, $filtersWithStringValue)):
+
+            // Check the type of $valueType is string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'));
             }
 
-            if ($filter === 'manager') {
+            // Switch statement according to filter
+            switch ($filter) {
+                case 'contract_type':
+                    // Getting vacancies filtered by contract type
+                    $filteredVacancies = $this->filteredSearchResults('contract_type', $request->value);
 
-                // Check if the application manager exists
-                $applicationManager = User::findOrFail($request->value);
+                    break;
 
-                // Getting vacancies filtered by $applicationManager->id
-                $filteredVacancies = $this->filteredSearchResults('application_manager', $applicationManager->id);
+                case 'status':
+                    // Getting vacancies filtered by status
+                    $filteredVacancies = $this->filteredSearchResults('status', $request->value);
+
+                    break;
+
+                case 'progress':
+                    // Getting vacancies filtered by progress
+                    $filteredVacancies = $this->filteredSearchResults('progress', $request->value);
+
+                    break;
+
+                default:
+                    return false;
             }
 
-            if ($filter === 'department') {
-
-                // Check if the department exists
-                $department = Department::findOrFail($request->value);
-
-                // Getting vacancies filtered by department
-                $filteredVacancies = $this->filteredSearchResults('department_id', $department->id);
-
-            }
-
-        }
+        endif;
 
         // Return success response
         return Response::success([
