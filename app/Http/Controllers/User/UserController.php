@@ -13,6 +13,7 @@ use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
 use App\Http\Requests\User\LessonProgressRequest;
 use App\Http\Requests\User\ModuleProgressRequest;
+use App\Http\Requests\User\SearchCandidateProfilesRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -239,6 +240,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->fetchEmployees();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Search Profiles
+    public function searchProfiles(SearchCandidateProfilesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->searchCandidateProfiles($request);
 
         } catch (\Exception $e) {
             return Response::fail([
