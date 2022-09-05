@@ -766,6 +766,15 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('candidates')->group(function () {
             Route::post('hire', [UserController::class, 'hire'])
                 ->middleware('permission:can_manage_candidate');
+
+            Route::post('filter', [UserController::class, 'searchProfiles'])
+                ->middleware(['permission:can_manage_candidate']);
+        });
+
+        // Routes for vacancies
+        Route::prefix('vacancies')->group(function () {
+            Route::post('filter', [HiringRequestController::class, 'search'])
+                ->middleware(['permission:can_manage_hiring_requests']);
         });
     });
 

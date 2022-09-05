@@ -17,7 +17,9 @@ use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
 use App\Models\ModuleProgress;
 use App\Models\PositionSummary;
+use App\Models\Practice;
 use App\Models\Profile;
+use App\Models\Role;
 use App\Models\TrainingCourse;
 use App\Models\User;
 use App\Notifications\WelcomeNewEmployeeNotification;
@@ -584,5 +586,177 @@ class UserService
         return Response::success([
             'employees' => $employees,
         ]);
+    }
+
+    // Search candidate profiles
+    public function searchCandidateProfiles($request)
+    {
+        /**
+         * Filters with the value as integer
+         *
+         * Add new filters to $filtersWithIntValue array to allow them to be searched
+         */
+        $filtersWithIntValue = [
+            'role',
+            'location',
+            'hiring_request',
+        ];
+
+        /**
+         * Filters with the value of string
+         *
+         * Add new filters to $filtersWithStringValue array to allow them to be searched
+         */
+        $filtersWithStringValue = [
+            'first_name',
+            'last_name',
+            'email',
+        ];
+
+        // Get the type of $request->lcg_value
+        $valueType = gettype($request->value);
+
+        // Cast $request->filter to variable
+        $filter = $request->filter;
+
+        // Fetching results for $filtersWithIntValue
+        if (in_array($filter, $filtersWithIntValue)):
+
+            // Check the type of $request->value is integer
+            if ($valueType !== 'integer') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type integer'));
+            }
+
+            switch ($filter) {
+                case 'role':
+
+                    // Check if role exists
+                    $role = Role::findOrFail($request->value);
+
+                    // Getting candidates filtered by role
+                    $filteredCandidates = User::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+                        ->whereHas('roles', function ($q) use ($role) {
+                            $q->where('id', $role->id);
+                        })
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'location':
+                    // Check if location(practice) exists
+                    $location = Practice::findOrFail($request->value);
+
+                    // Getting candidates filtered by hiring request
+                    $filteredCandidates = User::where('is_candidate', 1)
+                        ->whereHas('profile', function ($q) use ($location) {
+                            $q->whereHas('hiringRequest', function ($q) use ($location) {
+                                $q->where('practice_id', $location->id);
+                            });
+                        })->with([
+                        'profile.hiringRequest',
+                        'positionSummary',
+                        'contractSummary',
+                        'roles',
+                        'practices',
+                        'employmentCheck',
+                        'workPatterns.workTimings',
+                    ])
+                        ->latest()
+                        ->paginate(10);
+
+                    break;
+
+                case 'hiring_request':
+                    // Check if the hiring request exists
+                    $hiringRequest = HiringRequest::findOrFail($request->value);
+
+                    // Getting candidates filtered by hiring request
+                    $filteredCandidates = User::where('is_candidate', 1)
+                        ->whereHas('profile', function ($q) use ($hiringRequest) {
+                            $q->where('hiring_request_id', $hiringRequest->id);
+                        })->with([
+                        'profile.hiringRequest',
+                        'positionSummary',
+                        'contractSummary',
+                        'roles',
+                        'practices',
+                        'employmentCheck',
+                        'workPatterns.workTimings',
+                    ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+            }
+        endif;
+
+        if (in_array($filter, $filtersWithStringValue)):
+
+            // Check the type of $request->value is string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type string'));
+            }
+
+            switch ($filter) {
+                case 'email':
+
+                    $filteredCandidates = User::where('email', $request->value)
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'first_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('first_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'last_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('last_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                default:
+                    return false;
+            }
+
+        endif;
+
+        // Return response
+        return Response::success([
+            'filtered-candidates' => $filteredCandidates,
+        ]);
+
     }
 }
