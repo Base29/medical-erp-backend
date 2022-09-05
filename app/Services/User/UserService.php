@@ -359,6 +359,9 @@ class UserService
 
         $candidate->givePermissionTo('can_manage_own_profile');
         $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
+        $candidate->practices()->attach($hiringRequest->practice->id, [
+            'type' => 'user',
+        ]);
 
         $credentials = [
             'email' => $candidate->email,
