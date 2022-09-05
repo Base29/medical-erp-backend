@@ -689,6 +689,70 @@ class UserService
             }
         endif;
 
+        if (in_array($filter, $filtersWithStringValue)):
+
+            // Check the type of $request->value is string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type string'));
+            }
+
+            switch ($filter) {
+                case 'email':
+
+                    $filteredCandidates = User::where('email', $request->value)
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'first_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('first_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'last_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('last_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                default:
+                    return false;
+            }
+
+        endif;
+
         // Return response
         return Response::success([
             'filtered-candidates' => $filteredCandidates,
