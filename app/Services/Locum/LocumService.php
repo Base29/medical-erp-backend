@@ -7,6 +7,7 @@ use App\Models\LocumSession;
 use App\Models\Practice;
 use App\Models\Role;
 use App\Models\User;
+use Illuminate\Support\Carbon;
 
 class LocumService
 {
@@ -163,5 +164,50 @@ class LocumService
         return Response::success([
             'message' => ResponseMessage::deleteSuccess('Locum Session ' . $locumSession->id),
         ]);
+    }
+
+    // Fetch sessions by month
+    public function fetchSessionsByMonth($request)
+    {
+
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m', $date);
+
+        // Get session by month
+        $sessionsByMonth = LocumSession::whereMonth('start_date', '=', $parsedDate->format('m'))
+            ->with(['locums.profile'])
+            ->latest()
+            ->get();
+
+        // Return success response
+        return Response::success([
+            'sessions-by-month' => $sessionsByMonth,
+        ]);
+
+    }
+
+    // Fetch sessions by day
+    public function fetchSessionsByDay($request)
+    {
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m-d', $date);
+
+        // Get sessions by the date
+        $sessionsByDay = LocumSession::whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
+            ->with(['locums.profile'])
+            ->latest()
+            ->get();
+
+        // Return success response
+        return Response::success([
+            'sessions-by-day' => $sessionsByDay,
+        ]);
+
     }
 }

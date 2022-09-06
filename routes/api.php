@@ -728,6 +728,12 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [LocumController::class, 'delete'])
                     ->middleware(['permission:can_delete_locum_session|can_manage_locums']);
+
+                Route::post('month', [LocumController::class, 'fetchByMonth'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('day', [LocumController::class, 'fetchByDay'])
+                    ->middleware(['permission:can_manage_locums']);
             });
         });
 

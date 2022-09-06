@@ -36,7 +36,7 @@ class LocumSession extends Model
         return $this->belongsTo(Role::class);
     }
 
-    public function users()
+    public function locums()
     {
         return $this->belongsToMany(User::class);
     }
