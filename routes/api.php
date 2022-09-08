@@ -734,6 +734,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('day', [LocumController::class, 'fetchByDay'])
                     ->middleware(['permission:can_manage_locums']);
+
+                Route::post('invite', [LocumController::class, 'inviteUsersToSession'])
+                    ->middleware(['permission:can_manage_locums']);
             });
         });
 

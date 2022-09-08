@@ -45,4 +45,9 @@ class LocumSession extends Model
     {
         return $this->users->contains('id', $id);
     }
+
+    public function invitedLocums()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
 }

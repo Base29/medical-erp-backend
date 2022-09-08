@@ -4,9 +4,11 @@ namespace App\Services\Locum;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\LocumSession;
+use App\Models\LocumSessionInvite;
 use App\Models\Practice;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\Locum\SessionInvitationNotification;
 use Illuminate\Support\Carbon;
 
 class LocumService
@@ -209,5 +211,40 @@ class LocumService
             'sessions-by-day' => $sessionsByDay,
         ]);
 
+    }
+
+    // Invite users to sessions
+    public function inviteUsersToLocumSession($request)
+    {
+        // Get locum session
+        $session = LocumSession::findOrFail($request->session);
+
+        // Cast $request->locums array to variable
+        $locums = $request->locums;
+
+        // Loop through $locums
+        foreach ($locums as $locum):
+
+            // Fetch user details
+            $user = User::findOrFail($locum['locum']);
+
+            // Instance of LocumSessionInvite model
+            $locumSessionInvite = new LocumSessionInvite();
+            $locumSessionInvite->session = $session->id;
+            $locumSessionInvite->locum = $user->id;
+            $locumSessionInvite->title = $session->name;
+            $locumSessionInvite->save();
+
+            // Sending notification to invited users
+            if ($user):
+                $user->notify(new SessionInvitationNotification($user, $session, $locumSessionInvite));
+            endif;
+
+        endforeach;
+
+        // Return success
+        return Response::success([
+            'message' => ResponseMessage::customMessage('Invitations for session ' . $session->name . ' has been sent.'),
+        ]);
     }
 }
