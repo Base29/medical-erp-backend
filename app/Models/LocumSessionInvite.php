@@ -26,4 +26,9 @@ class LocumSessionInvite extends Model
     {
         return $this->belongsTo(User::class, 'locum', 'id');
     }
+
+    public function creator()
+    {
+        return $this->belongsTo(User::class, 'creator', 'id');
+    }
 }

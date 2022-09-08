@@ -810,6 +810,13 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('course-progress', [UserController::class, 'recordCourse']);
                 Route::post('module-exam', [UserController::class, 'endOfModuleExam']);
             });
+
+        });
+
+        Route::prefix('locum')->middleware(['permission:can_manage_own_locum_sessions'])->group(function () {
+            Route::prefix('sessions')->group(function () {
+                Route::post('invitation-action', [LocumController::class, 'invitationAction']);
+            });
         });
     });
 

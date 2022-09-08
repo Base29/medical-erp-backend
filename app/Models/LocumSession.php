@@ -43,7 +43,7 @@ class LocumSession extends Model
 
     public function userAlreadyAssignedToSession($id)
     {
-        return $this->users->contains('id', $id);
+        return $this->locums->contains('id', $id);
     }
 
     public function invitedLocums()

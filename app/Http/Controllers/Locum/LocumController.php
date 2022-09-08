@@ -13,6 +13,7 @@ use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
 use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
 use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
+use App\Http\Requests\Locum\SessionInvitationActionRequest;
 use App\Services\Locum\LocumService;
 
 class LocumController extends Controller
@@ -154,6 +155,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->inviteUsersToLocumSession($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Accept session invitation
+    public function invitationAction(SessionInvitationActionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->sessionInvitationAction($request);
 
         } catch (\Exception $e) {
             return Response::fail([
