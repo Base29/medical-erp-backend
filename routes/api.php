@@ -738,6 +738,12 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('invite', [LocumController::class, 'inviteUsersToSession'])
                     ->middleware(['permission:can_manage_locums']);
             });
+
+            Route::post('add-to-locum', [UserController::class, 'makeLocum'])
+                ->middleware(['permission:can_manage_locums']);
+
+            Route::post('remove-from-locum', [UserController::class, 'removeLocum'])
+                ->middleware(['permission:can_manage_locums']);
         });
 
         // Routes for employee handbook

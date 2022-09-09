@@ -762,4 +762,73 @@ class UserService
         ]);
 
     }
+
+    // Make user locum
+    public function makeUserAsLocum($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check if the user already a locum
+        if ($user->isLocum()) {
+            throw new \Exception(ResponseMessage::customMessage('User is already a locum'));
+        }
+
+        // Check if user is active and is a candidate and is hired
+        if (!$user->is_active || !$user->is_candidate || !$user->is_hired) {
+            throw new \Exception(ResponseMessage::customMessage('User must be active, must be a candidate and must be hired.'));
+        }
+
+        // Make user as locum
+        $user->is_locum = 1;
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Remove user from locum
+    public function removeFromLocum($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check if the user already a locum
+        if (!$user->isLocum()) {
+            throw new \Exception(ResponseMessage::customMessage('User is not a locum'));
+        }
+
+        // Make user as locum
+        $user->is_locum = 0;
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                ])
+                ->first(),
+        ]);
+    }
 }
