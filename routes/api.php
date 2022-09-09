@@ -728,7 +728,19 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [LocumController::class, 'delete'])
                     ->middleware(['permission:can_delete_locum_session|can_manage_locums']);
+
+                Route::post('month', [LocumController::class, 'fetchByMonth'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('day', [LocumController::class, 'fetchByDay'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('invite', [LocumController::class, 'inviteUsersToSession'])
+                    ->middleware(['permission:can_manage_locums']);
             });
+
+            Route::patch('user-locum-status', [UserController::class, 'updateLocumStatus'])
+                ->middleware(['permission:can_manage_locums']);
         });
 
         // Routes for employee handbook
@@ -800,6 +812,13 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('module-progress', [UserController::class, 'recordModule']);
                 Route::post('course-progress', [UserController::class, 'recordCourse']);
                 Route::post('module-exam', [UserController::class, 'endOfModuleExam']);
+            });
+
+        });
+
+        Route::prefix('locum')->middleware(['permission:can_manage_own_locum_sessions'])->group(function () {
+            Route::prefix('sessions')->group(function () {
+                Route::post('invitation-action', [LocumController::class, 'invitationAction']);
             });
         });
     });

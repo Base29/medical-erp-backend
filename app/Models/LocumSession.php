@@ -36,13 +36,18 @@ class LocumSession extends Model
         return $this->belongsTo(Role::class);
     }
 
-    public function users()
+    public function locums()
     {
         return $this->belongsToMany(User::class);
     }
 
     public function userAlreadyAssignedToSession($id)
     {
-        return $this->users->contains('id', $id);
+        return $this->locums->contains('id', $id);
+    }
+
+    public function sessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class, 'session', 'id');
     }
 }

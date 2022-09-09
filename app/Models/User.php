@@ -298,4 +298,23 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(InterviewAnswer::class);
     }
+
+    public function sessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function createdSessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function isLocum()
+    {
+        if ($this->is_locum) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
