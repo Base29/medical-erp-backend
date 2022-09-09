@@ -27,8 +27,7 @@ class InviteUsersToLocumSessionRequest extends FormRequest
     {
         return [
             'session' => 'required|numeric|exists:locum_sessions,id',
-            'locums' => 'required|array',
-            'locums.*.locum' => 'required|numeric|exists:users,id',
+            'locum' => 'required|numeric|exists:users,id',
         ];
     }
 

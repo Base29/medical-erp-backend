@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddCreatorFieldInLocumSessionInvitesTable extends Migration
+class AddNotifiableFieldInLocumSessionInvitesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,7 +14,7 @@ class AddCreatorFieldInLocumSessionInvitesTable extends Migration
     public function up()
     {
         Schema::table('locum_session_invites', function (Blueprint $table) {
-            $table->foreignId('creator')
+            $table->foreignId('notifiable')
                 ->after('id')
                 ->nullable()
                 ->references('id')
@@ -32,7 +32,7 @@ class AddCreatorFieldInLocumSessionInvitesTable extends Migration
     public function down()
     {
         Schema::table('locum_session_invites', function (Blueprint $table) {
-            $table->dropConstrainedForeignId('creator');
+            $table->dropConstrainedForeignId('notifiable');
         });
     }
 }

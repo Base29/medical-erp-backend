@@ -10,6 +10,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Notifications\Locum\SessionInvitationNotification;
 use App\Notifications\Locum\SessionInviteAcceptedNotification;
+use App\Notifications\Locum\SessionInviteDeclinedNotification;
 use Illuminate\Support\Carbon;
 
 class LocumService
@@ -221,32 +222,57 @@ class LocumService
         $session = LocumSession::findOrFail($request->session);
 
         // Cast $request->locums array to variable
-        $locums = $request->locums;
+        $locum = User::findOrFail($request->locum);
 
-        // Loop through $locums
-        foreach ($locums as $locum):
+        // Check if $user->is_active === true
+        if (!$locum->is_active) {
+            throw new \Exception(ResponseMessage::customMessage('User is not active.'));
+        }
 
-            // Fetch user details
-            $user = User::findOrFail($locum['locum']);
+        // Check if the user is a candidate and is hired
+        if (!$locum->is_candidate || !$locum->is_hired) {
+            throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before invited to a locum session'));
+        }
 
-            // Instance of LocumSessionInvite model
-            $locumSessionInvite = new LocumSessionInvite();
-            $locumSessionInvite->creator = auth()->user()->id;
-            $locumSessionInvite->session = $session->id;
-            $locumSessionInvite->locum = $user->id;
-            $locumSessionInvite->title = $session->name;
-            $locumSessionInvite->save();
+        // Check if the user is already assigned to the locum session
+        if ($session->userAlreadyAssignedToSession($locum->id)) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $locum->id . ' already assigned to locum session'));
+        }
 
-            // Sending notification to invited users
-            if ($user):
-                $user->notify(new SessionInvitationNotification($user, $session, $locumSessionInvite));
-            endif;
+        // // Check to restrict if locums are being adding above the required quantity
+        // if ($session->quantity === $session->locums()->count()) {
+        //     throw new \Exception(ResponseMessage::customMessage('Cannot invite users to locum session more than the required quantity'));
+        // }
 
-        endforeach;
+        // Check if user is a locum
+        if (!$locum->isLocum()) {
+            throw new \Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
+        }
+
+        // Instance of LocumSessionInvite model
+        $locumSessionInvite = new LocumSessionInvite();
+
+        if ($locumSessionInvite->alreadyInvitedForSession($session->id, $locum->id)) {
+            throw new \Exception(ResponseMessage::customMessage('Invite already sent.'));
+        }
+
+        $locumSessionInvite->notifiable = auth()->user()->id;
+        $locumSessionInvite->session = $session->id;
+        $locumSessionInvite->locum = $locum->id;
+        $locumSessionInvite->title = $session->name;
+        $locumSessionInvite->save();
+
+        // Sending notification to invited users
+        $locum->notify(new SessionInvitationNotification(
+            $locum,
+            $session,
+            $locumSessionInvite
+
+        ));
 
         // Return success
         return Response::success([
-            'message' => ResponseMessage::customMessage('Invitations for session ' . $session->name . ' has been sent.'),
+            'session' => $session->where('id', $session->id)->with('sessionInvites')->first(),
         ]);
     }
 
@@ -262,24 +288,12 @@ class LocumService
         // Get user
         $user = auth()->user();
 
-        // Check if $user->is_active === true
-        if (!$user->is_active) {
-            throw new \Exception(ResponseMessage::customMessage('User is not active.'));
-        }
-
-        // Check if the user is a candidate and is hired
-        if (!$user->is_candidate || !$user->is_hired) {
-            throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before adding to a locum session'));
-        }
+        // Get the creator of the invitation for notifying regarding action taken by the user
+        $notifiable = User::findOrFail($sessionInvite->notifiable);
 
         // Check if the user is already assigned to the locum session
         if ($locumSession->userAlreadyAssignedToSession($user->id)) {
             throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'));
-        }
-
-        // Check to restrict if locums are being adding above the required quantity
-        if ($locumSession->quantity === $locumSession->locums()->count()) {
-            throw new \Exception(ResponseMessage::customMessage('Cannot add user to locum session more than the required quantity'));
         }
 
         // Casting $request->action to variable
@@ -290,6 +304,11 @@ class LocumService
             // When a locum accepts invitation for a session
             case 2:
 
+                // Check to restrict if locums are being adding above the required quantity
+                if ($locumSession->quantity === $locumSession->locums()->count()) {
+                    throw new \Exception(ResponseMessage::customMessage('Sorry all the seats are filled within this session'));
+                }
+
                 // Check if the user already accepted the invitation
                 if ($sessionInvite->status === 2) {
                     throw new \Exception(ResponseMessage::customMessage('You have already accepted this invitation'));
@@ -298,33 +317,48 @@ class LocumService
                 // Add user to a locum session
                 $locumSession->locums()->attach($user->id);
 
-                // Change $user->is_locum === true
-                $user->is_locum = 1;
-                $user->save();
-
                 // Updated status of the invite
                 $sessionInvite->status = 2;
                 $sessionInvite->save();
 
-                $creator = User::findOrFail($sessionInvite->creator);
-
-                $creator->notify(new SessionInviteAcceptedNotification(
+                $notifiable->notify(new SessionInviteAcceptedNotification(
                     $user,
                     $locumSession,
                     $sessionInvite,
-                    $creator
+                    $notifiable
                 ));
                 break;
 
             // When a locum declines invitation for a session
             case 3:
+
+                // Check if the user already declined the invitation
+                if ($sessionInvite->status === 3) {
+                    throw new \Exception(ResponseMessage::customMessage('You have already declined this invitation'));
+                }
+
+                // Updated status of the invite
+                $sessionInvite->status = 3;
+                $sessionInvite->save();
+
+                $notifiable->notify(new SessionInviteDeclinedNotification(
+                    $user,
+                    $locumSession,
+                    $sessionInvite,
+                    $notifiable
+                ));
+
                 break;
 
             default:
                 return false;
         }
 
-        // // Return success response
-        // return Response::success(['message' => ResponseMessage::assigned($user->email, $locumSession->name)]);
+        // Return success response
+        return Response::success([
+            'session-invite' => $sessionInvite->where(['id' => $sessionInvite->id, 'locum' => $user->id])
+                ->with('session')
+                ->first(),
+        ]);
     }
 }

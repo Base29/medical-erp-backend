@@ -46,8 +46,8 @@ class LocumSession extends Model
         return $this->locums->contains('id', $id);
     }
 
-    public function invitedLocums()
+    public function sessionInvites()
     {
-        return $this->hasMany(LocumSessionInvite::class);
+        return $this->hasMany(LocumSessionInvite::class, 'session', 'id');
     }
 }

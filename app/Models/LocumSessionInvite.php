@@ -27,8 +27,13 @@ class LocumSessionInvite extends Model
         return $this->belongsTo(User::class, 'locum', 'id');
     }
 
-    public function creator()
+    public function notifiable()
     {
-        return $this->belongsTo(User::class, 'creator', 'id');
+        return $this->belongsTo(User::class, 'notifiable', 'id');
+    }
+
+    public function alreadyInvitedForSession($session, $locum)
+    {
+        return $this->where(['session' => $session, 'locum' => $locum])->first();
     }
 }

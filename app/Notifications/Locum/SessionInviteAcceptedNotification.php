@@ -18,19 +18,19 @@ class SessionInviteAcceptedNotification extends Notification implements ShouldBr
     protected $user;
     protected $session;
     protected $sessionInvite;
-    protected $creator;
+    protected $notifiable;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(User $user, LocumSession $session, LocumSessionInvite $sessionInvite, User $creator)
+    public function __construct(User $user, LocumSession $session, LocumSessionInvite $sessionInvite, User $notifiable)
     {
         $this->user = $user;
         $this->session = $session;
         $this->sessionInvite = $sessionInvite;
-        $this->creator = $creator;
+        $this->notifiable = $notifiable;
     }
 
     /**
@@ -70,9 +70,10 @@ class SessionInviteAcceptedNotification extends Notification implements ShouldBr
         return [
             'session_id' => $this->session->id,
             'session_invite_id' => $this->sessionInvite->id,
+            'session_invite_status' => $this->sessionInvite->status,
             'session_invite_title' => $this->sessionInvite->title,
             'user_name' => $this->user->profile->first_name . ' ' . $this->user->profile->last_name,
-            'creator_name' => $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name,
+            'notifiable_name' => $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name,
         ];
     }
 
@@ -82,7 +83,8 @@ class SessionInviteAcceptedNotification extends Notification implements ShouldBr
             "data" => [
                 "user_name" => $this->user->profile->first_name . ' ' . $this->user->profile->last_name,
                 "session_invite_title" => $this->sessionInvite->title,
-                "creator_name" => $this->creator->profile->first_name . ' ' . $this->creator->profile->last_name,
+                'session_invite_status' => $this->sessionInvite->status,
+                "notifiable_name" => $this->notifiable->profile->first_name . ' ' . $this->notifiable->profile->last_name,
             ],
         ];
 
