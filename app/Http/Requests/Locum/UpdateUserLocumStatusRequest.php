@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class MakeUserAsLocumRequest extends FormRequest
+class UpdateUserLocumStatusRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -27,6 +27,7 @@ class MakeUserAsLocumRequest extends FormRequest
     {
         return [
             'user' => 'required|numeric|exists:users,id',
+            'locum_status' => 'required|boolean',
         ];
     }
 

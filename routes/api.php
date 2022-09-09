@@ -739,10 +739,7 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_manage_locums']);
             });
 
-            Route::post('add-to-locum', [UserController::class, 'makeLocum'])
-                ->middleware(['permission:can_manage_locums']);
-
-            Route::post('remove-from-locum', [UserController::class, 'removeLocum'])
+            Route::patch('user-locum-status', [UserController::class, 'updateLocumStatus'])
                 ->middleware(['permission:can_manage_locums']);
         });
 

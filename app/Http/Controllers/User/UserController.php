@@ -4,8 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Locum\MakeUserAsLocumRequest;
-use App\Http\Requests\Locum\RemoveFromLocumRequest;
+use App\Http\Requests\Locum\UpdateUserLocumStatusRequest;
 use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
@@ -267,25 +266,11 @@ class UserController extends Controller
     }
 
     // Make user as locum
-    public function makeLocum(MakeUserAsLocumRequest $request)
+    public function updateLocumStatus(UpdateUserLocumStatusRequest $request)
     {
         try {
             // Logic here
-            return $this->userService->makeUserAsLocum($request);
-
-        } catch (\Exception $e) {
-            return Response::fail([
-                'code' => 400,
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
-
-    public function removeLocum(RemoveFromLocumRequest $request)
-    {
-        try {
-            // Logic here
-            return $this->userService->removeFromLocum($request);
+            return $this->userService->updateUserLocumStatus($request);
 
         } catch (\Exception $e) {
             return Response::fail([
