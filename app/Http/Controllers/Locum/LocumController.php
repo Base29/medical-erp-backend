@@ -8,8 +8,12 @@ use App\Http\Requests\Locum\AssignUserToLocumSessionRequest;
 use App\Http\Requests\Locum\CreateLocumSessionRequest;
 use App\Http\Requests\Locum\DeleteLocumSessionRequest;
 use App\Http\Requests\Locum\FetchLocumSessionsRequest;
+use App\Http\Requests\Locum\FetchSessionsByDayRequest;
+use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
 use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
+use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
+use App\Http\Requests\Locum\SessionInvitationActionRequest;
 use App\Services\Locum\LocumService;
 
 class LocumController extends Controller
@@ -106,6 +110,66 @@ class LocumController extends Controller
         try {
             // Delete locum session service
             return $this->locumService->deleteLocumSession($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch by month
+    public function fetchByMonth(FetchSessionsByMonthRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->fetchSessionsByMonth($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch by day
+    public function fetchByDay(FetchSessionsByDayRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->fetchSessionsByDay($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Invite users to session
+    public function inviteUsersToSession(InviteUsersToLocumSessionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->inviteUsersToLocumSession($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Accept session invitation
+    public function invitationAction(SessionInvitationActionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->sessionInvitationAction($request);
 
         } catch (\Exception $e) {
             return Response::fail([

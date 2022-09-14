@@ -41,6 +41,7 @@ class CreateUserRequest extends FormRequest
             'additional_roles' => 'nullable|array',
             'hiring_request' => 'required_if:is_candidate,1|numeric|exists:hiring_requests,id',
             'department' => 'required_if:is_candidate,1|numeric|exists:departments,id',
+            'generic_user' => 'nullable|boolean',
         ];
     }
 

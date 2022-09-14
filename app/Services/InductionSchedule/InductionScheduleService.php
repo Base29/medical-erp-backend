@@ -1,7 +1,9 @@
 <?php
 namespace App\Services\InductionSchedule;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Helpers\UpdateService;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
 use App\Models\User;
@@ -43,7 +45,7 @@ class InductionScheduleService
 
         // Return success response
         return $inductionSchedule
-            ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'practice', 'inductionChecklists.inductionQuestions')
             ->first();
     }
 
@@ -53,8 +55,6 @@ class InductionScheduleService
         return collect($checklists)->map(function ($checklist) {
             return [
                 'induction_checklist_id' => $checklist['induction_checklist_id'],
-                'is_complete' => $checklist['is_complete'],
-                'completed_date' => $checklist['completed_date'],
             ];
         });
     }
@@ -67,7 +67,7 @@ class InductionScheduleService
 
         // Get induction schedules for the $practice
         return InductionSchedule::where('practice_id', $practice->id)
-            ->with('user', 'practice', 'inductionChecklists.inductionQuestions')
+            ->with('user.profile', 'practice', 'inductionChecklists.inductionQuestions')
             ->latest()
             ->paginate(10);
     }
@@ -80,5 +80,54 @@ class InductionScheduleService
 
         // Delete induction schedule
         $inductionSchedule->delete();
+
+        // Return success response
+        return Response::success([
+            'induction-schedule' => $inductionSchedule,
+        ]);
+    }
+
+    // Fetch user induction
+    public function fetchUserInduction($request)
+    {
+        // Get user induction
+        $userInduction = InductionSchedule::where('user_id', $request->user)
+            ->with('user.profile', 'inductionChecklists.inductionQuestions')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'user-induction' => $userInduction,
+        ]);
+    }
+
+    // Fetch single induction
+    public function fetchSingleInduction($request)
+    {
+        // Get induction
+        $induction = InductionSchedule::where('id', $request->induction)
+            ->with('user.profile', 'inductionChecklists.inductionQuestions')
+            ->firstOrFail();
+
+        // Return success response
+        return Response::success([
+            'induction' => $induction,
+        ]);
+    }
+
+    // Update Induction schedule
+    public function updateInductionSchedule($request)
+    {
+        // Get induction schedule
+        $inductionSchedule = InductionSchedule::findOrFail($request->induction);
+
+        UpdateService::updateModel($inductionSchedule, $request->validated(), 'induction');
+
+        // Return success response
+        return Response::success([
+            'interview' => $inductionSchedule->with('practice', 'user.profile')
+                ->latest('updated_at')
+                ->first(),
+        ]);
     }
 }

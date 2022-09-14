@@ -20,20 +20,24 @@ class InterviewPolicy extends Model
         'name',
     ];
 
+    protected $hidden = [
+        'pivot',
+    ];
+
     public function interviewSchedules()
     {
-        return $this->hasMany(InterviewSchedule::class);
+        return $this->belongsToMany(InterviewSchedule::class);
     }
 
-    public function interviewQuestions()
+    public function questions()
     {
         return $this->hasMany(InterviewQuestion::class);
     }
 
-    public function interviewPolicy()
-    {
-        return $this->belongsTo(Practice::class);
-    }
+    // public function interviewPolicy()
+    // {
+    //     return $this->belongsTo(Practice::class);
+    // }
 
     public function role()
     {

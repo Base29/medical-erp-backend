@@ -13,6 +13,7 @@ use App\Http\Requests\HiringRequest\FetchApplicantsRequest;
 use App\Http\Requests\HiringRequest\FetchHiringRequest;
 use App\Http\Requests\HiringRequest\FetchPostingsRequest;
 use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
+use App\Http\Requests\HiringRequest\SearchVacanciesRequest;
 use App\Http\Requests\HiringRequest\UpdateHiringRequest;
 use App\Services\HiringRequest\HiringRequestService;
 
@@ -178,6 +179,21 @@ class HiringRequestController extends Controller
         try {
             // Fetch hiring request postings
             return $this->hiringRequestService->fetchAllPostings($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Search
+    public function search(SearchVacanciesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->hiringRequestService->searchVacancies($request);
 
         } catch (\Exception $e) {
             return Response::fail([

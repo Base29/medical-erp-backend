@@ -28,6 +28,7 @@ class UpdateInductionChecklistRequest extends FormRequest
         return [
             'induction_checklist' => 'required|numeric|exists:induction_checklists,id',
             'name' => 'nullable|string|max:255',
+            'description' => 'nullable|string|max:2000',
             'questions' => 'nullable|array',
         ];
     }

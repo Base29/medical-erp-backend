@@ -26,7 +26,7 @@ class UpdateProfileRequest extends FormRequest
     public function rules()
     {
         return [
-            'profile' => 'required|numeric|exists:profiles,id',
+            'profile' => 'nullable|numeric|exists:profiles,id',
             'first_name' => 'string',
             'last_name' => 'string',
             'middle_name' => 'string',
@@ -46,6 +46,9 @@ class UpdateProfileRequest extends FormRequest
             'zip_code' => 'string',
             'nhs_card' => 'string',
             'nhs_number' => 'string',
+            'nhs_employment' => 'nullable|boolean',
+            'nhs_smart_card_number' => 'nullable|string',
+            'tutorial_completed' => 'nullable|boolean',
         ];
     }
 

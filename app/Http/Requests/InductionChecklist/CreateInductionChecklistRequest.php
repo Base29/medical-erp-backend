@@ -29,6 +29,7 @@ class CreateInductionChecklistRequest extends FormRequest
             'practice' => 'required|numeric|exists:practices,id',
             'role' => 'required|numeric|exists:roles,id',
             'name' => 'required|string|max:255',
+            'description' => 'required|string|max:2000',
             'questions' => 'required|array',
         ];
     }

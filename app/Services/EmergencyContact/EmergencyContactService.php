@@ -67,7 +67,7 @@ class EmergencyContactService
         $emergencyContact = EmergencyContact::findOrFail($request->emergency_contact);
 
         // Update emergency contact
-        $emergencyContactUpdated = UpdateService::updateModel($emergencyContact, $request->all(), 'emergency_contact');
+        $emergencyContactUpdated = UpdateService::updateModel($emergencyContact, $request->validated(), 'emergency_contact');
 
         // Return failed response in-case update fails
         if (!$emergencyContactUpdated) {

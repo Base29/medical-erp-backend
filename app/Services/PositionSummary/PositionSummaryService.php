@@ -53,7 +53,7 @@ class PositionSummaryService
         $positionSummary = PositionSummary::findOrFail($request->position_summary);
 
         // Update position summary
-        UpdateService::updateModel($positionSummary, $request->all(), 'position_summary');
+        UpdateService::updateModel($positionSummary, $request->validated(), 'position_summary');
 
         return Response::success([
             'position_summary' => $positionSummary->with('user.profile')->latest('updated_at')->first(),

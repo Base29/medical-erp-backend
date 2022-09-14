@@ -48,13 +48,38 @@ class InterviewSchedule extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function interviewPolicy()
+    public function interviewPolicies()
     {
-        return $this->belongsTo(InterviewPolicy::class);
+        return $this->belongsToMany(InterviewPolicy::class);
     }
 
     public function department()
     {
         return $this->belongsTo(Department::class);
+    }
+
+    public function interviewAnswers()
+    {
+        return $this->hasMany(InterviewAnswer::class);
+    }
+
+    public function adhocQuestions()
+    {
+        return $this->hasMany(AdhocQuestion::class, 'interview', 'id');
+    }
+
+    public function candidateQuestions()
+    {
+        return $this->hasMany(CandidateQuestion::class, 'interview', 'id');
+    }
+
+    public function interviewMiscInfo()
+    {
+        return $this->hasOne(InterviewMiscInfo::class, 'interview', 'id');
+    }
+
+    public function interviewScore()
+    {
+        return $this->hasOne(InterviewScore::class, 'interview', 'id');
     }
 }

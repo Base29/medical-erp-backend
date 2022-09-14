@@ -6,6 +6,7 @@ use App\Helpers\UpdateService;
 use App\Models\InductionChecklist;
 use App\Models\InductionQuestion;
 use App\Models\Practice;
+use App\Models\Role;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Role as ModelsRole;
 
@@ -23,6 +24,7 @@ class InductionChecklistService
         // Instance of InductionChecklist model
         $inductionChecklist = new InductionChecklist();
         $inductionChecklist->name = $request->name;
+        $inductionChecklist->description = $request->description;
         $inductionChecklist->role_id = $role->id;
         $practice->inductionChecklists()->save($inductionChecklist);
 
@@ -49,14 +51,28 @@ class InductionChecklistService
     // Fetch induction checklists
     public function fetchInductionChecklists($request)
     {
-        // Get practice
-        $practice = Practice::findOrFail($request->practice);
+        if ($request->has('role')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
 
-        // Get induction checklists for a practice
-        return InductionChecklist::where(['practice_id' => $practice->id, 'role_id' => $request->role])
-            ->with('practice', 'role', 'inductionQuestions')
-            ->latest()
-            ->paginate(10);
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            // Get induction checklists for a practice
+            return InductionChecklist::where(['practice_id' => $practice->id, 'role_id' => $role->id])
+                ->with('practice', 'role', 'inductionQuestions')
+                ->latest()
+                ->paginate(10);
+        } else {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            // Get induction checklists for a practice
+            return InductionChecklist::where('practice_id', $practice->id)
+                ->with('practice', 'role', 'inductionQuestions')
+                ->latest()
+                ->paginate(10);
+        }
     }
 
     // Fetch single induction checklist
@@ -87,6 +103,7 @@ class InductionChecklistService
         // Allowed fields
         $allowedFields = [
             'name',
+            'description',
             'questions',
         ];
 
@@ -104,7 +121,7 @@ class InductionChecklistService
         }
 
         // Update induction checklist
-        $inductionChecklistUpdated = UpdateService::updateModel($inductionChecklist, $request->all(), 'induction_checklist');
+        $inductionChecklistUpdated = UpdateService::updateModel($inductionChecklist, $request->validated(), 'induction_checklist');
 
         // Return response if update fails
         if (!$inductionChecklistUpdated) {

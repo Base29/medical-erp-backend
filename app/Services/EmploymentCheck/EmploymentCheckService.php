@@ -114,8 +114,8 @@ class EmploymentCheckService
         // Get employment check
         $employmentCheck = EmploymentCheck::findOrFail($request->employment_check);
 
-        // Mapping $request->all() to a variable
-        $updateRequestData = $request->all();
+        // Mapping $request->validated() to a variable
+        $updateRequestData = $request->validated();
 
         //TODO: File url update functionality needs to be changed/enhanced as done in MiscellaneousInformationController
         // Check if request contains files to upload

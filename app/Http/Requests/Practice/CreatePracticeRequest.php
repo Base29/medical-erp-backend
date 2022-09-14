@@ -28,6 +28,7 @@ class CreatePracticeRequest extends FormRequest
         return [
             'practice_manager' => 'required|numeric|exists:users,id',
             'name' => 'required|unique:practices,practice_name',
+            'logo' => 'nullable|file|mimes:png,jpg',
         ];
     }
 

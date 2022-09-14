@@ -133,4 +133,9 @@ class Practice extends Model
     {
         return $this->hasMany(LocumSession::class);
     }
+
+    public function appraisals()
+    {
+        return $this->hasMany(Appraisal::class, 'practice', 'id');
+    }
 }

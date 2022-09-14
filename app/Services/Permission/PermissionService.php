@@ -59,7 +59,7 @@ class PermissionService
         $permission = Permission::where('name', $request->permission)->firstOrFail();
 
         // Assigning permission to the role
-        $role->givePermissionTo($request->permission);
+        $role->givePermissionTo($permission->name);
 
         return Response::success(['message' => ResponseMessage::assigned($permission->name, $role->name)]);
     }
@@ -81,7 +81,7 @@ class PermissionService
         $permission = Permission::where('name', $request->permission)->firstOrFail();
 
         // Assigning permission to the user
-        $user->givePermissionTo($request->permission);
+        $user->givePermissionTo($permission->name);
 
         return Response::success(['message' => ResponseMessage::assigned($permission->name, $user->email)]);
     }

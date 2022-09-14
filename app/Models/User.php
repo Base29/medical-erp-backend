@@ -8,6 +8,7 @@ use App\Models\ContractSummary;
 use App\Models\Department;
 use App\Models\Education;
 use App\Models\EmergencyContact;
+use App\Models\EmployeeHandbook;
 use App\Models\EmploymentCheck;
 use App\Models\EmploymentHistory;
 use App\Models\EmploymentPolicy;
@@ -15,6 +16,7 @@ use App\Models\Equipment;
 use App\Models\HiringRequest;
 use App\Models\InductionSchedule;
 use App\Models\InterviewSchedule;
+use App\Models\ItPolicy;
 use App\Models\Legal;
 use App\Models\LocumSession;
 use App\Models\MiscellaneousInformation;
@@ -250,5 +252,69 @@ class User extends Authenticatable implements JWTSubject
     public function locumSessions()
     {
         return $this->belongsToMany(LocumSession::class);
+    }
+
+    public function signedEmployeeHandbooks()
+    {
+        return $this->belongsToMany(EmployeeHandbook::class);
+    }
+
+    public function signedItPolicies()
+    {
+        return $this->belongsToMany(ItPolicy::class);
+    }
+
+    public function courses()
+    {
+        return $this->belongsToMany(TrainingCourse::class);
+    }
+
+    public function courseProgress()
+    {
+        return $this->hasMany(CourseProgress::class);
+    }
+
+    public function moduleProgress()
+    {
+        return $this->hasMany(ModuleProgress::class);
+    }
+
+    public function lessonProgress()
+    {
+        return $this->hasMany(LessonProgress::class);
+    }
+
+    public function endOfModuleExams()
+    {
+        return $this->hasMany(CourseModuleExam::class);
+    }
+
+    public function testingLogicProgress()
+    {
+        return $this->hasManyThrough(LessonProgress::class, ModuleLesson::class);
+    }
+
+    public function interviewAnswers()
+    {
+        return $this->hasMany(InterviewAnswer::class);
+    }
+
+    public function sessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function createdSessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function isLocum()
+    {
+        if ($this->is_locum) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }

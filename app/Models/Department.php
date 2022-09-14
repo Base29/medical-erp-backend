@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Appraisal;
 use App\Models\HiringRequest;
 use App\Models\InterviewSchedule;
 use App\Models\Practice;
@@ -42,5 +43,10 @@ class Department extends Model
     public function interviewSchedules()
     {
         return $this->hasMany(InterviewSchedule::class);
+    }
+
+    public function appraisals()
+    {
+        return $this->hasMany(Appraisal::class);
     }
 }

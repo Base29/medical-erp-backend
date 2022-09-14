@@ -17,10 +17,14 @@ class PracticeService
         // Create practice with the provided name
         $practice = new Practice();
         $practice->practice_name = $request->name;
-        $practice->user_id = $practiceManager->id;
+        $practice->practice_manager = $practiceManager->id;
         $practice->save();
 
-        return Response::success(['practice' => $practice]);
+        return Response::success([
+            'practice' => $practice->with('practiceManager')
+                ->latest()
+                ->first(),
+        ]);
     }
 
     // Delete practice

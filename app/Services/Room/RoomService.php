@@ -97,7 +97,7 @@ class RoomService
         $room = Room::findOrFail($request->room);
 
         // Update Room
-        UpdateService::updateModel($room, $request->all(), 'room');
+        UpdateService::updateModel($room, $request->validated(), 'room');
 
         // Return success response
         return Response::success(['room' => $room]);

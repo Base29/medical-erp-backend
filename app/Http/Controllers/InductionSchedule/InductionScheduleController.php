@@ -8,6 +8,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionSchedule\CreateInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\DeleteInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
+use App\Http\Requests\InductionSchedule\FetchSingleInductionRequest;
+use App\Http\Requests\InductionSchedule\FetchUserInductionRequest;
+use App\Http\Requests\InductionSchedule\UpdateInductionScheduleRequest;
 use App\Models\InductionSchedule;
 use App\Services\InductionSchedule\InductionScheduleService;
 
@@ -77,6 +80,51 @@ class InductionScheduleController extends Controller
             return Response::success([
                 'message' => ResponseMessage::deleteSuccess('Induction Schedule'),
             ]);
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Single user induction
+    public function userInduction(FetchUserInductionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->inductionScheduleService->fetchUserInduction($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Single Induction
+    public function singleInduction(FetchSingleInductionRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->inductionScheduleService->fetchSingleInduction($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update
+    public function update(UpdateInductionScheduleRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->inductionScheduleService->updateInductionSchedule($request);
+
         } catch (\Exception $e) {
             return Response::fail([
                 'code' => 400,

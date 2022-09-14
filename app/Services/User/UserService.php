@@ -1,17 +1,28 @@
 <?php
 namespace App\Services\User;
 
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Applicant;
 use App\Models\ContractSummary;
+use App\Models\CourseModule;
+use App\Models\CourseModuleExam;
+use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
+use App\Models\LessonProgress;
 use App\Models\MiscellaneousInformation;
+use App\Models\ModuleLesson;
+use App\Models\ModuleProgress;
 use App\Models\PositionSummary;
+use App\Models\Practice;
 use App\Models\Profile;
+use App\Models\Role;
+use App\Models\TrainingCourse;
 use App\Models\User;
+use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -72,6 +83,7 @@ class UserService
         $user->is_active = $request->is_candidate ? 0 : 1;
         $user->is_candidate = $request->is_candidate ? $request->is_candidate : 0;
         $user->department_id = $request->is_candidate ? $department->id : null;
+        $user->generic_user = $request->generic_user ? $request->generic_user : null;
         $user->save();
 
         // Create profile for the user
@@ -202,7 +214,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -210,13 +222,13 @@ class UserService
                     ->paginate(10);
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
-                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->latest()
                     ->paginate(10);
 
             } elseif ($request->filter === 'role') {
                 // Filter users by role
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->whereHas('roles', function ($q) {
                         $q->where('id', request()->value);
                     })
@@ -226,7 +238,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                 ->latest()
                 ->paginate(10);
         }
@@ -265,10 +277,10 @@ class UserService
         // Get profile for the user
         $profile = Profile::where('user_id', $user->id)->firstOrFail();
 
-        UpdateService::updateModel($profile, $request->all(), 'user');
+        UpdateService::updateModel($profile, $request->validated(), 'user');
 
         return Response::success([
-            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices')
+            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices', 'user.workPatterns.workTimings')
                 ->latest('updated_at')
                 ->first(),
         ]);
@@ -283,7 +295,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
             ->firstOrFail();
 
         // Return details of the user
@@ -297,12 +309,516 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with('profile.applicant', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck')
+            ->with([
+                'profile.applicant',
+                'positionSummary',
+                'contractSummary',
+                'roles',
+                'practices',
+                'employmentCheck',
+                'workPatterns.workTimings',
+                'courses.modules.lessons',
+            ])
             ->firstOrFail();
 
         // Return details of the user
         return Response::success([
             'user' => $user,
+        ]);
+    }
+
+    // Generate password for candidate
+    public function hireCandidate($request)
+    {
+        // Get user
+        $candidate = User::where('id', $request->candidate)
+            ->with('profile')
+            ->firstOrFail();
+
+        // Check if candidate is hired
+        if (!$candidate->is_candidate) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is not a candidate'));
+        }
+
+        // Check if $candidate is already hired
+        if ($candidate->is_hired) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'));
+        }
+
+        // Fetch hiring request
+        $hiringRequest = HiringRequest::where('id', $candidate->profile->hiring_request_id)->firstOrFail();
+
+        // Generate password
+        $password = Str::random(16);
+
+        // Save user pass and make user active
+        $candidate->password = Hash::make($password);
+        $candidate->is_hired = 1;
+        $candidate->is_active = 1;
+        $candidate->save();
+
+        $candidate->givePermissionTo('can_manage_own_profile');
+        $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
+        $candidate->practices()->attach($hiringRequest->practice->id, [
+            'type' => 'user',
+        ]);
+
+        $credentials = [
+            'email' => $candidate->email,
+            'password' => $password,
+        ];
+
+        $candidate->notify(new WelcomeNewEmployeeNotification($credentials));
+
+        // Return success response
+        return Response::success([
+            'candidate' => $candidate,
+        ]);
+    }
+
+    // Record lesson progress
+    public function recordLessonProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get lesson
+        $lesson = ModuleLesson::where('id', $request->lesson)->with('module')->firstOrFail();
+
+        // Module
+        $module = CourseModule::where('id', $lesson->module)->with('course')->firstOrFail();
+
+        // Check if $authenticatedUser already recorded progress
+
+        $lessonProgress = new LessonProgress();
+
+        if ($lessonProgress->alreadyRecordedProgress($lesson->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this lesson'));
+        }
+
+        // Lesson completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $lesson->module . '/lesson-' . $lesson->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $lessonProgress->lesson = $lesson->id;
+        $lessonProgress->user = $authenticatedUser->id;
+        $lessonProgress->completed_at = $request->completed_at;
+        $lessonProgress->is_completed = $request->is_completed;
+        $lessonProgress->completion_evidence = $completionEvidenceUrl;
+        $lessonProgress->save();
+
+        // Return success response
+        return Response::success([
+            'lesson-progress' => $lessonProgress,
+        ]);
+    }
+
+    // Fetch user training courses
+    public function fetchUserTrainingCourses()
+    {
+        // Get user
+        $authenticatedUser = auth()->user()->id;
+
+        // Get user courses
+        $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
+            $q->where('user_id', $authenticatedUser);
+        })->with(['modules.lessons', 'modules' => function ($q) {
+            $q->withCount('lessons');
+        }])->withCount('modules')->paginate(10);
+
+        return Response::success([
+            'user-courses' => $userCourses,
+        ]);
+    }
+
+    // Record module progress
+    public function recordModuleProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Module
+        $module = CourseModule::where('id', $request->module)->with('course')->firstOrFail();
+
+        // Check if $authenticatedUser has already recorded progress
+        $moduleProgress = new ModuleProgress();
+
+        if ($moduleProgress->alreadyRecordedProgress($module->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this module'));
+        }
+
+        // Module completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $module->course . '/module-' . $module->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $moduleProgress->module = $module->id;
+        $moduleProgress->user = $authenticatedUser->id;
+        $moduleProgress->completed_at = $request->completed_at;
+        $moduleProgress->is_completed = $request->is_completed;
+        $moduleProgress->completion_evidence = $completionEvidenceUrl;
+        $moduleProgress->save();
+
+        // Return success response
+        return Response::success([
+            'module-progress' => $moduleProgress,
+        ]);
+    }
+
+    // Record course progress
+    public function recordCourseProgress($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Course
+        $course = TrainingCourse::where('id', $request->course)->firstOrFail();
+
+        // Check if $authenticatedUser has already recorded progress
+        $courseProgress = new CourseProgress();
+
+        if ($courseProgress->alreadyRecordedProgress($course->id, $authenticatedUser->id)) {
+            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this course'));
+        }
+
+        // Module completion evidence folder path on S3
+        $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $course->id;
+
+        // Completion evidence
+        $completionEvidenceUrl = FileUploadService::upload($request->completion_evidence, $folderPath, 's3');
+
+        // Save progress
+        $courseProgress->course = $course->id;
+        $courseProgress->user = $authenticatedUser->id;
+        $courseProgress->completed_at = $request->completed_at;
+        $courseProgress->is_completed = $request->is_completed;
+        $courseProgress->completion_evidence = $completionEvidenceUrl;
+        $courseProgress->save();
+
+        // Return success response
+        return Response::success([
+            'module-progress' => $courseProgress,
+        ]);
+    }
+
+    // Record end of module exam
+    public function createEndOfModuleExam($request)
+    {
+        // Get module
+        $module = CourseModule::findOrFail($request->module);
+
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Initiate instance of CourseModuleExam
+        $moduleExam = new CourseModuleExam();
+        $moduleExam->module = $module->id;
+        $moduleExam->user = $authenticatedUser->id;
+        $moduleExam->type = $request->type;
+        $moduleExam->number_of_questions = $request->number_of_questions;
+        $moduleExam->is_restricted = $request->is_restricted;
+        $moduleExam->duration = $request->duration;
+        $moduleExam->description = $request->description;
+        $moduleExam->url = $request->url;
+        $moduleExam->is_passing_percentage = $request->is_passing_percentage;
+        $moduleExam->passing_percentage = $request->passing_percentage;
+        $moduleExam->is_passed = $request->is_passed;
+        $moduleExam->grade_achieved = $request->grade_achieved;
+        $moduleExam->percentage_achieved = $request->percentage_achieved;
+
+        // Save module exam
+        $moduleExam->save();
+
+        // Return success response
+        return Response::success([
+            'module-exam' => $moduleExam,
+        ]);
+    }
+
+    // Get single enrolled course
+    public function fetchSingleEnrolledCourse($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        $isUserEnrolledToCourse = $authenticatedUser->courses->contains($request->course);
+
+        if (!$isUserEnrolledToCourse) {
+            throw new \Exception(ResponseMessage::customMessage('User is not enrolled to the provided course'));
+        }
+
+        // Get user courses
+        $userCourse = TrainingCourse::where('id', $request->course)
+            ->with(['modules.lessons', 'modules.moduleProgress' => function ($q) use ($authenticatedUser) {
+                $q->where('user', $authenticatedUser->id);
+            }, 'modules.lessons.lessonProgress' => function ($q) use ($authenticatedUser) {
+                $q->where('user', $authenticatedUser->id);
+            }, 'courseProgress' => function ($q) use ($authenticatedUser) {
+                $q->where('user', $authenticatedUser->id);
+            }, 'modules' => function ($q) {
+                $q->withCount('lessons');
+            }])
+            ->withCount('modules')
+            ->firstOrFail();
+
+        return Response::success([
+            'user-course' => $userCourse,
+        ]);
+    }
+
+    // Get hired users
+    public function fetchEmployees()
+    {
+        // Get hired users
+        $employees = User::where('is_hired', 1)
+            ->with(['profile', 'department', 'courses.modules.lessons', 'courses' => function ($q) {
+                $q->with(['modules' => function ($q) {
+                    $q->withCount('lessons');
+                }])->withCount('modules');
+            }])
+            ->withCount('courses')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'employees' => $employees,
+        ]);
+    }
+
+    // Search candidate profiles
+    public function searchCandidateProfiles($request)
+    {
+        /**
+         * Filters with the value as integer
+         *
+         * Add new filters to $filtersWithIntValue array to allow them to be searched
+         */
+        $filtersWithIntValue = [
+            'role',
+            'location',
+            'hiring_request',
+        ];
+
+        /**
+         * Filters with the value of string
+         *
+         * Add new filters to $filtersWithStringValue array to allow them to be searched
+         */
+        $filtersWithStringValue = [
+            'first_name',
+            'last_name',
+            'email',
+        ];
+
+        // Get the type of $request->lcg_value
+        $valueType = gettype($request->value);
+
+        // Cast $request->filter to variable
+        $filter = $request->filter;
+
+        // Fetching results for $filtersWithIntValue
+        if (in_array($filter, $filtersWithIntValue)):
+
+            // Check the type of $request->value is integer
+            if ($valueType !== 'integer') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type integer'));
+            }
+
+            switch ($filter) {
+                case 'role':
+
+                    // Check if role exists
+                    $role = Role::findOrFail($request->value);
+
+                    // Getting candidates filtered by role
+                    $filteredCandidates = User::with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+                        ->whereHas('roles', function ($q) use ($role) {
+                            $q->where('id', $role->id);
+                        })
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'location':
+                    // Check if location(practice) exists
+                    $location = Practice::findOrFail($request->value);
+
+                    // Getting candidates filtered by hiring request
+                    $filteredCandidates = User::where('is_candidate', 1)
+                        ->whereHas('profile', function ($q) use ($location) {
+                            $q->whereHas('hiringRequest', function ($q) use ($location) {
+                                $q->where('practice_id', $location->id);
+                            });
+                        })->with([
+                        'profile.hiringRequest',
+                        'positionSummary',
+                        'contractSummary',
+                        'roles',
+                        'practices',
+                        'employmentCheck',
+                        'workPatterns.workTimings',
+                    ])
+                        ->latest()
+                        ->paginate(10);
+
+                    break;
+
+                case 'hiring_request':
+                    // Check if the hiring request exists
+                    $hiringRequest = HiringRequest::findOrFail($request->value);
+
+                    // Getting candidates filtered by hiring request
+                    $filteredCandidates = User::where('is_candidate', 1)
+                        ->whereHas('profile', function ($q) use ($hiringRequest) {
+                            $q->where('hiring_request_id', $hiringRequest->id);
+                        })->with([
+                        'profile.hiringRequest',
+                        'positionSummary',
+                        'contractSummary',
+                        'roles',
+                        'practices',
+                        'employmentCheck',
+                        'workPatterns.workTimings',
+                    ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+            }
+        endif;
+
+        if (in_array($filter, $filtersWithStringValue)):
+
+            // Check the type of $request->value is string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type string'));
+            }
+
+            switch ($filter) {
+                case 'email':
+
+                    $filteredCandidates = User::where('email', $request->value)
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'first_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('first_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                case 'last_name':
+                    $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
+                        $q->where('last_name', 'like', '%' . $request->value . '%');
+                    })
+                        ->with([
+                            'profile.hiringRequest',
+                            'positionSummary',
+                            'contractSummary',
+                            'roles',
+                            'practices',
+                            'employmentCheck',
+                            'workPatterns.workTimings',
+                        ])
+                        ->latest()
+                        ->paginate(10);
+                    break;
+
+                default:
+                    return false;
+            }
+
+        endif;
+
+        // Return response
+        return Response::success([
+            'filtered-candidates' => $filteredCandidates,
+        ]);
+
+    }
+
+    // Make user locum
+    public function updateUserLocumStatus($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Switch Case
+        switch ($request->locum_status) {
+            case 1:
+
+                // Check if the user already a locum
+                if ($user->isLocum()) {
+                    throw new \Exception(ResponseMessage::customMessage('User is already a locum'));
+                }
+
+                // Check if user is active and is a candidate and is hired
+                if (!$user->is_active || !$user->is_candidate || !$user->is_hired) {
+                    throw new \Exception(ResponseMessage::customMessage('User must be active, must be a candidate and must be hired.'));
+                }
+
+                // Make user as locum
+                $user->is_locum = 1;
+                $user->save();
+
+                break;
+
+            case 0:
+                // Check if the user already a locum
+                if (!$user->isLocum()) {
+                    throw new \Exception(ResponseMessage::customMessage('User is not a locum'));
+                }
+
+                // Make user as locum
+                $user->is_locum = 0;
+                $user->save();
+
+                break;
+
+            default:
+                return false;
+        }
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                ])
+                ->first(),
         ]);
     }
 }
