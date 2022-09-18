@@ -114,25 +114,94 @@ class LocumService
     // Fetch All Sessions
     public function fetchAllSessions($request)
     {
-        // If $request->practice is available
+        // // If $request->practice is available
+        // if ($request->has('practice')) {
+
+        //     // Get practice
+        //     $practice = Practice::findOrFail($request->practice);
+
+        //     // Get sessions
+        //     $locumSessions = LocumSession::where('practice_id', $practice->id)
+        //         ->with('practice', 'role', 'users.profile')
+        //         ->latest()
+        //         ->paginate(10);
+
+        // } else {
+
+        //     // Get sessions
+        //     $locumSessions = LocumSession::with('practice', 'role', 'users.profile')
+        //         ->latest()
+        //         ->paginate(10);
+        // }
+
+        $filters = [];
+
         if ($request->has('practice')) {
-
             // Get practice
-            $practice = Practice::findOrFail($request->practice);
+            // $practice = Practice::findOrFail($request->practice);
 
-            // Get sessions
-            $locumSessions = LocumSession::where('practice_id', $practice->id)
-                ->with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-
-            // Get sessions
-            $locumSessions = LocumSession::with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
+            $filters['practice'] = $request->practice;
         }
+
+        if ($request->has('role')) {
+            // Get role
+            // $role = Role::findOrFail($request->role);
+
+            $filters['role'] = $request->role;
+        }
+
+        if ($request->has('start_date')) {
+            // Start Date
+            // $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $filters['start_date'] = $request->start_date;
+        }
+
+        if ($request->has('end_date')) {
+            // End Date
+            // $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $filters['end_date'] = $request->end_date;
+        }
+
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $filters['rate'] = $rate;
+        }
+
+        if ($request->has('name')) {
+            $name = $request->name;
+
+            $filters['name'] = $name;
+        }
+
+        if ($request->has('quantity')) {
+            $quantity = $request->quantity;
+
+            $filters['quantity'] = $quantity;
+        }
+
+        if ($request->has('unit')) {
+            $unit = $request->unit;
+
+            $filters['unit'] = $unit;
+        }
+
+        $locumSessions = LocumSession::where(function ($q) use ($filters) {
+            $q->where('practice_id', $filters['practice'])
+                ->orWhere('name', 'like', '%' . $filters['name'] . '%')
+                ->orWhere('role_id', $filters['role'])
+                ->orWhereDate('start_date', $filters['start_date'])
+                ->orWhereDate('end_date', $filters['end_date'])
+                ->orWhere('quantity', $filters['quantity'])
+                ->orWhere('unit', $filters['unit'])
+                ->orWhere('rate', $filters['rate']);
+        })
+            ->with('practice', 'role', 'locums.profile')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
