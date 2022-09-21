@@ -114,29 +114,72 @@ class LocumService
     // Fetch All Sessions
     public function fetchAllSessions($request)
     {
-        // If $request->practice is available
-        if ($request->has('practice')) {
 
+        $locumSessionsQuery = LocumSession::query();
+
+        if ($request->has('practice')) {
             // Get practice
             $practice = Practice::findOrFail($request->practice);
 
-            // Get sessions
-            $locumSessions = LocumSession::where('practice_id', $practice->id)
-                ->with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-
-            // Get sessions
-            $locumSessions = LocumSession::with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
+            $locumSessionsQuery = $locumSessionsQuery->where('practice_id', $practice->id);
         }
+
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $locumSessionsQuery = $locumSessionsQuery->where('role_id', $role->id);
+        }
+
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $filters['start_date'] = $request->start_date;
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('start_date', $startDate);
+        }
+
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $filters['end_date'] = $request->end_date;
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('end_date', $endDate);
+        }
+
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('rate', $rate);
+        }
+
+        if ($request->has('name')) {
+            $name = $request->name;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('name', 'like', '%' . $name . '%');
+        }
+
+        if ($request->has('quantity')) {
+            $quantity = $request->quantity;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('quantity', $quantity);
+
+        }
+
+        if ($request->has('unit')) {
+            $unit = $request->unit;
+
+            $$locumSessionsQuery = $locumSessionsQuery->where('unit', $unit);
+        }
+
+        $filteredLocumSessions = $locumSessionsQuery->with('practice', 'role', 'locums.profile')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
-            'locum-sessions' => $locumSessions,
+            'locum-sessions' => $filteredLocumSessions,
         ]);
     }
 
@@ -145,7 +188,7 @@ class LocumService
     {
         // Get locum session
         $locumSession = LocumSession::where('id', $request->locum_session)
-            ->with('practice', 'role', 'users.profile')
+            ->with('practice', 'role', 'locums.profile')
             ->latest()
             ->firstOrFail();
 
