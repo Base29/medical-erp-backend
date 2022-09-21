@@ -11,6 +11,7 @@ use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUsersRequest;
+use App\Http\Requests\User\FilterUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
 use App\Http\Requests\User\LessonProgressRequest;
 use App\Http\Requests\User\ModuleProgressRequest;
@@ -271,6 +272,20 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->updateUserLocumStatus($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function filter(FilterUsersRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->filterUsers($request);
 
         } catch (\Exception $e) {
             return Response::fail([

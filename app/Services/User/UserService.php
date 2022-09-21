@@ -821,4 +821,75 @@ class UserService
                 ->first(),
         ]);
     }
+
+    public function filterUsers($request)
+    {
+        // Query users
+        $usersQuery = User::query();
+
+        // Check filters
+        if ($request->has('mobile_phone')) {
+
+            $usersQuery = $usersQuery->whereHas('profile', function ($q) use ($request) {
+                $q->where('mobile_phone', $request->mobile_phone);
+            });
+        }
+
+        if ($request->has('first_name')) {
+
+            $usersQuery = $usersQuery->whereHas('profile', function ($q) use ($request) {
+                $q->where('first_name', 'like', '%' . $request->first_name . '%');
+            });
+        }
+
+        if ($request->has('last_name')) {
+            $usersQuery = $usersQuery->whereHas('profile', function ($q) use ($request) {
+                $q->where('last_name', 'like', '%' . $request->last_name . '%');
+            });
+        }
+
+        if ($request->has('email')) {
+            $usersQuery = $usersQuery->where('email', $request->email);
+        }
+
+        if ($request->has('role')) {
+            $usersQuery = $usersQuery->whereHas('roles', function ($q) use ($request) {
+                $q->where('id', $request->role);
+            });
+        }
+
+        if ($request->has('is_active')) {
+            $usersQuery = $usersQuery->where('is_active', $request->is_active);
+        }
+
+        if ($request->has('is_candidate')) {
+            $usersQuery = $usersQuery->where('is_candidate', $request->is_candidate);
+        }
+
+        if ($request->has('is_hired')) {
+            $usersQuery = $usersQuery->where('is_hired', $request->is_hired);
+        }
+
+        if ($request->has('is_locum')) {
+            $usersQuery = $usersQuery->where('is_locum', $request->is_locum);
+        }
+
+        $filteredUsers = $usersQuery->with([
+            'profile.applicant',
+            'positionSummary',
+            'contractSummary',
+            'roles',
+            'practices',
+            'employmentCheck',
+            'workPatterns.workTimings',
+            'courses.modules.lessons',
+        ])
+            ->latest()
+            ->paginate(10);
+
+        // Return response
+        return Response::success([
+            'users' => $filteredUsers,
+        ]);
+    }
 }

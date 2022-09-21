@@ -124,6 +124,8 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update', [UserController::class, 'update']);
 
             Route::post('user', [UserController::class, 'fetchSingle']);
+
+            Route::post('filter', [UserController::class, 'filter']);
         });
 
     // Endpoints for practice operations
@@ -622,7 +624,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     });
 
-    // Routes for RE
+    // Routes for Recruiter
     Route::prefix('re')->group(function () {
 
         // Routes for interviews
