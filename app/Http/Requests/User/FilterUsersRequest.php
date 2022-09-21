@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Locum;
+namespace App\Http\Requests\User;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class FetchLocumSessionsRequest extends FormRequest
+class FilterUsersRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,12 +26,14 @@ class FetchLocumSessionsRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'nullable|numeric|exists:practices,id',
+            'mobile_phone' => 'nullable|numeric',
+            'last_name' => 'nullable|string',
+            'email' => 'nullable|email',
             'role' => 'nullable|numeric|exists:roles,id',
-            'name' => 'nullable|string',
-            'start_date' => 'nullable|date|date_format:Y-m-d',
-            'end_date' => 'nullable|date|date_format:Y-m-d',
-            'rate' => 'nullable|string',
+            'is_active' => 'nullable|boolean',
+            'is_candidate' => 'nullable|boolean',
+            'is_hired' => 'nullable|boolean',
+            'is_locum' => 'nullable|boolean',
         ];
     }
 
