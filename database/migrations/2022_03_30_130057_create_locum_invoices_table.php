@@ -15,6 +15,16 @@ class CreateLocumInvoicesTable extends Migration
     {
         Schema::create('locum_invoices', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('session')->references('id')->on('locum_sessions')->constrained()->cascadeOnDelete();
+            $table->foreignId('locum')->references('id')->on('users')->constrained()->cascadeOnDelete();
+            $table->foreignId('location')->references('id')->on('practices')->constrained()->cascadeOnDelete();
+            $table->date('start_date')->nullable();
+            $table->date('end_date')->nullable();
+            $table->time('start_time')->nullable();
+            $table->time('end_time')->nullable();
+            $table->string('session_invoice')->nullable();
+            $table->integer('esm_status')->default(1);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
