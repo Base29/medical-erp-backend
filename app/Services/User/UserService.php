@@ -13,6 +13,7 @@ use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\LessonProgress;
+use App\Models\LocumSessionInvite;
 use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
 use App\Models\ModuleProgress;
@@ -219,12 +220,13 @@ class UserService
                         $q->where(request()->filter, request()->value);
                     })
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
+
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
                 $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
 
             } elseif ($request->filter === 'role') {
                 // Filter users by role
@@ -233,14 +235,14 @@ class UserService
                         $q->where('id', request()->value);
                     })
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
             }
 
         } else {
             // Fetching all the users from database
             $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                 ->latest()
-                ->paginate(10);
+                ->paginate($request->per_page ? $request->per_page : 10);
         }
 
         return Response::success(['users' => $users]);
@@ -890,6 +892,23 @@ class UserService
         // Return response
         return Response::success([
             'users' => $filteredUsers,
+        ]);
+    }
+
+    // Fetch session invites of user
+    public function fetchUserSessionInvites($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Get session invites of $user
+        $sessionInvites = LocumSessionInvite::where('locum', $user->id)
+            ->latest()
+            ->get();
+
+        // Return response
+        return Response::success([
+            'session-invites' => $sessionInvites,
         ]);
     }
 }
