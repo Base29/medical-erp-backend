@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class FetchUsersRequest extends FormRequest
+class FetchUserSessionInvitesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,7 @@ class FetchUsersRequest extends FormRequest
     public function rules()
     {
         return [
-            'filter' => 'nullable|string',
-            'value' => 'nullable|string',
-            'per_page' => 'nullable|numeric',
+            'user' => 'required|numeric|exists:users,id',
         ];
     }
 
