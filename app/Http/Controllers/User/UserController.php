@@ -10,6 +10,7 @@ use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
+use App\Http\Requests\User\FetchUserSessionInvitesRequest;
 use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\FilterUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
@@ -286,6 +287,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->filterUsers($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch Invites
+    public function fetchUserInvites(FetchUserSessionInvitesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionInvites($request);
 
         } catch (\Exception $e) {
             return Response::fail([

@@ -13,6 +13,7 @@ use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\LessonProgress;
+use App\Models\LocumSessionInvite;
 use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
 use App\Models\ModuleProgress;
@@ -891,6 +892,23 @@ class UserService
         // Return response
         return Response::success([
             'users' => $filteredUsers,
+        ]);
+    }
+
+    // Fetch session invites of user
+    public function fetchUserSessionInvites($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Get session invites of $user
+        $sessionInvites = LocumSessionInvite::where('locum', $user->id)
+            ->latest()
+            ->get();
+
+        // Return response
+        return Response::success([
+            'session-invites' => $sessionInvites,
         ]);
     }
 }

@@ -739,6 +739,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('invite', [LocumController::class, 'inviteUsersToSession'])
                     ->middleware(['permission:can_manage_locums']);
+
+                Route::post('fetch-user-invites', [UserController::class, 'fetchUserInvites'])
+                    ->middleware(['permission:can_manage_locums']);
             });
 
             Route::patch('user-locum-status', [UserController::class, 'updateLocumStatus'])
