@@ -22,6 +22,7 @@ class CreateLocumInvoicesTable extends Migration
             $table->date('end_date')->nullable();
             $table->time('start_time')->nullable();
             $table->time('end_time')->nullable();
+            $table->decimal('rate', 8, 2)->nullable();
             $table->string('session_invoice')->nullable();
             $table->integer('esm_status')->default(1);
             $table->softDeletes();

@@ -14,6 +14,7 @@ use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
 use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
+use App\Http\Requests\Locum\UploadSessionInvoiceRequest;
 use App\Services\Locum\LocumService;
 
 class LocumController extends Controller
@@ -170,6 +171,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->sessionInvitationAction($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Upload invoice
+    public function uploadInvoice(UploadSessionInvoiceRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->uploadSessionInvoice($request);
 
         } catch (\Exception $e) {
             return Response::fail([
