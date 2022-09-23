@@ -1,8 +1,10 @@
 <?php
 namespace App\Services\Locum;
 
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Models\LocumInvoice;
 use App\Models\LocumSession;
 use App\Models\LocumSessionInvite;
 use App\Models\Practice;
@@ -364,6 +366,18 @@ class LocumService
                 $sessionInvite->status = 2;
                 $sessionInvite->save();
 
+                // Add session to user's locum invoices
+                $sessionInvoice = new LocumInvoice();
+                $sessionInvoice->session = $locumSession->id;
+                $sessionInvoice->locum = $user->id;
+                $sessionInvoice->location = $locumSession->practice_id;
+                $sessionInvoice->start_date = $locumSession->start_date;
+                $sessionInvoice->end_date = $locumSession->end_date;
+                $sessionInvoice->start_time = $locumSession->start_time;
+                $sessionInvoice->end_time = $locumSession->end_time;
+                $sessionInvoice->rate = $locumSession->rate;
+                $sessionInvoice->save();
+
                 $notifiable->notify(new SessionInviteAcceptedNotification(
                     $user,
                     $locumSession,
@@ -403,5 +417,27 @@ class LocumService
                 ->with('session')
                 ->first(),
         ]);
+    }
+
+    public function uploadSessionInvoice($request)
+    {
+        // Get locum invoice
+        $sessionInvoice = LocumInvoice::where('session', $request->session)->firstOrFail();
+
+        // Path on S3
+        $folderPath = 'locum/user-' . $sessionInvoice->locum . '/session-' . $sessionInvoice->session . '/invoice';
+
+        // Upload invoice
+        $invoiceUrl = FileUploadService::upload($request->invoice, $folderPath, 's3');
+
+        // Save invoice url
+        $sessionInvoice->session_invoice = $invoiceUrl;
+        $sessionInvoice->save();
+
+        // Return response
+        return Response::success([
+            'session-invoice' => $sessionInvoice,
+        ]);
+
     }
 }

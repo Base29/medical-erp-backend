@@ -50,4 +50,9 @@ class LocumSession extends Model
     {
         return $this->hasMany(LocumSessionInvite::class, 'session', 'id');
     }
+
+    public function sessionInvoices()
+    {
+        return $this->hasMany(LocumInvoice::class);
+    }
 }
