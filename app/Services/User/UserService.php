@@ -219,12 +219,13 @@ class UserService
                         $q->where(request()->filter, request()->value);
                     })
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
+
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
                 $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
 
             } elseif ($request->filter === 'role') {
                 // Filter users by role
@@ -233,14 +234,14 @@ class UserService
                         $q->where('id', request()->value);
                     })
                     ->latest()
-                    ->paginate(10);
+                    ->paginate($request->per_page ? $request->per_page : 10);
             }
 
         } else {
             // Fetching all the users from database
             $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
                 ->latest()
-                ->paginate(10);
+                ->paginate($request->per_page ? $request->per_page : 10);
         }
 
         return Response::success(['users' => $users]);
