@@ -1,6 +1,7 @@
 <?php
 namespace App\Services\Locum;
 
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\LocumInvoice;
@@ -420,6 +421,23 @@ class LocumService
 
     public function uploadSessionInvoice($request)
     {
-        //
+        // Get locum invoice
+        $sessionInvoice = LocumInvoice::where('session', $request->session)->firstOrFail();
+
+        // Path on S3
+        $folderPath = 'locum/user-' . $sessionInvoice->locum . '/session-' . $sessionInvoice->session . '/invoice';
+
+        // Upload invoice
+        $invoiceUrl = FileUploadService::upload($request->invoice, $folderPath, 's3');
+
+        // Save invoice url
+        $sessionInvoice->session_invoice = $invoiceUrl;
+        $sessionInvoice->save();
+
+        // Return response
+        return Response::success([
+            'session-invoice' => $sessionInvoice,
+        ]);
+
     }
 }

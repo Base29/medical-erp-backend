@@ -26,7 +26,7 @@ class UploadSessionInvoiceRequest extends FormRequest
     public function rules()
     {
         return [
-            'session_invoice' => 'required|numeric|exists:locum_invoices,id',
+            'session' => 'required|numeric|exists:locum_sessions,id',
             'invoice' => 'required|file|mimes:pdf,docx',
         ];
     }
