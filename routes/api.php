@@ -742,6 +742,15 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('fetch-user-invites', [UserController::class, 'fetchUserInvites'])
                     ->middleware(['permission:can_manage_locums']);
+
+                Route::prefix('billing')->group(function () {
+
+                    Route::get('/', [LocumController::class, 'fetchLocumInvoices'])
+                        ->middleware(['permission:can_manage_locums']);
+
+                    Route::post('update-esm-status', [LocumController::class, 'esmStatus'])
+                        ->middleware(['permission:can_manage_locums']);
+                });
             });
 
             Route::patch('user-locum-status', [UserController::class, 'updateLocumStatus'])

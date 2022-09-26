@@ -457,4 +457,34 @@ class LocumService
             'locum-invoices' => $locumInvoices,
         ]);
     }
+
+    // Fetch locum billing as a recruiter
+    public function fetchAllLocumBilling()
+    {
+        // Get locum invoices
+        $locumInvoices = LocumInvoice::with(['locum.profile', 'session'])
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'locum-invoices' => $locumInvoices,
+        ]);
+    }
+
+    // Update ESM Status of Locum Invoice
+    public function updateEsmStatus($request)
+    {
+        // Get locum invoice
+        $locumInvoice = LocumInvoice::findOrFail($request->invoice);
+
+        // Update esm_status
+        $locumInvoice->esm_status = $request->esm_status;
+        $locumInvoice->save();
+
+        // Return success response
+        return Response::success([
+            'locum-invoice' => $locumInvoice,
+        ]);
+    }
 }

@@ -14,6 +14,7 @@ use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
 use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
+use App\Http\Requests\Locum\UpdateEsmStatusRequest;
 use App\Http\Requests\Locum\UploadSessionInvoiceRequest;
 use App\Services\Locum\LocumService;
 
@@ -200,6 +201,36 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->fetchUserInvoices();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update esm status
+    public function esmStatus(UpdateEsmStatusRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->updateEsmStatus($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch locum session invoices as recruiter
+    public function fetchLocumInvoices()
+    {
+        try {
+            // Logic here
+            return $this->locumService->fetchAllLocumBilling();
 
         } catch (\Exception $e) {
             return Response::fail([
