@@ -440,4 +440,21 @@ class LocumService
         ]);
 
     }
+
+    // Fetch user invoices
+    public function fetchUserInvoices()
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get locum invoices
+        $locumInvoices = LocumInvoice::where(['locum' => $authenticatedUser->id])
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'locum-invoices' => $locumInvoices,
+        ]);
+    }
 }

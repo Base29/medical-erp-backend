@@ -194,4 +194,18 @@ class LocumController extends Controller
             ]);
         }
     }
+
+    public function fetchInvoices()
+    {
+        try {
+            // Logic here
+            return $this->locumService->fetchUserInvoices();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }
