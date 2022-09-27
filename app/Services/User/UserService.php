@@ -876,6 +876,12 @@ class UserService
             $usersQuery = $usersQuery->where('is_locum', $request->is_locum);
         }
 
+        if ($request->has('location')) {
+            $usersQuery = $usersQuery->whereHas('practices', function ($q) use ($request) {
+                $q->where('id', $request->location);
+            });
+        }
+
         $filteredUsers = $usersQuery->with([
             'profile.applicant',
             'positionSummary',
