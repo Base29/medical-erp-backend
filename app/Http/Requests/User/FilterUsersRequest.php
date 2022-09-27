@@ -35,6 +35,8 @@ class FilterUsersRequest extends FormRequest
             'is_hired' => 'nullable|boolean',
             'is_locum' => 'nullable|boolean',
             'location' => 'nullable|numeric|exists:practices,id',
+            'roles' => 'nullable|array',
+            'locations' => 'nullable|array',
         ];
     }
 

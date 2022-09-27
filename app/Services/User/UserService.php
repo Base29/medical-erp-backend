@@ -855,6 +855,11 @@ class UserService
         }
 
         if ($request->has('role')) {
+
+            if ($request->has('roles')) {
+                throw new \Exception(ResponseMessage::customMessage('You can either search by roles or role separately'));
+            }
+
             $usersQuery = $usersQuery->whereHas('roles', function ($q) use ($request) {
                 $q->where('id', $request->role);
             });
@@ -877,8 +882,35 @@ class UserService
         }
 
         if ($request->has('location')) {
+
+            if ($request->has('locations')) {
+                throw new \Exception(ResponseMessage::customMessage('You can either search by locations or location separately'));
+            }
+
             $usersQuery = $usersQuery->whereHas('practices', function ($q) use ($request) {
-                $q->where('id', $request->location);
+                $q->where('practice_id', $request->location);
+            });
+        }
+
+        if ($request->has('roles')) {
+
+            if ($request->has('role')) {
+                throw new \Exception(ResponseMessage::customMessage('You can either search by roles or role separately'));
+            }
+
+            $usersQuery = $usersQuery->whereHas('roles', function ($q) use ($request) {
+                $q->whereIn('id', $request->roles);
+            });
+        }
+
+        if ($request->has('locations')) {
+
+            if ($request->has('location')) {
+                throw new \Exception(ResponseMessage::customMessage('You can either search by locations or location separately'));
+            }
+
+            $usersQuery = $usersQuery->whereHas('practices', function ($q) use ($request) {
+                $q->where('practice_id', $request->locations);
             });
         }
 
