@@ -4,6 +4,7 @@ namespace App\Services\Locum;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Models\BlacklistedLocum;
 use App\Models\LocumInvoice;
 use App\Models\LocumSession;
 use App\Models\LocumSessionInvite;
@@ -485,6 +486,32 @@ class LocumService
         // Return success response
         return Response::success([
             'locum-invoice' => $locumInvoice,
+        ]);
+    }
+
+    // Blacklist Locum
+    public function addLocumToBlacklist($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check if user is locum
+        if (!$user->isLocum()) {
+            throw new \Exception(ResponseMessage::customMessage('User should be a locum'));
+        }
+
+        if ($user->isBlacklisted()) {
+            throw new \Exception(ResponseMessage::customMessage('User is already blacklisted'));
+        }
+
+        // Add user to blacklist
+        $blacklistUser = new BlacklistedLocum();
+        $blacklistUser->locum = $user->id;
+        $blacklistUser->save();
+
+        // Return success response
+        return Response::success([
+            'blacklisted-locum' => $blacklistUser,
         ]);
     }
 }
