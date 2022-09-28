@@ -289,10 +289,10 @@ class LocumService
         //     throw new \Exception(ResponseMessage::customMessage('Cannot invite users to locum session more than the required quantity'));
         // }
 
-        // Check if user is a locum
-        if (!$locum->isLocum()) {
-            throw new \Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
-        }
+        // // Check if user is a locum
+        // if (!$locum->isLocum()) {
+        //     throw new \Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
+        // }
 
         // Instance of LocumSessionInvite model
         $locumSessionInvite = new LocumSessionInvite();
