@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Locum;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Locum\AddLocumToBlacklistRequest;
 use App\Http\Requests\Locum\AssignUserToLocumSessionRequest;
 use App\Http\Requests\Locum\CreateLocumSessionRequest;
 use App\Http\Requests\Locum\DeleteLocumSessionRequest;
@@ -231,6 +232,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->fetchAllLocumBilling();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Blacklist locum
+    public function addToBlacklist(AddLocumToBlacklistRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->addLocumToBlacklist($request);
 
         } catch (\Exception $e) {
             return Response::fail([
