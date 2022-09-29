@@ -322,9 +322,4 @@ class User extends Authenticatable implements JWTSubject
     {
         return $this->hasMany(LocumInvoice::class);
     }
-
-    public function isBlacklisted()
-    {
-        return BlacklistedLocum::where('locum', $this->id)->exists();
-    }
 }

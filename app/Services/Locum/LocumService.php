@@ -4,7 +4,6 @@ namespace App\Services\Locum;
 use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
-use App\Models\BlacklistedLocum;
 use App\Models\LocumInvoice;
 use App\Models\LocumSession;
 use App\Models\LocumSessionInvite;
@@ -500,18 +499,28 @@ class LocumService
             throw new \Exception(ResponseMessage::customMessage('User should be a locum'));
         }
 
-        if ($user->isBlacklisted()) {
+        if ($user->is_blacklisted === 1) {
             throw new \Exception(ResponseMessage::customMessage('User is already blacklisted'));
         }
 
-        // Add user to blacklist
-        $blacklistUser = new BlacklistedLocum();
-        $blacklistUser->locum = $user->id;
-        $blacklistUser->save();
+        // Blacklist user
+        $user->is_blacklisted = 1;
+        $user->save();
 
         // Return success response
         return Response::success([
-            'blacklisted-locum' => $blacklistUser,
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                ])
+                ->first(),
         ]);
     }
 }

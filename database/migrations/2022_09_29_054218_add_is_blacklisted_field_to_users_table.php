@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateBlacklistedLocumsTable extends Migration
+class AddIsBlacklistedFieldToUsersTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,8 @@ class CreateBlacklistedLocumsTable extends Migration
      */
     public function up()
     {
-        Schema::create('blacklisted_locums', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('locum')->references('id')->on('users')->constrained()->cascadeOnDelete();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->boolean('is_blacklisted')->nullable()->after('is_locum');
         });
     }
 
@@ -27,6 +25,8 @@ class CreateBlacklistedLocumsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('blacklisted_locums');
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('is_blacklisted');
+        });
     }
 }
