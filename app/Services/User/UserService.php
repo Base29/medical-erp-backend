@@ -359,7 +359,12 @@ class UserService
         $candidate->is_active = 1;
         $candidate->save();
 
-        $candidate->givePermissionTo('can_manage_own_profile');
+        $candidate->givePermissionTo([
+            'can_manage_own_profile',
+            'can_manage_own_trainings',
+            'can_manage_own_locum_sessions',
+        ]);
+
         $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
         $candidate->practices()->attach($hiringRequest->practice->id, [
             'type' => 'user',
