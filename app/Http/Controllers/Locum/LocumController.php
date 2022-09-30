@@ -12,6 +12,7 @@ use App\Http\Requests\Locum\FetchLocumSessionsRequest;
 use App\Http\Requests\Locum\FetchSessionsByDayRequest;
 use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
 use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
+use App\Http\Requests\Locum\FilterLocumInvoicesRequest;
 use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
@@ -197,11 +198,12 @@ class LocumController extends Controller
         }
     }
 
-    public function fetchInvoices()
+    // Fetch invoices for authenticated user
+    public function fetchInvoices(FilterLocumInvoicesRequest $request)
     {
         try {
             // Logic here
-            return $this->locumService->fetchUserInvoices();
+            return $this->locumService->fetchUserInvoices($request);
 
         } catch (\Exception $e) {
             return Response::fail([
@@ -227,11 +229,11 @@ class LocumController extends Controller
     }
 
     // Fetch locum session invoices as recruiter
-    public function fetchLocumInvoices()
+    public function fetchLocumInvoices(FilterLocumInvoicesRequest $request)
     {
         try {
             // Logic here
-            return $this->locumService->fetchAllLocumBilling();
+            return $this->locumService->fetchAllLocumBilling($request);
 
         } catch (\Exception $e) {
             return Response::fail([

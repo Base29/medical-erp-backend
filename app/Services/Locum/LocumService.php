@@ -137,7 +137,6 @@ class LocumService
             // Start Date
             $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
 
-            $filters['start_date'] = $request->start_date;
             $locumSessionsQuery = $locumSessionsQuery->whereDate('start_date', $startDate);
         }
 
@@ -145,7 +144,6 @@ class LocumService
             // End Date
             $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
 
-            $filters['end_date'] = $request->end_date;
             $locumSessionsQuery = $locumSessionsQuery->whereDate('end_date', $endDate);
         }
 
@@ -442,34 +440,140 @@ class LocumService
     }
 
     // Fetch user invoices
-    public function fetchUserInvoices()
+    public function fetchUserInvoices($request)
     {
         // Get authenticated user
         $authenticatedUser = auth()->user();
 
+        // Locum invoice query
+        $invoiceQuery = LocumInvoice::query();
+
+        // $request has location
+        if ($request->has('location')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->location);
+
+            $invoiceQuery = $invoiceQuery->where('location', $practice->id);
+        }
+
+        // If request has role
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $invoiceQuery = $invoiceQuery->whereHas('session', function ($q) use ($role) {
+                $q->where('role_id', $role->id);
+            });
+        }
+
+        // if $request has start_date
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('start_date', $startDate);
+        }
+
+        // If $request has end_date
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('end_date', $endDate);
+        }
+
+        // If $request has rate
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $invoiceQuery = $invoiceQuery->where('rate', $rate);
+        }
+
+        // If request has esm_status
+        if ($request->has('esm_status')) {
+            $invoiceQuery = $invoiceQuery->where('esm_status', $request->esm_status);
+        }
+
+        // If $request has invoice_status
+        //TODO: This filter hasn't been clarified in the user stories. Once it is discussed it will be added
+
         // Get locum invoices
-        $locumInvoices = LocumInvoice::where(['locum' => $authenticatedUser->id])
+        $filteredInvoices = $invoiceQuery->where('locum', $authenticatedUser->id)
             ->with(['locum.profile', 'session', 'location'])
             ->latest()
             ->paginate(10);
 
         // Return success response
         return Response::success([
-            'locum-invoices' => $locumInvoices,
+            'locum-invoices' => $filteredInvoices,
         ]);
     }
 
     // Fetch locum billing as a recruiter
-    public function fetchAllLocumBilling()
+    public function fetchAllLocumBilling($request)
     {
+        // Locum invoice query
+        $invoiceQuery = LocumInvoice::query();
+
+        // $request has location
+        if ($request->has('location')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->location);
+
+            $invoiceQuery = $invoiceQuery->where('location', $practice->id);
+        }
+
+        // If request has role
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $invoiceQuery = $invoiceQuery->whereHas('session', function ($q) use ($role) {
+                $q->where('role_id', $role->id);
+            });
+        }
+
+        // if $request has start_date
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('start_date', $startDate);
+        }
+
+        // If $request has end_date
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('end_date', $endDate);
+        }
+
+        // If $request has rate
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $invoiceQuery = $invoiceQuery->where('rate', $rate);
+        }
+
+        // If request has esm_status
+        if ($request->has('esm_status')) {
+            $invoiceQuery = $invoiceQuery->where('esm_status', $request->esm_status);
+        }
+
+        // If $request has invoice_status
+        //TODO: This filter hasn't been clarified in the user stories. Once it is discussed it will be added
+
         // Get locum invoices
-        $locumInvoices = LocumInvoice::with(['locum.profile', 'session', 'location'])
+        $filteredInvoices = $invoiceQuery->with(['locum.profile', 'session', 'location'])
             ->latest()
             ->paginate(10);
 
         // Return success response
         return Response::success([
-            'locum-invoices' => $locumInvoices,
+            'locum-invoices' => $filteredInvoices,
         ]);
     }
 

@@ -745,7 +745,7 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::prefix('billing')->group(function () {
 
-                    Route::get('/', [LocumController::class, 'fetchLocumInvoices'])
+                    Route::post('/', [LocumController::class, 'fetchLocumInvoices'])
                         ->middleware(['permission:can_manage_locums']);
 
                     Route::post('update-esm-status', [LocumController::class, 'esmStatus'])
@@ -837,7 +837,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::prefix('sessions')->group(function () {
                 Route::post('invitation-action', [LocumController::class, 'invitationAction']);
                 Route::post('upload-invoice', [LocumController::class, 'uploadInvoice']);
-                Route::get('billing', [LocumController::class, 'fetchInvoices']);
+                Route::post('billing', [LocumController::class, 'fetchInvoices']);
             });
         });
     });
