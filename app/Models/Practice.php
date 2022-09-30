@@ -138,4 +138,9 @@ class Practice extends Model
     {
         return $this->hasMany(Appraisal::class, 'practice', 'id');
     }
+
+    public function locumInvoices()
+    {
+        return $this->hasMany(LocumInvoice::class);
+    }
 }

@@ -21,4 +21,9 @@ class LocumInvoice extends Model
     {
         return $this->belongsTo(LocumSession::class, 'session', 'id');
     }
+
+    public function location()
+    {
+        return $this->belongsTo(Practice::class, 'location', 'id');
+    }
 }

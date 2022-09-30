@@ -449,6 +449,7 @@ class LocumService
 
         // Get locum invoices
         $locumInvoices = LocumInvoice::where(['locum' => $authenticatedUser->id])
+            ->with(['locum.profile', 'session', 'location'])
             ->latest()
             ->paginate(10);
 
@@ -462,7 +463,7 @@ class LocumService
     public function fetchAllLocumBilling()
     {
         // Get locum invoices
-        $locumInvoices = LocumInvoice::with(['locum.profile', 'session'])
+        $locumInvoices = LocumInvoice::with(['locum.profile', 'session', 'location'])
             ->latest()
             ->paginate(10);
 
