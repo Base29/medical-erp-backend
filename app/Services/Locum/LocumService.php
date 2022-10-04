@@ -105,9 +105,9 @@ class LocumService
         // Remove user from a locum session
         $locumSession->users()->detach($user->id);
 
-        // Change $user->is_locum === true
-        $user->is_locum = 0;
-        $user->save();
+        // // Change $user->is_locum === true
+        // $user->is_locum = 0;
+        // $user->save();
 
         // Return success response
         return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);
