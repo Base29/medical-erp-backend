@@ -50,25 +50,23 @@ class HeadQuarterService
             ->latest()
             ->paginate(10);
 
-        // $offersWithCount = $offers->toArray();
-
         // Getting count of permanent contract
-        $permanent = $this->processCount('contract_type', 'permanent');
+        $made = $this->processCount('made');
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount('contract_type', 'fixed-term');
+        $accepted = $this->processCount('accepted');
 
         // Getting count of casual contract
-        $casual = $this->processCount('contract_type', 'casual');
+        $pending = $this->processCount('pending');
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount('contract_type', 'zero-hour');
+        $declined = $this->processCount('declined');
 
         $countByContractType = collect(['count' => [
-            'permanent' => $permanent,
-            'fixed-term' => $fixedTerm,
-            'casual' => $casual,
-            'zero-hour' => $zeroHour,
+            'made' => $made,
+            'accepted' => $accepted,
+            'pending' => $pending,
+            'declined' => $declined,
         ]]);
 
         $offersWithCount = $countByContractType->merge($offers);
@@ -95,8 +93,8 @@ class HeadQuarterService
     }
 
     // Process count
-    private function processCount($column, $value)
+    private function processCount($value)
     {
-        return HiringRequest::where([$column => $value])->count();
+        return Offer::where('status', $value)->count();
     }
 }
