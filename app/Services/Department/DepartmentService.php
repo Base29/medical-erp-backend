@@ -102,7 +102,7 @@ class DepartmentService
         $casual = $this->processCount($department->id, 'contract_type', 'casual');
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour', $request);
+        $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour');
 
         $result['count']['permanent'] = $permanent;
         $result['count']['fixed-term'] = $fixedTerm;

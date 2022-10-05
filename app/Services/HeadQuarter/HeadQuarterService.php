@@ -46,13 +46,35 @@ class HeadQuarterService
     public function fetchAllOffers()
     {
         // Get Offers
-        $offers = Offer::with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
+        $offers = Offer::with(['practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings'])
             ->latest()
             ->paginate(10);
 
+        // $offersWithCount = $offers->toArray();
+
+        // Getting count of permanent contract
+        $permanent = $this->processCount('contract_type', 'permanent');
+
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount('contract_type', 'fixed-term');
+
+        // Getting count of casual contract
+        $casual = $this->processCount('contract_type', 'casual');
+
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount('contract_type', 'zero-hour');
+
+        $countByContractType = collect(['count' => [
+            'permanent' => $permanent,
+            'fixed-term' => $fixedTerm,
+            'casual' => $casual,
+            'zero-hour' => $zeroHour,
+        ]]);
+
+        $offersWithCount = $countByContractType->merge($offers);
         // Return success response
         return Response::success([
-            'offers' => $offers,
+            'offers' => $offersWithCount,
         ]);
     }
 
@@ -70,5 +92,11 @@ class HeadQuarterService
         return Response::success([
             'search-results' => $results,
         ]);
+    }
+
+    // Process count
+    private function processCount($column, $value)
+    {
+        return HiringRequest::where([$column => $value])->count();
     }
 }
