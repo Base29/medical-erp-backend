@@ -62,14 +62,14 @@ class HeadQuarterService
         // Getting count of zero hour contract
         $declined = $this->processCount('declined');
 
-        $countByContractType = collect(['count' => [
+        $countByStatus = collect(['count' => [
             'made' => $made,
             'accepted' => $accepted,
             'pending' => $pending,
             'declined' => $declined,
         ]]);
 
-        $offersWithCount = $countByContractType->merge($offers);
+        $offersWithCount = $countByStatus->merge($offers);
         // Return success response
         return Response::success([
             'offers' => $offersWithCount,

@@ -49,9 +49,34 @@ class InterviewService
                 ->paginate(10);
         }
 
+        /**
+         * Count according to contract type
+         */
+
+        // Getting count of permanent contract
+        $permanent = $this->processCount('contract_type', 'permanent');
+
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount('contract_type', 'fixed-term');
+
+        // Getting count of casual contract
+        $casual = $this->processCount('contract_type', 'casual');
+
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount('contract_type', 'zero-hour');
+
+        $countByContractType = collect(['count' => [
+            'permanent' => $permanent,
+            'fixed-term' => $fixedTerm,
+            'casual' => $casual,
+            'zero-hour' => $zeroHour,
+        ]]);
+
+        $interviewsWithCount = $countByContractType->merge($interviews);
+
         // Return success response
         return Response::success([
-            'interviews' => $interviews,
+            'interviews' => $interviewsWithCount,
         ]);
     }
 
@@ -506,5 +531,13 @@ class InterviewService
         return Response::success([
             'interviews' => $interviews,
         ]);
+    }
+
+    // Processing count by contract type
+    private function processCount($column, $value)
+    {
+        return InterviewSchedule::whereHas('hiringRequest', function ($q) use ($column, $value) {
+            $q->where($column, $value);
+        })->count();
     }
 }
