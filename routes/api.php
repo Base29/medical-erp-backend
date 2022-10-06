@@ -838,6 +838,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('invitation-action', [LocumController::class, 'invitationAction']);
                 Route::post('upload-invoice', [LocumController::class, 'uploadInvoice']);
                 Route::post('billing', [LocumController::class, 'fetchInvoices']);
+                Route::post('/', [UserController::class, 'fetchMyLocumSessions']);
             });
         });
     });

@@ -13,6 +13,7 @@ use App\Models\CourseProgress;
 use App\Models\Department;
 use App\Models\HiringRequest;
 use App\Models\LessonProgress;
+use App\Models\LocumSession;
 use App\Models\LocumSessionInvite;
 use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
@@ -952,6 +953,82 @@ class UserService
         // Return response
         return Response::success([
             'session-invites' => $sessionInvites,
+        ]);
+    }
+
+    // Fetch All Sessions
+    public function fetchUserSessions($request)
+    {
+        // Authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Query build
+        $locumSessionsQuery = LocumSession::query();
+
+        if ($request->has('practice')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->practice);
+
+            $locumSessionsQuery = $locumSessionsQuery->where('practice_id', $practice->id);
+        }
+
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $locumSessionsQuery = $locumSessionsQuery->where('role_id', $role->id);
+        }
+
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('start_date', $startDate);
+        }
+
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('end_date', $endDate);
+        }
+
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('rate', $rate);
+        }
+
+        if ($request->has('name')) {
+            $name = $request->name;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('name', 'like', '%' . $name . '%');
+        }
+
+        if ($request->has('quantity')) {
+            $quantity = $request->quantity;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('quantity', $quantity);
+
+        }
+
+        if ($request->has('unit')) {
+            $unit = $request->unit;
+
+            $$locumSessionsQuery = $locumSessionsQuery->where('unit', $unit);
+        }
+
+        $filteredLocumSessions = $locumSessionsQuery->whereHas('locums', function ($q) use ($authenticatedUser) {
+            $q->where('user_id', $authenticatedUser->id);
+        })
+            ->with('practice', 'role', 'locums.profile', 'locums.roles')
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'locum-sessions' => $filteredLocumSessions,
         ]);
     }
 }

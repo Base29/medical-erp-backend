@@ -4,6 +4,7 @@ namespace App\Http\Controllers\User;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Locum\FetchLocumSessionsRequest;
 use App\Http\Requests\Locum\UpdateUserLocumStatusRequest;
 use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateEndOfModuleExamRequest;
@@ -302,6 +303,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->fetchUserSessionInvites($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch My Locum Sessions
+    public function fetchMyLocumSessions(FetchLocumSessionsRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessions($request);
 
         } catch (\Exception $e) {
             return Response::fail([
