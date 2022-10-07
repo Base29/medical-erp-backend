@@ -30,14 +30,13 @@ class LocumService
         $locumSession = new LocumSession();
         $locumSession->practice_id = $practice->id;
         $locumSession->name = $request->name;
-        $locumSession->quantity = $request->quantity;
         $locumSession->start_date = $request->start_date;
         $locumSession->end_date = $request->end_date;
         $locumSession->start_time = $request->start_time;
         $locumSession->end_time = $request->end_time;
         $locumSession->rate = $request->rate;
         $locumSession->unit = $request->unit;
-        $locumSession->location = $request->location;
+        $locumSession->location = $practice->practice_name;
 
         // Save $locumSession
         $role->locumSessions()->save($locumSession);
@@ -223,15 +222,25 @@ class LocumService
         // Parsing $date with Carbon
         $parsedDate = Carbon::createFromFormat('Y-m', $date);
 
+        // Build session by month query
+        $sessionsByMonthQuery = LocumSession::query();
+
+        // Check if $request has location
+        if ($request->has('location')) {
+            $location = Practice::findOrFail($request->location);
+
+            $sessionsByMonthQuery = $sessionsByMonthQuery->where('practice_id', $location->id);
+        }
+
         // Get session by month
-        $sessionsByMonth = LocumSession::whereMonth('start_date', '=', $parsedDate->format('m'))
+        $sessionsByMonthFiltered = $sessionsByMonthQuery->whereMonth('start_date', '=', $parsedDate->format('m'))
             ->with(['locums.profile', 'locums.roles'])
             ->latest()
             ->get();
 
         // Return success response
         return Response::success([
-            'sessions-by-month' => $sessionsByMonth,
+            'sessions-by-month' => $sessionsByMonthFiltered,
         ]);
 
     }

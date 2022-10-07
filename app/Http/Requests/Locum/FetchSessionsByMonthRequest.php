@@ -27,6 +27,7 @@ class FetchSessionsByMonthRequest extends FormRequest
     {
         return [
             'date' => 'required|date|date_format:Y-m',
+            'location' => 'nullable|numeric|exists:practices,id',
         ];
     }
 
