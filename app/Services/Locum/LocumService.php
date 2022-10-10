@@ -173,6 +173,7 @@ class LocumService
         }
 
         $filteredLocumSessions = $locumSessionsQuery->with('practice', 'role', 'locums.profile', 'locums.roles')
+            ->withCount(['locums'])
             ->latest()
             ->paginate(10);
 
@@ -188,6 +189,7 @@ class LocumService
         // Get locum session
         $locumSession = LocumSession::where('id', $request->locum_session)
             ->with('practice', 'role', 'locums.profile', 'locums.roles')
+            ->withCount(['locums'])
             ->latest()
             ->firstOrFail();
 
@@ -235,6 +237,7 @@ class LocumService
         // Get session by month
         $sessionsByMonthFiltered = $sessionsByMonthQuery->whereMonth('start_date', '=', $parsedDate->format('m'))
             ->with(['locums.profile', 'locums.roles'])
+            ->withCount(['locums'])
             ->latest()
             ->get();
 
@@ -257,6 +260,7 @@ class LocumService
         // Get sessions by the date
         $sessionsByDay = LocumSession::whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
             ->with(['locums.profile', 'locums.roles'])
+            ->withCount(['locums'])
             ->latest()
             ->get();
 

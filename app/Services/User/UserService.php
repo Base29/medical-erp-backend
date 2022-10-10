@@ -1060,6 +1060,7 @@ class UserService
         })
             ->whereMonth('start_date', '=', $parsedDate->format('m'))
             ->with(['locums.profile', 'locums.roles'])
+            ->withCount(['locums'])
             ->latest()
             ->get();
 
@@ -1089,6 +1090,7 @@ class UserService
         })
             ->whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
             ->with(['locums.profile', 'locums.roles'])
+            ->withCount(['locums'])
             ->latest()
             ->get();
 
