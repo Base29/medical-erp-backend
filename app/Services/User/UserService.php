@@ -1069,4 +1069,33 @@ class UserService
         ]);
 
     }
+
+    // Fetch sessions by day
+    public function fetchUserSessionsByDay($request)
+    {
+
+        // Authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m-d', $date);
+
+        // Get sessions by the date
+        $sessionsByDay = LocumSession::whereHas('locums', function ($q) use ($authenticatedUser) {
+            $q->where('user_id', $authenticatedUser->id);
+        })
+            ->whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
+            ->with(['locums.profile', 'locums.roles'])
+            ->latest()
+            ->get();
+
+        // Return success response
+        return Response::success([
+            'sessions-by-day' => $sessionsByDay,
+        ]);
+
+    }
 }

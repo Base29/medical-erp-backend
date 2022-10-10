@@ -5,6 +5,7 @@ namespace App\Http\Controllers\User;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Locum\FetchLocumSessionsRequest;
+use App\Http\Requests\Locum\FetchSessionsByDayRequest;
 use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
 use App\Http\Requests\Locum\UpdateUserLocumStatusRequest;
 use App\Http\Requests\User\CourseProgressRequest;
@@ -328,12 +329,27 @@ class UserController extends Controller
         }
     }
 
-    // Fetch my session by month
+    // Fetch my sessions by month
     public function fetchMySessionsByMonth(FetchSessionsByMonthRequest $request)
     {
         try {
             // Logic here
             return $this->userService->fetchUserSessionsByMonth($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch my sessions by day
+    public function fetchMySessionsByDay(FetchSessionsByDayRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionsByDay($request);
 
         } catch (\Exception $e) {
             return Response::fail([

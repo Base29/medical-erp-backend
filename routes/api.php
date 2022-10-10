@@ -840,6 +840,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('billing', [LocumController::class, 'fetchInvoices']);
                 Route::post('/', [UserController::class, 'fetchMyLocumSessions']);
                 Route::post('month', [UserController::class, 'fetchMySessionsByMonth']);
+                Route::post('day', [UserController::class, 'fetchMySessionsByDay']);
             });
         });
     });

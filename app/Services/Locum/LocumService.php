@@ -357,8 +357,8 @@ class LocumService
             case 2:
 
                 // Check to restrict if locums are being adding above the required quantity
-                if ($locumSession->quantity === $locumSession->locums()->count()) {
-                    throw new \Exception(ResponseMessage::customMessage('Sorry all the seats are filled within this session'));
+                if ($locumSession->locums()->count() === 1) {
+                    throw new \Exception(ResponseMessage::customMessage('Sorry seat for this session has been filled.'));
                 }
 
                 // Check if the user already accepted the invitation
