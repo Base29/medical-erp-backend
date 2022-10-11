@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\User;
+namespace App\Http\Requests\Locum;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class FilterUsersRequest extends FormRequest
+class RemoveLocumFromBlacklistRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,18 +26,7 @@ class FilterUsersRequest extends FormRequest
     public function rules()
     {
         return [
-            'mobile_phone' => 'nullable|numeric',
-            'last_name' => 'nullable|string',
-            'email' => 'nullable|email',
-            'role' => 'nullable|numeric|exists:roles,id',
-            'is_active' => 'nullable|boolean',
-            'is_candidate' => 'nullable|boolean',
-            'is_hired' => 'nullable|boolean',
-            'is_locum' => 'nullable|boolean',
-            'location' => 'nullable|numeric|exists:practices,id',
-            'roles' => 'nullable|array',
-            'locations' => 'nullable|array',
-            'is_blacklisted' => 'nullable|boolean',
+            'locum' => 'required|numeric|exists:users,id',
         ];
     }
 

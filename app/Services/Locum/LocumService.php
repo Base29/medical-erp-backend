@@ -290,6 +290,11 @@ class LocumService
             throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before invited to a locum session'));
         }
 
+        // Check if $locum is blacklisted
+        if ($locum->is_blacklisted) {
+            throw new \Exception(ResponseMessage::customMessage('Blacklisted locums cannot be invited to a session'));
+        }
+
         // Check if the user is already assigned to the locum session
         if ($session->userAlreadyAssignedToSession($locum->id)) {
             throw new \Exception(ResponseMessage::customMessage('User ' . $locum->id . ' already assigned to locum session'));
@@ -623,6 +628,39 @@ class LocumService
 
         // Blacklist user
         $user->is_blacklisted = 1;
+        $user->blacklist_reason = $request->blacklist_reason;
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Remove from blacklist
+    public function removeLocumFromBlacklist($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        if (!$user->is_blacklisted) {
+            throw new \Exception(ResponseMessage::customMessage('User is not blaclisted'));
+        }
+
+        // Blacklist user
+        $user->is_blacklisted = 0;
+        $user->blacklist_reason = '';
         $user->save();
 
         // Return success response

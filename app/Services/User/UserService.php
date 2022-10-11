@@ -887,6 +887,10 @@ class UserService
             $usersQuery = $usersQuery->where('is_locum', $request->is_locum);
         }
 
+        if ($request->has('is_blacklisted')) {
+            $usersQuery = $usersQuery->where('is_blacklisted', $request->is_blacklisted);
+        }
+
         if ($request->has('location')) {
 
             if ($request->has('locations')) {
