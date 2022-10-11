@@ -27,6 +27,14 @@ class AddLocumToBlacklistRequest extends FormRequest
     {
         return [
             'user' => 'required|numeric|exists:users,id',
+            'blacklist_reason' => 'required|string|max:1000',
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'blacklist_reason.required' => 'Please provide reason for blacklisting this locum',
         ];
     }
 

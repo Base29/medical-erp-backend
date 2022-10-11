@@ -758,6 +758,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('add-to-blacklist', [LocumController::class, 'addToBlacklist'])
                 ->middleware(['permission:can_manage_locums']);
+
+            Route::post('remove-from-blacklist', [LocumController::class, 'removeFromBlacklist'])
+                ->middleware(['permission:can_manage_locums']);
         });
 
         // Routes for employee handbook

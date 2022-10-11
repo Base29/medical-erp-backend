@@ -14,6 +14,7 @@ use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
 use App\Http\Requests\Locum\FetchSingleLocumSessionRequest;
 use App\Http\Requests\Locum\FilterLocumInvoicesRequest;
 use App\Http\Requests\Locum\InviteUsersToLocumSessionRequest;
+use App\Http\Requests\Locum\RemoveLocumFromBlacklistRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
 use App\Http\Requests\Locum\UpdateEsmStatusRequest;
@@ -249,6 +250,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->addLocumToBlacklist($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Remove from blacklist
+    public function removeFromBlacklist(RemoveLocumFromBlacklistRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->removeLocumFromBlacklist($request);
 
         } catch (\Exception $e) {
             return Response::fail([
