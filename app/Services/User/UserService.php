@@ -216,7 +216,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes')
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -225,13 +225,13 @@ class UserService
 
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
-                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+                $users = User::where($request->filter, $request->value)->with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes')
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);
 
             } elseif ($request->filter === 'role') {
                 // Filter users by role
-                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+                $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes')
                     ->whereHas('roles', function ($q) {
                         $q->where('id', request()->value);
                     })
@@ -241,7 +241,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+            $users = User::with('profile', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes')
                 ->latest()
                 ->paginate($request->per_page ? $request->per_page : 10);
         }
@@ -283,7 +283,7 @@ class UserService
         UpdateService::updateModel($profile, $request->validated(), 'user');
 
         return Response::success([
-            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices', 'user.workPatterns.workTimings')
+            'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices', 'user.workPatterns.workTimings', 'locumNotes')
                 ->latest('updated_at')
                 ->first(),
         ]);
@@ -298,7 +298,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings')
+            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes')
             ->firstOrFail();
 
         // Return details of the user
@@ -321,6 +321,7 @@ class UserService
                 'employmentCheck',
                 'workPatterns.workTimings',
                 'courses.modules.lessons',
+                'locumNotes',
             ])
             ->firstOrFail();
 
@@ -671,6 +672,7 @@ class UserService
                         'practices',
                         'employmentCheck',
                         'workPatterns.workTimings',
+                        'locumNotes',
                     ])
                         ->latest()
                         ->paginate(10);
@@ -693,6 +695,7 @@ class UserService
                         'practices',
                         'employmentCheck',
                         'workPatterns.workTimings',
+                        'locumNotes',
                     ])
                         ->latest()
                         ->paginate(10);
@@ -719,6 +722,7 @@ class UserService
                             'practices',
                             'employmentCheck',
                             'workPatterns.workTimings',
+                            'locumNotes',
                         ])
                         ->latest()
                         ->paginate(10);
@@ -736,6 +740,7 @@ class UserService
                             'practices',
                             'employmentCheck',
                             'workPatterns.workTimings',
+                            'locumNotes',
                         ])
                         ->latest()
                         ->paginate(10);
@@ -753,6 +758,7 @@ class UserService
                             'practices',
                             'employmentCheck',
                             'workPatterns.workTimings',
+                            'locumNotes',
                         ])
                         ->latest()
                         ->paginate(10);
@@ -825,6 +831,7 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'courses.modules.lessons',
+                    'locumNotes',
                 ])
                 ->first(),
         ]);
@@ -933,6 +940,7 @@ class UserService
             'employmentCheck',
             'workPatterns.workTimings',
             'courses.modules.lessons',
+            'locumNotes',
         ])
             ->latest()
             ->paginate(10);
@@ -1026,7 +1034,7 @@ class UserService
         $filteredLocumSessions = $locumSessionsQuery->whereHas('locums', function ($q) use ($authenticatedUser) {
             $q->where('user_id', $authenticatedUser->id);
         })
-            ->with('practice', 'role', 'locums.profile', 'locums.roles')
+            ->with('practice', 'role', 'locums.profile', 'locums.roles', 'locumNotes')
             ->latest()
             ->paginate(10);
 
@@ -1063,7 +1071,7 @@ class UserService
             $q->where('user_id', $authenticatedUser->id);
         })
             ->whereMonth('start_date', '=', $parsedDate->format('m'))
-            ->with(['locums.profile', 'locums.roles'])
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes'])
             ->withCount(['locums'])
             ->latest()
             ->get();
@@ -1093,7 +1101,7 @@ class UserService
             $q->where('user_id', $authenticatedUser->id);
         })
             ->whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
-            ->with(['locums.profile', 'locums.roles'])
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes'])
             ->withCount(['locums'])
             ->latest()
             ->get();

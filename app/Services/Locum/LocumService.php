@@ -173,7 +173,7 @@ class LocumService
             $$locumSessionsQuery = $locumSessionsQuery->where('unit', $unit);
         }
 
-        $filteredLocumSessions = $locumSessionsQuery->with('practice', 'role', 'locums.profile', 'locums.roles')
+        $filteredLocumSessions = $locumSessionsQuery->with('practice', 'role', 'locums.profile', 'locums.roles', 'locums.locumNotes')
             ->withCount(['locums'])
             ->latest()
             ->paginate(10);
@@ -189,7 +189,7 @@ class LocumService
     {
         // Get locum session
         $locumSession = LocumSession::where('id', $request->locum_session)
-            ->with('practice', 'role', 'locums.profile', 'locums.roles')
+            ->with('practice', 'role', 'locums.profile', 'locums.roles', 'locums.locumNotes')
             ->withCount(['locums'])
             ->latest()
             ->firstOrFail();
@@ -237,7 +237,7 @@ class LocumService
 
         // Get session by month
         $sessionsByMonthFiltered = $sessionsByMonthQuery->whereMonth('start_date', '=', $parsedDate->format('m'))
-            ->with(['locums.profile', 'locums.roles'])
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes'])
             ->withCount(['locums'])
             ->latest()
             ->get();
@@ -260,7 +260,7 @@ class LocumService
 
         // Get sessions by the date
         $sessionsByDay = LocumSession::whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
-            ->with(['locums.profile', 'locums.roles'])
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes'])
             ->withCount(['locums'])
             ->latest()
             ->get();
@@ -644,6 +644,7 @@ class LocumService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'courses.modules.lessons',
+                    'locumNotes',
                 ])
                 ->first(),
         ]);
@@ -676,6 +677,7 @@ class LocumService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'courses.modules.lessons',
+                    'locumNotes',
                 ])
                 ->first(),
         ]);
