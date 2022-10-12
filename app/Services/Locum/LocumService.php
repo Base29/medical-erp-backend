@@ -715,4 +715,21 @@ class LocumService
                 ->first(),
         ]);
     }
+
+    // Update locum
+    public function updateLocumNote($request)
+    {
+
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Update note
+        $locumNote->note = $request->note;
+        $locumNote->save();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
+        ]);
+    }
 }

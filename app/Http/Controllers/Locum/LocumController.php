@@ -19,6 +19,7 @@ use App\Http\Requests\Locum\RemoveLocumFromBlacklistRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
 use App\Http\Requests\Locum\UpdateEsmStatusRequest;
+use App\Http\Requests\Locum\UpdateLocumNoteRequest;
 use App\Http\Requests\Locum\UploadSessionInvoiceRequest;
 use App\Services\Locum\LocumService;
 
@@ -281,6 +282,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->createLocumNote($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update note for locum
+    public function updateNote(UpdateLocumNoteRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->updateLocumNote($request);
 
         } catch (\Exception $e) {
             return Response::fail([
