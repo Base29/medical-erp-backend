@@ -8,6 +8,7 @@ use App\Http\Requests\Locum\AddLocumToBlacklistRequest;
 use App\Http\Requests\Locum\AssignUserToLocumSessionRequest;
 use App\Http\Requests\Locum\CreateLocumNoteRequest;
 use App\Http\Requests\Locum\CreateLocumSessionRequest;
+use App\Http\Requests\Locum\DeleteLocumNoteRequest;
 use App\Http\Requests\Locum\DeleteLocumSessionRequest;
 use App\Http\Requests\Locum\FetchLocumSessionsRequest;
 use App\Http\Requests\Locum\FetchSessionsByDayRequest;
@@ -297,6 +298,21 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->updateLocumNote($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete locum note
+    public function deleteNote(DeleteLocumNoteRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->deleteLocumNote($request);
 
         } catch (\Exception $e) {
             return Response::fail([

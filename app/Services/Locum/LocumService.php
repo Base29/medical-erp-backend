@@ -716,7 +716,7 @@ class LocumService
         ]);
     }
 
-    // Update locum
+    // Update locum note
     public function updateLocumNote($request)
     {
 
@@ -726,6 +726,21 @@ class LocumService
         // Update note
         $locumNote->note = $request->note;
         $locumNote->save();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
+        ]);
+    }
+
+    // Delete locum note
+    public function deleteLocumNote($request)
+    {
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Delete locum note
+        $locumNote->delete();
 
         // Return success response
         return Response::success([

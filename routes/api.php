@@ -763,13 +763,15 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_manage_locums']);
 
             // Routes for locum notes
-            Route::prefix('notes')->group(function () {
-                Route::post('create', [LocumController::class, 'createNote'])
-                    ->middleware(['permission:can_manage_locums']);
+            Route::prefix('notes')
+                ->middleware(['permission:can_manage_locums'])
+                ->group(function () {
+                    Route::post('create', [LocumController::class, 'createNote']);
 
-                Route::patch('update', [LocumController::class, 'updateNote'])
-                    ->middleware(['permission:can_manage_locums']);
-            });
+                    Route::patch('update', [LocumController::class, 'updateNote']);
+
+                    Route::post('delete', [LocumController::class, 'deleteNote']);
+                });
         });
 
         // Routes for employee handbook
