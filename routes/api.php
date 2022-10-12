@@ -761,6 +761,17 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('remove-from-blacklist', [LocumController::class, 'removeFromBlacklist'])
                 ->middleware(['permission:can_manage_locums']);
+
+            // Routes for locum notes
+            Route::prefix('notes')
+                ->middleware(['permission:can_manage_locums'])
+                ->group(function () {
+                    Route::post('create', [LocumController::class, 'createNote']);
+
+                    Route::patch('update', [LocumController::class, 'updateNote']);
+
+                    Route::post('delete', [LocumController::class, 'deleteNote']);
+                });
         });
 
         // Routes for employee handbook

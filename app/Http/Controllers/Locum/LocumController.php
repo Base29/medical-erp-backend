@@ -6,7 +6,9 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Locum\AddLocumToBlacklistRequest;
 use App\Http\Requests\Locum\AssignUserToLocumSessionRequest;
+use App\Http\Requests\Locum\CreateLocumNoteRequest;
 use App\Http\Requests\Locum\CreateLocumSessionRequest;
+use App\Http\Requests\Locum\DeleteLocumNoteRequest;
 use App\Http\Requests\Locum\DeleteLocumSessionRequest;
 use App\Http\Requests\Locum\FetchLocumSessionsRequest;
 use App\Http\Requests\Locum\FetchSessionsByDayRequest;
@@ -18,6 +20,7 @@ use App\Http\Requests\Locum\RemoveLocumFromBlacklistRequest;
 use App\Http\Requests\Locum\RemoveUserFromLocumSessionRequest;
 use App\Http\Requests\Locum\SessionInvitationActionRequest;
 use App\Http\Requests\Locum\UpdateEsmStatusRequest;
+use App\Http\Requests\Locum\UpdateLocumNoteRequest;
 use App\Http\Requests\Locum\UploadSessionInvoiceRequest;
 use App\Services\Locum\LocumService;
 
@@ -265,6 +268,51 @@ class LocumController extends Controller
         try {
             // Logic here
             return $this->locumService->removeLocumFromBlacklist($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Create note for locum
+    public function createNote(CreateLocumNoteRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->createLocumNote($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update note for locum
+    public function updateNote(UpdateLocumNoteRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->updateLocumNote($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete locum note
+    public function deleteNote(DeleteLocumNoteRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->locumService->deleteLocumNote($request);
 
         } catch (\Exception $e) {
             return Response::fail([

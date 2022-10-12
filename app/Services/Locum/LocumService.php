@@ -5,6 +5,7 @@ use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\LocumInvoice;
+use App\Models\LocumNote;
 use App\Models\LocumSession;
 use App\Models\LocumSessionInvite;
 use App\Models\Practice;
@@ -677,6 +678,73 @@ class LocumService
                     'courses.modules.lessons',
                 ])
                 ->first(),
+        ]);
+    }
+
+    // Create note for locum (formerly known as privileges)
+    public function createLocumNote($request)
+    {
+        // Get locum
+        $locum = User::findOrFail($request->locum);
+
+        // Check if $locum->is_locum = true
+        if (!$locum->is_locum) {
+            throw new \Exception(ResponseMessage::customMessage('User must be a locum'));
+        }
+
+        // Initiate instance of LocumNote
+        $locumNote = new LocumNote();
+        $locumNote->locum = $locum->id;
+        $locumNote->note = $request->note;
+        $locumNote->save();
+
+        // Return success response
+        return Response::success([
+            'locum' => $locum->where('id', $locum->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                    'locumNotes',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Update locum note
+    public function updateLocumNote($request)
+    {
+
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Update note
+        $locumNote->note = $request->note;
+        $locumNote->save();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
+        ]);
+    }
+
+    // Delete locum note
+    public function deleteLocumNote($request)
+    {
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Delete locum note
+        $locumNote->delete();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
         ]);
     }
 }
