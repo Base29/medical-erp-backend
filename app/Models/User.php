@@ -325,6 +325,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function locumNotes()
     {
-        return $this->hasMany(LocumNote::class);
+        return $this->hasMany(LocumNote::class, 'locum', 'id');
     }
 }
