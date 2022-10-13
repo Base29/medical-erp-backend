@@ -27,7 +27,8 @@ class CreateLocumNoteRequest extends FormRequest
     {
         return [
             'locum' => 'required|numeric|exists:users,id',
-            'note' => 'required|string|max:500',
+            'notes' => 'required|array',
+            'notes.*.note' => 'required|string|max:500',
         ];
     }
 

@@ -694,11 +694,18 @@ class LocumService
             throw new \Exception(ResponseMessage::customMessage('User must be a locum'));
         }
 
-        // Initiate instance of LocumNote
-        $locumNote = new LocumNote();
-        $locumNote->locum = $locum->id;
-        $locumNote->note = $request->note;
-        $locumNote->save();
+        // Cast $request->notes to array
+        $notes = $request->notes;
+
+        foreach ($notes as $note):
+
+            // Initiate instance of LocumNote
+            $locumNote = new LocumNote();
+            $locumNote->locum = $locum->id;
+            $locumNote->note = $note['note'];
+            $locumNote->save();
+
+        endforeach;
 
         // Return success response
         return Response::success([
