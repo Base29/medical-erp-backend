@@ -34,6 +34,7 @@ use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Qualification\QualificationController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Role\RoleController;
@@ -126,6 +127,14 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('user', [UserController::class, 'fetchSingle']);
 
             Route::post('filter', [UserController::class, 'filter']);
+
+            Route::prefix('qualifications')->group(function () {
+                Route::post('create', [QualificationController::class, 'create']);
+
+                Route::patch('update', [QualificationController::class, 'update']);
+
+                Route::post('delete', [QualificationController::class, 'delete']);
+            });
         });
 
     // Endpoints for practice operations
