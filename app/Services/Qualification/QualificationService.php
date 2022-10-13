@@ -62,4 +62,19 @@ class QualificationService
 
     }
 
+    // Delete qualification
+    public function deleteQualification($request)
+    {
+        // Get qualification
+        $qualification = Qualification::findOrFail($request->qualification);
+
+        // Delete $qualification
+        $qualification->delete();
+
+        // Return success response
+        return Response::success([
+            'qualification' => $qualification,
+        ]);
+    }
+
 }

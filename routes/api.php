@@ -132,6 +132,8 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('create', [QualificationController::class, 'create']);
 
                 Route::patch('update', [QualificationController::class, 'update']);
+
+                Route::post('delete', [QualificationController::class, 'delete']);
             });
         });
 
