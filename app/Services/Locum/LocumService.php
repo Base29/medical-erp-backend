@@ -655,7 +655,7 @@ class LocumService
     public function removeLocumFromBlacklist($request)
     {
         // Get user
-        $user = User::findOrFail($request->user);
+        $user = User::findOrFail($request->locum);
 
         if (!$user->is_blacklisted) {
             throw new \Exception(ResponseMessage::customMessage('User is not blaclisted'));
