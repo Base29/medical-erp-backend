@@ -6,7 +6,7 @@ use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreateQualificationRequest extends FormRequest
+class UpdateQualificationRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -26,9 +26,8 @@ class CreateQualificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'user' => 'required|numeric|exists:users,id',
-            'qualifications' => 'required|array',
-            'qualifications.*.skill' => 'required|string|max:100',
+            'qualification' => 'required|numeric|exists:qualifications,id',
+            'skill' => 'required|string|max:100',
         ];
     }
 

@@ -330,6 +330,6 @@ class User extends Authenticatable implements JWTSubject
 
     public function qualifications()
     {
-        return $this->hasMany(Qualification::class, 'locum', 'id');
+        return $this->hasMany(Qualification::class, 'user', 'id');
     }
 }
