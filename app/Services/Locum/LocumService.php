@@ -11,6 +11,7 @@ use App\Models\LocumSessionInvite;
 use App\Models\Practice;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\Locum\RemoveLocumFromSessionNotification;
 use App\Notifications\Locum\SessionInvitationNotification;
 use App\Notifications\Locum\SessionInviteAcceptedNotification;
 use App\Notifications\Locum\SessionInviteDeclinedNotification;
@@ -103,11 +104,17 @@ class LocumService
         }
 
         // Remove user from a locum session
-        $locumSession->users()->detach($user->id);
+        $locumSession->locums()->detach($user->id);
 
         // // Change $user->is_locum === true
         // $user->is_locum = 0;
         // $user->save();
+
+        // Send notification to locum on removing from session
+        $user->notify(new RemoveLocumFromSessionNotification(
+            $user,
+            $locumSession
+        ));
 
         // Return success response
         return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);

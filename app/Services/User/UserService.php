@@ -24,6 +24,7 @@ use App\Models\Profile;
 use App\Models\Role;
 use App\Models\TrainingCourse;
 use App\Models\User;
+use App\Notifications\Locum\ChangeLocumStatusNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
@@ -864,6 +865,8 @@ class UserService
             default:
                 return false;
         }
+
+        $user->notify(new ChangeLocumStatusNotification($user));
 
         // Return success response
         return Response::success([
