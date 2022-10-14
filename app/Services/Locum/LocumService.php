@@ -244,7 +244,7 @@ class LocumService
 
         // Get session by month
         $sessionsByMonthFiltered = $sessionsByMonthQuery->whereMonth('start_date', '=', $parsedDate->format('m'))
-            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications'])
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications', 'role'])
             ->withCount(['locums'])
             ->latest()
             ->get();

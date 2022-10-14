@@ -6,12 +6,15 @@ use App\Models\LocumSession;
 use App\Models\User;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class RemoveLocumFromSessionNotification extends Notification implements ShouldBroadcast
+class RemoveLocumFromSessionNotification extends Notification implements
+ShouldBroadcast,
+ShouldQueue
 {
     use Queueable;
     protected $notifiable;
