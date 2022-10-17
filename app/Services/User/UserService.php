@@ -992,6 +992,9 @@ class UserService
             'courses.modules.lessons',
             'locumNotes',
             'qualifications',
+            'locumSessions' => function ($q) {
+                $q->latest();
+            },
         ])
             ->latest()
             ->paginate(10);
