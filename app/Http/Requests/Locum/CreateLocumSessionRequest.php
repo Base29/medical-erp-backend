@@ -35,7 +35,7 @@ class CreateLocumSessionRequest extends FormRequest
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
             'rate' => ['required', 'regex:/^-?(?:\d+|\d*\.\d+)$/'],
-            'unit' => ['required', Rule::in(['hourly', 'weekly', 'monthly'])],
+            'unit' => ['required', Rule::in(['hourly', 'session'])],
         ];
     }
 
