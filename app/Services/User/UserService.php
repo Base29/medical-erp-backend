@@ -1169,7 +1169,7 @@ class UserService
     }
 
     // Fetch user's locum session invites
-    public function fetchUserSessionInvites()
+    public function getMySessionInvites()
     {
         // Get authenticated
         $authenticatedUser = auth()->user();
@@ -1177,13 +1177,13 @@ class UserService
         // Get $authenticatedUser invites
         $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser) {
             return LocumSessionInvite::where('locum', $authenticatedUser->id)
-            ->latest()
-            ->get();
+                ->latest()
+                ->get();
         });
 
         // Return success response
         return Response::success([
-            'session-invites' => $invites
+            'session-invites' => $invites,
         ]);
     }
 }
