@@ -1182,9 +1182,11 @@ class UserService
 
         // Get $authenticatedUser invites
         $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser, $parsedDate) {
-            return LocumSessionInvite::where('locum', $authenticatedUser->id)
-                ->with('session')
-                ->whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
+            return LocumSessionInvite::whereHas('session', function ($q) use ($parsedDate) {
+                $q->whereMonth('start_date', '=', $parsedDate->format('m'));
+            })
+                ->where('locum', $authenticatedUser->id)
+                ->with(['session'])
                 ->latest()
                 ->get();
         });
