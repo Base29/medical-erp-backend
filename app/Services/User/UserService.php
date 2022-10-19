@@ -27,6 +27,7 @@ use App\Models\User;
 use App\Notifications\Locum\ChangeLocumStatusNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -1165,5 +1166,24 @@ class UserService
             'sessions-by-day' => $sessionsByDay,
         ]);
 
+    }
+
+    // Fetch user's locum session invites
+    public function fetchUserSessionInvites()
+    {
+        // Get authenticated
+        $authenticatedUser = auth()->user();
+
+        // Get $authenticatedUser invites
+        $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser) {
+            return LocumSessionInvite::where('locum', $authenticatedUser->id)
+            ->latest()
+            ->get();
+        });
+
+        // Return success response
+        return Response::success([
+            'session-invites' => $invites
+        ]);
     }
 }

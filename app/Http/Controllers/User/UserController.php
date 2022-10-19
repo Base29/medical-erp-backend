@@ -358,4 +358,19 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch my session invites
+    public function fetchMySessionInvites()
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionInvites();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

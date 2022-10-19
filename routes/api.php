@@ -864,6 +864,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('/', [UserController::class, 'fetchMyLocumSessions']);
                 Route::post('month', [UserController::class, 'fetchMySessionsByMonth']);
                 Route::post('day', [UserController::class, 'fetchMySessionsByDay']);
+                Route::get('session-invites', [UserController::class, 'fetchMySessionInvites']);
             });
         });
     });
