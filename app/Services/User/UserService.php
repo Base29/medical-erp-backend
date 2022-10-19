@@ -1169,14 +1169,21 @@ class UserService
     }
 
     // Fetch user's locum session invites
-    public function getMySessionInvites()
+    public function getMySessionInvites($request)
     {
         // Get authenticated
         $authenticatedUser = auth()->user();
 
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m', $date);
+
         // Get $authenticatedUser invites
-        $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser) {
+        $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser, $parsedDate) {
             return LocumSessionInvite::where('locum', $authenticatedUser->id)
+                ->whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
                 ->latest()
                 ->get();
         });

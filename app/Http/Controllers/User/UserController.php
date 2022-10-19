@@ -13,6 +13,7 @@ use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
+use App\Http\Requests\User\FetchUserSessionInvitesByMonthRequest;
 use App\Http\Requests\User\FetchUserSessionInvitesRequest;
 use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\FilterUsersRequest;
@@ -360,11 +361,11 @@ class UserController extends Controller
     }
 
     // Fetch my session invites
-    public function fetchMySessionInvites()
+    public function fetchMySessionInvites(FetchUserSessionInvitesByMonthRequest $request)
     {
         try {
             // Logic here
-            return $this->userService->getMySessionInvites();
+            return $this->userService->getMySessionInvites($request);
 
         } catch (\Exception $e) {
             return Response::fail([
