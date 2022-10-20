@@ -27,7 +27,6 @@ use App\Models\User;
 use App\Notifications\Locum\ChangeLocumStatusNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -1181,15 +1180,13 @@ class UserService
         $parsedDate = Carbon::createFromFormat('Y-m', $date);
 
         // Get $authenticatedUser invites
-        $invites = Cache::remember('userSessionInvites', now()->addDay(), function () use ($authenticatedUser, $parsedDate) {
-            return LocumSessionInvite::whereHas('session', function ($q) use ($parsedDate) {
-                $q->whereMonth('start_date', '=', $parsedDate->format('m'));
-            })
-                ->where('locum', $authenticatedUser->id)
-                ->with(['session'])
-                ->latest()
-                ->get();
-        });
+        $invites = LocumSessionInvite::whereHas('session', function ($q) use ($parsedDate) {
+            $q->whereMonth('start_date', '=', $parsedDate->format('m'));
+        })
+            ->where('locum', $authenticatedUser->id)
+            ->with(['session'])
+            ->latest()
+            ->get();
 
         // Return success response
         return Response::success([
