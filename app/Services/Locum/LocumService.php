@@ -390,6 +390,10 @@ class LocumService
                 $sessionInvite->status = 2;
                 $sessionInvite->save();
 
+                // Update user's is_locum status to true (1)
+                $user->is_locum = 1;
+                $user->save();
+
                 // Add session to user's locum invoices
                 $sessionInvoice = new LocumInvoice();
                 $sessionInvoice->session = $locumSession->id;
