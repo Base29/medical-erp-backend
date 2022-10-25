@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
 use App\Models\Offer;
+use App\Models\User;
 
 class HeadQuarterService
 {
@@ -25,8 +26,17 @@ class HeadQuarterService
             throw new \Exception(ResponseMessage::allowedFields($allowedFields));
         }
 
+        // Fetch users with the role recruiter
+        $recruiters = User::whereHas('roles', function ($q) {
+            $q->where('name', 'recruiter')->orWhere('name', 're');
+        })
+            ->get();
+
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
+
+        // Fetch $hiringRequest manager
+        $manager = User::findOrFail($hiringRequest->notifiable);
 
         // Process hiring request
         $hiringRequestProcessed = UpdateService::updateModel($hiringRequest, $request->validated(), 'hiring_request');
@@ -35,6 +45,25 @@ class HeadQuarterService
         if (!$hiringRequestProcessed) {
             throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot process hiring request at the moment'));
         }
+
+        // Looping through $recruiters
+        foreach ($recruiters as $recruiter):
+            // Send Notifications according to $request->gc_status
+            switch ($request->status) {
+                case 'approved':
+
+                    break;
+
+                case 'declined':
+                    break;
+
+                case 'escalated':
+                    break;
+
+                default:
+                    return false;
+            }
+        endforeach;
 
         // Return success response
         return $hiringRequest->with('workPatterns.workTimings', 'practice')

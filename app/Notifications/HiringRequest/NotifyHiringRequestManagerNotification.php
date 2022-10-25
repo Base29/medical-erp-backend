@@ -12,23 +12,23 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class ApproveHiringRequestNotification extends Notification implements ShouldQueue, ShouldBroadcast
+class NotifyHiringRequestManagerNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
     public $hiringRequest;
+    public $manager;
     public $hqUser;
-    public $recruiter;
 
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(User $hqUser, HiringRequest $hiringRequest, User $recruiter)
+    public function __construct(User $manager, HiringRequest $hiringRequest, User $hqUser)
     {
-        $this->hqUser = $hqUser;
+        $this->manager = $manager;
         $this->hiringRequest = $hiringRequest;
-        $this->recruiter = $recruiter;
+        $this->hqUser = $hqUser;
     }
 
     /**
@@ -52,11 +52,11 @@ class ApproveHiringRequestNotification extends Notification implements ShouldQue
     {
         return (new MailMessage)
             ->greeting('Hello! ' . $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name)
-            ->line('A hiring request has been approved and ready for processing ')
+            ->line('A hiring request has been ' . $this->hiringRequest->status)
             ->line(new HtmlString('<b>Job Title: ' . $this->hiringRequest->job_title . '</b>'))
             ->line(new HtmlString('<b>Job Contract Type: ' . $this->hiringRequest->contract_type . '</b>'))
             ->line(new HtmlString('<br />'))
-            ->line('Please log in to your dashboard to process the hiring request.')
+            ->line('Please log in to your dashboard to check the status of your hiring request.')
             ->action('Login', url(env('FRONTEND_URL') . '/login'))
             ->line('Thank you for using our application!');
     }
@@ -74,7 +74,7 @@ class ApproveHiringRequestNotification extends Notification implements ShouldQue
             'hiring_request_id' => $this->hiringRequest->id,
             'title' => $this->hiringRequest->job_title,
             'contract_type' => $this->hiringRequest->contract_type,
-            'request_approved_by' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,
+            'request_action_by' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,
         ];
     }
 
@@ -82,7 +82,7 @@ class ApproveHiringRequestNotification extends Notification implements ShouldQue
     {
         $notification = [
             "data" => [
-                'recruiter_user_name' => $this->recruiter->profile->first_name . ' ' . $this->recruiter->profile->last_name,
+                'manager_user_name' => $this->manager->profile->first_name . ' ' . $this->manager->profile->last_name,
                 'title' => $this->hiringRequest->job_title,
                 'contract_type' => $this->hiringRequest->contract_type,
                 'request_approved_by' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,

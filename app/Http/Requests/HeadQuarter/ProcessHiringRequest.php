@@ -4,6 +4,7 @@ namespace App\Http\Requests\HeadQuarter;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class ProcessHiringRequest extends FormRequest
@@ -27,7 +28,10 @@ class ProcessHiringRequest extends FormRequest
     {
         return [
             'hiring_request' => 'required|numeric|exists:hiring_requests,id',
-            'status' => 'required|string',
+            'status' => [
+                'required',
+                Rule::in(['approved', 'declined', 'escalated']),
+            ],
             'decision_reason' => 'nullable|string|max:100',
             'decision_comment' => 'nullable|string|max:1000',
             'progress' => 'required|string',
@@ -37,7 +41,7 @@ class ProcessHiringRequest extends FormRequest
     public function messages()
     {
         return [
-            'status.required' => 'Select either of the status APPROVED|ESCALATED|DECLINED',
+            'status.in' => 'Select either of the status APPROVED|ESCALATED|DECLINED',
         ];
     }
 
