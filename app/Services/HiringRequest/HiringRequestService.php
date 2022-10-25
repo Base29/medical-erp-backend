@@ -20,6 +20,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
+use App\Notifications\HiringRequest\NewHiringRequestNotification;
 
 class HiringRequestService
 {
@@ -40,7 +41,7 @@ class HiringRequestService
         $department = Department::findOrFail($request->department);
 
         // Get role
-        $role = Role::where('name', $request->job_title)->firstOrFail();
+        $role = Role::where('id', $request->role)->firstOrFail();
 
         // Get role
         $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
@@ -50,6 +51,14 @@ class HiringRequestService
 
         // Cast id of $workPattern to a variable
         $workPatternId = $workPattern ? $workPattern->id : null;
+
+        // Get current authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
 
         // If $workPattern is false
         if (!$workPattern) {
@@ -88,6 +97,7 @@ class HiringRequestService
 
         // Instance of HiringRequest
         $hiringRequest = new HiringRequest();
+        $hiringRequest->notifiable = $authenticatedUser->id;
         $hiringRequest->job_title = $request->job_title;
         $hiringRequest->role = $role->id;
         $hiringRequest->contract_type = $request->contract_type;
@@ -105,6 +115,15 @@ class HiringRequestService
 
         // Attach work pattern with the hiring request
         $hiringRequest->workPatterns()->attach($workPatternId);
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewHiringRequestNotification(
+                $hqUser,
+                $hiringRequest,
+                $authenticatedUser
+            ));
+        endforeach;
 
         // Return newly created $hiringRequest
         return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')

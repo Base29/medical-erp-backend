@@ -27,7 +27,8 @@ class CreateHiringRequest extends FormRequest
     {
         return [
             'practice' => 'required|numeric|exists:practices,id',
-            'job_title' => 'required|string|exists:roles,name',
+            'job_title' => 'required|string',
+            'role' => 'required|numeric|exists:roles,id',
             'contract_type' => 'required|string|max:50',
             'department' => 'required|numeric|exists:departments,id',
             'reporting_to' => 'required|numeric|exists:users,id',
@@ -49,7 +50,7 @@ class CreateHiringRequest extends FormRequest
     public function messages()
     {
         return [
-            'job_title.exists' => 'The job_title field should correspond to a role in the system. The ' . request()->job_title . ' is not a valid role.',
+            //
         ];
     }
 
