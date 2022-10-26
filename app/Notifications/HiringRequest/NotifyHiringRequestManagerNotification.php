@@ -51,8 +51,9 @@ class NotifyHiringRequestManagerNotification extends Notification implements Sho
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject('Hiring Request ' . ucfirst($this->hiringRequest->status))
             ->greeting('Hello! ' . $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name)
-            ->line('A hiring request has been ' . $this->hiringRequest->status)
+            ->line('Your hiring request has been ' . $this->hiringRequest->status)
             ->line(new HtmlString('<b>Job Title: ' . $this->hiringRequest->job_title . '</b>'))
             ->line(new HtmlString('<b>Job Contract Type: ' . $this->hiringRequest->contract_type . '</b>'))
             ->line(new HtmlString('<br />'))

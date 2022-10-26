@@ -51,6 +51,7 @@ class ApproveHiringRequestNotification extends Notification implements ShouldQue
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject('Hiring Request Approved')
             ->greeting('Hello! ' . $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name)
             ->line('A hiring request has been approved and ready for processing ')
             ->line(new HtmlString('<b>Job Title: ' . $this->hiringRequest->job_title . '</b>'))

@@ -2,30 +2,17 @@
 namespace App\Services\HeadQuarter;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
-use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\User;
+use App\Notifications\HiringRequest\ApproveHiringRequestNotification;
+use App\Notifications\HiringRequest\NotifyHiringRequestManagerNotification;
 
 class HeadQuarterService
 {
     // Process hiring request
     public function processHiringRequest($request)
     {
-        // Allowed fields
-        $allowedFields = [
-            'status',
-            'decision_reason',
-            'decision_comment',
-            'progress',
-        ];
-
-        // Checking if the $request doesn't contain any of the allowed fields
-        if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
-        }
-
         // Fetch users with the role recruiter
         $recruiters = User::whereHas('roles', function ($q) {
             $q->where('name', 'recruiter')->orWhere('name', 're');
@@ -38,13 +25,17 @@ class HeadQuarterService
         // Fetch $hiringRequest manager
         $manager = User::findOrFail($hiringRequest->notifiable);
 
-        // Process hiring request
-        $hiringRequestProcessed = UpdateService::updateModel($hiringRequest, $request->validated(), 'hiring_request');
+        // HQ User
+        $hqUser = auth()->user();
 
-        // Throw exception if processing failed
-        if (!$hiringRequestProcessed) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot process hiring request at the moment'));
-        }
+        // Update $hiringRequest
+        $hiringRequest->status = $request->status;
+        $hiringRequest->decision_reason = $request->decision_reason;
+        $hiringRequest->decision_comment = $request->decision_comment;
+        $hiringRequest->progress = $this->setProgress($request->status);
+
+        // Save changes
+        $hiringRequest->save();
 
         // Looping through $recruiters
         foreach ($recruiters as $recruiter):
@@ -52,18 +43,26 @@ class HeadQuarterService
             switch ($request->status) {
                 case 'approved':
 
-                    break;
+                    // Notify $recruiter that the $hiringRequest has been approved
+                    $recruiter->notify(new ApproveHiringRequestNotification(
+                        $hqUser,
+                        $hiringRequest,
+                        $recruiter
+                    ));
 
-                case 'declined':
                     break;
 
                 case 'escalated':
                     break;
-
-                default:
-                    return false;
             }
         endforeach;
+
+        // Notify $manager regarding the action taken by HQ on the $hiringRequest
+        $manager->notify(new NotifyHiringRequestManagerNotification(
+            $manager,
+            $hiringRequest,
+            $hqUser
+        ));
 
         // Return success response
         return $hiringRequest->with('workPatterns.workTimings', 'practice')
@@ -125,5 +124,41 @@ class HeadQuarterService
     private function processCount($value)
     {
         return Offer::where('status', $value)->count();
+    }
+
+    // Set progress for hiring request depending upon status
+    private function setProgress($status)
+    {
+        // Initiating empty $progress variable
+        $progress = null;
+
+        // Set $progress depending upon the $status in a switch statement
+        /**
+         * Default = pending-approval
+         *
+         * Approved = in-process
+         *
+         * Hired = completed <-- This status will be updated via recruiter when a candidate is hired against the $hiringRequest
+         *
+         * Declined = declined
+         *
+         * Escalated = escalated
+         */
+
+        switch ($status) {
+            case 'approved':
+                $progress = 'in-process';
+                break;
+
+            case 'declined':
+                $progress = 'declined';
+                break;
+
+            case 'escalated':
+                $progress = 'escalated';
+                break;
+        }
+
+        return $progress;
     }
 }

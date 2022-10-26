@@ -30,18 +30,17 @@ class ProcessHiringRequest extends FormRequest
             'hiring_request' => 'required|numeric|exists:hiring_requests,id',
             'status' => [
                 'required',
-                Rule::in(['approved', 'declined', 'escalated']),
+                Rule::in(['approved', 'declined', 'escalated', 'hired']),
             ],
             'decision_reason' => 'nullable|string|max:100',
             'decision_comment' => 'nullable|string|max:1000',
-            'progress' => 'required|string',
         ];
     }
 
     public function messages()
     {
         return [
-            'status.in' => 'Select either of the status APPROVED|ESCALATED|DECLINED',
+            'status.in' => 'Select either of the status APPROVED|ESCALATED|DECLINED|HIRED',
         ];
     }
 
