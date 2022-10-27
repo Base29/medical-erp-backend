@@ -321,6 +321,9 @@ class HiringRequestService
          * Count according to status
          */
 
+        // Getting count of pending hiring requests
+        $pending = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'pending', $request);
+
         // Getting count of approved hiring requests
         $approved = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'approved', $request);
 
@@ -347,6 +350,7 @@ class HiringRequestService
         $zeroHour = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'zero-hour', $request);
 
         // Adding extra meta to response $results
+        $results['count']['pending'] = $pending;
         $results['count']['approved'] = $approved;
         $results['count']['declined'] = $declined;
         $results['count']['escalated'] = $escalated;
