@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Str;
-
 return [
 
     /*
@@ -143,7 +141,16 @@ return [
 
         'options' => [
             'cluster' => env('REDIS_CLUSTER', 'redis'),
-            'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            // 'prefix' => env('REDIS_PREFIX', Str::slug(env('APP_NAME', 'laravel'), '_') . '_database_'),
+            'prefix' => '',
+            'scheme' => env('REDIS_SCHEME', 'tcp'),
+            'stream' => [
+                'ssl' => [
+                    'cafile' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT', null),
+                    'verify_peer' => true,
+                    'verify_peer_name' => false,
+                ],
+            ],
         ],
 
         'default' => [
