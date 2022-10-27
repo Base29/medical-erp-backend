@@ -107,6 +107,7 @@ class HiringRequestService
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
         $hiringRequest->comment = $request->comment;
+        $hiringRequest->status = 'pending';
         $hiringRequest->job_specification_id = $jobSpecification->id;
         $hiringRequest->person_specification_id = $personSpecification->id;
         $hiringRequest->application_manager = auth()->user()->id;

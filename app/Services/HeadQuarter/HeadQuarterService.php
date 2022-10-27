@@ -6,6 +6,7 @@ use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\User;
 use App\Notifications\HiringRequest\ApproveHiringRequestNotification;
+use App\Notifications\HiringRequest\EscalateHiringRequestNotification;
 use App\Notifications\HiringRequest\NotifyHiringRequestManagerNotification;
 
 class HeadQuarterService
@@ -53,6 +54,11 @@ class HeadQuarterService
                     break;
 
                 case 'escalated':
+                    $recruiter->notify(new EscalateHiringRequestNotification(
+                        $hqUser,
+                        $hiringRequest,
+                        $recruiter
+                    ));
                     break;
             }
         endforeach;
