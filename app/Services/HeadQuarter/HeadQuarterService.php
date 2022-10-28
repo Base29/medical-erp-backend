@@ -161,7 +161,7 @@ class HeadQuarterService
                 break;
 
             case 'escalated':
-                $progress = 'escalated';
+                $progress = 'in-process';
                 break;
         }
 
