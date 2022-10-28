@@ -4,6 +4,7 @@ namespace App\Http\Requests\HiringRequest;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CreateHiringRequest extends FormRequest
@@ -29,7 +30,11 @@ class CreateHiringRequest extends FormRequest
             'practice' => 'required|numeric|exists:practices,id',
             'job_title' => 'required|string',
             'role' => 'required|numeric|exists:roles,id',
-            'contract_type' => 'required|string|max:50',
+            'contract_type' => [
+                'required',
+                'string',
+                Rule::in(['permanent', 'casual', 'fixed-term', 'zero-hour']),
+            ],
             'department' => 'required|numeric|exists:departments,id',
             'reporting_to' => 'required|numeric|exists:users,id',
             'start_date' => 'required|date|date_format:Y-m-d',

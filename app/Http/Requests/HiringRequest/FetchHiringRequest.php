@@ -4,6 +4,7 @@ namespace App\Http\Requests\HiringRequest;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class FetchHiringRequest extends FormRequest
@@ -26,8 +27,20 @@ class FetchHiringRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'nullable|numeric|exists:practices,id',
-            'status' => 'nullable|string',
+            'status' => [
+                'nullable',
+                Rule::in(['pending', 'approved', 'declined', 'escalated', 'hired']),
+            ],
+            'role' => 'nullable|numeric|exists:roles,id',
+            'progress' => [
+                'nullable',
+                Rule::in(['pending-approval', 'in-process', 'interviews-in-progress', 'offer-made', 'completed']),
+            ],
+            'job_title' => 'nullable|string',
+            'contract_type' => [
+                'nullable',
+                Rule::in(['permanent', 'casual', 'fixed-term', 'zero-hour']),
+            ],
         ];
     }
 
