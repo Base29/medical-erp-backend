@@ -147,8 +147,7 @@ return [
             'stream' => [
                 'ssl' => [
                     'cafile' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT', null),
-                    'verify_peer' => true,
-                    'verify_peer_name' => false,
+                    'verify_peer' => env('VERIFY_PEER_OPTION'),
                 ],
             ],
         ],

@@ -43,8 +43,8 @@ return [
                 'port' => 6001,
                 'scheme' => 'https',
                 'curl_options' => [
-                    CURLOPT_SSL_VERIFYHOST => 0,
-                    CURLOPT_SSL_VERIFYPEER => 0,
+                    CURLOPT_SSL_VERIFYHOST => env('CURLOPT_SSL_VERIFYHOST_OPTION'),
+                    CURLOPT_SSL_VERIFYPEER => env('CURLOPT_SSL_VERIFYPEER_OPTION'),
                 ],
             ],
         ],
