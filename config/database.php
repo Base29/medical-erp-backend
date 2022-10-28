@@ -146,7 +146,7 @@ return [
             'scheme' => env('REDIS_SCHEME', 'tcp'),
             'stream' => [
                 'ssl' => [
-                    'cafile' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT', null),
+                    'cafile' => env('LARAVEL_WEBSOCKETS_SSL_LOCAL_CERT'),
                     'verify_peer' => env('VERIFY_PEER_OPTION'),
                 ],
             ],
