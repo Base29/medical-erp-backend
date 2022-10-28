@@ -289,31 +289,6 @@ class HiringRequestService
     public function fetchHiringRequests($request)
     {
 
-        // // Request if the route is not HQ
-        // if (!$request->is('api/hq/*')) {
-
-        //     // Check if the practice id is provided
-        //     if (!$request->has('practice')) {
-        //         throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-        //     }
-
-        //     // Get practice
-        //     $practice = Practice::findOrFail($request->practice);
-
-        //     // Get hiring requests
-        //     $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-        //         ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-        //         ->withCount('applicants')
-        //         ->latest()
-        //         ->paginate(10);
-        // } else {
-        //     // Get hiring requests
-        //     $hiringRequests = HiringRequest::where('status', $request->status)
-        //         ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-        //         ->latest()
-        //         ->paginate(10);
-        // }
-
         // Initiate query for HiringRequests
         $hiringRequestQuery = HiringRequest::query();
 
