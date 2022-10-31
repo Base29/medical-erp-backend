@@ -141,7 +141,7 @@ class UserService
         // $user->legal()->save($legal);
 
         // Add user as a applicant to the hiring request
-        if ($hiringRequest) {
+        if (isset($hiringRequest)) {
             // Instance of Applicant
             $applicant = new Applicant();
             $applicant->hiring_request_id = $hiringRequest->id;

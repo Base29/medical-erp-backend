@@ -12,22 +12,23 @@ use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 use Illuminate\Support\HtmlString;
 
-class NewHiringRequestNotification extends Notification implements ShouldQueue, ShouldBroadcast
+class NotifyHiringRequestManagerNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
-    public $hqUser;
     public $hiringRequest;
-    public $requestCreatedBy;
+    public $manager;
+    public $hqUser;
+
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct(User $hqUser, HiringRequest $hiringRequest, User $requestCreatedBy)
+    public function __construct(User $manager, HiringRequest $hiringRequest, User $hqUser)
     {
-        $this->hqUser = $hqUser;
+        $this->manager = $manager;
         $this->hiringRequest = $hiringRequest;
-        $this->requestCreatedBy = $requestCreatedBy;
+        $this->hqUser = $hqUser;
     }
 
     /**
@@ -50,12 +51,13 @@ class NewHiringRequestNotification extends Notification implements ShouldQueue, 
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject('Hiring Request ' . ucfirst($this->hiringRequest->status))
             ->greeting('Hello! ' . $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name)
-            ->line('A new hiring request has been created ')
+            ->line('Your hiring request has been ' . $this->hiringRequest->status)
             ->line(new HtmlString('<b>Job Title: ' . $this->hiringRequest->job_title . '</b>'))
             ->line(new HtmlString('<b>Job Contract Type: ' . $this->hiringRequest->contract_type . '</b>'))
             ->line(new HtmlString('<br />'))
-            ->line('Please log in to your dashboard to approve or decline the hiring request.')
+            ->line('Please log in to your dashboard to check the status of your hiring request.')
             ->action('Login', url(env('FRONTEND_URL') . '/login'))
             ->line('Thank you for using our application!');
     }
@@ -69,11 +71,11 @@ class NewHiringRequestNotification extends Notification implements ShouldQueue, 
     public function toArray($notifiable)
     {
         return [
-            'hq_user_name' => $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name,
+            'recruiter_user_name' => $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name,
             'hiring_request_id' => $this->hiringRequest->id,
             'title' => $this->hiringRequest->job_title,
             'contract_type' => $this->hiringRequest->contract_type,
-            'request_created_by' => $this->requestCreatedBy->profile->first_name . ' ' . $this->requestCreatedBy->profile->last_name,
+            'request_action_by' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,
         ];
     }
 
@@ -81,10 +83,10 @@ class NewHiringRequestNotification extends Notification implements ShouldQueue, 
     {
         $notification = [
             "data" => [
-                'hq_user_name' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,
+                'manager_user_name' => $this->manager->profile->first_name . ' ' . $this->manager->profile->last_name,
                 'title' => $this->hiringRequest->job_title,
                 'contract_type' => $this->hiringRequest->contract_type,
-                'request_created_by' => $this->requestCreatedBy->profile->first_name . ' ' . $this->requestCreatedBy->profile->last_name,
+                'request_approved_by' => $this->hqUser->profile->first_name . ' ' . $this->hqUser->profile->last_name,
             ],
         ];
 

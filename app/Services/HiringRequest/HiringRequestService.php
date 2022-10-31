@@ -20,6 +20,7 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
+use App\Notifications\HiringRequest\NewHiringRequestNotification;
 
 class HiringRequestService
 {
@@ -40,7 +41,7 @@ class HiringRequestService
         $department = Department::findOrFail($request->department);
 
         // Get role
-        $role = Role::where('name', $request->job_title)->firstOrFail();
+        $role = Role::where('id', $request->role)->firstOrFail();
 
         // Get role
         $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
@@ -50,6 +51,14 @@ class HiringRequestService
 
         // Cast id of $workPattern to a variable
         $workPatternId = $workPattern ? $workPattern->id : null;
+
+        // Get current authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
 
         // If $workPattern is false
         if (!$workPattern) {
@@ -88,6 +97,7 @@ class HiringRequestService
 
         // Instance of HiringRequest
         $hiringRequest = new HiringRequest();
+        $hiringRequest->notifiable = $authenticatedUser->id;
         $hiringRequest->job_title = $request->job_title;
         $hiringRequest->role = $role->id;
         $hiringRequest->contract_type = $request->contract_type;
@@ -97,6 +107,7 @@ class HiringRequestService
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
         $hiringRequest->comment = $request->comment;
+        $hiringRequest->status = 'pending';
         $hiringRequest->job_specification_id = $jobSpecification->id;
         $hiringRequest->person_specification_id = $personSpecification->id;
         $hiringRequest->application_manager = auth()->user()->id;
@@ -105,6 +116,15 @@ class HiringRequestService
 
         // Attach work pattern with the hiring request
         $hiringRequest->workPatterns()->attach($workPatternId);
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewHiringRequestNotification(
+                $hqUser,
+                $hiringRequest,
+                $authenticatedUser
+            ));
+        endforeach;
 
         // Return newly created $hiringRequest
         return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
@@ -269,30 +289,40 @@ class HiringRequestService
     public function fetchHiringRequests($request)
     {
 
-        // Request if the route is not HQ
-        if (!$request->is('api/hq/*')) {
+        // Initiate query for HiringRequests
+        $hiringRequestQuery = HiringRequest::query();
 
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
-
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get hiring requests
-            $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-                ->withCount('applicants')
-                ->latest()
-                ->paginate(10);
-        } else {
-            // Get hiring requests
-            $hiringRequests = HiringRequest::where('status', $request->status)
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has status
+        if ($request->has('status')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('status', $request->status);
         }
+
+        // Check if $request has contract_type
+        if ($request->has('contract_type')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('contract_type', $request->contract_type);
+        }
+
+        // Check if $request has role
+        if ($request->has('role')) {
+            $role = Role::findOrFail($request->role);
+
+            $hiringRequestQuery = $hiringRequestQuery->where('role', $role->id);
+        }
+
+        // Check if $request has job_title
+        if ($request->has('job_title')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('job_title', 'like', '%' . $request->job_title . '%');
+        }
+
+        // Check if $request has progress
+        if ($request->has('progress')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('progress', $request->progress);
+        }
+
+        // Cast $hiringRequestQuery to $hiringRequests
+        $hiringRequests = $hiringRequestQuery->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+            ->latest()
+            ->paginate(10);
 
         // Casting $hiringRequests to $results and converting the object to array
         $results = $hiringRequests->toArray();
@@ -301,32 +331,36 @@ class HiringRequestService
          * Count according to status
          */
 
+        // Getting count of pending hiring requests
+        $pending = $this->processCount('status', 'pending', $request);
+
         // Getting count of approved hiring requests
-        $approved = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'approved', $request);
+        $approved = $this->processCount('status', 'approved', $request);
 
         // Getting count of declined hiring requests
-        $declined = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'declined', $request);
+        $declined = $this->processCount('status', 'declined', $request);
 
         // Getting count of escalated hiring requests
-        $escalated = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'escalated', $request);
+        $escalated = $this->processCount('status', 'escalated', $request);
 
         /**
          * Count according to contract type
          */
 
         // Getting count of permanent contract
-        $permanent = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'permanent', $request);
+        $permanent = $this->processCount('contract_type', 'permanent', $request);
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'fixed-term', $request);
+        $fixedTerm = $this->processCount('contract_type', 'fixed-term', $request);
 
         // Getting count of casual contract
-        $casual = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'casual', $request);
+        $casual = $this->processCount('contract_type', 'casual', $request);
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'zero-hour', $request);
+        $zeroHour = $this->processCount('contract_type', 'zero-hour', $request);
 
         // Adding extra meta to response $results
+        $results['count']['pending'] = $pending;
         $results['count']['approved'] = $approved;
         $results['count']['declined'] = $declined;
         $results['count']['escalated'] = $escalated;
@@ -340,14 +374,9 @@ class HiringRequestService
     }
 
     // Process count
-    private function processCount($practiceId = null, $column, $value, $request)
+    private function processCount($column, $value, $request)
     {
-        if (!$request->is('api/hq/*')) {
-            return HiringRequest::where(['practice_id' => $practiceId, $column => $value])->count();
-        }
-
         return HiringRequest::where([$column => $value])->count();
-
     }
 
     // Add applicant to hiring request
