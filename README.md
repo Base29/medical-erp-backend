@@ -1,5 +1,14 @@
 # ESM
 
+## Change Log - July 26 2022
+- Added models and migrations for Training Courses
+## Change Log - July 21 2022
+- Added a new endpoint for fetching role's appraisal policy
+- Removed pagination from fetchRoleAppraisalPolicy method
+- Changes to create appraisal
+- Bug fixes in appraisal
+- Bug fixes in appraisal fetch
+- Added a new endpoint for fetching role's interview policy
 ## Change Log - July 20 2022
 - Added request for appraisals
 - Changes to update appraisal request
