@@ -629,6 +629,9 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('/', [InterviewController::class, 'fetch'])
                 ->middleware(['permission:can_fetch_all_interviews|can_manage_interview']);
+
+            Route::post('interview', [InterviewController::class, 'singleInterview'])
+                ->middleware(['permission:can_manage_interview']);
         });
 
     });
