@@ -1,5 +1,33 @@
 # ESM
 
+## Change Log - July 20 2022
+- Added request for appraisals
+- Changes to update appraisal request
+- Fixes to appraisal models
+## Change Log - July 19 2022
+- Added CRUD methods to appraisal service
+- Added controller for appraisal policy
+## Change Log - July 18 2022
+- Added relations for appaisal queestions and aprraisal policy
+- Marked role as nullable for fetching induction checklist
+- Added logic to fetch induction policies with practice or with practice + role
+- Added relations for Appraisal Question Option
+- Added endpoint for fetching single induction
+- Added model and migration for Appraisal Answer
+- Added relationship between Appraisal and Appraisal Answer
+- Added routes for appraisals in api.php
+- Changes to resultAlreadyGenerated
+- Fixes to induction results
+- Added endpoint for update induction
+
+## Change log - July 15 2022
+- Added models and migrations for Appraisals
+- Added relation for role and induction checklist
+- Added a new endpoint for induction result
+- Added a new endpoint for fetching user specific induction
+- Added CRUD service for creating appraisal policy
+## Change Log - July 13 2022
+- Created Appraisal Service
 ## Change Log - July 07 2022
 - Ability to create staff appraisals
 - Ability to create appraisal policy
