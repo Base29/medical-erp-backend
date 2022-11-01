@@ -358,25 +358,6 @@ class InterviewService
     // Fetch single interview
     public function fetchSingleInterview($request)
     {
-        // // Check if $request->user is available
-        // if ($request->has('user')) {
-
-        // } else {
-        //     // Get interview
-        //     $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-        //         ->with([
-        //             'user.profile',
-        //             'hiringRequest',
-        //             'interviewPolicies.questions.options',
-        //             'practice',
-        //             'candidateQuestions',
-        //             'adhocQuestions',
-        //             'interviewMiscInfo',
-        //             'interviewScore',
-        //         ])
-        //         ->firstOrFail();
-        // }
-
         // Get interview with $request->user answers
         $interviewSchedule = InterviewSchedule::where('id', $request->interview)
             ->with([
