@@ -96,7 +96,8 @@ class UserService
         $profile->gender = $request->is_candidate ? $request->gender : null;
         $profile->mobile_phone = $request->is_candidate ? $request->mobile_phone : null;
         $profile->primary_role = $request->is_candidate ? $request->job_title : null;
-        $profile->hiring_request_id = $request->is_candidate ? $hiringRequest->id : null;
+        // $profile->hiring_request_id = $request->is_candidate ? $hiringRequest->id : null;
+        $profile->hiring_request_id = isset($hiringRequest) && $request->is_candidate ? $hiringRequest->id : null;
         $user->profile()->save($profile);
 
         // Create position summary
