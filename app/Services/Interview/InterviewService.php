@@ -363,7 +363,7 @@ class InterviewService
                 'user.profile',
                 'hiringRequest',
                 'interviewPolicies.questions.options',
-                'interviewPolicies.questions.interviewAnswers' => function ($q) {
+                'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
                     $q->where('interview', $request->interview);
                 },
                 'practice',
