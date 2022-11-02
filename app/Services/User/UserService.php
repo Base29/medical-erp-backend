@@ -153,9 +153,9 @@ class UserService
         }
 
         // Assigning role(s) if user being created is a candidate
-        if ($request->is_candidate) {
+        if (isset($hiringRequest) && $user->is_candidate) {
             // Assigning primary role (position) to user
-            $user->assignRole($request->job_title);
+            $user->assignRole($hiringRequest->role);
 
             // Check if request has additional_roles array
             if ($request->has('additional_roles')) {
