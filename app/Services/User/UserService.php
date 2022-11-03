@@ -252,6 +252,7 @@ class UserService
                     ->paginate($request->per_page ? $request->per_page : 10);
 
             } elseif ($request->filter === 'role') {
+
                 // Filter users by role
                 $users = User::with(
                     'profile',
@@ -265,7 +266,9 @@ class UserService
                     'qualifications'
                 )
                     ->whereHas('roles', function ($q) use ($request) {
-                        if (gettype($request->value) === 'integer'):
+                        $valueType = gettype($request->value);
+
+                        if ($valueType === 'integer'):
                             // Search by role id
                             $q->where('id', $request->value);
                         else:

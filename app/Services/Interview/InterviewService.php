@@ -375,6 +375,7 @@ class InterviewService
             $candidateQuestion = new CandidateQuestion();
             $candidateQuestion->interview = $interviewSchedule->id;
             $candidateQuestion->question = $question['question'];
+            $candidateQuestion->answer = $question['answer'];
             $candidateQuestion->save();
         }
 
