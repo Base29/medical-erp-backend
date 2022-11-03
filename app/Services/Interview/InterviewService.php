@@ -361,6 +361,8 @@ class InterviewService
         $interviewSchedule = InterviewSchedule::where('id', $request->interview)
             ->with([
                 'user.profile',
+                'user.education',
+                'user.employmentHistories',
                 'hiringRequest',
                 'interviewPolicies.questions.options',
                 'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
