@@ -264,8 +264,15 @@ class UserService
                     'locumNotes',
                     'qualifications'
                 )
-                    ->whereHas('roles', function ($q) {
-                        $q->where('id', request()->value);
+                    ->whereHas('roles', function ($q) use ($request) {
+                        if (gettype($request->value) === 'integer'):
+                            // Search by role id
+                            $q->where('id', $request->value);
+                        else:
+                            // search by role name
+                            $q->where('name', $request->value);
+                        endif;
+
                     })
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);
