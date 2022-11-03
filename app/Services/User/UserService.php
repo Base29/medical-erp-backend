@@ -96,7 +96,8 @@ class UserService
         $profile->gender = $request->is_candidate ? $request->gender : null;
         $profile->mobile_phone = $request->is_candidate ? $request->mobile_phone : null;
         $profile->primary_role = $request->is_candidate ? $request->job_title : null;
-        $profile->hiring_request_id = $request->is_candidate ? $hiringRequest->id : null;
+        // $profile->hiring_request_id = $request->is_candidate ? $hiringRequest->id : null;
+        $profile->hiring_request_id = isset($hiringRequest) && $request->is_candidate ? $hiringRequest->id : null;
         $user->profile()->save($profile);
 
         // Create position summary
@@ -263,8 +264,15 @@ class UserService
                     'locumNotes',
                     'qualifications'
                 )
-                    ->whereHas('roles', function ($q) {
-                        $q->where('id', request()->value);
+                    ->whereHas('roles', function ($q) use ($request) {
+                        if (gettype($request->value) === 'integer'):
+                            // Search by role id
+                            $q->where('id', $request->value);
+                        else:
+                            // search by role name
+                            $q->where('name', $request->value);
+                        endif;
+
                     })
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);

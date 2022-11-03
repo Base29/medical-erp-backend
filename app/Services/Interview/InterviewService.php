@@ -18,6 +18,8 @@ use App\Models\InterviewSchedule;
 use App\Models\InterviewScore;
 use App\Models\Practice;
 use App\Models\User;
+use App\Notifications\Interview\InviteAdditionalStaffNotification;
+use App\Notifications\Interview\InviteHQStaffNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -152,6 +154,33 @@ class InterviewService
 
         // Attach Interview Policy
         $interviewSchedule->interviewPolicies()->attach($interviewPolicy->id);
+
+        // Send notifications to additional staff if invited
+        if (!empty($interviewSchedule->additional_staff) && !is_null($interviewSchedule->additional_staff)) {
+            // Get info for additional staff
+            $additionalStaff = User::findOrFail($interviewSchedule->additional_staff);
+
+            // Notify
+            $additionalStaff->notify(new InviteAdditionalStaffNotification(
+                $additionalStaff,
+                $interviewSchedule,
+                $hiringRequest
+            ));
+        }
+
+        // Send notification to HQ staff if invited
+        if (!empty($interviewSchedule->hq_staff) && !is_null($interviewSchedule->hq_staff)) {
+            // Get info for hq staff
+            $hqStaff = User::findOrFall($interviewSchedule->hq_staff);
+
+            // Notify
+            $hqStaff->notify(new InviteHQStaffNotification(
+                $hqStaff,
+                $hiringRequest,
+                $interviewSchedule
+            ));
+
+        }
 
         // Return success response {
         return Response::success([
