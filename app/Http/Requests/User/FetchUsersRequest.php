@@ -27,7 +27,7 @@ class FetchUsersRequest extends FormRequest
     {
         return [
             'filter' => 'nullable|string',
-            'value' => 'nullable|string',
+            'value' => 'nullable',
             'per_page' => 'nullable|numeric',
         ];
     }
