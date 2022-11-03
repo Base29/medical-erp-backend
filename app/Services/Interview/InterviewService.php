@@ -18,7 +18,6 @@ use App\Models\InterviewSchedule;
 use App\Models\InterviewScore;
 use App\Models\Practice;
 use App\Models\User;
-use App\Notifications\Interview\InviteAdditionalStaffNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -154,18 +153,6 @@ class InterviewService
         // Attach Interview Policy
         $interviewSchedule->interviewPolicies()->attach($interviewPolicy->id);
 
-        // Send notification to additional staff
-        if (!empty($interviewSchedule->additional_staff) && is_null($interviewSchedule->additional_staff)) {
-            // Get data for additional staff
-            $additionalStaff = User::findOrFail($interviewSchedule->additional_staff);
-
-            $additionalStaff->notify(new InviteAdditionalStaffNotification(
-                $additionalStaff, 
-                $interviewSchedule, 
-                $hiringRequest
-            ));
-        }
-
         // Return success response {
         return Response::success([
             'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
@@ -174,134 +161,88 @@ class InterviewService
         ]);
     }
 
-}
+    // Update interview
+    public function updateInterviewSchedule($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-// Update interview
-function updateInterviewSchedule($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // // Update is_completed field for $interviewSchedule
+        // $interviewSchedule->is_completed = $request->is_completed;
+        // $interviewSchedule->save();
 
-    // // Update is_completed field for $interviewSchedule
-    // $interviewSchedule->is_completed = $request->is_completed;
-    // $interviewSchedule->save();
+        UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');
 
-    UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');
-
-    // Return success response
-    return Response::success([
-        'interview' => $interviewSchedule->with('practice', 'department.departmentHead.profile', 'user.profile', 'hiringRequest')
-            ->latest('updated_at')
-            ->first(),
-    ]);
-}
-
-// Delete interview schedule
-function deleteInterviewSchedule($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->id);
+        // Return success response
+        return Response::success([
+            'interview' => $interviewSchedule->with('practice', 'department.departmentHead.profile', 'user.profile', 'hiringRequest')
+                ->latest('updated_at')
+                ->first(),
+        ]);
+    }
 
     // Delete interview schedule
-    $interviewSchedule->delete();
+    public function deleteInterviewSchedule($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->id);
 
-    // Return success response
-    return Response::success([
-        'message' => ResponseMessage::deleteSuccess('Interview Schedule'),
-    ]);
-}
+        // Delete interview schedule
+        $interviewSchedule->delete();
 
-// Fetch past interviews
-function fetchPastInterviews($request)
-{
+        // Return success response
+        return Response::success([
+            'message' => ResponseMessage::deleteSuccess('Interview Schedule'),
+        ]);
+    }
 
-    // Get past interview schedules
-    $interviewSchedules = InterviewSchedule::where('is_completed', 1)
-        ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-        ->latest()
-        ->paginate(10);
+    // Fetch past interviews
+    public function fetchPastInterviews($request)
+    {
 
-    // Return success response
-    return Response::success([
-        'interview-schedules' => $interviewSchedules,
-    ]);
-}
+        // Get past interview schedules
+        $interviewSchedules = InterviewSchedule::where('is_completed', 1)
+            ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
 
-// Store interview answers
-function storeInterviewAnswer($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // Return success response
+        return Response::success([
+            'interview-schedules' => $interviewSchedules,
+        ]);
+    }
 
-    // Get interview question
-    $interviewQuestion = InterviewQuestion::findOrFail($request->question);
+    // Store interview answers
+    public function storeInterviewAnswer($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-    /**
-     * Check type of the $interviewQuestion.
-     *
-     * If the type = descriptive then save the text in the answer field of the DB table.
-     * Or if the type = single-choice/multi-choice then save the ID of the option in the option field of the DB table.
-     *
-     * In-case of the type multi-choice loop through the options provided by the frontend and save them separately in the option field of the DB
-     * table.
-     */
+        // Get interview question
+        $interviewQuestion = InterviewQuestion::findOrFail($request->question);
 
-    // Get type of $interviewQuestion
-    $questionType = $interviewQuestion->type;
+        /**
+         * Check type of the $interviewQuestion.
+         *
+         * If the type = descriptive then save the text in the answer field of the DB table.
+         * Or if the type = single-choice/multi-choice then save the ID of the option in the option field of the DB table.
+         *
+         * In-case of the type multi-choice loop through the options provided by the frontend and save them separately in the option field of the DB
+         * table.
+         */
 
-    switch ($questionType) {
-        case 'descriptive':
-            if (!$request->has('answer')) {
-                throw new \Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'));
-            }
+        // Get type of $interviewQuestion
+        $questionType = $interviewQuestion->type;
 
-            if (Str::of($request->answer)->isEmpty) {
-                throw new \Exception(ResponseMessage::customMessage('answer key should not be empty'));
-            }
+        switch ($questionType) {
+            case 'descriptive':
+                if (!$request->has('answer')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'));
+                }
 
-            // Initiate instance of InterviewAnswer model
-            $interviewAnswer = new InterviewAnswer();
-
-            $interviewAnswer->interview = $interviewSchedule->id;
-            $interviewAnswer->user = $interviewSchedule->user_id;
-            $interviewAnswer->question = $interviewQuestion->id;
-            $interviewAnswer->answer = $request->answer;
-            $interviewAnswer->save();
-
-            return Response::success([
-                'message' => 'Answer Saved',
-            ]);
-
-            break;
-        case 'single-choice':
-            if (!$request->has('option')) {
-                throw new \Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
-            }
-
-            // Initiate instance of InterviewAnswer model
-            $interviewAnswer = new InterviewAnswer();
-
-            $interviewAnswer->interview = $interviewSchedule->id;
-            $interviewAnswer->user = $interviewSchedule->user_id;
-            $interviewAnswer->question = $interviewQuestion->id;
-            $interviewAnswer->option = $request->option;
-            $interviewAnswer->save();
-
-            return Response::success([
-                'message' => 'Answer Saved',
-            ]);
-
-            break;
-        case 'multi-choice':
-            if (!$request->has('options')) {
-                throw new \Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
-            }
-
-            // Cast $request->options to $options
-            $options = $request->options;
-
-            // Loop through $request->assert_options
-            foreach ($options as $option) {
+                if (Str::of($request->answer)->isEmpty) {
+                    throw new \Exception(ResponseMessage::customMessage('answer key should not be empty'));
+                }
 
                 // Initiate instance of InterviewAnswer model
                 $interviewAnswer = new InterviewAnswer();
@@ -309,229 +250,277 @@ function storeInterviewAnswer($request)
                 $interviewAnswer->interview = $interviewSchedule->id;
                 $interviewAnswer->user = $interviewSchedule->user_id;
                 $interviewAnswer->question = $interviewQuestion->id;
-                $interviewAnswer->option = $option;
+                $interviewAnswer->answer = $request->answer;
                 $interviewAnswer->save();
-            }
 
-            return Response::success([
-                'message' => 'Answer Saved',
-            ]);
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
 
-            break;
-        default:
-            return true;
+                break;
+            case 'single-choice':
+                if (!$request->has('option')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
+                }
+
+                // Initiate instance of InterviewAnswer model
+                $interviewAnswer = new InterviewAnswer();
+
+                $interviewAnswer->interview = $interviewSchedule->id;
+                $interviewAnswer->user = $interviewSchedule->user_id;
+                $interviewAnswer->question = $interviewQuestion->id;
+                $interviewAnswer->option = $request->option;
+                $interviewAnswer->save();
+
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
+
+                break;
+            case 'multi-choice':
+                if (!$request->has('options')) {
+                    throw new \Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
+                }
+
+                // Cast $request->options to $options
+                $options = $request->options;
+
+                // Loop through $request->assert_options
+                foreach ($options as $option) {
+
+                    // Initiate instance of InterviewAnswer model
+                    $interviewAnswer = new InterviewAnswer();
+
+                    $interviewAnswer->interview = $interviewSchedule->id;
+                    $interviewAnswer->user = $interviewSchedule->user_id;
+                    $interviewAnswer->question = $interviewQuestion->id;
+                    $interviewAnswer->option = $option;
+                    $interviewAnswer->save();
+                }
+
+                return Response::success([
+                    'message' => 'Answer Saved',
+                ]);
+
+                break;
+            default:
+                return true;
+        }
     }
-}
 
-function createAdhocQuestions($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+    public function createAdhocQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-    // Cast $request->questions to variable $questions
-    $questions = $request->questions;
+        // Cast $request->questions to variable $questions
+        $questions = $request->questions;
 
-    // Loop through $request->questions
-    foreach ($questions as $question) {
-        // Initiate instance of AdhocQuestion model
-        $adhocQuestion = new AdhocQuestion();
-        $adhocQuestion->interview = $interviewSchedule->id;
-        $adhocQuestion->question = $question['question'];
-        $adhocQuestion->answer = $question['answer'];
-        $adhocQuestion->save();
+        // Loop through $request->questions
+        foreach ($questions as $question) {
+            // Initiate instance of AdhocQuestion model
+            $adhocQuestion = new AdhocQuestion();
+            $adhocQuestion->interview = $interviewSchedule->id;
+            $adhocQuestion->question = $question['question'];
+            $adhocQuestion->answer = $question['answer'];
+            $adhocQuestion->save();
+        }
+
+        return Response::success([
+            'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
+        ]);
     }
 
-    return Response::success([
-        'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
-    ]);
-}
+    // Create candidate questions
+    public function createCandidateQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-// Create candidate questions
-function createCandidateQuestions($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // Cast $request->questions to variable $questions
+        $questions = $request->questions;
 
-    // Cast $request->questions to variable $questions
-    $questions = $request->questions;
+        // Loop through $request->questions
+        foreach ($questions as $question) {
+            // Initiate instance of AdhocQuestion model
+            $candidateQuestion = new CandidateQuestion();
+            $candidateQuestion->interview = $interviewSchedule->id;
+            $candidateQuestion->question = $question['question'];
+            $candidateQuestion->save();
+        }
 
-    // Loop through $request->questions
-    foreach ($questions as $question) {
-        // Initiate instance of AdhocQuestion model
-        $candidateQuestion = new CandidateQuestion();
-        $candidateQuestion->interview = $interviewSchedule->id;
-        $candidateQuestion->question = $question['question'];
-        $candidateQuestion->save();
+        return Response::success([
+            'message' => ResponseMessage::customMessage('Candidate Questions saved'),
+        ]);
     }
 
-    return Response::success([
-        'message' => ResponseMessage::customMessage('Candidate Questions saved'),
-    ]);
-}
+    // Fetch single interview
+    public function fetchSingleInterview($request)
+    {
+        // Get interview with $request->user answers
+        $interviewSchedule = InterviewSchedule::where('id', $request->interview)
+            ->with([
+                'user.profile',
+                'user.education',
+                'user.employmentHistories',
+                'hiringRequest',
+                'interviewPolicies.questions.options',
+                'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                    $q->where('interview', $request->interview);
+                },
+                'practice',
+                'candidateQuestions',
+                'adhocQuestions',
+                'interviewMiscInfo',
+                'interviewScore',
+            ])
+            ->firstOrFail();
 
-// Fetch single interview
-function fetchSingleInterview($request)
-{
-    // Get interview with $request->user answers
-    $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-        ->with([
-            'user.profile',
-            'hiringRequest',
-            'interviewPolicies.questions.options',
-            'interviewPolicies.questions.interviewAnswers',
-            'practice',
-            'candidateQuestions',
-            'adhocQuestions',
-            'interviewMiscInfo',
-            'interviewScore',
-        ])
-        ->firstOrFail();
+        // Return success response
+        return Response::success([
+            'interview' => $interviewSchedule,
+        ]);
+    }
 
-    // Return success response
-    return Response::success([
-        'interview' => $interviewSchedule,
-    ]);
-}
+    // Fetch adhoc questions
+    public function fetchAdhocQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-// Fetch adhoc questions
-function fetchAdhocQuestions($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // AdhocQuestions
+        $adhocQuestions = AdhocQuestion::where('interview', $interviewSchedule->id)->latest()->get();
 
-    // AdhocQuestions
-    $adhocQuestions = AdhocQuestion::where('interview', $interviewSchedule->id)->latest()->get();
+        // Return success response
+        return Response::success([
+            'adhoc-questions' => $adhocQuestions,
+        ]);
+    }
 
-    // Return success response
-    return Response::success([
-        'adhoc-questions' => $adhocQuestions,
-    ]);
-}
+    // Fetch candidate questions
+    public function fetchCandidateQuestions($request)
+    {
+        // Get interview schedule
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-// Fetch candidate questions
-function fetchCandidateQuestions($request)
-{
-    // Get interview schedule
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // AdhocQuestions
+        $candidateQuestions = CandidateQuestion::where('interview', $interviewSchedule->id)->latest()->get();
 
-    // AdhocQuestions
-    $candidateQuestions = CandidateQuestion::where('interview', $interviewSchedule->id)->latest()->get();
-
-    // Return success response
-    return Response::success([
-        'candidate-questions' => $candidateQuestions,
-    ]);
-}
-
-// Delete adhoc question
-function deleteAdhocQuestion($request)
-{
-    // Get adhoc question
-    $adhocQuestion = AdhocQuestion::findOrFail($request->adhoc_question);
+        // Return success response
+        return Response::success([
+            'candidate-questions' => $candidateQuestions,
+        ]);
+    }
 
     // Delete adhoc question
-    $adhocQuestion->delete();
+    public function deleteAdhocQuestion($request)
+    {
+        // Get adhoc question
+        $adhocQuestion = AdhocQuestion::findOrFail($request->adhoc_question);
 
-    // Return success response
-    return Response::success([
-        'adhoc-question' => $adhocQuestion,
-    ]);
-}
+        // Delete adhoc question
+        $adhocQuestion->delete();
 
-// Delete candidate question
-function deleteCandidateQuestion($request)
-{
-    // Get adhoc question
-    $candidateQuestion = CandidateQuestion::findOrFail($request->candidate_question);
+        // Return success response
+        return Response::success([
+            'adhoc-question' => $adhocQuestion,
+        ]);
+    }
 
-    // Delete adhoc question
-    $candidateQuestion->delete();
+    // Delete candidate question
+    public function deleteCandidateQuestion($request)
+    {
+        // Get adhoc question
+        $candidateQuestion = CandidateQuestion::findOrFail($request->candidate_question);
 
-    // Return success response
-    return Response::success([
-        'candidate-question' => $candidateQuestion,
-    ]);
-}
+        // Delete adhoc question
+        $candidateQuestion->delete();
 
-// Add interview misc info
-function addMiscInfo($request)
-{
-    // Get interview
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // Return success response
+        return Response::success([
+            'candidate-question' => $candidateQuestion,
+        ]);
+    }
 
-    // Initiate a instance of InterviewMiscInfo
-    $interviewMiscInfo = new InterviewMiscInfo();
-    $interviewMiscInfo->interview = $interviewSchedule->id;
-    $interviewMiscInfo->current_salary = $request->current_salary;
-    $interviewMiscInfo->expected_salary = $request->expected_salary;
-    $interviewMiscInfo->difference = $request->difference;
-    $interviewMiscInfo->availability = $request->availability;
-    $interviewMiscInfo->available_time = $request->available_time;
-    $interviewMiscInfo->job_type = $request->job_type;
-    $interviewMiscInfo->dbs = $request->dbs;
-    $interviewMiscInfo->dismissals = $request->dismissals;
-    $interviewMiscInfo->given_notice = $request->given_notice;
-    $interviewMiscInfo->notice_start = $request->notice_start;
-    $interviewMiscInfo->notice_duration = $request->notice_duration;
-    $interviewMiscInfo->interviewing_elsewhere = $request->interviewing_elsewhere;
-    $interviewMiscInfo->salary_notes = $request->salary_notes;
-    $interviewMiscInfo->notice_notes = $request->notice_notes;
-    $interviewMiscInfo->save();
+    // Add interview misc info
+    public function addMiscInfo($request)
+    {
+        // Get interview
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-    // Return success response
-    return Response::success([
-        'interview-misc-info' => $interviewMiscInfo,
-    ]);
-}
+        // Initiate a instance of InterviewMiscInfo
+        $interviewMiscInfo = new InterviewMiscInfo();
+        $interviewMiscInfo->interview = $interviewSchedule->id;
+        $interviewMiscInfo->current_salary = $request->current_salary;
+        $interviewMiscInfo->expected_salary = $request->expected_salary;
+        $interviewMiscInfo->difference = $request->difference;
+        $interviewMiscInfo->availability = $request->availability;
+        $interviewMiscInfo->available_time = $request->available_time;
+        $interviewMiscInfo->job_type = $request->job_type;
+        $interviewMiscInfo->dbs = $request->dbs;
+        $interviewMiscInfo->dismissals = $request->dismissals;
+        $interviewMiscInfo->given_notice = $request->given_notice;
+        $interviewMiscInfo->notice_start = $request->notice_start;
+        $interviewMiscInfo->notice_duration = $request->notice_duration;
+        $interviewMiscInfo->interviewing_elsewhere = $request->interviewing_elsewhere;
+        $interviewMiscInfo->salary_notes = $request->salary_notes;
+        $interviewMiscInfo->notice_notes = $request->notice_notes;
+        $interviewMiscInfo->save();
 
-// Create interview score
-function createInterviewScore($request)
-{
-    // Get interview
-    $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
+        // Return success response
+        return Response::success([
+            'interview-misc-info' => $interviewMiscInfo,
+        ]);
+    }
 
-    // Initiate instance of InterviewScore
-    $interviewScore = new InterviewScore();
-    $interviewScore->interview = $interviewSchedule->id;
-    $interviewScore->cultural_fit = $request->cultural_fit;
-    $interviewScore->career_motivation = $request->career_motivation;
-    $interviewScore->social_skills = $request->social_skills;
-    $interviewScore->team_work = $request->team_work;
-    $interviewScore->technical_skills = $request->technical_skills;
-    $interviewScore->leadership_capability = $request->leadership_capability;
-    $interviewScore->critical_thinking_problem_solving = $request->critical_thinking_problem_solving;
-    $interviewScore->self_awareness = $request->self_awareness;
-    $interviewScore->total = $request->total;
-    $interviewScore->remarks = $request->remarks;
+    // Create interview score
+    public function createInterviewScore($request)
+    {
+        // Get interview
+        $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-    // Save interview score
-    $interviewScore->save();
+        // Initiate instance of InterviewScore
+        $interviewScore = new InterviewScore();
+        $interviewScore->interview = $interviewSchedule->id;
+        $interviewScore->cultural_fit = $request->cultural_fit;
+        $interviewScore->career_motivation = $request->career_motivation;
+        $interviewScore->social_skills = $request->social_skills;
+        $interviewScore->team_work = $request->team_work;
+        $interviewScore->technical_skills = $request->technical_skills;
+        $interviewScore->leadership_capability = $request->leadership_capability;
+        $interviewScore->critical_thinking_problem_solving = $request->critical_thinking_problem_solving;
+        $interviewScore->self_awareness = $request->self_awareness;
+        $interviewScore->total = $request->total;
+        $interviewScore->remarks = $request->remarks;
 
-    // Return success response
-    return Response::success([
-        'interview-score' => $interviewScore,
-    ]);
-}
+        // Save interview score
+        $interviewScore->save();
 
-// Get All interviews
-function getAllInterviews()
-{
-    // Get all interviews
-    $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-        ->latest()
-        ->paginate(10);
+        // Return success response
+        return Response::success([
+            'interview-score' => $interviewScore,
+        ]);
+    }
 
-    // Return success response
-    return Response::success([
-        'interviews' => $interviews,
-    ]);
-}
+    // Get All interviews
+    public function getAllInterviews()
+    {
+        // Get all interviews
+        $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
 
-// Processing count by contract type
-function processCount($column, $value)
-{
-    return InterviewSchedule::whereHas('hiringRequest', function ($q) use ($column, $value) {
-        $q->where($column, $value);
-    })->count();
-}
+        // Return success response
+        return Response::success([
+            'interviews' => $interviews,
+        ]);
+    }
+
+    // Processing count by contract type
+    public function processCount($column, $value)
+    {
+        return InterviewSchedule::whereHas('hiringRequest', function ($q) use ($column, $value) {
+            $q->where($column, $value);
+        })->count();
+    }
 }
