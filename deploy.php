@@ -44,7 +44,6 @@ desc('Deploy the application');
 task('deploy', [
     'deploy:info',
     'deploy:prepare',
-    'deploy:release',
     'rsync',
     'deploy:shared',
     'deploy:vendors',
