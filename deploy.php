@@ -6,16 +6,17 @@ require 'contrib/rsync.php';
 // Include the Laravel & rsync recipes
 require 'recipe/laravel.php';
 
-set('application', 'dep-demo'); //for your reference
+set('application', 'esm'); //for your reference
 set('ssh_multiplexing', true); // Speed up deployment
 
 set('rsync_src', function () {
-    return __DIR__; // If your project isn't in the root, you'll need to change this.
+    return '/var/www/esm/backend'; // If your project isn't in the root, you'll need to change this.
 });
 
 // Files you don't want in your production server.
 add('rsync', [
     'exclude' => [
+        '.env',
         '.git',
         '/storage/',
         '/vendor/',
@@ -24,14 +25,17 @@ add('rsync', [
         'deploy.php',
         'upload-esm-backend.sh',
         '.vscode',
+        '.DS_Store',
+        '.editorconfig',
     ],
 ]);
 
 // Hosts
 host('3.232.244.22')
-    ->setRemoteUser('your_SSH_user') // SSH user
-    ->setDeployPath('/var/www/website') // Deploy path
-    ->setIdentityFile('~/.ssh/ESM_TESTVM_New'); // Your SSH key
+    ->setRemoteUser('ubuntu') // SSH user
+    ->setIdentityFile('~/.ssh/ESM_TESTVM_New.pem')
+    ->set('writable_use_sudo', true)
+    ->setDeployPath('/var/www/esm/backend');
 
 after('deploy:failed', 'deploy:unlock'); // In case your deployment goes wrong
 
@@ -42,11 +46,9 @@ task('deploy', [
     'deploy:lock',
     'deploy:release',
     'rsync',
-    'deploy:secrets',
     'deploy:shared',
     'deploy:vendors',
     'deploy:writable',
-    'php-fpm:restart',
     'artisan:storage:link',
     'artisan:view:cache',
     'artisan:config:cache',
