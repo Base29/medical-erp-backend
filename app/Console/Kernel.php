@@ -27,6 +27,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('checklist:resetDaily')->dailyAt('03:00')->timezone('Europe/London');
         $schedule->command('checklist:resetWeekly')->dailyAt('03:00')->timezone('Europe/London');
         $schedule->command('checklist:resetMonthly')->dailyAt('03:00')->timezone('Europe/London');
+        $schedule->command('hiringRequest:delete')->dailyAt('03:00')->timezone('Europe/London');
 
     }
 
