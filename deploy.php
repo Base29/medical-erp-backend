@@ -45,9 +45,6 @@ task('deploy', [
     'deploy:info',
     'deploy:prepare',
     'rsync',
-    'deploy:shared',
-    'deploy:vendors',
-    'deploy:writable',
     'artisan:storage:link',
     'artisan:view:cache',
     'artisan:config:cache',
@@ -55,4 +52,5 @@ task('deploy', [
     'artisan:migrate',
     'deploy:symlink',
     'deploy:cleanup',
+    'deploy:success',
 ]);
