@@ -5,7 +5,7 @@ require 'contrib/rsync.php';
 require 'recipe/laravel.php';
 
 // Config
-set('repository', 'https://github.com/IT-Roadway-Ltd/ESM-BackEnd.git');
+set('repository', 'git@github.com:IT-Roadway-Ltd/ESM-BackEnd.git');
 
 set('application', 'esm'); //for your reference
 set('ssh_multiplexing', true); // Speed up deployment
