@@ -11,7 +11,7 @@ set('application', 'esm'); //for your reference
 set('ssh_multiplexing', true); // Speed up deployment
 
 set('rsync_src', function () {
-    return '/var/www/esm/backend/'; // If your project isn't in the root, you'll need to change this.
+    return __DIR__; // If your project isn't in the root, you'll need to change this.
 });
 
 // Files you don't want in your production server.
