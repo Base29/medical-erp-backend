@@ -55,4 +55,5 @@ task('deploy', [
     'artisan:migrate',
     'deploy:symlink',
     'deploy:cleanup',
+    'deploy:success',
 ]);
