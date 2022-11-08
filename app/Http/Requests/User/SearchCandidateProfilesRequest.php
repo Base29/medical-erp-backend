@@ -28,7 +28,7 @@ class SearchCandidateProfilesRequest extends FormRequest
     {
         return [
             'filter' => [
-                'required',
+                'nullable',
                 Rule::in([
                     'role',
                     'location',
@@ -38,7 +38,7 @@ class SearchCandidateProfilesRequest extends FormRequest
                     'email',
                 ]),
             ],
-            'value' => 'required',
+            'value' => 'nullable',
         ];
     }
 
