@@ -40,6 +40,7 @@ class SearchVacanciesRequest extends FormRequest
                     'reporting_to',
                     'status',
                     'progress',
+                    'is_live',
                 ]),
             ],
             'value' => 'required',

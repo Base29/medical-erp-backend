@@ -478,6 +478,7 @@ class HiringRequestService
             'department',
             'job_specification',
             'person_specification',
+            'is_live',
         ];
 
         /**
@@ -565,6 +566,11 @@ class HiringRequestService
                     // Get vacancies filtered by reporting to
                     $filteredVacancies = $this->filteredSearchResults('reporting_to', $reportingTo->id);
 
+                    break;
+
+                case 'is_live':
+                    // Getting vacancies by is_live status
+                    $filteredVacancies = $this->filteredSearchResults('is_live', $request->value);
                     break;
 
                 default:
