@@ -51,9 +51,7 @@ task('deploy', [
     'artisan:view:cache',
     'artisan:config:cache',
     'artisan:optimize',
+    'artisan:optimize:clear',
     'artisan:migrate',
-    'deploy:symlink',
-    'deploy:unlock',
-    'deploy:cleanup',
-    'deploy:success',
+    'deploy:publish',
 ]);
