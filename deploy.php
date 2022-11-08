@@ -42,7 +42,6 @@ after('deploy:failed', 'deploy:unlock'); // In case your deployment goes wrong
 
 desc('Deploy the application');
 task('deploy', [
-    'deploy:info',
     'deploy:prepare',
     'rsync',
     'deploy:shared',
