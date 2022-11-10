@@ -3,7 +3,6 @@ namespace App\Services\Department;
 
 use App\Helpers\Response;
 use App\Models\Department;
-use App\Models\HiringRequest;
 use App\Models\Practice;
 use App\Models\User;
 
@@ -95,19 +94,19 @@ class DepartmentService
         // Getting count of permanent contract
         $permanent = $this->processCount($department->id, 'contract_type', 'permanent');
 
-        // Getting count of fixed term contract
-        $fixedTerm = $this->processCount($department->id, 'contract_type', 'fixed-term');
+        // // Getting count of fixed term contract
+        // $fixedTerm = $this->processCount($department->id, 'contract_type', 'fixed-term');
 
-        // Getting count of casual contract
-        $casual = $this->processCount($department->id, 'contract_type', 'casual');
+        // // Getting count of casual contract
+        // $casual = $this->processCount($department->id, 'contract_type', 'casual');
 
-        // Getting count of zero hour contract
-        $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour');
+        // // Getting count of zero hour contract
+        // $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour');
 
         $result['count']['permanent'] = $permanent;
-        $result['count']['fixed-term'] = $fixedTerm;
-        $result['count']['casual'] = $casual;
-        $result['count']['zero-hour'] = $zeroHour;
+        // $result['count']['fixed-term'] = $fixedTerm;
+        // $result['count']['casual'] = $casual;
+        // $result['count']['zero-hour'] = $zeroHour;
 
         // Return success response
         return Response::success([
@@ -118,8 +117,7 @@ class DepartmentService
     // Process count
     private function processCount($departmentId = null, $column, $value)
     {
-
-        return HiringRequest::where(['department_id' => $departmentId, $column => $value])->count();
+        //TODO: Send count of hired users in a department according to contract type
 
     }
 }
