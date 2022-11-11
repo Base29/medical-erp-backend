@@ -28,28 +28,43 @@ class InterviewService
     // Fetch all of practice's interviews
     public function fetchAllInterviews($request)
     {
-        if (!$request->is('api/hq/*')) {
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
 
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
-
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get $practice interviews
-            $interviews = InterviewSchedule::where('practice_id', $practice->id)
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-            // Get $practice interviews
-            $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
         }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
+        // Filtered Interviews
+        $interviews = $interviewsQuery->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
 
         /**
          * Count according to contract type
@@ -286,8 +301,41 @@ class InterviewService
     public function fetchPastInterviews($request)
     {
 
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
+
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
+        }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
         // Get past interview schedules
-        $interviewSchedules = InterviewSchedule::where('is_completed', 1)
+        $interviewSchedules = $interviewsQuery->where('is_completed', 1)
             ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
@@ -590,10 +638,43 @@ class InterviewService
     }
 
     // Get All interviews
-    public function getAllInterviews()
+    public function getAllInterviews($request)
     {
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
+
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
+        }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
         // Get all interviews
-        $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+        $interviews = $interviewsQuery->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
 
