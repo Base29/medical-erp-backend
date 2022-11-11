@@ -142,6 +142,11 @@ class InterviewService
             }
         }
 
+        // Check if the first interview is completed
+        if (!$user->interviewSchedules[0]->is_completed) {
+            throw new \Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'));
+        }
+
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
