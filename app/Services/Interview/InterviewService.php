@@ -128,6 +128,13 @@ class InterviewService
             throw new \Exception(ResponseMessage::customMessage('User already have first and second interview'));
         }
 
+        // Check if $user doesn't have any interviews. Creating a second interview should not be allowed
+        if ($request->application_status === 'second-interview') {
+            if ($user->interviewSchedules->isEmpty()) {
+                throw new \Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'));
+            }
+        }
+
         // Check if the users has a first interview
         if ($request->application_status == 'first-interview') {
             if (!$user->interviewSchedules->isEmpty() && $user->interviewSchedules[0]->application_status === 'first-interview') {
@@ -195,12 +202,44 @@ class InterviewService
 
         }
 
-        // Return success response {
-        return Response::success([
-            'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
+        // Return success response
+
+        // Incase of second interview
+        if ($interviewSchedule->application_status === 'second-interview'):
+
+            // Get the id of the first interview
+            $firstInterview = $user->interviewSchedules[0]->id;
+
+            // Get misc info first interview
+            $firstInterviewMiscInfo = InterviewMiscInfo::where('interview', $firstInterview)->firstOrFail();
+
+            // Get first interview score
+            $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
+
+            // Cast $interviewSchedule to $secondInterviewSchedule variable
+            $secondInterviewSchedule = $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
                 ->latest()
-                ->first(),
-        ]);
+                ->first();
+
+            // Converting to array
+            $secondInterviewScheduleWithAdditionalData = $secondInterviewSchedule->toArray();
+
+            // Inserting additional data from the first interview
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['misc_info'] = $firstInterviewMiscInfo;
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
+
+            return Response::success([
+                'interview-schedule' => $secondInterviewScheduleWithAdditionalData,
+            ]);
+
+        else:
+            // Incase of first interview
+            return Response::success([
+                'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
+                    ->latest()
+                    ->first(),
+            ]);
+        endif;
     }
 
     // Update interview
