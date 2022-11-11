@@ -100,28 +100,44 @@ class InterviewService
     // Fetch interview schedules for a practice
     public function fetchUpcomingInterviewSchedules($request)
     {
-        if (!$request->is('api/hq/*')) {
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
 
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
 
-            // Get $practice interview schedules
-            $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
-                ->where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
-        } else {
-            // Get $practice interview schedules
-            $interviewSchedules = InterviewSchedule::where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
         }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
+        $interviewSchedules = $interviewsQuery->where('date', '>', Carbon::now())
+            ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
