@@ -122,6 +122,19 @@ class InterviewService
 
         // Get user
         $user = User::findOrFail($request->user);
+
+        // Check if $user has already 2 interviews
+        if ($user->interviewSchedules->count() === 2) {
+            throw new \Exception(ResponseMessage::customMessage('User already have first and second interview'));
+        }
+
+        // Check if the users has a first interview
+        if ($request->application_status == 'first-interview') {
+            if (!$user->interviewSchedules->isEmpty() && $user->interviewSchedules[0]->application_status === 'first-interview') {
+                throw new \Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'));
+            }
+        }
+
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
