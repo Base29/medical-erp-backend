@@ -15,8 +15,10 @@ class PolicyService
         // Check if the practice exists
         $practice = Practice::findOrFail($request->practice);
 
+        // Folder name
+        $folderName = $request->type . '-policies';
         // Upload policy document
-        $attachmentUrl = FileUploadService::upload($request->file('attachment'), 'policies', 's3');
+        $attachmentUrl = FileUploadService::upload($request->file('attachment'), $folderName, 's3');
 
         // Create Policy
         $policy = new Policy();

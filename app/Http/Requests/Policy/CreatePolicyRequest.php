@@ -36,6 +36,8 @@ class CreatePolicyRequest extends FormRequest
             ],
             'attachment' => 'required|file|mimes:doc,docx,pdf',
             'practice' => 'required|numeric|exists:practices,id',
+            'roles' => 'nullable|array',
+            'roles.*.role' => 'required|numeric|exists:roles,id',
         ];
     }
 
