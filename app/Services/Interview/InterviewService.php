@@ -517,8 +517,26 @@ class InterviewService
     public function fetchSingleInterview($request)
     {
         // Get interview with $request->user answers
-        $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-            ->with([
+        $interviewSchedule = InterviewSchedule::where('id', $request->interview)->firstOrFail();
+
+        // Return success response
+        // In case of 2nd interview
+        if ($interviewSchedule->application_status === 'second-interview'):
+
+            // Get user
+            $user = User::findOrFail($interviewSchedule->user_id);
+
+            // Get the id of the first interview
+            $firstInterview = $user->interviewSchedules[0]->id;
+
+            // Get misc info first interview
+            $firstInterviewMiscInfo = InterviewMiscInfo::where('interview', $firstInterview)->firstOrFail();
+
+            // Get first interview score
+            $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
+
+            // Cast $interviewSchedule to $secondInterviewSchedule variable
+            $secondInterviewSchedule = $interviewSchedule->with([
                 'user.profile',
                 'user.education',
                 'user.employmentHistories',
@@ -533,12 +551,40 @@ class InterviewService
                 'interviewMiscInfo',
                 'interviewScore',
             ])
-            ->firstOrFail();
+                ->latest()
+                ->first();
 
-        // Return success response
-        return Response::success([
-            'interview' => $interviewSchedule,
-        ]);
+            // Converting to array
+            $secondInterviewScheduleWithAdditionalData = $secondInterviewSchedule->toArray();
+
+            // Inserting additional data from the first interview
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['misc_info'] = $firstInterviewMiscInfo;
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
+
+            return Response::success([
+                'interview-schedule' => $secondInterviewScheduleWithAdditionalData,
+            ]);
+        else:
+
+            return Response::success([
+                'interview' => $interviewSchedule->with([
+                    'user.profile',
+                    'user.education',
+                    'user.employmentHistories',
+                    'hiringRequest',
+                    'interviewPolicies.questions.options',
+                    'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                        $q->where('interview', $request->interview);
+                    },
+                    'practice',
+                    'candidateQuestions',
+                    'adhocQuestions',
+                    'interviewMiscInfo',
+                    'interviewScore',
+                ])
+                    ->first(),
+            ]);
+        endif;
     }
 
     // Fetch adhoc questions
