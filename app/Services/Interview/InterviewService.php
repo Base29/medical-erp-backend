@@ -168,14 +168,22 @@ class InterviewService
 
         // Check if the users has a first interview
         if ($request->application_status == 'first-interview') {
-            if (!$user->interviewSchedules->isEmpty() && $user->interviewSchedules[0]->application_status === 'first-interview') {
-                throw new \Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'));
+
+            if (!$user->interviewSchedules->isEmpty()) {
+
+                if (isset($user->interviewSchedules[0])) {
+                    throw new \Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'));
+                }
+
             }
         }
 
         // Check if the first interview is completed
-        if (!$user->interviewSchedules[0]->is_completed) {
-            throw new \Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'));
+        if (isset($user->interviewSchedules[0])) {
+
+            if (!$user->interviewSchedules[0]->is_completed) {
+                throw new \Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'));
+            }
         }
 
         // Get hiring request
