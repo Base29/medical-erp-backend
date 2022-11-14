@@ -562,7 +562,7 @@ class InterviewService
             $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
 
             return Response::success([
-                'interview-schedule' => $secondInterviewScheduleWithAdditionalData,
+                'interview' => $secondInterviewScheduleWithAdditionalData,
             ]);
         else:
 
