@@ -16,18 +16,41 @@ class PolicyService
         $practice = Practice::findOrFail($request->practice);
 
         // Folder name
-        $folderName = $request->type . '-policies';
+        $folderName = $request->has('type') ? $request->type . '-policies' : 'policies';
+
         // Upload policy document
         $attachmentUrl = FileUploadService::upload($request->file('attachment'), $folderName, 's3');
+
+        // If upload fails
+        if (!$attachmentUrl) {
+            throw new \Exception(ResponseMessage::customMessage('Something went wrong while uploading document'));
+        }
 
         // Create Policy
         $policy = new Policy();
         $policy->name = $request->name;
+        $policy->description = $request->description;
+        $policy->type = $request->type;
         $policy->attachment = $attachmentUrl;
         $policy->practice_id = $practice->id;
         $policy->save();
 
-        return Response::success(['policy' => $policy]);
+        // Check if $request has roles
+        if ($request->has('roles')) {
+
+            // Cast $request->roles to $roles variable
+            $roles = $request->roles;
+
+            // Iterate through $roles array and attach policy
+            foreach ($roles as $role):
+                $role->policies()->attach($policy->id);
+            endforeach;
+        }
+
+        // Return success response
+        return Response::success([
+            'policy' => $policy->with(['roles'])->first(),
+        ]);
     }
 
     // Fetch Policies
