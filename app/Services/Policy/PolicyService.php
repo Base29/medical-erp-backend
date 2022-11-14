@@ -12,11 +12,16 @@ class PolicyService
     // Create policy
     public function createPolicy($request)
     {
-        // Check if the practice exists
-        $practice = Practice::findOrFail($request->practice);
+        // If $request has practice
+        if ($request->has('practice')) {
+
+            // Check if the practice exists
+            $practice = Practice::findOrFail($request->practice);
+
+        }
 
         // Folder name
-        $folderName = $request->has('type') ? $request->type . '-policies' : 'policies';
+        $folderName = $request->has('type') ? 'policies/' . $request->type . '-policies' : 'policies';
 
         // Upload policy document
         $attachmentUrl = FileUploadService::upload($request->file('attachment'), $folderName, 's3');
@@ -32,7 +37,7 @@ class PolicyService
         $policy->description = $request->description;
         $policy->type = $request->type;
         $policy->attachment = $attachmentUrl;
-        $policy->practice_id = $practice->id;
+        $policy->practice_id = isset($practice) ? $practice->id : null;
         $policy->save();
 
         // Check if $request has roles
@@ -43,13 +48,13 @@ class PolicyService
 
             // Iterate through $roles array and attach policy
             foreach ($roles as $role):
-                $role->policies()->attach($policy->id);
+                $policy->roles()->attach($role['role']);
             endforeach;
         }
 
         // Return success response
         return Response::success([
-            'policy' => $policy->with(['roles'])->first(),
+            'policy' => $policy->with(['roles'])->latest()->first(),
         ]);
     }
 

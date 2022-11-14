@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::table('policies', function (Blueprint $table) {
             $table->text('description')->nullable()->after('name');
             $table->string('type')->nullable()->after('description');
+            $table->foreignId('practice_id')->nullable()->change();
+            $table->string('name')->nullable()->change();
         });
     }
 
@@ -29,6 +31,8 @@ return new class extends Migration
         Schema::table('policies', function (Blueprint $table) {
             $table->dropColumn('description');
             $table->dropColumn('type');
+            $table->foreignId('practice_id')->nullable(false)->change();
+            $table->string('name')->nullable(false)->change();
         });
     }
 };

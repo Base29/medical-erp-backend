@@ -35,7 +35,7 @@ class CreatePolicyRequest extends FormRequest
                 Rule::in(['clinical']),
             ],
             'attachment' => 'required|file|mimes:doc,docx,pdf',
-            'practice' => 'required|numeric|exists:practices,id',
+            'practice' => 'nullable|numeric|exists:practices,id',
             'roles' => 'nullable|array',
             'roles.*.role' => 'required_with:roles|numeric|exists:roles,id',
         ];
