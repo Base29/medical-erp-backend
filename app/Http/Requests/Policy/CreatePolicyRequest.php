@@ -4,6 +4,7 @@ namespace App\Http\Requests\Policy;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class CreatePolicyRequest extends FormRequest
@@ -26,9 +27,17 @@ class CreatePolicyRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'required|unique:policies,name',
+            'name' => 'nullable|unique:policies,name',
+            'description' => 'nullable|string|max:2000',
+            'type' => [
+                'nullable',
+                'string',
+                Rule::in(['clinical']),
+            ],
             'attachment' => 'required|file|mimes:doc,docx,pdf',
-            'practice' => 'required|numeric|exists:practices,id',
+            'practice' => 'nullable|numeric|exists:practices,id',
+            'roles' => 'nullable|array',
+            'roles.*.role' => 'required_with:roles|numeric|exists:roles,id',
         ];
     }
 

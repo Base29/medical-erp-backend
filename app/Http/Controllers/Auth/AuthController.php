@@ -32,8 +32,7 @@ class AuthController extends Controller
             // Return response
             return Response::success(['user' => $user]);
 
-        } catch (\Exception $e) {
-
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),
@@ -59,7 +58,7 @@ class AuthController extends Controller
 
             return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 400,
@@ -78,7 +77,7 @@ class AuthController extends Controller
 
             return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 400,
@@ -97,7 +96,7 @@ class AuthController extends Controller
 
             return Response::success(['user' => $userWithToken]);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
 
             return Response::fail([
                 'code' => 400,
