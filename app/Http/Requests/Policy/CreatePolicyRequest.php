@@ -45,6 +45,7 @@ class CreatePolicyRequest extends FormRequest
     {
         return [
             'name.unique' => 'Policy ' . request()->name . ' already exists',
+            'type.in' => 'Policy type should be one of clinical-governance|health-and-safety|hr-and-training|admin',
         ];
     }
 
