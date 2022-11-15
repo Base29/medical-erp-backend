@@ -31,7 +31,7 @@ class UpdateInterviewScheduleRequest extends FormRequest
             'is_completed' => 'nullable|boolean',
             'progress' => 'nullable|numeric',
             'applicant_status' => [
-                'required',
+                'nullable',
                 Rule::in([
                     0, // Rejected
                     1, // Accepted
