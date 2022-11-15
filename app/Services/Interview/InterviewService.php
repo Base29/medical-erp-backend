@@ -770,6 +770,7 @@ class InterviewService
 
         // Update applicant_status
         $interview->applicant_status = $request->applicant_status;
+        $interview->save();
 
         return;
     }
