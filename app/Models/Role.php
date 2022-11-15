@@ -77,4 +77,9 @@ class Role extends SpatieRole
     {
         return $this->hasMany(HiringRequest::class, 'role', 'id');
     }
+
+    public function policies()
+    {
+        return $this->belongsToMany(Policy::class);
+    }
 }

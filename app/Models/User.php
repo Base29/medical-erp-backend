@@ -213,9 +213,9 @@ class User extends Authenticatable implements JWTSubject
         return $alreadyHasInductionSchedule;
     }
 
-    public function interviewSchedule()
+    public function interviewSchedules()
     {
-        return $this->hasOne(InterviewSchedule::class);
+        return $this->hasMany(InterviewSchedule::class);
     }
 
     public function offer()

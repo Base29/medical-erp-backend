@@ -36,6 +36,7 @@ host('3.232.244.22')
     ->setRemoteUser('ubuntu') // SSH user
     ->setIdentityFile('~/.ssh/ESM_TESTVM_New.pem')
     ->set('writable_use_sudo', true)
+    ->set('branch', 'main')
     ->setDeployPath('/var/www/esm/backend');
 
 after('deploy:failed', 'deploy:unlock'); // In case your deployment goes wrong
