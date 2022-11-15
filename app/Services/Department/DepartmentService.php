@@ -86,7 +86,10 @@ class DepartmentService
     {
         // Get department
         $department = Department::where('id', $request->department)
-            ->with('practice', 'departmentHead.profile', 'users.profile', 'users.positionSummary')
+            ->with(['practice', 'departmentHead.profile', 'users.profile', 'users.positionSummary', 'users' => function ($q) {
+                // Filtering only hired users
+                $q->where('is_hired', 1);
+            }])
             ->firstOrFail();
 
         $result = $department->toArray();
@@ -94,19 +97,19 @@ class DepartmentService
         // Getting count of permanent contract
         $permanent = $this->processCount($department->id, 'contract_type', 'permanent');
 
-        // // Getting count of fixed term contract
-        // $fixedTerm = $this->processCount($department->id, 'contract_type', 'fixed-term');
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount($department->id, 'contract_type', 'fixed-term');
 
-        // // Getting count of casual contract
-        // $casual = $this->processCount($department->id, 'contract_type', 'casual');
+        // Getting count of casual contract
+        $casual = $this->processCount($department->id, 'contract_type', 'casual');
 
-        // // Getting count of zero hour contract
-        // $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour');
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount($department->id, 'contract_type', 'zero-hour');
 
         $result['count']['permanent'] = $permanent;
-        // $result['count']['fixed-term'] = $fixedTerm;
-        // $result['count']['casual'] = $casual;
-        // $result['count']['zero-hour'] = $zeroHour;
+        $result['count']['fixed-term'] = $fixedTerm;
+        $result['count']['casual'] = $casual;
+        $result['count']['zero-hour'] = $zeroHour;
 
         // Return success response
         return Response::success([
@@ -117,7 +120,12 @@ class DepartmentService
     // Process count
     private function processCount($departmentId = null, $column, $value)
     {
-        //TODO: Send count of hired users in a department according to contract type
+        // Get hired user's within a department and according to contract type
+        return User::whereHas('profile', function ($q) use ($departmentId, $column, $value) {
+            $q->whereHas('hiringRequest', function ($q) use ($departmentId, $column, $value) {
+                $q->where(['department_id' => $departmentId, $column => $value]);
+            });
+        })->where('is_hired', 1)->count();
 
     }
 }
