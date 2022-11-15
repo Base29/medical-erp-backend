@@ -761,4 +761,5 @@ class InterviewService
             $q->where($column, $value);
         })->count();
     }
+
 }
