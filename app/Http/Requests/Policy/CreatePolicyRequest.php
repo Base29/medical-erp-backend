@@ -32,7 +32,7 @@ class CreatePolicyRequest extends FormRequest
             'type' => [
                 'nullable',
                 'string',
-                Rule::in(['clinical']),
+                Rule::in(['clinical-governance', 'health-and-safety', 'hr-and-training', 'admin']),
             ],
             'attachment' => 'required|file|mimes:doc,docx,pdf',
             'practice' => 'nullable|numeric|exists:practices,id',
