@@ -762,16 +762,4 @@ class InterviewService
         })->count();
     }
 
-    // Update application_status for the interview
-    public function updateApplicantStatusForInterview($request)
-    {
-        // Get the interview
-        $interview = InterviewSchedule::findOrFail($request->interview);
-
-        // Update applicant_status
-        $interview->applicant_status = $request->applicant_status;
-        $interview->save();
-
-        return;
-    }
 }

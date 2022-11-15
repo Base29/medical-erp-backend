@@ -19,7 +19,6 @@ use App\Http\Requests\Interview\CreateInterviewScoreRequest;
 use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
 use App\Http\Requests\Interview\FetchSingleInterviewRequest;
-use App\Http\Requests\Interview\UpdateApplicantStatusRequest;
 use App\Services\Interview\InterviewService;
 
 class InterviewController extends Controller
@@ -288,18 +287,4 @@ class InterviewController extends Controller
         }
     }
 
-    // Update applicant status for the interview
-    public function updateApplicantStatus(UpdateApplicantStatusRequest $request)
-    {
-        try {
-            // Logic here
-            return $this->interviewService->updateApplicantStatusForInterview($request);
-
-        } catch (\Exception$e) {
-            return Response::fail([
-                'code' => 400,
-                'message' => $e->getMessage(),
-            ]);
-        }
-    }
 }

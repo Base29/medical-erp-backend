@@ -671,9 +671,6 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('all-interviews', [InterviewController::class, 'getAll'])
                 ->middleware(['permission:can_manage_interview']);
 
-            Route::post('applicant-status', [InterviewController::class, 'updateApplicantStatus'])
-                ->middleware(['permission:can_manage_interview']);
-
             // Routes for interview policies
             Route::prefix('policies')->group(function () {
                 Route::post('create', [InterviewPolicyController::class, 'create'])
