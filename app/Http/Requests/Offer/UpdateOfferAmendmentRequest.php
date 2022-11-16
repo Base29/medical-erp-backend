@@ -27,13 +27,12 @@ class UpdateOfferAmendmentRequest extends FormRequest
     public function rules()
     {
         return [
-            'offer_amendment' => 'required|numeric|exists:offer_amendments,id',
+            'amendment' => 'required|numeric|exists:offer_amendments,id',
             'status' => [
                 'required',
                 Rule::in([
                     0, // Rejected/Declined
                     1, // Accepted
-                    2, // Negotiating
                 ]),
             ],
         ];
@@ -42,7 +41,7 @@ class UpdateOfferAmendmentRequest extends FormRequest
     public function messages()
     {
         return [
-            'status.in' => 'The :attribute is invalid. :attribute can only be 0 => declined | 1 => accepted | 2 => negotiating',
+            'status.in' => 'The :attribute is invalid. :attribute can only be 0 => declined | 1 => accepted',
         ];
     }
 

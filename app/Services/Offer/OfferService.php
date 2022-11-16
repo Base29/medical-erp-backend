@@ -159,4 +159,20 @@ class OfferService
         ]);
 
     }
+
+    // Update offer amendment
+    public function updateOfferAmendment($request)
+    {
+        // Get Offer amendment
+        $offerAmendment = OfferAmendment::findOrFail($request->amendment);
+
+        // Update status of the offer amendment
+        $offerAmendment->status = $request->status;
+        $offerAmendment->save();
+
+        // Return success response
+        return Response::success([
+            'offer-amendment' => $offerAmendment->latest('updated_at')->first(),
+        ]);
+    }
 }

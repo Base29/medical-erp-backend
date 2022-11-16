@@ -839,8 +839,13 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('offer', [OfferController::class, 'fetchSingle'])
                 ->middleware(['permission:can_fetch_single_offer|can_manage_offers']);
 
-            Route::post('amend-offer', [OfferController::class, 'amendOffer'])
-                ->middleware(['permission:can_manage_offer']);
+            Route::prefix('amendments')->group(function () {
+                Route::post('create', [OfferController::class, 'amendOffer'])
+                    ->middleware(['permission:can_manage_offer']);
+
+                Route::post('update', [OfferController::class, 'updateAmendment'])
+                    ->middleware(['permission:can_manage_offer']);
+            });
         });
 
     });
