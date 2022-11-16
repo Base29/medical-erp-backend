@@ -536,22 +536,22 @@ class InterviewService
             $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
 
             // Cast $interviewSchedule to $secondInterviewSchedule variable
-            $secondInterviewSchedule = $interviewSchedule->with([
-                'user.profile',
-                'user.education',
-                'user.employmentHistories',
-                'hiringRequest',
-                'interviewPolicies.questions.options',
-                'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
-                    $q->where('interview', $request->interview);
-                },
-                'practice',
-                'candidateQuestions',
-                'adhocQuestions',
-                'interviewMiscInfo',
-                'interviewScore',
-            ])
-                ->latest()
+            $secondInterviewSchedule = $interviewSchedule->where('id', $interviewSchedule->id)
+                ->with([
+                    'user.profile',
+                    'user.education',
+                    'user.employmentHistories',
+                    'hiringRequest',
+                    'interviewPolicies.questions.options',
+                    'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                        $q->where('interview', $request->interview);
+                    },
+                    'practice',
+                    'candidateQuestions',
+                    'adhocQuestions',
+                    'interviewMiscInfo',
+                    'interviewScore',
+                ])
                 ->first();
 
             // Converting to array
@@ -567,21 +567,22 @@ class InterviewService
         else:
 
             return Response::success([
-                'interview' => $interviewSchedule->with([
-                    'user.profile',
-                    'user.education',
-                    'user.employmentHistories',
-                    'hiringRequest',
-                    'interviewPolicies.questions.options',
-                    'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
-                        $q->where('interview', $request->interview);
-                    },
-                    'practice',
-                    'candidateQuestions',
-                    'adhocQuestions',
-                    'interviewMiscInfo',
-                    'interviewScore',
-                ])
+                'interview' => $interviewSchedule->where('id', $interviewSchedule->id)
+                    ->with([
+                        'user.profile',
+                        'user.education',
+                        'user.employmentHistories',
+                        'hiringRequest',
+                        'interviewPolicies.questions.options',
+                        'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                            $q->where('interview', $request->interview);
+                        },
+                        'practice',
+                        'candidateQuestions',
+                        'adhocQuestions',
+                        'interviewMiscInfo',
+                        'interviewScore',
+                    ])
                     ->first(),
             ]);
         endif;
