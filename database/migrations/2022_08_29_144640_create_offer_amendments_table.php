@@ -25,7 +25,7 @@ class CreateOfferAmendmentsTable extends Migration
                 ->on('work_patterns')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->decimal('amount', 5, 2)->nullable();
+            $table->decimal('amount', 8, 2)->nullable();
             $table->integer('status')->nullable();
             $table->softDeletes();
             $table->timestamps();

@@ -126,12 +126,19 @@ class OfferService
         // Get all amendments of $offer
         $offerAmendments = $offer->amendments->toArray();
 
-        // Get latest amendment from $offerAmendments
-        $latestAmendment = end($offerAmendments);
+        if (!empty($offerAmendments)) {
+            // Get latest amendment from $offerAmendments
+            $latestAmendment = end($offerAmendments);
 
-        // Check if previous amendment has been rejected/declined
-        if ($latestAmendment['status'] !== 0) {
-            throw new \Exception(ResponseMessage::customMessage('Please Reject/Decline the previous amendment in order to create a new one.'));
+            // Check if the previous amendment is accepted
+            if ($latestAmendment['status'] === 1) {
+                throw new \Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
+            }
+
+            // Check if previous amendment has been rejected/declined
+            if ($latestAmendment['status'] !== 0) {
+                throw new \Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+            }
         }
 
         // Create amendment for $offer
