@@ -16,9 +16,11 @@ use App\Models\HiringRequestPosting;
 use App\Models\JobSpecification;
 use App\Models\PersonSpecification;
 use App\Models\Practice;
+use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
+use App\Notifications\HiringRequest\NewHiringRequestNotification;
 
 class HiringRequestService
 {
@@ -39,6 +41,9 @@ class HiringRequestService
         $department = Department::findOrFail($request->department);
 
         // Get role
+        $role = Role::where('id', $request->role)->firstOrFail();
+
+        // Get role
         $reportingTo = User::where('id', $request->reporting_to)->with('profile')->firstOrFail();
 
         // Get work pattern
@@ -46,6 +51,14 @@ class HiringRequestService
 
         // Cast id of $workPattern to a variable
         $workPatternId = $workPattern ? $workPattern->id : null;
+
+        // Get current authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
 
         // If $workPattern is false
         if (!$workPattern) {
@@ -84,7 +97,9 @@ class HiringRequestService
 
         // Instance of HiringRequest
         $hiringRequest = new HiringRequest();
+        $hiringRequest->notifiable = $authenticatedUser->id;
         $hiringRequest->job_title = $request->job_title;
+        $hiringRequest->role = $role->id;
         $hiringRequest->contract_type = $request->contract_type;
         $hiringRequest->department_id = $department->id;
         $hiringRequest->reporting_to = $reportingTo->profile->first_name . ' ' . $reportingTo->profile->last_name;
@@ -92,6 +107,7 @@ class HiringRequestService
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
         $hiringRequest->comment = $request->comment;
+        $hiringRequest->status = 'pending';
         $hiringRequest->job_specification_id = $jobSpecification->id;
         $hiringRequest->person_specification_id = $personSpecification->id;
         $hiringRequest->application_manager = auth()->user()->id;
@@ -100,6 +116,15 @@ class HiringRequestService
 
         // Attach work pattern with the hiring request
         $hiringRequest->workPatterns()->attach($workPatternId);
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewHiringRequestNotification(
+                $hqUser,
+                $hiringRequest,
+                $authenticatedUser
+            ));
+        endforeach;
 
         // Return newly created $hiringRequest
         return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
@@ -264,30 +289,40 @@ class HiringRequestService
     public function fetchHiringRequests($request)
     {
 
-        // Request if the route is not HQ
-        if (!$request->is('api/hq/*')) {
+        // Initiate query for HiringRequests
+        $hiringRequestQuery = HiringRequest::query();
 
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
-
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get hiring requests
-            $hiringRequests = HiringRequest::where(['practice_id' => $practice->id, 'status' => $request->status])
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-                ->withCount('applicants')
-                ->latest()
-                ->paginate(10);
-        } else {
-            // Get hiring requests
-            $hiringRequests = HiringRequest::where('status', $request->status)
-                ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has status
+        if ($request->has('status')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('status', $request->status);
         }
+
+        // Check if $request has contract_type
+        if ($request->has('contract_type')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('contract_type', $request->contract_type);
+        }
+
+        // Check if $request has role
+        if ($request->has('role')) {
+            $role = Role::findOrFail($request->role);
+
+            $hiringRequestQuery = $hiringRequestQuery->where('role', $role->id);
+        }
+
+        // Check if $request has job_title
+        if ($request->has('job_title')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('job_title', 'like', '%' . $request->job_title . '%');
+        }
+
+        // Check if $request has progress
+        if ($request->has('progress')) {
+            $hiringRequestQuery = $hiringRequestQuery->where('progress', $request->progress);
+        }
+
+        // Cast $hiringRequestQuery to $hiringRequests
+        $hiringRequests = $hiringRequestQuery->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+            ->latest()
+            ->paginate(10);
 
         // Casting $hiringRequests to $results and converting the object to array
         $results = $hiringRequests->toArray();
@@ -296,32 +331,36 @@ class HiringRequestService
          * Count according to status
          */
 
+        // Getting count of pending hiring requests
+        $pending = $this->processCount('status', 'pending', $request);
+
         // Getting count of approved hiring requests
-        $approved = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'approved', $request);
+        $approved = $this->processCount('status', 'approved', $request);
 
         // Getting count of declined hiring requests
-        $declined = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'declined', $request);
+        $declined = $this->processCount('status', 'declined', $request);
 
         // Getting count of escalated hiring requests
-        $escalated = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'status', 'escalated', $request);
+        $escalated = $this->processCount('status', 'escalated', $request);
 
         /**
          * Count according to contract type
          */
 
         // Getting count of permanent contract
-        $permanent = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'permanent', $request);
+        $permanent = $this->processCount('contract_type', 'permanent', $request);
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'fixed-term', $request);
+        $fixedTerm = $this->processCount('contract_type', 'fixed-term', $request);
 
         // Getting count of casual contract
-        $casual = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'casual', $request);
+        $casual = $this->processCount('contract_type', 'casual', $request);
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount(!$request->is('api/hq/*') ? $practice->id : null, 'contract_type', 'zero-hour', $request);
+        $zeroHour = $this->processCount('contract_type', 'zero-hour', $request);
 
         // Adding extra meta to response $results
+        $results['count']['pending'] = $pending;
         $results['count']['approved'] = $approved;
         $results['count']['declined'] = $declined;
         $results['count']['escalated'] = $escalated;
@@ -335,14 +374,9 @@ class HiringRequestService
     }
 
     // Process count
-    private function processCount($practiceId = null, $column, $value, $request)
+    private function processCount($column, $value, $request)
     {
-        if (!$request->is('api/hq/*')) {
-            return HiringRequest::where(['practice_id' => $practiceId, $column => $value])->count();
-        }
-
         return HiringRequest::where([$column => $value])->count();
-
     }
 
     // Add applicant to hiring request
@@ -425,5 +459,173 @@ class HiringRequestService
             'postings' => $postings,
         ]);
 
+    }
+
+    // Search Hiring Request
+    public function searchVacancies($request)
+    {
+        // Get type of $request->value
+        $valueType = gettype($request->value);
+
+        /**
+         * Filter with integer as a value
+         * Add new filters which will be searching using ID to the below $filtersWithIntValue array
+         */
+        $filtersWithIntValue = [
+            'role',
+            'location',
+            'manager',
+            'department',
+            'job_specification',
+            'person_specification',
+            'is_live',
+        ];
+
+        /**
+         * Filter with string as a value
+         * Add new filters which will be searching using string to the below $filtersWithStringValue array
+         */
+        $filtersWithStringValue = [
+            'contract_type',
+            'status',
+            'progress',
+        ];
+
+        // Filter
+        $filter = $request->filter;
+
+        // Check if $filter is in $filtersWithIntValue array
+        if (in_array($filter, $filtersWithIntValue)):
+
+            // Check the type of $request->value is integer
+            if ($valueType !== 'integer') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'));
+            }
+
+            // Switch statement according to $filter
+            switch ($filter) {
+
+                case 'role':
+                    // Check if role exists
+                    $role = Role::findOrFail($request->value);
+
+                    // Getting vacancies filtered by $role->id
+                    $filteredVacancies = $this->filteredSearchResults('role', $role->id);
+
+                    break;
+
+                case 'location':
+                    // Check if practice exists
+                    $location = Practice::findOrFail($request->value);
+
+                    // Getting vacancies filtered by $location->id
+                    $filteredVacancies = $this->filteredSearchResults('practice_id', $location->id);
+
+                    break;
+
+                case 'manager':
+                    // Check if the application manager exists
+                    $applicationManager = User::findOrFail($request->value);
+
+                    // Getting vacancies filtered by $applicationManager->id
+                    $filteredVacancies = $this->filteredSearchResults('application_manager', $applicationManager->id);
+
+                    break;
+
+                case 'department':
+                    // Check if the department exists
+                    $department = Department::findOrFail($request->value);
+
+                    // Getting vacancies filtered by department
+                    $filteredVacancies = $this->filteredSearchResults('department_id', $department->id);
+
+                    break;
+
+                case 'job_specification':
+                    // Check if job specification exists
+                    $jobSpecification = JobSpecification::findOrFail($request->value);
+
+                    // Getting vacancies filtered by job spcifications
+                    $filteredVacancies = $this->filteredSearchResults('job_specification_id', $jobSpecification->id);
+
+                    break;
+
+                case 'person_specification':
+                    // Check if person specification exists
+                    $personSpecification = PersonSpecification::findOrFail($request->value);
+
+                    // Getting vacancies filtered by person specification
+                    $filteredVacancies = $this->filteredSearchResults('person_specification_id', $personSpecification->id);
+
+                    break;
+
+                case 'reporting_to':
+                    // Check if reporting to user exists
+                    $reportingTo = User::findOrFail($request->value);
+
+                    // Get vacancies filtered by reporting to
+                    $filteredVacancies = $this->filteredSearchResults('reporting_to', $reportingTo->id);
+
+                    break;
+
+                case 'is_live':
+                    // Getting vacancies by is_live status
+                    $filteredVacancies = $this->filteredSearchResults('is_live', $request->value);
+                    break;
+
+                default:
+                    return false;
+            }
+
+        endif;
+
+        // Check if $filter is in $filtersWithStringValue array
+
+        if (in_array($filter, $filtersWithStringValue)):
+
+            // Check the type of $valueType is string
+            if ($valueType !== 'string') {
+                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'));
+            }
+
+            // Switch statement according to filter
+            switch ($filter) {
+                case 'contract_type':
+                    // Getting vacancies filtered by contract type
+                    $filteredVacancies = $this->filteredSearchResults('contract_type', $request->value);
+
+                    break;
+
+                case 'status':
+                    // Getting vacancies filtered by status
+                    $filteredVacancies = $this->filteredSearchResults('status', $request->value);
+
+                    break;
+
+                case 'progress':
+                    // Getting vacancies filtered by progress
+                    $filteredVacancies = $this->filteredSearchResults('progress', $request->value);
+
+                    break;
+
+                default:
+                    return false;
+            }
+
+        endif;
+
+        // Return success response
+        return Response::success([
+            'filtered-vacancies' => $filteredVacancies,
+        ]);
+
+    }
+
+    private function filteredSearchResults($filter, $value)
+    {
+        return HiringRequest::where($filter, $value)
+            ->with('applicants.profile')
+            ->latest()
+            ->paginate(10);
     }
 }

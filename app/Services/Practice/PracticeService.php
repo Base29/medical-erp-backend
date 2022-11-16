@@ -46,8 +46,14 @@ class PracticeService
     // Fetch practices
     public function fetchPractices()
     {
-        // Fetch practices
-        $practices = Practice::with('policies', 'users.profile', 'practiceManager.profile')->latest()->paginate(10);
+        if (request()->paginate === 'yes'):
+
+            // Fetch practices
+            $practices = Practice::with('policies', 'users.profile', 'practiceManager.profile')->latest()->paginate(10);
+        else:
+            // Fetch practices
+            $practices = Practice::with('policies', 'users.profile', 'practiceManager.profile')->latest()->get();
+        endif;
 
         return Response::success(['practices' => $practices]);
     }

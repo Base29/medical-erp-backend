@@ -27,6 +27,11 @@ class FetchLocumSessionsRequest extends FormRequest
     {
         return [
             'practice' => 'nullable|numeric|exists:practices,id',
+            'role' => 'nullable|numeric|exists:roles,id',
+            'name' => 'nullable|string',
+            'start_date' => 'nullable|date|date_format:Y-m-d',
+            'end_date' => 'nullable|date|date_format:Y-m-d',
+            'rate' => 'nullable|string',
         ];
     }
 

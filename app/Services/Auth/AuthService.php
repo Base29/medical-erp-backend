@@ -29,11 +29,16 @@ class AuthService
             throw new \Exception(ResponseMessage::userNotActive($user->email));
         }
 
+        // Check if $user is blacklisted
+        if ($user->is_blacklisted) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $user->email . ' is blacklisted. Please contact HQ.'));
+        }
+
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw new \Exception(ResponseMessage::invalidCredentials());
         }
 
-        // Generating JWT token from provided creds
+        // Generating JWT token from provided credentials
         $token = JWTAuth::attempt($request->only('email', 'password'));
 
         // Adding token to user array

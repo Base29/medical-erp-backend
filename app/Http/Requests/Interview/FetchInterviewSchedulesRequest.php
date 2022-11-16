@@ -4,6 +4,7 @@ namespace App\Http\Requests\Interview;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class FetchInterviewSchedulesRequest extends FormRequest
@@ -27,6 +28,15 @@ class FetchInterviewSchedulesRequest extends FormRequest
     {
         return [
             'practice' => 'nullable|numeric|exists:practices,id',
+            'application_status' => [
+                'nullable',
+                Rule::in(['first-interview', 'second-interview']),
+            ],
+            'department' => 'nullable|numeric|exists:departments,id',
+            'interview_type' => [
+                'nullable',
+                Rule::in(['digital-interview', 'physical-interview']),
+            ],
         ];
     }
 

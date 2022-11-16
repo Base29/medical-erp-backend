@@ -30,14 +30,12 @@ class CreateLocumSessionRequest extends FormRequest
             'practice' => 'required|numeric|exists:practices,id',
             'role' => 'required|numeric|exists:roles,id',
             'name' => 'required|string',
-            'quantity' => 'required|numeric',
             'start_date' => 'required|date|date_format:Y-m-d',
             'end_date' => 'required|date|date_format:Y-m-d',
             'start_time' => 'required|date_format:H:i',
             'end_time' => 'required|date_format:H:i',
-            'rate' => 'required|numeric',
-            'unit' => ['required', Rule::in(['hourly', 'weekly', 'monthly'])],
-            'location' => 'required|string',
+            'rate' => ['required', 'regex:/^-?(?:\d+|\d*\.\d+)$/'],
+            'unit' => ['required', Rule::in(['hourly', 'session'])],
         ];
     }
 

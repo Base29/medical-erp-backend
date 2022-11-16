@@ -29,6 +29,7 @@ class CreateCandidateQuestionRequest extends FormRequest
             'interview' => 'required|numeric|exists:interview_schedules,id',
             'questions' => 'required|array',
             'questions.*.question' => 'required|string|max:1000',
+            'questions.*.answer' => 'required|string|max:1000',
         ];
     }
 

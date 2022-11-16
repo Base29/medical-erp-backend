@@ -34,6 +34,7 @@ use App\Http\Controllers\PositionSummary\PositionSummaryController;
 use App\Http\Controllers\Post\PostController;
 use App\Http\Controllers\Practice\PracticeController;
 use App\Http\Controllers\Profile\ProfileController;
+use App\Http\Controllers\Qualification\QualificationController;
 use App\Http\Controllers\Reason\ReasonController;
 use App\Http\Controllers\Reference\ReferenceController;
 use App\Http\Controllers\Role\RoleController;
@@ -124,6 +125,16 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('update', [UserController::class, 'update']);
 
             Route::post('user', [UserController::class, 'fetchSingle']);
+
+            Route::post('filter', [UserController::class, 'filter']);
+
+            Route::prefix('qualifications')->group(function () {
+                Route::post('create', [QualificationController::class, 'create']);
+
+                Route::patch('update', [QualificationController::class, 'update']);
+
+                Route::post('delete', [QualificationController::class, 'delete']);
+            });
         });
 
     // Endpoints for practice operations
@@ -618,11 +629,14 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('/', [InterviewController::class, 'fetch'])
                 ->middleware(['permission:can_fetch_all_interviews|can_manage_interview']);
+
+            Route::post('interview', [InterviewController::class, 'singleInterview'])
+                ->middleware(['permission:can_manage_interview']);
         });
 
     });
 
-    // Routes for RE
+    // Routes for Recruiter
     Route::prefix('re')->group(function () {
 
         // Routes for interviews
@@ -654,7 +668,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create-score', [InterviewController::class, 'score'])
                 ->middleware(['permission:can_create_interview_score|can_manage_interview']);
 
-            Route::get('all-interviews', [InterviewController::class, 'getAll'])
+            Route::post('all-interviews', [InterviewController::class, 'getAll'])
                 ->middleware(['permission:can_manage_interview']);
 
             // Routes for interview policies
@@ -728,7 +742,48 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [LocumController::class, 'delete'])
                     ->middleware(['permission:can_delete_locum_session|can_manage_locums']);
+
+                Route::post('month', [LocumController::class, 'fetchByMonth'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('day', [LocumController::class, 'fetchByDay'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('invite', [LocumController::class, 'inviteUsersToSession'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::post('fetch-user-invites', [UserController::class, 'fetchUserInvites'])
+                    ->middleware(['permission:can_manage_locums']);
+
+                Route::prefix('billing')->group(function () {
+
+                    Route::post('/', [LocumController::class, 'fetchLocumInvoices'])
+                        ->middleware(['permission:can_manage_locums']);
+
+                    Route::post('update-esm-status', [LocumController::class, 'esmStatus'])
+                        ->middleware(['permission:can_manage_locums']);
+                });
             });
+
+            Route::patch('user-locum-status', [UserController::class, 'updateLocumStatus'])
+                ->middleware(['permission:can_manage_locums']);
+
+            Route::post('add-to-blacklist', [LocumController::class, 'addToBlacklist'])
+                ->middleware(['permission:can_manage_locums']);
+
+            Route::post('remove-from-blacklist', [LocumController::class, 'removeFromBlacklist'])
+                ->middleware(['permission:can_manage_locums']);
+
+            // Routes for locum notes
+            Route::prefix('notes')
+                ->middleware(['permission:can_manage_locums'])
+                ->group(function () {
+                    Route::post('create', [LocumController::class, 'createNote']);
+
+                    Route::patch('update', [LocumController::class, 'updateNote']);
+
+                    Route::post('delete', [LocumController::class, 'deleteNote']);
+                });
         });
 
         // Routes for employee handbook
@@ -766,6 +821,15 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('candidates')->group(function () {
             Route::post('hire', [UserController::class, 'hire'])
                 ->middleware('permission:can_manage_candidate');
+
+            Route::post('filter', [UserController::class, 'searchProfiles'])
+                ->middleware(['permission:can_manage_candidate']);
+        });
+
+        // Routes for vacancies
+        Route::prefix('vacancies')->group(function () {
+            Route::post('filter', [HiringRequestController::class, 'search'])
+                ->middleware(['permission:can_manage_hiring_requests']);
         });
     });
 
@@ -791,6 +855,19 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('module-progress', [UserController::class, 'recordModule']);
                 Route::post('course-progress', [UserController::class, 'recordCourse']);
                 Route::post('module-exam', [UserController::class, 'endOfModuleExam']);
+            });
+
+        });
+
+        Route::prefix('locum')->middleware(['permission:can_manage_own_locum_sessions'])->group(function () {
+            Route::prefix('sessions')->group(function () {
+                Route::post('invitation-action', [LocumController::class, 'invitationAction']);
+                Route::post('upload-invoice', [LocumController::class, 'uploadInvoice']);
+                Route::post('billing', [LocumController::class, 'fetchInvoices']);
+                Route::post('/', [UserController::class, 'fetchMyLocumSessions']);
+                Route::post('month', [UserController::class, 'fetchMySessionsByMonth']);
+                Route::post('day', [UserController::class, 'fetchMySessionsByDay']);
+                Route::post('session-invites', [UserController::class, 'fetchMySessionInvites']);
             });
         });
     });

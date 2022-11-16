@@ -1,12 +1,21 @@
 <?php
 namespace App\Services\Locum;
 
+use App\Helpers\FileUploadService;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
+use App\Models\LocumInvoice;
+use App\Models\LocumNote;
 use App\Models\LocumSession;
+use App\Models\LocumSessionInvite;
 use App\Models\Practice;
 use App\Models\Role;
 use App\Models\User;
+use App\Notifications\Locum\RemoveLocumFromSessionNotification;
+use App\Notifications\Locum\SessionInvitationNotification;
+use App\Notifications\Locum\SessionInviteAcceptedNotification;
+use App\Notifications\Locum\SessionInviteDeclinedNotification;
+use Illuminate\Support\Carbon;
 
 class LocumService
 {
@@ -23,14 +32,13 @@ class LocumService
         $locumSession = new LocumSession();
         $locumSession->practice_id = $practice->id;
         $locumSession->name = $request->name;
-        $locumSession->quantity = $request->quantity;
         $locumSession->start_date = $request->start_date;
         $locumSession->end_date = $request->end_date;
         $locumSession->start_time = $request->start_time;
         $locumSession->end_time = $request->end_time;
         $locumSession->rate = $request->rate;
         $locumSession->unit = $request->unit;
-        $locumSession->location = $request->location;
+        $locumSession->location = $practice->practice_name;
 
         // Save $locumSession
         $role->locumSessions()->save($locumSession);
@@ -66,12 +74,12 @@ class LocumService
         }
 
         // Check to restrict if locums are being adding above the required quantity
-        if ($locumSession->quantity === $locumSession->users()->count()) {
+        if ($locumSession->quantity === $locumSession->locums()->count()) {
             throw new \Exception(ResponseMessage::customMessage('Cannot add user to locum session more than the required quantity'));
         }
 
         // Add user to a locum session
-        $locumSession->users()->attach($user->id);
+        $locumSession->locums()->attach($user->id);
 
         // Change $user->is_locum === true
         $user->is_locum = 1;
@@ -96,11 +104,17 @@ class LocumService
         }
 
         // Remove user from a locum session
-        $locumSession->users()->detach($user->id);
+        $locumSession->locums()->detach($user->id);
 
-        // Change $user->is_locum === true
-        $user->is_locum = 0;
-        $user->save();
+        // // Change $user->is_locum === true
+        // $user->is_locum = 0;
+        // $user->save();
+
+        // Send notification to locum on removing from session
+        $user->notify(new RemoveLocumFromSessionNotification(
+            $user,
+            $locumSession
+        ));
 
         // Return success response
         return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);
@@ -109,29 +123,71 @@ class LocumService
     // Fetch All Sessions
     public function fetchAllSessions($request)
     {
-        // If $request->practice is available
-        if ($request->has('practice')) {
 
+        $locumSessionsQuery = LocumSession::query();
+
+        if ($request->has('practice')) {
             // Get practice
             $practice = Practice::findOrFail($request->practice);
 
-            // Get sessions
-            $locumSessions = LocumSession::where('practice_id', $practice->id)
-                ->with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-
-            // Get sessions
-            $locumSessions = LocumSession::with('practice', 'role', 'users.profile')
-                ->latest()
-                ->paginate(10);
+            $locumSessionsQuery = $locumSessionsQuery->where('practice_id', $practice->id);
         }
+
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $locumSessionsQuery = $locumSessionsQuery->where('role_id', $role->id);
+        }
+
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('start_date', $startDate);
+        }
+
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $locumSessionsQuery = $locumSessionsQuery->whereDate('end_date', $endDate);
+        }
+
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('rate', $rate);
+        }
+
+        if ($request->has('name')) {
+            $name = $request->name;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('name', 'like', '%' . $name . '%');
+        }
+
+        if ($request->has('quantity')) {
+            $quantity = $request->quantity;
+
+            $locumSessionsQuery = $locumSessionsQuery->where('quantity', $quantity);
+
+        }
+
+        if ($request->has('unit')) {
+            $unit = $request->unit;
+
+            $$locumSessionsQuery = $locumSessionsQuery->where('unit', $unit);
+        }
+
+        $filteredLocumSessions = $locumSessionsQuery->with('practice', 'role', 'locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications')
+            ->withCount(['locums'])
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
-            'locum-sessions' => $locumSessions,
+            'locum-sessions' => $filteredLocumSessions,
         ]);
     }
 
@@ -140,7 +196,8 @@ class LocumService
     {
         // Get locum session
         $locumSession = LocumSession::where('id', $request->locum_session)
-            ->with('practice', 'role', 'users.profile')
+            ->with('practice', 'role', 'locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications')
+            ->withCount(['locums'])
             ->latest()
             ->firstOrFail();
 
@@ -162,6 +219,555 @@ class LocumService
         // Return success response
         return Response::success([
             'message' => ResponseMessage::deleteSuccess('Locum Session ' . $locumSession->id),
+        ]);
+    }
+
+    // Fetch sessions by month
+    public function fetchSessionsByMonth($request)
+    {
+
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m', $date);
+
+        // Build session by month query
+        $sessionsByMonthQuery = LocumSession::query();
+
+        // Check if $request has location
+        if ($request->has('location')) {
+            $location = Practice::findOrFail($request->location);
+
+            $sessionsByMonthQuery = $sessionsByMonthQuery->where('practice_id', $location->id);
+        }
+
+        // Get session by month
+        $sessionsByMonthFiltered = $sessionsByMonthQuery->whereMonth('start_date', '=', $parsedDate->format('m'))
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications', 'role'])
+            ->withCount(['locums'])
+            ->latest()
+            ->get();
+
+        // Return success response
+        return Response::success([
+            'sessions-by-month' => $sessionsByMonthFiltered,
+        ]);
+
+    }
+
+    // Fetch sessions by day
+    public function fetchSessionsByDay($request)
+    {
+        // Cast $request->date to variable
+        $date = $request->date;
+
+        // Parsing $date with Carbon
+        $parsedDate = Carbon::createFromFormat('Y-m-d', $date);
+
+        // Get sessions by the date
+        $sessionsByDay = LocumSession::whereDate('start_date', '=', $parsedDate->format('Y-m-d'))
+            ->with(['locums.profile', 'locums.roles', 'locums.locumNotes', 'locums.qualifications'])
+            ->withCount(['locums'])
+            ->latest()
+            ->get();
+
+        // Return success response
+        return Response::success([
+            'sessions-by-day' => $sessionsByDay,
+        ]);
+
+    }
+
+    // Invite users to sessions
+    public function inviteUsersToLocumSession($request)
+    {
+        // Get locum session
+        $session = LocumSession::findOrFail($request->session);
+
+        // Cast $request->locums array to variable
+        $locum = User::findOrFail($request->locum);
+
+        // Check if $user->is_active === true
+        if (!$locum->is_active) {
+            throw new \Exception(ResponseMessage::customMessage('User is not active.'));
+        }
+
+        // Check if the user is a candidate and is hired
+        if (!$locum->is_candidate || !$locum->is_hired) {
+            throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before invited to a locum session'));
+        }
+
+        // Check if $locum is blacklisted
+        if ($locum->is_blacklisted) {
+            throw new \Exception(ResponseMessage::customMessage('Blacklisted locums cannot be invited to a session'));
+        }
+
+        // Check if the user is already assigned to the locum session
+        if ($session->userAlreadyAssignedToSession($locum->id)) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $locum->id . ' already assigned to locum session'));
+        }
+
+        // // Check to restrict if locums are being adding above the required quantity
+        // if ($session->quantity === $session->locums()->count()) {
+        //     throw new \Exception(ResponseMessage::customMessage('Cannot invite users to locum session more than the required quantity'));
+        // }
+
+        // // Check if user is a locum
+        // if (!$locum->isLocum()) {
+        //     throw new \Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
+        // }
+
+        // Instance of LocumSessionInvite model
+        $locumSessionInvite = new LocumSessionInvite();
+
+        if ($locumSessionInvite->alreadyInvitedForSession($session->id, $locum->id)) {
+            throw new \Exception(ResponseMessage::customMessage('Invite already sent.'));
+        }
+
+        $locumSessionInvite->notifiable = auth()->user()->id;
+        $locumSessionInvite->session = $session->id;
+        $locumSessionInvite->locum = $locum->id;
+        $locumSessionInvite->title = $session->name;
+        $locumSessionInvite->save();
+
+        // Sending notification to invited users
+        $locum->notify(new SessionInvitationNotification(
+            $locum,
+            $session,
+            $locumSessionInvite
+
+        ));
+
+        // Return success
+        return Response::success([
+            'session' => $session->where('id', $session->id)->with('sessionInvites')->first(),
+        ]);
+    }
+
+    // Accept locum session invitation
+    public function sessionInvitationAction($request)
+    {
+        // Get session invitation
+        $sessionInvite = LocumSessionInvite::where('id', $request->session_invite)->firstOrFail();
+
+        // Get locum session
+        $locumSession = LocumSession::findOrFail($sessionInvite->session);
+
+        // Get user
+        $user = auth()->user();
+
+        // Get the creator of the invitation for notifying regarding action taken by the user
+        $notifiable = User::findOrFail($sessionInvite->notifiable);
+
+        // Check if the user is already assigned to the locum session
+        if ($locumSession->userAlreadyAssignedToSession($user->id)) {
+            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'));
+        }
+
+        // Casting $request->action to variable
+        $action = $request->action;
+
+        // Switch statement
+        switch ($action) {
+            // When a locum accepts invitation for a session
+            case 2:
+
+                // Check to restrict if locums are being adding above the required quantity
+                if ($locumSession->locums()->count() === 1) {
+                    throw new \Exception(ResponseMessage::customMessage('Sorry seat for this session has been filled.'));
+                }
+
+                // Check if the user already accepted the invitation
+                if ($sessionInvite->status === 2) {
+                    throw new \Exception(ResponseMessage::customMessage('You have already accepted this invitation'));
+                }
+
+                // Add user to a locum session
+                $locumSession->locums()->attach($user->id);
+
+                // Updated status of the invite
+                $sessionInvite->status = 2;
+                $sessionInvite->save();
+
+                // Update user's is_locum status to true (1)
+                $user->is_locum = 1;
+                $user->save();
+
+                // Add session to user's locum invoices
+                $sessionInvoice = new LocumInvoice();
+                $sessionInvoice->session = $locumSession->id;
+                $sessionInvoice->locum = $user->id;
+                $sessionInvoice->location = $locumSession->practice_id;
+                $sessionInvoice->start_date = $locumSession->start_date;
+                $sessionInvoice->end_date = $locumSession->end_date;
+                $sessionInvoice->start_time = $locumSession->start_time;
+                $sessionInvoice->end_time = $locumSession->end_time;
+                $sessionInvoice->rate = $locumSession->rate;
+                $sessionInvoice->save();
+
+                $notifiable->notify(new SessionInviteAcceptedNotification(
+                    $user,
+                    $locumSession,
+                    $sessionInvite,
+                    $notifiable
+                ));
+                break;
+
+            // When a locum declines invitation for a session
+            case 3:
+
+                // Check if the user already declined the invitation
+                if ($sessionInvite->status === 3) {
+                    throw new \Exception(ResponseMessage::customMessage('You have already declined this invitation'));
+                }
+
+                // Updated status of the invite
+                $sessionInvite->status = 3;
+                $sessionInvite->save();
+
+                $notifiable->notify(new SessionInviteDeclinedNotification(
+                    $user,
+                    $locumSession,
+                    $sessionInvite,
+                    $notifiable
+                ));
+
+                break;
+
+            default:
+                return false;
+        }
+
+        // Return success response
+        return Response::success([
+            'session-invite' => $sessionInvite->where(['id' => $sessionInvite->id, 'locum' => $user->id])
+                ->with('session')
+                ->first(),
+        ]);
+    }
+
+    public function uploadSessionInvoice($request)
+    {
+        // Get locum invoice
+        $sessionInvoice = LocumInvoice::where('session', $request->session)->firstOrFail();
+
+        // Path on S3
+        $folderPath = 'locum/user-' . $sessionInvoice->locum . '/session-' . $sessionInvoice->session . '/invoice';
+
+        // Upload invoice
+        $invoiceUrl = FileUploadService::upload($request->invoice, $folderPath, 's3');
+
+        // Save invoice url
+        $sessionInvoice->session_invoice = $invoiceUrl;
+        $sessionInvoice->save();
+
+        // Return response
+        return Response::success([
+            'session-invoice' => $sessionInvoice,
+        ]);
+
+    }
+
+    // Fetch user invoices
+    public function fetchUserInvoices($request)
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Locum invoice query
+        $invoiceQuery = LocumInvoice::query();
+
+        // $request has location
+        if ($request->has('location')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->location);
+
+            $invoiceQuery = $invoiceQuery->where('location', $practice->id);
+        }
+
+        // If request has role
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $invoiceQuery = $invoiceQuery->whereHas('session', function ($q) use ($role) {
+                $q->where('role_id', $role->id);
+            });
+        }
+
+        // if $request has start_date
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('start_date', $startDate);
+        }
+
+        // If $request has end_date
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('end_date', $endDate);
+        }
+
+        // If $request has rate
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $invoiceQuery = $invoiceQuery->where('rate', $rate);
+        }
+
+        // If request has esm_status
+        if ($request->has('esm_status')) {
+            $invoiceQuery = $invoiceQuery->where('esm_status', $request->esm_status);
+        }
+
+        // If $request has invoice_status
+        //TODO: This filter hasn't been clarified in the user stories. Once it is discussed it will be added
+
+        // Get locum invoices
+        $filteredInvoices = $invoiceQuery->where('locum', $authenticatedUser->id)
+            ->with(['locum.profile', 'session', 'location'])
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'locum-invoices' => $filteredInvoices,
+        ]);
+    }
+
+    // Fetch locum billing as a recruiter
+    public function fetchAllLocumBilling($request)
+    {
+        // Locum invoice query
+        $invoiceQuery = LocumInvoice::query();
+
+        // $request has location
+        if ($request->has('location')) {
+            // Get practice
+            $practice = Practice::findOrFail($request->location);
+
+            $invoiceQuery = $invoiceQuery->where('location', $practice->id);
+        }
+
+        // If request has role
+        if ($request->has('role')) {
+            // Get role
+            $role = Role::findOrFail($request->role);
+
+            $invoiceQuery = $invoiceQuery->whereHas('session', function ($q) use ($role) {
+                $q->where('role_id', $role->id);
+            });
+        }
+
+        // if $request has start_date
+        if ($request->has('start_date')) {
+            // Start Date
+            $startDate = Carbon::createFromFormat('Y-m-d', $request->start_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('start_date', $startDate);
+        }
+
+        // If $request has end_date
+        if ($request->has('end_date')) {
+            // End Date
+            $endDate = Carbon::createFromFormat('Y-m-d', $request->end_date);
+
+            $invoiceQuery = $invoiceQuery->whereDate('end_date', $endDate);
+        }
+
+        // If $request has rate
+        if ($request->has('rate')) {
+            // Parse rate
+            $rate = $request->rate;
+
+            $invoiceQuery = $invoiceQuery->where('rate', $rate);
+        }
+
+        // If request has esm_status
+        if ($request->has('esm_status')) {
+            $invoiceQuery = $invoiceQuery->where('esm_status', $request->esm_status);
+        }
+
+        // If $request has invoice_status
+        //TODO: This filter hasn't been clarified in the user stories. Once it is discussed it will be added
+
+        // Get locum invoices
+        $filteredInvoices = $invoiceQuery->with(['locum.profile', 'session', 'location'])
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'locum-invoices' => $filteredInvoices,
+        ]);
+    }
+
+    // Update ESM Status of Locum Invoice
+    public function updateEsmStatus($request)
+    {
+        // Get locum invoice
+        $locumInvoice = LocumInvoice::findOrFail($request->invoice);
+
+        // Update esm_status
+        $locumInvoice->esm_status = $request->esm_status;
+        $locumInvoice->save();
+
+        // Return success response
+        return Response::success([
+            'locum-invoice' => $locumInvoice,
+        ]);
+    }
+
+    // Blacklist Locum
+    public function addLocumToBlacklist($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Check if user is locum
+        if (!$user->isLocum()) {
+            throw new \Exception(ResponseMessage::customMessage('User should be a locum'));
+        }
+
+        if ($user->is_blacklisted === 1) {
+            throw new \Exception(ResponseMessage::customMessage('User is already blacklisted'));
+        }
+
+        // Blacklist user
+        $user->is_blacklisted = 1;
+        $user->blacklist_reason = $request->blacklist_reason;
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                    'locumNotes',
+                    'qualifications',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Remove from blacklist
+    public function removeLocumFromBlacklist($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->locum);
+
+        if (!$user->is_blacklisted) {
+            throw new \Exception(ResponseMessage::customMessage('User is not blaclisted'));
+        }
+
+        // Blacklist user
+        $user->is_blacklisted = 0;
+        $user->blacklist_reason = '';
+        $user->save();
+
+        // Return success response
+        return Response::success([
+            'user' => $user->where('id', $user->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                    'locumNotes',
+                    'qualifications',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Create note for locum (formerly known as privileges)
+    public function createLocumNote($request)
+    {
+        // Get locum
+        $locum = User::findOrFail($request->locum);
+
+        // Check if $locum->is_locum = true
+        if (!$locum->is_locum) {
+            throw new \Exception(ResponseMessage::customMessage('User must be a locum'));
+        }
+
+        // Cast $request->notes to array
+        $notes = $request->notes;
+
+        foreach ($notes as $note):
+
+            // Initiate instance of LocumNote
+            $locumNote = new LocumNote();
+            $locumNote->locum = $locum->id;
+            $locumNote->note = $note['note'];
+            $locumNote->save();
+
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'locum' => $locum->where('id', $locum->id)
+                ->with([
+                    'profile.applicant',
+                    'positionSummary',
+                    'contractSummary',
+                    'roles',
+                    'practices',
+                    'employmentCheck',
+                    'workPatterns.workTimings',
+                    'courses.modules.lessons',
+                    'locumNotes',
+                    'qualifications',
+                ])
+                ->first(),
+        ]);
+    }
+
+    // Update locum note
+    public function updateLocumNote($request)
+    {
+
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Update note
+        $locumNote->note = $request->note;
+        $locumNote->save();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
+        ]);
+    }
+
+    // Delete locum note
+    public function deleteLocumNote($request)
+    {
+        // Get locum note
+        $locumNote = LocumNote::findOrFail($request->locum_note);
+
+        // Delete locum note
+        $locumNote->delete();
+
+        // Return success response
+        return Response::success([
+            'locum-note' => $locumNote,
         ]);
     }
 }

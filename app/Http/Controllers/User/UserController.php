@@ -4,15 +4,23 @@ namespace App\Http\Controllers\User;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Locum\FetchLocumSessionsRequest;
+use App\Http\Requests\Locum\FetchSessionsByDayRequest;
+use App\Http\Requests\Locum\FetchSessionsByMonthRequest;
+use App\Http\Requests\Locum\UpdateUserLocumStatusRequest;
 use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
 use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
+use App\Http\Requests\User\FetchUserSessionInvitesByMonthRequest;
+use App\Http\Requests\User\FetchUserSessionInvitesRequest;
 use App\Http\Requests\User\FetchUsersRequest;
+use App\Http\Requests\User\FilterUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
 use App\Http\Requests\User\LessonProgressRequest;
 use App\Http\Requests\User\ModuleProgressRequest;
+use App\Http\Requests\User\SearchCandidateProfilesRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Models\User;
 use App\Services\User\UserService;
@@ -239,6 +247,125 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->fetchEmployees();
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Search Profiles
+    public function searchProfiles(SearchCandidateProfilesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->searchCandidateProfiles($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Make user as locum
+    public function updateLocumStatus(UpdateUserLocumStatusRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->updateUserLocumStatus($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    public function filter(FilterUsersRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->filterUsers($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch Invites
+    public function fetchUserInvites(FetchUserSessionInvitesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionInvites($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch My Locum Sessions
+    public function fetchMyLocumSessions(FetchLocumSessionsRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessions($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch my sessions by month
+    public function fetchMySessionsByMonth(FetchSessionsByMonthRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionsByMonth($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch my sessions by day
+    public function fetchMySessionsByDay(FetchSessionsByDayRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserSessionsByDay($request);
+
+        } catch (\Exception $e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch my session invites
+    public function fetchMySessionInvites(FetchUserSessionInvitesByMonthRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->getMySessionInvites($request);
 
         } catch (\Exception $e) {
             return Response::fail([

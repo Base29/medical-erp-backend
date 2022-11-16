@@ -18,6 +18,8 @@ use App\Models\InterviewSchedule;
 use App\Models\InterviewScore;
 use App\Models\Practice;
 use App\Models\User;
+use App\Notifications\Interview\InviteAdditionalStaffNotification;
+use App\Notifications\Interview\InviteHQStaffNotification;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -26,60 +28,116 @@ class InterviewService
     // Fetch all of practice's interviews
     public function fetchAllInterviews($request)
     {
-        if (!$request->is('api/hq/*')) {
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
 
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
-
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get $practice interviews
-            $interviews = InterviewSchedule::where('practice_id', $practice->id)
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-            // Get $practice interviews
-            $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
         }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
+        // Filtered Interviews
+        $interviews = $interviewsQuery->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
+
+        /**
+         * Count according to contract type
+         */
+
+        // Getting count of permanent contract
+        $permanent = $this->processCount('contract_type', 'permanent');
+
+        // Getting count of fixed term contract
+        $fixedTerm = $this->processCount('contract_type', 'fixed-term');
+
+        // Getting count of casual contract
+        $casual = $this->processCount('contract_type', 'casual');
+
+        // Getting count of zero hour contract
+        $zeroHour = $this->processCount('contract_type', 'zero-hour');
+
+        $countByContractType = collect(['count' => [
+            'permanent' => $permanent,
+            'fixed-term' => $fixedTerm,
+            'casual' => $casual,
+            'zero-hour' => $zeroHour,
+        ]]);
+
+        $interviewsWithCount = $countByContractType->merge($interviews);
 
         // Return success response
         return Response::success([
-            'interviews' => $interviews,
+            'interviews' => $interviewsWithCount,
         ]);
     }
 
     // Fetch interview schedules for a practice
     public function fetchUpcomingInterviewSchedules($request)
     {
-        if (!$request->is('api/hq/*')) {
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
-            }
 
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
 
-            // Get $practice interview schedules
-            $interviewSchedules = InterviewSchedule::where('practice_id', $practice->id)
-                ->where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
-        } else {
-            // Get $practice interview schedules
-            $interviewSchedules = InterviewSchedule::where('date', '>', Carbon::now())
-                ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
-                ->latest()
-                ->paginate(10);
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
         }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
+        $interviewSchedules = $interviewsQuery->where('date', '>', Carbon::now())
+            ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([
@@ -95,6 +153,39 @@ class InterviewService
 
         // Get user
         $user = User::findOrFail($request->user);
+
+        // Check if $user has already 2 interviews
+        if ($user->interviewSchedules->count() === 2) {
+            throw new \Exception(ResponseMessage::customMessage('User already have first and second interview'));
+        }
+
+        // Check if $user doesn't have any interviews. Creating a second interview should not be allowed
+        if ($request->application_status === 'second-interview') {
+            if ($user->interviewSchedules->isEmpty()) {
+                throw new \Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'));
+            }
+        }
+
+        // Check if the users has a first interview
+        if ($request->application_status == 'first-interview') {
+
+            if (!$user->interviewSchedules->isEmpty()) {
+
+                if (isset($user->interviewSchedules[0])) {
+                    throw new \Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'));
+                }
+
+            }
+        }
+
+        // Check if the first interview is completed
+        if (isset($user->interviewSchedules[0])) {
+
+            if (!$user->interviewSchedules[0]->is_completed) {
+                throw new \Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'));
+            }
+        }
+
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
 
@@ -128,13 +219,71 @@ class InterviewService
         // Attach Interview Policy
         $interviewSchedule->interviewPolicies()->attach($interviewPolicy->id);
 
-        // Return success response
-        return Response::success([
-            'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
-                ->latest()
-                ->first(),
-        ]);
+        // Send notifications to additional staff if invited
+        if (!empty($interviewSchedule->additional_staff) && !is_null($interviewSchedule->additional_staff)) {
+            // Get info for additional staff
+            $additionalStaff = User::findOrFail($interviewSchedule->additional_staff);
 
+            // Notify
+            $additionalStaff->notify(new InviteAdditionalStaffNotification(
+                $additionalStaff,
+                $interviewSchedule,
+                $hiringRequest
+            ));
+        }
+
+        // Send notification to HQ staff if invited
+        if (!empty($interviewSchedule->hq_staff) && !is_null($interviewSchedule->hq_staff)) {
+            // Get info for hq staff
+            $hqStaff = User::findOrFall($interviewSchedule->hq_staff);
+
+            // Notify
+            $hqStaff->notify(new InviteHQStaffNotification(
+                $hqStaff,
+                $hiringRequest,
+                $interviewSchedule
+            ));
+
+        }
+
+        // Return success response
+
+        // Incase of second interview
+        if ($interviewSchedule->application_status === 'second-interview'):
+
+            // Get the id of the first interview
+            $firstInterview = $user->interviewSchedules[0]->id;
+
+            // Get misc info first interview
+            $firstInterviewMiscInfo = InterviewMiscInfo::where('interview', $firstInterview)->firstOrFail();
+
+            // Get first interview score
+            $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
+
+            // Cast $interviewSchedule to $secondInterviewSchedule variable
+            $secondInterviewSchedule = $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
+                ->latest()
+                ->first();
+
+            // Converting to array
+            $secondInterviewScheduleWithAdditionalData = $secondInterviewSchedule->toArray();
+
+            // Inserting additional data from the first interview
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['misc_info'] = $firstInterviewMiscInfo;
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
+
+            return Response::success([
+                'interview-schedule' => $secondInterviewScheduleWithAdditionalData,
+            ]);
+
+        else:
+            // Incase of first interview
+            return Response::success([
+                'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
+                    ->latest()
+                    ->first(),
+            ]);
+        endif;
     }
 
     // Update interview
@@ -176,8 +325,41 @@ class InterviewService
     public function fetchPastInterviews($request)
     {
 
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
+
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
+        }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
         // Get past interview schedules
-        $interviewSchedules = InterviewSchedule::where('is_completed', 1)
+        $interviewSchedules = $interviewsQuery->where('is_completed', 1)
             ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
@@ -322,6 +504,7 @@ class InterviewService
             $candidateQuestion = new CandidateQuestion();
             $candidateQuestion->interview = $interviewSchedule->id;
             $candidateQuestion->question = $question['question'];
+            $candidateQuestion->answer = $question['answer'];
             $candidateQuestion->save();
         }
 
@@ -333,17 +516,65 @@ class InterviewService
     // Fetch single interview
     public function fetchSingleInterview($request)
     {
-        // Check if $request->user is available
-        if ($request->has('user')) {
+        // Get interview with $request->user answers
+        $interviewSchedule = InterviewSchedule::where('id', $request->interview)->firstOrFail();
 
-            // Get interview with $request->user answers
-            $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-                ->with([
+        // Return success response
+        // In case of 2nd interview
+        if ($interviewSchedule->application_status === 'second-interview'):
+
+            // Get user
+            $user = User::findOrFail($interviewSchedule->user_id);
+
+            // Get the id of the first interview
+            $firstInterview = $user->interviewSchedules[0]->id;
+
+            // Get misc info first interview
+            $firstInterviewMiscInfo = InterviewMiscInfo::where('interview', $firstInterview)->firstOrFail();
+
+            // Get first interview score
+            $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
+
+            // Cast $interviewSchedule to $secondInterviewSchedule variable
+            $secondInterviewSchedule = $interviewSchedule->with([
+                'user.profile',
+                'user.education',
+                'user.employmentHistories',
+                'hiringRequest',
+                'interviewPolicies.questions.options',
+                'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
+                    $q->where('interview', $request->interview);
+                },
+                'practice',
+                'candidateQuestions',
+                'adhocQuestions',
+                'interviewMiscInfo',
+                'interviewScore',
+            ])
+                ->latest()
+                ->first();
+
+            // Converting to array
+            $secondInterviewScheduleWithAdditionalData = $secondInterviewSchedule->toArray();
+
+            // Inserting additional data from the first interview
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['misc_info'] = $firstInterviewMiscInfo;
+            $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
+
+            return Response::success([
+                'interview' => $secondInterviewScheduleWithAdditionalData,
+            ]);
+        else:
+
+            return Response::success([
+                'interview' => $interviewSchedule->with([
                     'user.profile',
+                    'user.education',
+                    'user.employmentHistories',
                     'hiringRequest',
                     'interviewPolicies.questions.options',
                     'interviewPolicies.questions.interviewAnswers' => function ($q) use ($request) {
-                        $q->where('user', $request->user);
+                        $q->where('interview', $request->interview);
                     },
                     'practice',
                     'candidateQuestions',
@@ -351,27 +582,9 @@ class InterviewService
                     'interviewMiscInfo',
                     'interviewScore',
                 ])
-                ->firstOrFail();
-        } else {
-            // Get interview
-            $interviewSchedule = InterviewSchedule::where('id', $request->interview)
-                ->with([
-                    'user.profile',
-                    'hiringRequest',
-                    'interviewPolicies.questions.options',
-                    'practice',
-                    'candidateQuestions',
-                    'adhocQuestions',
-                    'interviewMiscInfo',
-                    'interviewScore',
-                ])
-                ->firstOrFail();
-        }
-
-        // Return success response
-        return Response::success([
-            'interview' => $interviewSchedule,
-        ]);
+                    ->first(),
+            ]);
+        endif;
     }
 
     // Fetch adhoc questions
@@ -495,10 +708,43 @@ class InterviewService
     }
 
     // Get All interviews
-    public function getAllInterviews()
+    public function getAllInterviews($request)
     {
+        // Init query builder for InterviewSchedule
+        $interviewsQuery = InterviewSchedule::query();
+
+        // Check if $request has application_status
+        if ($request->has('application_status')) {
+            // Fetch interviews filtered by application_status ['first-interview', 'second-interview']
+            $interviewsQuery = $interviewsQuery->where('application_status', $request->application_status);
+        }
+
+        // Check if $request has is_completed
+        if ($request->has('is_completed')) {
+            // Fetch interviews filtered by is_completed
+            $interviewsQuery = $interviewsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Check if $request has practice
+        if ($request->has('practice')) {
+            // Fetch interviews filtered by practice
+            $interviewsQuery = $interviewsQuery->where('practice_id', $request->practice);
+        }
+
+        // Check if $request has department
+        if ($request->has('department')) {
+            // Fetch interviews filtered by department
+            $interviewsQuery = $interviewsQuery->where('department_id', $request->department);
+        }
+
+        // Check if $request has interview_type
+        if ($request->has('interview_type')) {
+            // Fetch interviews filtered by interview_type
+            $interviewsQuery = $interviewsQuery->where('interview_type', $request->interview_type);
+        }
+
         // Get all interviews
-        $interviews = InterviewSchedule::with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
+        $interviews = $interviewsQuery->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
 
@@ -507,4 +753,13 @@ class InterviewService
             'interviews' => $interviews,
         ]);
     }
+
+    // Processing count by contract type
+    public function processCount($column, $value)
+    {
+        return InterviewSchedule::whereHas('hiringRequest', function ($q) use ($column, $value) {
+            $q->where($column, $value);
+        })->count();
+    }
+
 }

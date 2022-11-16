@@ -213,9 +213,9 @@ class User extends Authenticatable implements JWTSubject
         return $alreadyHasInductionSchedule;
     }
 
-    public function interviewSchedule()
+    public function interviewSchedules()
     {
-        return $this->hasOne(InterviewSchedule::class);
+        return $this->hasMany(InterviewSchedule::class);
     }
 
     public function offer()
@@ -297,5 +297,39 @@ class User extends Authenticatable implements JWTSubject
     public function interviewAnswers()
     {
         return $this->hasMany(InterviewAnswer::class);
+    }
+
+    public function sessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function createdSessionInvites()
+    {
+        return $this->hasMany(LocumSessionInvite::class);
+    }
+
+    public function isLocum()
+    {
+        if ($this->is_locum) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public function locumInvoices()
+    {
+        return $this->hasMany(LocumInvoice::class);
+    }
+
+    public function locumNotes()
+    {
+        return $this->hasMany(LocumNote::class, 'locum', 'id');
+    }
+
+    public function qualifications()
+    {
+        return $this->hasMany(Qualification::class, 'user', 'id');
     }
 }
