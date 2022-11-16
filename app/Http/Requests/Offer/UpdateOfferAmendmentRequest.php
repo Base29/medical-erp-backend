@@ -30,7 +30,11 @@ class UpdateOfferAmendmentRequest extends FormRequest
             'offer_amendment' => 'required|numeric|exists:offer_amendments,id',
             'status' => [
                 'required',
-                Rule::in(['accepted', 'declined']),
+                Rule::in([
+                    0, // Rejected/Declined
+                    1, // Accepted
+                    2, // Negotiating
+                ]),
             ],
         ];
     }

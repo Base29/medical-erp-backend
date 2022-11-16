@@ -37,7 +37,7 @@ class OfferService
         $offer->practice_id = $practice->id;
         $offer->user_id = $user->id;
         $offer->work_pattern_id = $workPattern->id;
-        $offer->status = $request->status;
+        $offer->status = 2;
         $offer->amount = $request->amount;
 
         // Save offer
@@ -136,11 +136,11 @@ class OfferService
         $offerAmendment->offer = $offer->id;
         $offerAmendment->work_pattern = $offer->work_pattern_id;
         $offerAmendment->amount = $request->amount;
-        $offerAmendment->status = 'in-negotiation';
+        $offerAmendment->status = 2;
         $offerAmendment->save();
 
         // Change te status of the original offer to "revised"
-        $offer->status = 'revised';
+        $offer->status = 3;
         $offer->save();
 
         // Return success response

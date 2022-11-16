@@ -33,7 +33,12 @@ class CreateOfferRequest extends FormRequest
             'work_pattern' => 'required|numeric|exists:work_patterns,id',
             'status' => [
                 'required',
-                Rule::in(['made', 'accepted', 'declined', 'revised']),
+                Rule::in([
+                    0, // Rejected/Declined
+                    1, // Accepted
+                    2, // Made
+                    3, // Revised/Amended
+                ]),
             ],
             'amount' => 'required|string|max:10',
         ];
