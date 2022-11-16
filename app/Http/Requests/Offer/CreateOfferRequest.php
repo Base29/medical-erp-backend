@@ -32,7 +32,7 @@ class CreateOfferRequest extends FormRequest
             'user' => 'required|numeric|exists:users,id',
             'work_pattern' => 'required|numeric|exists:work_patterns,id',
             'status' => [
-                'required',
+                'nullable',
                 Rule::in([
                     0, // Rejected/Declined
                     1, // Accepted
@@ -40,14 +40,15 @@ class CreateOfferRequest extends FormRequest
                     3, // Revised/Amended
                 ]),
             ],
-            'amount' => 'required|string|max:10',
+            'amount' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
         ];
     }
 
     public function messages()
     {
         return [
-            'status.in' => 'The :attribute is invalid. :attribute can only be made|accepted|declined|revised',
+            'status.in' => 'The :attribute is invalid. :attribute can only be 0 => declined | 1 => accepted | 2 => made | 3 => revised',
+            'amount.regex' => 'The amount should be in decimal 0.00',
         ];
     }
 

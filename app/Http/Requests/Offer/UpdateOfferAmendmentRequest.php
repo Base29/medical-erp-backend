@@ -39,6 +39,13 @@ class UpdateOfferAmendmentRequest extends FormRequest
         ];
     }
 
+    public function messages()
+    {
+        return [
+            'status.in' => 'The :attribute is invalid. :attribute can only be 0 => declined | 1 => accepted | 2 => negotiating',
+        ];
+    }
+
     public function failedValidation($validator)
     {
         throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));

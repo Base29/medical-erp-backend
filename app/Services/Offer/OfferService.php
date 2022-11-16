@@ -129,7 +129,10 @@ class OfferService
         // Get latest amendment from $offerAmendments
         $latestAmendment = end($offerAmendments);
 
-        dd('Incomplete logic here');
+        // Check if previous amendment has been rejected/declined
+        if ($latestAmendment['status'] !== 0) {
+            throw new \Exception(ResponseMessage::customMessage('Please Reject/Decline the previous amendment in order to create a new one.'));
+        }
 
         // Create amendment for $offer
         $offerAmendment = new OfferAmendment();
