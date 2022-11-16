@@ -3,7 +3,6 @@ namespace App\Services\Department;
 
 use App\Helpers\Response;
 use App\Models\Department;
-use App\Models\HiringRequest;
 use App\Models\Practice;
 use App\Models\User;
 
@@ -87,7 +86,10 @@ class DepartmentService
     {
         // Get department
         $department = Department::where('id', $request->department)
-            ->with('practice', 'departmentHead.profile', 'users.profile', 'users.positionSummary')
+            ->with(['practice', 'departmentHead.profile', 'users.profile', 'users.positionSummary', 'users' => function ($q) {
+                // Filtering only hired users
+                $q->where('is_hired', 1);
+            }])
             ->firstOrFail();
 
         $result = $department->toArray();
@@ -118,8 +120,12 @@ class DepartmentService
     // Process count
     private function processCount($departmentId = null, $column, $value)
     {
-
-        return HiringRequest::where(['department_id' => $departmentId, $column => $value])->count();
+        // Get hired user's within a department and according to contract type
+        return User::whereHas('profile', function ($q) use ($departmentId, $column, $value) {
+            $q->whereHas('hiringRequest', function ($q) use ($departmentId, $column, $value) {
+                $q->where(['department_id' => $departmentId, $column => $value]);
+            });
+        })->where('is_hired', 1)->count();
 
     }
 }
