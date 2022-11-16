@@ -1021,6 +1021,11 @@ class UserService
             });
         }
 
+        // If $request has applicant_status
+        if ($request->has('applicant_status')) {
+            $usersQuery = $usersQuery->where('applicant_status', $request->applicant_status);
+        }
+
         $filteredUsers = $usersQuery->with([
             'profile.applicant',
             'positionSummary',
@@ -1035,6 +1040,8 @@ class UserService
             'locumSessions' => function ($q) {
                 $q->latest();
             },
+            'interviewSchedules.interviewMiscInfo',
+            'interviewSchedules.interviewScore',
         ])
             ->latest()
             ->paginate(10);

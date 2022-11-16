@@ -42,4 +42,9 @@ class Offer extends Model
     {
         return $this->belongsTo(WorkPattern::class);
     }
+
+    public function amendments()
+    {
+        return $this->hasMany(OfferAmendment::class, 'offer', 'id');
+    }
 }

@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Offer\CreateOfferRequest;
 use App\Http\Requests\Offer\DeleteOfferRequest;
 use App\Http\Requests\Offer\FetchSingleOfferRequest;
+use App\Http\Requests\Offer\OfferAmendmentRequest;
+use App\Http\Requests\Offer\UpdateOfferAmendmentRequest;
 use App\Http\Requests\Offer\UpdateOfferRequest;
 use App\Services\Offer\OfferService;
 
@@ -29,7 +31,7 @@ class OfferController extends Controller
             // Create offer service
             return $this->offerService->createOffer($request);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),
@@ -44,7 +46,7 @@ class OfferController extends Controller
             // Update offer service
             return $this->offerService->updateOffer($request);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),
@@ -59,7 +61,7 @@ class OfferController extends Controller
             // Delete offer service
             return $this->offerService->deleteOffer($request);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),
@@ -74,7 +76,37 @@ class OfferController extends Controller
             // Fetch single offer service
             return $this->offerService->fetchSingleOffer($request);
 
-        } catch (\Exception $e) {
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Amend Offer
+    public function amendOffer(OfferAmendmentRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->offerService->amendHiringRequestOffer($request);
+
+        } catch (\Exception$e) {
+            return Response::fail([
+                'code' => 400,
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update amendment
+    public function updateAmendment(UpdateOfferAmendmentRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->offerService->updateOfferAmendment($request);
+
+        } catch (\Exception$e) {
             return Response::fail([
                 'code' => 400,
                 'message' => $e->getMessage(),

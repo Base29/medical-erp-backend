@@ -606,23 +606,6 @@ Route::middleware(['auth:api'])->group(function () {
                 ->middleware(['permission:can_search_hiring_requests|can_manage_hiring_requests']);
         });
 
-        Route::prefix('offers')->group(function () {
-            Route::post('create', [OfferController::class, 'create'])
-                ->middleware(['permission:can_create_offer|can_manage_offers']);
-
-            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
-                ->middleware(['permission:can_fetch_offers|can_manage_offers']);
-
-            Route::post('update', [OfferController::class, 'update'])
-                ->middleware(['permission:can_update_offer|can_manage_offers']);
-
-            Route::post('delete', [OfferController::class, 'delete'])
-                ->middleware(['permission:can_delete_offer|can_manage_offers']);
-
-            Route::post('offer', [OfferController::class, 'fetchSingle'])
-                ->middleware(['permission:can_fetch_single_offer|can_manage_offers']);
-        });
-
         Route::prefix('interviews')->group(function () {
             Route::post('up-coming', [InterviewController::class, 'upcomingInterviews'])
                 ->middleware(['permission:can_fetch_upcoming_interviews|can_manage_interview']);
@@ -632,6 +615,13 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('interview', [InterviewController::class, 'singleInterview'])
                 ->middleware(['permission:can_manage_interview']);
+        });
+
+        // Routes for offer
+        Route::prefix('offers')->group(function () {
+
+            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
+                ->middleware(['permission:can_fetch_offers|can_manage_offers']);
         });
 
     });
@@ -831,6 +821,33 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('filter', [HiringRequestController::class, 'search'])
                 ->middleware(['permission:can_manage_hiring_requests']);
         });
+
+        // Routes for offer
+        Route::prefix('offers')->group(function () {
+            Route::post('create', [OfferController::class, 'create'])
+                ->middleware(['permission:can_create_offer|can_manage_offers']);
+
+            Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
+                ->middleware(['permission:can_fetch_offers|can_manage_offers']);
+
+            Route::post('update', [OfferController::class, 'update'])
+                ->middleware(['permission:can_update_offer|can_manage_offers']);
+
+            Route::post('delete', [OfferController::class, 'delete'])
+                ->middleware(['permission:can_delete_offer|can_manage_offers']);
+
+            Route::post('offer', [OfferController::class, 'fetchSingle'])
+                ->middleware(['permission:can_fetch_single_offer|can_manage_offers']);
+
+            Route::prefix('amendments')->group(function () {
+                Route::post('create', [OfferController::class, 'amendOffer'])
+                    ->middleware(['permission:can_manage_offer']);
+
+                Route::post('update', [OfferController::class, 'updateAmendment'])
+                    ->middleware(['permission:can_manage_offer']);
+            });
+        });
+
     });
 
     // Routes for US

@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
 use App\Models\Offer;
+use App\Models\OfferAmendment;
 use App\Models\Practice;
 use App\Models\User;
 use App\Models\WorkPattern;
@@ -36,7 +37,7 @@ class OfferService
         $offer->practice_id = $practice->id;
         $offer->user_id = $user->id;
         $offer->work_pattern_id = $workPattern->id;
-        $offer->status = $request->status;
+        $offer->status = 2;
         $offer->amount = $request->amount;
 
         // Save offer
@@ -114,5 +115,64 @@ class OfferService
             'offer' => $offer,
         ]);
 
+    }
+
+    // Amend offer
+    public function amendHiringRequestOffer($request)
+    {
+        // Get Original offer
+        $offer = Offer::findOrFail($request->offer);
+
+        // Get all amendments of $offer
+        $offerAmendments = $offer->amendments->toArray();
+
+        if (!empty($offerAmendments)) {
+            // Get latest amendment from $offerAmendments
+            $latestAmendment = end($offerAmendments);
+
+            // Check if the previous amendment is accepted
+            if ($latestAmendment['status'] === 1) {
+                throw new \Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
+            }
+
+            // Check if previous amendment has been rejected/declined
+            if ($latestAmendment['status'] !== 0) {
+                throw new \Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+            }
+        }
+
+        // Create amendment for $offer
+        $offerAmendment = new OfferAmendment();
+        $offerAmendment->offer = $offer->id;
+        $offerAmendment->work_pattern = $offer->work_pattern_id;
+        $offerAmendment->amount = $request->amount;
+        $offerAmendment->status = 2;
+        $offerAmendment->save();
+
+        // Change te status of the original offer to "revised"
+        $offer->status = 3;
+        $offer->save();
+
+        // Return success response
+        return Response::success([
+            'offer' => $offer->where('id', $offer->id)->with('amendments')->first(),
+        ]);
+
+    }
+
+    // Update offer amendment
+    public function updateOfferAmendment($request)
+    {
+        // Get Offer amendment
+        $offerAmendment = OfferAmendment::findOrFail($request->amendment);
+
+        // Update status of the offer amendment
+        $offerAmendment->status = $request->status;
+        $offerAmendment->save();
+
+        // Return success response
+        return Response::success([
+            'offer-amendment' => $offerAmendment->latest('updated_at')->first(),
+        ]);
     }
 }

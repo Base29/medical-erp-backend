@@ -292,9 +292,15 @@ class InterviewService
         // Get interview schedule
         $interviewSchedule = InterviewSchedule::findOrFail($request->interview);
 
-        // // Update is_completed field for $interviewSchedule
-        // $interviewSchedule->is_completed = $request->is_completed;
-        // $interviewSchedule->save();
+        // Check if $request has applicant_status
+        if ($request->has('applicant_status')) {
+            // Get user from $interviewSchedule
+            $user = User::findOrFail($interviewSchedule->user_id);
+
+            // Update $user applicant_status according to $interviewSchedule' applicant_status
+            $user->applicant_status = $request->applicant_status;
+            $user->save();
+        }
 
         UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');
 
