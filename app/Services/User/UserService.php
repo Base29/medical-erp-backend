@@ -292,7 +292,9 @@ class UserService
                 'employmentCheck',
                 'workPatterns.workTimings',
                 'locumNotes',
-                'qualifications'
+                'qualifications',
+                'interviewSchedules.interviewMiscInfo',
+                'interviewSchedules.interviewScore'
             )
                 ->latest()
                 ->paginate($request->per_page ? $request->per_page : 10);
