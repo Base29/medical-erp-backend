@@ -20,7 +20,12 @@ class CreateOfferAmendmentsTable extends Migration
                 ->on('offers')
                 ->constrained()
                 ->cascadeOnDelete();
-            $table->string('amount')->nullable();
+            $table->foreignId('work_pattern')
+                ->references('id')
+                ->on('work_patterns')
+                ->constrained()
+                ->cascadeOnDelete();
+            $table->decimal('amount', 5, 2)->nullable();
             $table->string('status')->nullable();
             $table->softDeletes();
             $table->timestamps();

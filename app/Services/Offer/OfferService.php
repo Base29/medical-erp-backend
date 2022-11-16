@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\HiringRequest;
 use App\Models\Offer;
+use App\Models\OfferAmendment;
 use App\Models\Practice;
 use App\Models\User;
 use App\Models\WorkPattern;
@@ -112,6 +113,39 @@ class OfferService
         // Return success response
         return Response::success([
             'offer' => $offer,
+        ]);
+
+    }
+
+    // Amend offer
+    public function amendHiringRequestOffer($request)
+    {
+        // Get Original offer
+        $offer = Offer::findOrFail($request->offer);
+
+        // Get all amendments of $offer
+        $offerAmendments = $offer->amendments->toArray();
+
+        // Get latest amendment from $offerAmendments
+        $latestAmendment = end($offerAmendments);
+
+        dd('Incomplete logic here');
+
+        // Create amendment for $offer
+        $offerAmendment = new OfferAmendment();
+        $offerAmendment->offer = $offer->id;
+        $offerAmendment->work_pattern = $offer->work_pattern_id;
+        $offerAmendment->amount = $request->amount;
+        $offerAmendment->status = 'in-negotiation';
+        $offerAmendment->save();
+
+        // Change te status of the original offer to "revised"
+        $offer->status = 'revised';
+        $offer->save();
+
+        // Return success response
+        return Response::success([
+            'offer' => $offer->where('id', $offer->id)->with('amendments')->first(),
         ]);
 
     }

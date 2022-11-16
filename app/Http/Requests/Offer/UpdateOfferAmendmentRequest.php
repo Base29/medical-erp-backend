@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Locum;
+namespace App\Http\Requests\Offer;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class CreateLocumSessionRequest extends FormRequest
+class UpdateOfferAmendmentRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,20 +22,16 @@ class CreateLocumSessionRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
-            'role' => 'required|numeric|exists:roles,id',
-            'name' => 'required|string',
-            'start_date' => 'required|date|date_format:Y-m-d',
-            'end_date' => 'required|date|date_format:Y-m-d',
-            'start_time' => 'required|date_format:H:i',
-            'end_time' => 'required|date_format:H:i',
-            'rate' => ['required', 'regex:/^\d+\.\d\d$/'],
-            'unit' => ['required', Rule::in(['hourly', 'session'])],
+            'offer_amendment' => 'required|numeric|exists:offer_amendments,id',
+            'status' => [
+                'required',
+                Rule::in(['accepted', 'declined']),
+            ],
         ];
     }
 

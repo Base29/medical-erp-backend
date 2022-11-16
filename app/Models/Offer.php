@@ -45,6 +45,6 @@ class Offer extends Model
 
     public function amendments()
     {
-        return $this->hasMany(OfferAmendment::class);
+        return $this->hasMany(OfferAmendment::class, 'offer', 'id');
     }
 }
