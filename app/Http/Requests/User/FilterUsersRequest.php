@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class FilterUsersRequest extends FormRequest
@@ -38,6 +39,14 @@ class FilterUsersRequest extends FormRequest
             'roles' => 'nullable|array',
             'locations' => 'nullable|array',
             'is_blacklisted' => 'nullable|boolean',
+            'applicant_status' => [
+                'nullable',
+                Rule::in([
+                    0, // Rejected
+                    1, // Accepted
+                    2, // Referred for 2nd Interview
+                ]),
+            ],
         ];
     }
 
