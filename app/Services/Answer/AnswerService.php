@@ -66,7 +66,7 @@ class AnswerService
         $answer = Answer::findOrFail($id);
 
         if (!$answer) {
-            throw new Exception(ResponseMessage::notFound('Answer', $id, false));
+            throw new Exception(ResponseMessage::notFound('Answer', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Check if the user updating the answer is the author of the answer

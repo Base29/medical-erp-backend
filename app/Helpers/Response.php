@@ -17,7 +17,12 @@ class Response extends HttpResponse
     // Send Success Response
     public static function success($args)
     {
-        return response(self::responseData($args, 'success'), self::HTTP_OK);
+        // Checking if the required args (message & code) are passed where the Response::fail() method is used
+        if (!Arr::has($args, 'code')) {
+            throw new ResponseException('Argument code is missing for the Response::success() method.');
+        }
+
+        return response(self::responseData($args, 'success'), $args['code']);
     }
 
     // Send Failed Response

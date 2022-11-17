@@ -9,6 +9,7 @@ use App\Http\Requests\Answer\CreateAnswerRequest;
 use App\Http\Requests\Answer\FetchAnswersRequest;
 use App\Http\Requests\Answer\UpdateAnswerRequest;
 use App\Services\Answer\AnswerService;
+use Exception;
 
 class AnswerController extends Controller
 {
@@ -30,12 +31,15 @@ class AnswerController extends Controller
             $answer = $this->answerService->createAnswer($request);
 
             // Return response
-            return Response::success(['answer' => $answer->with('user')->latest('id')->first()]);
+            return Response::success([
+                'code' => Response::HTTP_CREATED,
+                'answer' => $answer->with('user')->latest('id')->first(),
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -51,9 +55,9 @@ class AnswerController extends Controller
             // Return success response
             return Response::success(['post_answers' => $answers]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -72,9 +76,9 @@ class AnswerController extends Controller
                 'answer' => $answer,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -90,9 +94,9 @@ class AnswerController extends Controller
             // Return success response
             return Response::success(['message' => ResponseMessage::deleteSuccess('Answer')]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
