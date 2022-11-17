@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\AuthenticateUserRequest;
 use App\Http\Requests\Auth\ResetPasswordLinkRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Services\Auth\AuthService;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -32,9 +33,10 @@ class AuthController extends Controller
             // Return response
             return Response::success(['user' => $user]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
+
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -58,10 +60,10 @@ class AuthController extends Controller
 
             return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,10 +79,10 @@ class AuthController extends Controller
 
             return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -96,10 +98,10 @@ class AuthController extends Controller
 
             return Response::success(['user' => $userWithToken]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

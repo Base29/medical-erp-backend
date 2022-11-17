@@ -8,14 +8,16 @@
 namespace App\Helpers;
 
 use App\Exceptions\ResponseException;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Arr;
 
-class Response
+class Response extends HttpResponse
 {
+
     // Send Success Response
     public static function success($args)
     {
-        return response(self::responseData($args, 'success'), 200);
+        return response(self::responseData($args, 'success'), self::HTTP_OK);
     }
 
     // Send Failed Response
