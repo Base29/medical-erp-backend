@@ -24,4 +24,9 @@ class Applicant extends User
     {
         return $this->hasOne(Profile::class, 'user_id', 'user_id');
     }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class, 'user_id', 'user_id');
+    }
 }
