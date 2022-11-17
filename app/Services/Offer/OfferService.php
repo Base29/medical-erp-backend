@@ -25,6 +25,21 @@ class OfferService
         // Get user
         $user = User::findOrFail($request->user);
 
+        // Check if $user applicant_status = NULL
+        if ($user->applicant_status === null) {
+            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Status of the applicant is not updated'));
+        }
+
+        // Check if $user applicant_status = 0
+        if ($user->applicant_status === 0) {
+            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'));
+        }
+
+        // Check if $user applicant_status = 2
+        if ($user->applicant_status === 2) {
+            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'));
+        }
+
         // Get work pattern
         $workPattern = WorkPattern::findOrFail($request->work_pattern);
 
