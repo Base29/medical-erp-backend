@@ -38,6 +38,8 @@ class CreateOfferRequest extends FormRequest
                     1, // Accepted
                     2, // Made
                     3, // Revised/Amended
+                    4, // Pending
+                    5, // Discarded
                 ]),
             ],
             'amount' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',

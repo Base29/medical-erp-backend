@@ -3,12 +3,11 @@
 namespace App\Models;
 
 use App\Models\HiringRequest;
-use App\Models\Profile;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Applicant extends Model
+class Applicant extends User
 {
     use HasFactory, SoftDeletes;
 
@@ -22,8 +21,4 @@ class Applicant extends Model
         return $this->belongsTo(HiringRequest::class, 'hiring_request_id', 'id');
     }
 
-    public function profile()
-    {
-        return $this->hasOne(Profile::class, 'user_id', 'user_id');
-    }
 }
