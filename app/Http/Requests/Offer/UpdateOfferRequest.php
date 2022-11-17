@@ -35,6 +35,8 @@ class UpdateOfferRequest extends FormRequest
                     1, // Accepted
                     2, // Made
                     3, // Revised/Amended
+                    4, // Pending
+                    5, // Discarded
                 ]),
             ],
             'amount' => 'nullable|string|max:10',

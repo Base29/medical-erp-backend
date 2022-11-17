@@ -84,23 +84,27 @@ class HeadQuarterService
             ->latest()
             ->paginate(10);
 
-        // Getting count of permanent contract
-        $made = $this->processCount('made');
+        // Getting count of made offers
+        $made = $this->processCount(2);
 
-        // Getting count of fixed term contract
-        $accepted = $this->processCount('accepted');
+        // Getting count of accepted
+        $accepted = $this->processCount(1);
 
-        // Getting count of casual contract
-        $pending = $this->processCount('pending');
+        // Getting count of pending
+        $pending = $this->processCount(4);
 
-        // Getting count of zero hour contract
-        $declined = $this->processCount('declined');
+        // Getting count of declined
+        $declined = $this->processCount(0);
+
+        // Getting count of revised offers
+        $revised = $this->processCount(3);
 
         $countByStatus = collect(['count' => [
             'made' => $made,
             'accepted' => $accepted,
             'pending' => $pending,
             'declined' => $declined,
+            'revised' => $revised,
         ]]);
 
         $offersWithCount = $countByStatus->merge($offers);
