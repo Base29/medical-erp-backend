@@ -185,6 +185,11 @@ class OfferService
         $offerAmendment->status = $request->status;
         $offerAmendment->save();
 
+        // Update status of $offerAmendment->offer to accepted if the $offerAmendment if accepted
+        $offer = Offer::findOrFail($offerAmendment->offer);
+        $offer->status = 1;
+        $offer->save();
+
         // Return success response
         return Response::success([
             'offer-amendment' => $offerAmendment->latest('updated_at')->first(),
