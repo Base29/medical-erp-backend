@@ -10,6 +10,7 @@ use App\Models\OfferAmendment;
 use App\Models\Practice;
 use App\Models\User;
 use App\Models\WorkPattern;
+use Exception;
 
 class OfferService
 {
@@ -27,26 +28,33 @@ class OfferService
 
         // Check if $user applicant_status = NULL
         if ($user->applicant_status === null) {
-            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Status of the applicant is not updated'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Status of the applicant is not updated'));
         }
 
         // Check if $user applicant_status = 0
         if ($user->applicant_status === 0) {
-            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'));
         }
 
         // Check if $user applicant_status = 2
         if ($user->applicant_status === 2) {
-            throw new \Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'));
         }
 
         // Get work pattern
         $workPattern = WorkPattern::findOrFail($request->work_pattern);
 
-        // Check if user already has a offer
-        if ($hiringRequest->alreadyHasOffer($user->id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already has a offer for vacancy ' . $hiringRequest->id));
+        // Cast $user->offers array to variable
+        $userOffers = $user->offers->toArray();
+
+        // Get applicant's latest offer
+        $userLatestOffer = end($userOffers);
+
+        // Check if $userLatestOffer is discarded
+        if ($userLatestOffer['status'] !== 5) {
+            throw new Exception('Applicant already have a active offer.');
         }
+
         // Instance of Offer
         $offer = new Offer();
         $offer->practice_id = $practice->id;
@@ -78,7 +86,7 @@ class OfferService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields));
         }
 
         // Get offer
@@ -91,7 +99,7 @@ class OfferService
         $offerUpdated = UpdateService::updateModel($offer, $request->validated(), 'offer');
 
         if (!$offerUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id));
         }
 
         // Return success response
@@ -147,12 +155,12 @@ class OfferService
 
             // Check if the previous amendment is accepted
             if ($latestAmendment['status'] === 1) {
-                throw new \Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
+                throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
             }
 
             // Check if previous amendment has been rejected/declined
             if ($latestAmendment['status'] !== 0) {
-                throw new \Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+                throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
             }
         }
 

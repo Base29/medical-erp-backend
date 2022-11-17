@@ -127,7 +127,7 @@ class HiringRequestService
         endforeach;
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
             ->withCount('applicants')
             ->latest()
             ->first();
@@ -138,7 +138,7 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
             ->get();
     }
 
@@ -270,7 +270,7 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
             ->latest('updated_at')
             ->first();
     }
@@ -320,7 +320,7 @@ class HiringRequestService
         }
 
         // Cast $hiringRequestQuery to $hiringRequests
-        $hiringRequests = $hiringRequestQuery->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile.user.offer', 'hiringRequestPostings')
+        $hiringRequests = $hiringRequestQuery->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
             ->latest()
             ->paginate(10);
 
@@ -432,7 +432,7 @@ class HiringRequestService
 
         // Applicants of $hiringRequest
         $applicants = Applicant::where('hiring_request_id', $hiringRequest->id)
-            ->with('profile.user.offer')
+            ->with('profile', 'offers')
             ->latest()
             ->paginate(10);
 

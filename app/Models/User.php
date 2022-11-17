@@ -218,9 +218,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(InterviewSchedule::class);
     }
 
-    public function offer()
+    public function offers()
     {
-        return $this->hasOne(Offer::class);
+        return $this->hasMany(Offer::class, 'user_id', 'id');
     }
 
     public function isPracticeManager()
