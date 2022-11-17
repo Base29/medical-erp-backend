@@ -50,9 +50,13 @@ class OfferService
         // Get applicant's latest offer
         $userLatestOffer = end($userOffers);
 
-        // Check if $userLatestOffer is discarded
-        if ($userLatestOffer['status'] !== 5) {
-            throw new Exception('Applicant already have a active offer.');
+        // Check if $user has offers
+        if ($userLatestOffer !== false) {
+
+            // Check if $userLatestOffer is discarded
+            if ($userLatestOffer['status'] !== 5) {
+                throw new Exception('Applicant already have a active offer.');
+            }
         }
 
         // Instance of Offer
