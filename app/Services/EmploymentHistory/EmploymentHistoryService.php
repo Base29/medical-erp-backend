@@ -1,10 +1,12 @@
 <?php
 namespace App\Services\EmploymentHistory;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\EmploymentHistory;
 use App\Models\User;
+use Exception;
 
 class EmploymentHistoryService
 {
@@ -61,7 +63,7 @@ class EmploymentHistoryService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get employment history by Id ($request->employment_history)
@@ -71,7 +73,7 @@ class EmploymentHistoryService
         $employmentHistoryUpdated = UpdateService::updateModel($employmentHistory, $request->validated(), 'employment_history');
 
         if (!$employmentHistoryUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Employment History.'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Employment History.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
