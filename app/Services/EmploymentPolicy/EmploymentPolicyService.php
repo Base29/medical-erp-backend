@@ -2,10 +2,12 @@
 namespace App\Services\EmploymentPolicy;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\EmploymentPolicy;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class EmploymentPolicyService
@@ -47,7 +49,7 @@ class EmploymentPolicyService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get employment policy
@@ -57,7 +59,7 @@ class EmploymentPolicyService
         $employmentPolicyUpdated = UpdateService::updateModel($employmentPolicy, $request->validated(), 'employment_policy');
 
         if (!$employmentPolicyUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Can not update Employment Policy'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Can not update Employment Policy'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
