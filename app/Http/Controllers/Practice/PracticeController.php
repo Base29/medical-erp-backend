@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Practice\AssignPracticeToUserRequest;
 use App\Http\Requests\Practice\CreatePracticeRequest;
 use App\Http\Requests\Practice\RevokePracticeForUserRequest;
-use App\Models\Practice;
 use App\Services\Practice\PracticeService;
+use Exception;
 
 class PracticeController extends Controller
 {
@@ -31,10 +31,10 @@ class PracticeController extends Controller
             // Create practice
             return $this->practiceService->createPractice($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -49,10 +49,10 @@ class PracticeController extends Controller
             // Delete practice
             return $this->practiceService->deletePractice($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -67,10 +67,10 @@ class PracticeController extends Controller
             // Fetch practices
             return $this->practiceService->fetchPractices();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -85,10 +85,10 @@ class PracticeController extends Controller
             // Assign user to practice
             return $this->practiceService->assignUserToPractice($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -104,10 +104,10 @@ class PracticeController extends Controller
             // Revoke user from practice
             return $this->practiceService->revokeUserFromPractice($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -12,6 +12,7 @@ use App\Http\Requests\InterviewPolicy\FetchSingleInterviewPolicyRequest;
 use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyQuestionRequest;
 use App\Http\Requests\InterviewPolicy\UpdateInterviewPolicyRequest;
 use App\Services\InterviewPolicy\InterviewPolicyService;
+use Exception;
 
 class InterviewPolicyController extends Controller
 {
@@ -32,9 +33,9 @@ class InterviewPolicyController extends Controller
             // Create service
             return $this->interviewPolicyService->createInterviewPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,9 +48,9 @@ class InterviewPolicyController extends Controller
             // Fetch all interview policies service
             return $this->interviewPolicyService->fetchAllInterviewPolicies();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -62,9 +63,9 @@ class InterviewPolicyController extends Controller
             // Fetch all interview policies of a practice
             return $this->interviewPolicyService->fetchPracticeInterviewPolicies($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,9 +78,9 @@ class InterviewPolicyController extends Controller
             // Fetch single interview policy
             return $this->interviewPolicyService->fetchSingleInterviewPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -92,9 +93,9 @@ class InterviewPolicyController extends Controller
             // Delete interview policy
             return $this->interviewPolicyService->deleteInterviewPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -107,9 +108,9 @@ class InterviewPolicyController extends Controller
             // Update Interview Policy
             return $this->interviewPolicyService->updateInterviewPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -121,9 +122,9 @@ class InterviewPolicyController extends Controller
         try {
             // Update interview policy question
             return $this->interviewPolicyService->updateQuestion($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -136,9 +137,9 @@ class InterviewPolicyController extends Controller
             // Logic here
             return $this->interviewPolicyService->fetchRoleAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

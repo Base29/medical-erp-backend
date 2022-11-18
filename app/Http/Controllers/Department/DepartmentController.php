@@ -10,8 +10,8 @@ use App\Http\Requests\Department\CreateDepartmentRequest;
 use App\Http\Requests\Department\DeleteDepartmentRequest;
 use App\Http\Requests\Department\FetchDepartmentRequest;
 use App\Http\Requests\Department\FetchSingleDepartmentRequest;
-use App\Models\Department;
 use App\Services\Department\DepartmentService;
+use Exception;
 
 class DepartmentController extends Controller
 {
@@ -35,12 +35,13 @@ class DepartmentController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'department' => $department,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,12 +56,13 @@ class DepartmentController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'departments' => $departments,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,12 +78,13 @@ class DepartmentController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Department'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -94,9 +97,9 @@ class DepartmentController extends Controller
             // Assign user to practice
             return $this->departmentService->assignUserToDepartment($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -109,9 +112,9 @@ class DepartmentController extends Controller
             // Fetch single department
             return $this->departmentService->fetchSingleDepartment($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

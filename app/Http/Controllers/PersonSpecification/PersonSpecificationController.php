@@ -9,6 +9,7 @@ use App\Http\Requests\PersonSpecification\DeletePersonSpecificationRequest;
 use App\Http\Requests\PersonSpecification\FetchPersonSpecificationRequest;
 use App\Http\Requests\PersonSpecification\FetchSinglePersonSpecificationRequest;
 use App\Services\PersonSpecification\PersonSpecificationService;
+use Exception;
 
 class PersonSpecificationController extends Controller
 {
@@ -30,9 +31,9 @@ class PersonSpecificationController extends Controller
             // Create person specification
             return $this->personSpecificationService->createPersonSpecification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -46,9 +47,9 @@ class PersonSpecificationController extends Controller
             // Fetch person specifications
             return $this->personSpecificationService->fetchPersonSpecifications($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -61,9 +62,9 @@ class PersonSpecificationController extends Controller
             // Delete person specification
             return $this->personSpecificationService->deletePersonSpecification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,9 +77,9 @@ class PersonSpecificationController extends Controller
             // Fetch single person specification
             return $this->personSpecificationService->fetchSinglePersonSpecification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

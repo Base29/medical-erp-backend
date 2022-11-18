@@ -12,6 +12,7 @@ use App\Http\Requests\AppraisalPolicy\FetchSingleAppraisalPolicyRequest;
 use App\Http\Requests\AppraisalPolicy\UpdateAppraisalPolicyQuestionRequest;
 use App\Http\Requests\AppraisalPolicy\UpdateAppraisalPolicyRequest;
 use App\Services\Appraisal\AppraisalService;
+use Exception;
 
 class AppraisalPolicyController extends Controller
 {
@@ -32,9 +33,9 @@ class AppraisalPolicyController extends Controller
             // Create service
             return $this->appraisalService->createAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,9 +48,9 @@ class AppraisalPolicyController extends Controller
             // Fetch all appraisal policies service
             return $this->appraisalService->fetchAllAppraisalPolicies();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -62,9 +63,9 @@ class AppraisalPolicyController extends Controller
             // Fetch all appraisal policies of a practice
             return $this->appraisalService->fetchPracticeAppraisalPolicies($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,9 +78,9 @@ class AppraisalPolicyController extends Controller
             // Fetch single appraisal policy
             return $this->appraisalService->fetchSingleAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -92,9 +93,9 @@ class AppraisalPolicyController extends Controller
             // Delete appraisal policy
             return $this->appraisalService->deleteAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -107,9 +108,9 @@ class AppraisalPolicyController extends Controller
             // Update appraisal Policy
             return $this->appraisalService->updateAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -122,9 +123,9 @@ class AppraisalPolicyController extends Controller
             // Update appraisal policy question
             return $this->appraisalService->updateQuestion($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -137,9 +138,9 @@ class AppraisalPolicyController extends Controller
             // Logic here
             return $this->appraisalService->fetchRoleAppraisalPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

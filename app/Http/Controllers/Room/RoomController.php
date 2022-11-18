@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Room\CreateRoomRequest;
 use App\Http\Requests\Room\FetchRoomsRequest;
 use App\Http\Requests\Room\UpdateRoomRequest;
-use App\Models\Room;
 use App\Services\Room\RoomService;
+use Exception;
 
 class RoomController extends Controller
 {
@@ -31,10 +31,10 @@ class RoomController extends Controller
             // Create room
             return $this->roomService->createRoom($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -49,10 +49,10 @@ class RoomController extends Controller
             // Delete room service
             return $this->roomService->deleteRoom($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -67,10 +67,10 @@ class RoomController extends Controller
             // Fetch rooms
             return $this->roomService->fetchRooms($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -85,10 +85,10 @@ class RoomController extends Controller
             // Update room
             return $this->roomService->updateRoom($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\WorkPattern;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkPattern\CreateWorkPatternRequest;
-use App\Models\WorkPattern;
 use App\Services\WorkPattern\WorkPatternService;
+use Exception;
 
 class WorkPatternController extends Controller
 {
@@ -28,9 +28,9 @@ class WorkPatternController extends Controller
             // Create work pattern
             return $this->workPatternService->createWorkPattern($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -43,9 +43,9 @@ class WorkPatternController extends Controller
             // Fetch work patterns
             return $this->workPatternService->fetchWorkPatterns();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -59,10 +59,10 @@ class WorkPatternController extends Controller
             // Delete work pattern
             return $this->workPatternService->deleteWorkPattern($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -16,6 +16,7 @@ use App\Http\Requests\HiringRequest\FetchSingleHiringRequest;
 use App\Http\Requests\HiringRequest\SearchVacanciesRequest;
 use App\Http\Requests\HiringRequest\UpdateHiringRequest;
 use App\Services\HiringRequest\HiringRequestService;
+use Exception;
 
 class HiringRequestController extends Controller
 {
@@ -36,12 +37,13 @@ class HiringRequestController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'hiring-request' => $hiringRequest,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -57,11 +59,12 @@ class HiringRequestController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'hiring-request' => $hiringRequest,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,12 +79,13 @@ class HiringRequestController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'hiring-request' => $hiringRequest,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -97,11 +101,12 @@ class HiringRequestController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Hiring Request'),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -117,12 +122,13 @@ class HiringRequestController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'hiring-requests' => $hiringRequests,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -135,9 +141,9 @@ class HiringRequestController extends Controller
             // Add applicant to hiring request
             return $this->hiringRequestService->addApplicantToHiringRequest($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -150,9 +156,9 @@ class HiringRequestController extends Controller
             // Create posting service
             return $this->hiringRequestService->createHiringRequestPosting($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -165,9 +171,9 @@ class HiringRequestController extends Controller
             // Fetch applicants service
             return $this->hiringRequestService->fetchAllApplicants($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -180,9 +186,9 @@ class HiringRequestController extends Controller
             // Fetch hiring request postings
             return $this->hiringRequestService->fetchAllPostings($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -195,9 +201,9 @@ class HiringRequestController extends Controller
             // Logic here
             return $this->hiringRequestService->searchVacancies($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

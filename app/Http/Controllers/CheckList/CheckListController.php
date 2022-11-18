@@ -6,8 +6,8 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Checklist\CreateChecklistRequest;
 use App\Http\Requests\Checklist\FetchChecklistRequest;
-use App\Models\CheckList;
 use App\Services\Checklist\ChecklistService;
+use Exception;
 
 class CheckListController extends Controller
 {
@@ -29,12 +29,15 @@ class CheckListController extends Controller
             $checklist = $this->checklistService->createChecklist($request);
 
             // Return success response
-            return Response::success(['checklist' => $checklist]);
+            return Response::success([
+                'code' => Response::HTTP_CREATED,
+                'checklist' => $checklist,
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -48,12 +51,15 @@ class CheckListController extends Controller
             $checklists = $this->checklistService->fetchChecklists($request);
 
             // Return success response
-            return Response::success(['checklists' => $checklists]);
+            return Response::success([
+                'code' => Response::HTTP_CREATED,
+                'checklists' => $checklists,
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

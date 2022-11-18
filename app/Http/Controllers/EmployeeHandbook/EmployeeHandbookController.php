@@ -9,6 +9,7 @@ use App\Http\Requests\EmployeeHandbook\DeleteEmployeeHandbookRequest;
 use App\Http\Requests\EmployeeHandbook\FetchSingleEmployeeHandbookRequest;
 use App\Http\Requests\EmployeeHandbook\SignEmployeeHandbookRequest;
 use App\Services\EmployeeHandbook\EmployeeHandbookService;
+use Exception;
 
 class EmployeeHandbookController extends Controller
 {
@@ -29,9 +30,9 @@ class EmployeeHandbookController extends Controller
             // Employee Handbook service
             return $this->employeeHandbookService->createEmployeeHandbook($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -44,9 +45,9 @@ class EmployeeHandbookController extends Controller
             // Logic here
             return $this->employeeHandbookService->fetchEmployeehandbooks();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -59,9 +60,9 @@ class EmployeeHandbookController extends Controller
             // Logic here
             return $this->employeeHandbookService->deleteEmployeeHandbook($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -74,9 +75,9 @@ class EmployeeHandbookController extends Controller
             // Logic here
             return $this->employeeHandbookService->fetchSingleEmployeeHandbook($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -89,9 +90,9 @@ class EmployeeHandbookController extends Controller
             // Logic here
             return $this->employeeHandbookService->signEmployeeHandbook($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

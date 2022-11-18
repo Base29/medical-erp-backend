@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\HeadQuarter\ProcessHiringRequest;
 use App\Http\Requests\HeadQuarter\SearchHiringRequest;
 use App\Services\HeadQuarter\HeadQuarterService;
+use Exception;
 
 class HeadQuarterController extends Controller
 {
@@ -30,12 +31,13 @@ class HeadQuarterController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'hiring-request' => $hiringRequest,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -48,9 +50,9 @@ class HeadQuarterController extends Controller
             // Fetch Offers
             return $this->headQuarterService->fetchAllOffers();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,9 +65,9 @@ class HeadQuarterController extends Controller
             // Search hiring request service
             return $this->headQuarterService->searchHiringRequest($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

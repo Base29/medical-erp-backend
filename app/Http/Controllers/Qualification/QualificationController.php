@@ -8,6 +8,7 @@ use App\Http\Requests\Qualification\CreateQualificationRequest;
 use App\Http\Requests\Qualification\DeleteQualificationRequest;
 use App\Http\Requests\Qualification\UpdateQualificationRequest;
 use App\Services\Qualification\QualificationService;
+use Exception;
 
 class QualificationController extends Controller
 {
@@ -28,9 +29,9 @@ class QualificationController extends Controller
             // Logic here
             return $this->qualificationService->createQualification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -43,9 +44,9 @@ class QualificationController extends Controller
             // Logic here
             return $this->qualificationService->updateQualification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -58,9 +59,9 @@ class QualificationController extends Controller
             // Logic here
             return $this->qualificationService->deleteQualification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

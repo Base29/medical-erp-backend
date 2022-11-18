@@ -11,8 +11,8 @@ use App\Http\Requests\InductionSchedule\FetchInductionScheduleRequest;
 use App\Http\Requests\InductionSchedule\FetchSingleInductionRequest;
 use App\Http\Requests\InductionSchedule\FetchUserInductionRequest;
 use App\Http\Requests\InductionSchedule\UpdateInductionScheduleRequest;
-use App\Models\InductionSchedule;
 use App\Services\InductionSchedule\InductionScheduleService;
+use Exception;
 
 class InductionScheduleController extends Controller
 {
@@ -36,12 +36,13 @@ class InductionScheduleController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'induction-schedule' => $inductionSchedule,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -57,12 +58,13 @@ class InductionScheduleController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'induction-schedules' => $inductionSchedules,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -78,11 +80,12 @@ class InductionScheduleController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Induction Schedule'),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,9 +98,9 @@ class InductionScheduleController extends Controller
             // Logic here
             return $this->inductionScheduleService->fetchUserInduction($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -110,9 +113,9 @@ class InductionScheduleController extends Controller
             // Logic here
             return $this->inductionScheduleService->fetchSingleInduction($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -125,9 +128,9 @@ class InductionScheduleController extends Controller
             // Logic here
             return $this->inductionScheduleService->updateInductionSchedule($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

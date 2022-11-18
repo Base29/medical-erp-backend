@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Profile;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Profile\UpdateProfileRequest;
-use App\Models\Profile;
 use App\Services\Profile\ProfileService;
+use Exception;
 
 class ProfileController extends Controller
 {
@@ -27,9 +27,9 @@ class ProfileController extends Controller
             // update profile
             return $this->profileService->updateProfile($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

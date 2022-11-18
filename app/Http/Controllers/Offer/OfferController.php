@@ -11,6 +11,7 @@ use App\Http\Requests\Offer\OfferAmendmentRequest;
 use App\Http\Requests\Offer\UpdateOfferAmendmentRequest;
 use App\Http\Requests\Offer\UpdateOfferRequest;
 use App\Services\Offer\OfferService;
+use Exception;
 
 class OfferController extends Controller
 {
@@ -31,9 +32,9 @@ class OfferController extends Controller
             // Create offer service
             return $this->offerService->createOffer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -46,9 +47,9 @@ class OfferController extends Controller
             // Update offer service
             return $this->offerService->updateOffer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -61,9 +62,9 @@ class OfferController extends Controller
             // Delete offer service
             return $this->offerService->deleteOffer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,9 +77,9 @@ class OfferController extends Controller
             // Fetch single offer service
             return $this->offerService->fetchSingleOffer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -91,9 +92,9 @@ class OfferController extends Controller
             // Logic here
             return $this->offerService->amendHiringRequestOffer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -106,9 +107,9 @@ class OfferController extends Controller
             // Logic here
             return $this->offerService->updateOfferAmendment($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
