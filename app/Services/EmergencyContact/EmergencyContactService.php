@@ -1,10 +1,12 @@
 <?php
 namespace App\Services\EmergencyContact;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\EmergencyContact;
 use App\Models\User;
+use Exception;
 
 class EmergencyContactService
 {
@@ -60,7 +62,7 @@ class EmergencyContactService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get emergency contact
@@ -71,7 +73,7 @@ class EmergencyContactService
 
         // Return failed response in-case update fails
         if (!$emergencyContactUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating emergency contact'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating emergency contact'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
