@@ -172,6 +172,11 @@ class OfferService
         // Get Original offer
         $offer = Offer::findOrFail($request->offer);
 
+        // Check if $offer is discarded (status = 5)
+        if ($offer->status === 5) {
+            throw new Exception(ResponseMessage::customMessage('Cannot create amendment for Offer. The offer is discarded (status = 5).'));
+        }
+
         // Get all amendments of $offer
         $offerAmendments = $offer->amendments->toArray();
 
@@ -179,14 +184,16 @@ class OfferService
             // Get latest amendment from $offerAmendments
             $latestAmendment = end($offerAmendments);
 
-            // Check if the previous amendment is accepted
-            if ($latestAmendment['status'] === 1) {
-                throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
-            }
+            if ($latestAmendment !== false) {
+                // Check if the previous amendment is accepted
+                if ($latestAmendment['status'] === 1) {
+                    throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
+                }
 
-            // Check if previous amendment has been rejected/declined
-            if ($latestAmendment['status'] !== 0) {
-                throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+                // Check if previous amendment has been rejected/declined
+                if ($latestAmendment['status'] !== 0) {
+                    throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+                }
             }
         }
 
