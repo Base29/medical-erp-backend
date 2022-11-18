@@ -1026,6 +1026,14 @@ class UserService
             $usersQuery = $usersQuery->where('applicant_status', $request->applicant_status);
         }
 
+        // If $request has offer_status
+        if ($request->has('offer_status')) {
+            // Filter users by offer status
+            $usersQuery = $usersQuery->whereHas('offers', function ($q) use ($request) {
+                $q->where(['is_active' => 1, 'status' => $request->offer_status]);
+            });
+        }
+
         $filteredUsers = $usersQuery->with([
             'profile.applicant',
             'positionSummary',
@@ -1042,6 +1050,10 @@ class UserService
             },
             'interviewSchedules.interviewMiscInfo',
             'interviewSchedules.interviewScore',
+            'offers' => function ($q) {
+                $q->orderBy('id', 'desc')->limit(1);
+            },
+            'offers.amendments',
         ])
             ->latest()
             ->paginate(10);

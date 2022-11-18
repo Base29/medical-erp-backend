@@ -127,7 +127,9 @@ class HiringRequestService
         endforeach;
 
         // Return newly created $hiringRequest
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
+        return $hiringRequest->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
+            $q->orderBy('id', 'desc')->limit(1);
+        }, 'hiringRequestPostings'])
             ->withCount('applicants')
             ->latest()
             ->first();
@@ -138,7 +140,9 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
+            ->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
+                $q->orderBy('id', 'desc')->limit(1);
+            }, 'hiringRequestPostings'])
             ->get();
     }
 
@@ -270,7 +274,9 @@ class HiringRequestService
         }
 
         // Return success response
-        return $hiringRequest->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
+        return $hiringRequest->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
+            $q->orderBy('id', 'desc')->limit(1);
+        }, 'hiringRequestPostings'])
             ->latest('updated_at')
             ->first();
     }
@@ -320,7 +326,9 @@ class HiringRequestService
         }
 
         // Cast $hiringRequestQuery to $hiringRequests
-        $hiringRequests = $hiringRequestQuery->with('applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers', 'hiringRequestPostings')
+        $hiringRequests = $hiringRequestQuery->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
+            $q->orderBy('id', 'desc')->limit(1);
+        }, 'hiringRequestPostings'])
             ->latest()
             ->paginate(10);
 

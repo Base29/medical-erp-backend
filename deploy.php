@@ -6,7 +6,7 @@ require 'recipe/laravel.php';
 
 // Config
 set('repository', 'git@github.com:IT-Roadway-Ltd/ESM-BackEnd.git');
-
+set('keep_releases', 3); // keep a maximum of 3 releases
 set('application', 'esm'); //for your reference
 set('ssh_multiplexing', true); // Speed up deployment
 

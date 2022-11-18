@@ -47,6 +47,17 @@ class FilterUsersRequest extends FormRequest
                     2, // Referred for 2nd Interview
                 ]),
             ],
+            'offer_status' => [
+                'nullable',
+                Rule::in([
+                    0, // Rejected/Declined
+                    1, // Accepted
+                    2, // Made
+                    3, // Revised
+                    4, // Pending
+                    5, // Discarded
+                ]),
+            ],
         ];
     }
 
