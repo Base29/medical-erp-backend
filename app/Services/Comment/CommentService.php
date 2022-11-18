@@ -6,9 +6,11 @@
 
 namespace App\Services\Comment;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Comment;
 use App\Models\Post;
+use Exception;
 
 class CommentService
 {
@@ -44,14 +46,16 @@ class CommentService
 
         // Check if the comment is soft deleted
         if ($comment->trashed()) {
-            throw new \Exception(ResponseMessage::customMessage('The selected comment is invalid or deleted.'));
+            throw new Exception(ResponseMessage::customMessage('The selected comment is invalid or deleted.'),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         // Check if the user updating the comment is the author of the comment
         $ownedByUser = $comment->ownedBy(auth()->user());
 
         if (!$ownedByUser) {
-            throw new \Exception(ResponseMessage::notAllowedToUpdate('comment'));
+            throw new Exception(ResponseMessage::notAllowedToUpdate('comment'), Response::HTTP_FORBIDDEN);
         }
 
         // Update comment
@@ -67,14 +71,14 @@ class CommentService
         $comment = Comment::find($id);
 
         if (!$comment) {
-            throw new \Exception(ResponseMessage::notFound('Comment', $id, false));
+            throw new Exception(ResponseMessage::notFound('Comment', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Check if the user updating the answer is the author of the answer
         $ownedByUser = $comment->ownedBy(auth()->user());
 
         if (!$ownedByUser) {
-            throw new \Exception(ResponseMessage::notAllowedToDelete('comment'));
+            throw new Exception(ResponseMessage::notAllowedToDelete('comment'), Response::HTTP_FORBIDDEN);
         }
 
         // Delete the answer
