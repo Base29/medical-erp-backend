@@ -2,7 +2,6 @@
 namespace App\Services\WorkPattern;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
 
@@ -29,6 +28,7 @@ class WorkPatternService
         }
 
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'work_pattern' => $workPattern->with('workTimings')->latest()->first(),
         ]);
     }
@@ -40,6 +40,7 @@ class WorkPatternService
         $workPatterns = WorkPattern::with('workTimings')->latest()->get();
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'work_patterns' => $workPatterns,
         ]);
     }
@@ -54,7 +55,8 @@ class WorkPatternService
         $workPattern->delete();
 
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Work Pattern'),
+            'code' => Response::HTTP_OK,
+            'work-pattern' => $workPattern,
         ]);
     }
 }
