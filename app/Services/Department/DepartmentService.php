@@ -75,6 +75,7 @@ class DepartmentService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'department')
                 ->latest('updated_at')
                 ->first(),
@@ -113,6 +114,7 @@ class DepartmentService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'department' => $result,
         ]);
     }
