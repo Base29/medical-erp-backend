@@ -1030,7 +1030,7 @@ class UserService
         if ($request->has('offer_status')) {
             // Filter users by offer status
             $usersQuery = $usersQuery->whereHas('offers', function ($q) use ($request) {
-                $q->where('status', $request->offer_status);
+                $q->where(['is_active' => 1, 'status' => $request->offer_status]);
             });
         }
 
@@ -1050,6 +1050,9 @@ class UserService
             },
             'interviewSchedules.interviewMiscInfo',
             'interviewSchedules.interviewScore',
+            'offers' => function ($q) {
+                $q->orderBy('id', 'desc')->limit(1);
+            },
             'offers.amendments',
         ])
             ->latest()

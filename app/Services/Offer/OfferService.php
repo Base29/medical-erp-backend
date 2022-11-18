@@ -41,6 +41,8 @@ class OfferService
             throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'));
         }
 
+        //TODO: START-BLOCK - Logic in this code block for latest offer can be improved with the newly added is_active key in offers table
+
         // Get work pattern
         $workPattern = WorkPattern::findOrFail($request->work_pattern);
 
@@ -50,8 +52,14 @@ class OfferService
         // Get applicant's latest offer
         $userLatestOffer = end($userOffers);
 
+        // Id of the current offer
+        $currentOfferId = null;
+
         // Check if $user has offers
         if ($userLatestOffer !== false) {
+
+            // Cast id of the offer to $currentOfferId
+            $currentOfferId = $userLatestOffer['id'];
 
             // Check if $userLatestOffer is discarded
             if ($userLatestOffer['status'] !== 5) {
@@ -59,16 +67,30 @@ class OfferService
             }
         }
 
+        //TODO: END-BLOCK
+
         // Instance of Offer
         $offer = new Offer();
         $offer->practice_id = $practice->id;
         $offer->user_id = $user->id;
         $offer->work_pattern_id = $workPattern->id;
         $offer->status = 2;
+        $offer->is_active = 1;
         $offer->amount = $request->amount;
 
         // Save offer
         $hiringRequest->offers()->save($offer);
+
+        // Change the is_active status of the user's old offer
+        if (isset($currentOfferId)) {
+            // Get the old offer
+            $oldOffer = Offer::findOrFail($currentOfferId);
+
+            // Change is_active
+            $oldOffer->is_active = 0;
+            $oldOffer->save();
+
+        }
 
         // Return success response
         return Response::success([
