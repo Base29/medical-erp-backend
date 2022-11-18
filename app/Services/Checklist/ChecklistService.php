@@ -6,9 +6,11 @@
 
 namespace App\Services\Checklist;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\CheckList;
 use App\Models\Room;
+use Exception;
 
 class ChecklistService
 {
@@ -22,7 +24,7 @@ class ChecklistService
         $checklistExists = $room->checkLists->contains('name', $request->name);
 
         if ($checklistExists) {
-            throw new \Exception(ResponseMessage::alreadyExists('Checklist'));
+            throw new Exception(ResponseMessage::alreadyExists('Checklist'), Response::HTTP_CREATED);
         }
 
         // Create Checklist
