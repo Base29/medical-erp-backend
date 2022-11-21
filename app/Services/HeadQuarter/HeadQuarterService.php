@@ -110,6 +110,7 @@ class HeadQuarterService
         $offersWithCount = $countByStatus->merge($offers);
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'offers' => $offersWithCount,
         ]);
     }
@@ -126,6 +127,7 @@ class HeadQuarterService
 
         // Return search results
         return Response::success([
+            'code' => Response::HTTP_OK,
             'search-results' => $results,
         ]);
     }
