@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
 use App\Notifications\HiringRequest\NewHiringRequestNotification;
+use Exception;
 
 class HiringRequestService
 {
@@ -74,7 +75,7 @@ class HiringRequestService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!$request->has($requiredFields)) {
-                throw new \Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)));
+                throw new Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)), Response::HTTP_BAD_REQUEST);
             }
 
             // Create work pattern
@@ -166,7 +167,7 @@ class HiringRequestService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get hiring request
@@ -214,7 +215,7 @@ class HiringRequestService
 
         //     // If work pattern doesn't exist with the provided $request->rota_information
         //     if (!$workPattern) {
-        //         throw new \Exception(ResponseMessage::customMessage('Work Pattern with the provided id ' . $request->rota_information . ' not found. Please provide correct work pattern id or create a new work pattern'));
+        //         throw new Exception(ResponseMessage::customMessage('Work Pattern with the provided id ' . $request->rota_information . ' not found. Please provide correct work pattern id or create a new work pattern'));
         //     }
 
         //     // Cast id of $workPattern to a variable
@@ -234,7 +235,7 @@ class HiringRequestService
 
         //         // Checking if the $request doesn't contain any of the allowed fields
         //         if (!$request->has($requiredFields)) {
-        //             throw new \Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)));
+        //             throw new Exception(ResponseMessage::customMessage('Selected Rota with id ' . $request->rota_information . ' is invalid. Supply following fields to create new rota ' . implode("|", $requiredFields)));
         //         }
 
         //         // Create work pattern
@@ -270,7 +271,7 @@ class HiringRequestService
 
         // Return fail response
         if (!$hiringRequestUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating Hiring Request'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating Hiring Request'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
@@ -406,6 +407,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'applicant' => $applicant->with('profile', 'vacancy')->latest()->first(),
         ]);
     }
@@ -428,6 +430,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
+            'code' => Respoonse::HTTP_CREATED,
             'postings' => $hiringRequestPosting,
         ]);
     }
@@ -446,6 +449,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'applicants' => $applicants,
         ]);
 
@@ -464,6 +468,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'postings' => $postings,
         ]);
 
@@ -507,7 +512,7 @@ class HiringRequestService
 
             // Check the type of $request->value is integer
             if ($valueType !== 'integer') {
-                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'));
+                throw new Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type integer'), Response::HTTP_BAD_REQUEST);
             }
 
             // Switch statement according to $filter
@@ -593,7 +598,7 @@ class HiringRequestService
 
             // Check the type of $valueType is string
             if ($valueType !== 'string') {
-                throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'));
+                throw new Exception(ResponseMessage::customMessage('The value for the filter "' . $request->filter . '" should be of type string'), Response::HTTP_BAD_REQUEST);
             }
 
             // Switch statement according to filter
@@ -624,6 +629,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'filtered-vacancies' => $filteredVacancies,
         ]);
 
