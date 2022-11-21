@@ -2,12 +2,14 @@
 namespace App\Services\Legal;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\GmcSpecialistRegister;
 use App\Models\Legal;
 use App\Models\NmcQualification;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Arr;
 
 class LegalService
@@ -145,7 +147,7 @@ class LegalService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!$request->hasAny($allowedFieldsNmc)) {
-                throw new \Exception(ResponseMessage::allowedFields($allowedFieldsNmc));
+                throw new Exception(ResponseMessage::allowedFields($allowedFieldsNmc), Response::HTTP_BAD_REQUEST);
             }
 
             $updateRequestData = $request->only($allowedFieldsNmc);
@@ -180,7 +182,7 @@ class LegalService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!$request->hasAny($allowedFieldsGmc)) {
-                throw new \Exception(ResponseMessage::allowedFields($allowedFieldsGmc));
+                throw new Exception(ResponseMessage::allowedFields($allowedFieldsGmc), Response::HTTP_BAD_REQUEST);
             }
 
             $updateRequestData = $request->only($allowedFieldsGmc);
@@ -192,7 +194,7 @@ class LegalService
 
         // Return fail response if something went wrong while updating
         if (!$legalUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong while updating Legal.'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating Legal.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
@@ -214,7 +216,7 @@ class LegalService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!Arr::hasAny($subItem, $allowedFields)) {
-                throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+                throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST));
             }
 
             // Get model depending on provided $tag gmc or nmc
