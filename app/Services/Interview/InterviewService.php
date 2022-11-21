@@ -137,6 +137,7 @@ class InterviewService
         }
 
         $interviewSchedules = $interviewsQuery->where('date', '>', Carbon::now())
+            ->where('is_completed', 0)
             ->with('practice', 'interviewPolicies.questions.options', 'user.profile', 'hiringRequest')
             ->latest()
             ->paginate(10);
@@ -159,7 +160,7 @@ class InterviewService
 
         // Check if $user has already 2 interviews
         if ($user->interviewSchedules->count() === 2) {
-            throw new Exception(ResponseMessage::customMessage('User already have first and second interview'), Response::HTTP_CONFLICT));
+            throw new Exception(ResponseMessage::customMessage('User already have first and second interview'), Response::HTTP_CONFLICT);
         }
 
         // Check if $user doesn't have any interviews. Creating a second interview should not be allowed
@@ -502,7 +503,7 @@ class InterviewService
         }
 
         return Response::success([
-            'code' => Response::HTTP_CREATED
+            'code' => Response::HTTP_CREATED,
             'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
         ]);
     }
