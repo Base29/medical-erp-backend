@@ -9,6 +9,7 @@ use App\Models\InterviewQuestion;
 use App\Models\InterviewQuestionOption;
 use App\Models\Practice;
 use App\Models\Role;
+use Exception;
 
 class InterviewPolicyService
 {
@@ -22,7 +23,7 @@ class InterviewPolicyService
         $role = Role::findOrFail($request->role);
 
         if ($role->hasInterviewPolicy()) {
-            throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a interview policy'));
+            throw new Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a interview policy'), Response::HTTP_CONFLICT);
         }
 
         // Instance of InterviewPolicy
@@ -36,6 +37,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'interview-policy' => $interviewPolicy->with('questions.options', 'role', 'practice')
                 ->latest()
                 ->first(),
@@ -91,6 +93,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-policies' => $interviewPolicies,
         ]);
 
@@ -110,6 +113,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-policies' => $interviewPolicies,
         ]);
     }
@@ -124,6 +128,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-policy' => $interviewPolicy,
         ]);
     }
@@ -139,6 +144,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'message' => ResponseMessage::deleteSuccess('Interview Policy'),
         ]);
     }
@@ -155,7 +161,7 @@ class InterviewPolicyService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST));
         }
 
         // Get interview policy
@@ -166,11 +172,12 @@ class InterviewPolicyService
 
         // Return response if update fails
         if (!$interviewPolicyUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Interview Policy'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Interview Policy'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-policy' => $interviewPolicy->with('role', 'questions.options')
                 ->latest('updated_at')
                 ->first(),
@@ -189,7 +196,7 @@ class InterviewPolicyService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get interview question
@@ -207,6 +214,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-question' => $interviewQuestion->with('options')->latest('updated_at')->first(),
         ]);
 
@@ -238,6 +246,7 @@ class InterviewPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-policy' => $interviewPolicy,
         ]);
 

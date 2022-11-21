@@ -8,6 +8,7 @@ use App\Http\Requests\Role\AssignRoleToUserRequest;
 use App\Http\Requests\Role\CreateRoleRequest;
 use App\Http\Requests\Role\RevokeRoleForUserRequest;
 use App\Services\Role\RoleService;
+use Exception;
 
 class RoleController extends Controller
 {
@@ -30,10 +31,10 @@ class RoleController extends Controller
             // Create role service
             return $this->roleService->createRole($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,10 +48,10 @@ class RoleController extends Controller
             // Delete role
             return $this->roleService->deleteRole($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -64,10 +65,10 @@ class RoleController extends Controller
             // Fetch roles
             return $this->roleService->fetchRoles();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -81,10 +82,10 @@ class RoleController extends Controller
             // Assign role to user
             return $this->roleService->assignRoleToUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -98,10 +99,10 @@ class RoleController extends Controller
             // Revoke role for user
             return $this->roleService->revokeRoleForUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

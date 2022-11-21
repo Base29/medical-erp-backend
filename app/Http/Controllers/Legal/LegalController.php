@@ -10,6 +10,7 @@ use App\Http\Requests\Legal\DeleteLegalRequest;
 use App\Http\Requests\Legal\FetchLegalRequest;
 use App\Http\Requests\Legal\UpdateLegalRequest;
 use App\Services\Legal\LegalService;
+use Exception;
 
 class LegalController extends Controller
 {
@@ -33,12 +34,13 @@ class LegalController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'legal' => $legal,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -54,12 +56,13 @@ class LegalController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'legal' => $legal,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -74,11 +77,12 @@ class LegalController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Legal'),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -94,12 +98,13 @@ class LegalController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'legal' => $legal,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -15,6 +15,7 @@ use App\Notifications\Locum\RemoveLocumFromSessionNotification;
 use App\Notifications\Locum\SessionInvitationNotification;
 use App\Notifications\Locum\SessionInviteAcceptedNotification;
 use App\Notifications\Locum\SessionInviteDeclinedNotification;
+use Exception;
 use Illuminate\Support\Carbon;
 
 class LocumService
@@ -45,6 +46,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'locum-session' => $locumSession->with('practice', 'role')->latest()->first(),
         ]);
     }
@@ -60,22 +62,22 @@ class LocumService
 
         // Check if $user->is_active === true
         if (!$user->is_active) {
-            throw new \Exception(ResponseMessage::customMessage('User is not active.'));
+            throw new Exception(ResponseMessage::customMessage('User is not active.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if the user is a candidate and is hired
         if (!$user->is_candidate || !$user->is_hired) {
-            throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before adding to a locum session'));
+            throw new Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before adding to a locum session'), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if the user is already assigned to the locum session
         if ($locumSession->userAlreadyAssignedToSession($user->id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'), Response::HTTP_CONFLICT);
         }
 
         // Check to restrict if locums are being adding above the required quantity
         if ($locumSession->quantity === $locumSession->locums()->count()) {
-            throw new \Exception(ResponseMessage::customMessage('Cannot add user to locum session more than the required quantity'));
+            throw new Exception(ResponseMessage::customMessage('Cannot add user to locum session more than the required quantity'), Response::HTTP_BAD_REQUEST);
         }
 
         // Add user to a locum session
@@ -86,7 +88,10 @@ class LocumService
         $user->save();
 
         // Return success response
-        return Response::success(['message' => ResponseMessage::assigned($user->email, $locumSession->name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::assigned($user->email, $locumSession->name),
+        ]);
     }
 
     // Remove user from locum session
@@ -100,7 +105,7 @@ class LocumService
 
         // Check if the user is already assigned to the locum session
         if (!$locumSession->userAlreadyAssignedToSession($user->id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' not assigned to locum session'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $user->id . ' not assigned to locum session'), Response::HTTP_BAD_REQUEST);
         }
 
         // Remove user from a locum session
@@ -117,7 +122,10 @@ class LocumService
         ));
 
         // Return success response
-        return Response::success(['message' => ResponseMessage::revoked($user->email, $locumSession->name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::revoked($user->email, $locumSession->name),
+        ]);
     }
 
     // Fetch All Sessions
@@ -187,6 +195,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-sessions' => $filteredLocumSessions,
         ]);
     }
@@ -203,6 +212,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-session' => $locumSession,
         ]);
     }
@@ -218,7 +228,8 @@ class LocumService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Locum Session ' . $locumSession->id),
+            'code' => Response::HTTP_BAD_REQUEST,
+            'locum-session' => $locumSession,
         ]);
     }
 
@@ -251,6 +262,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'sessions-by-month' => $sessionsByMonthFiltered,
         ]);
 
@@ -274,6 +286,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'sessions-by-day' => $sessionsByDay,
         ]);
 
@@ -290,39 +303,39 @@ class LocumService
 
         // Check if $user->is_active === true
         if (!$locum->is_active) {
-            throw new \Exception(ResponseMessage::customMessage('User is not active.'));
+            throw new Exception(ResponseMessage::customMessage('User is not active.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if the user is a candidate and is hired
         if (!$locum->is_candidate || !$locum->is_hired) {
-            throw new \Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before invited to a locum session'));
+            throw new Exception(ResponseMessage::customMessage('The user should be a candidate and should already be hired before invited to a locum session'), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if $locum is blacklisted
         if ($locum->is_blacklisted) {
-            throw new \Exception(ResponseMessage::customMessage('Blacklisted locums cannot be invited to a session'));
+            throw new Exception(ResponseMessage::customMessage('Blacklisted locums cannot be invited to a session'), Response::HTTP_FORBIDDEN);
         }
 
         // Check if the user is already assigned to the locum session
         if ($session->userAlreadyAssignedToSession($locum->id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $locum->id . ' already assigned to locum session'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $locum->id . ' already assigned to locum session'), Response::HTTP_CONFLICT);
         }
 
         // // Check to restrict if locums are being adding above the required quantity
         // if ($session->quantity === $session->locums()->count()) {
-        //     throw new \Exception(ResponseMessage::customMessage('Cannot invite users to locum session more than the required quantity'));
+        //     throw new Exception(ResponseMessage::customMessage('Cannot invite users to locum session more than the required quantity'));
         // }
 
         // // Check if user is a locum
         // if (!$locum->isLocum()) {
-        //     throw new \Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
+        //     throw new Exception(ResponseMessage::customMessage('Only users that are locums can be invited to a locum session'));
         // }
 
         // Instance of LocumSessionInvite model
         $locumSessionInvite = new LocumSessionInvite();
 
         if ($locumSessionInvite->alreadyInvitedForSession($session->id, $locum->id)) {
-            throw new \Exception(ResponseMessage::customMessage('Invite already sent.'));
+            throw new Exception(ResponseMessage::customMessage('Invite already sent.'), Response::HTTP_CONFLICT);
         }
 
         $locumSessionInvite->notifiable = auth()->user()->id;
@@ -341,6 +354,7 @@ class LocumService
 
         // Return success
         return Response::success([
+            'code' => Response::HTTP_OK,
             'session' => $session->where('id', $session->id)->with('sessionInvites')->first(),
         ]);
     }
@@ -362,7 +376,7 @@ class LocumService
 
         // Check if the user is already assigned to the locum session
         if ($locumSession->userAlreadyAssignedToSession($user->id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $user->id . ' already assigned to locum session'), Response::HTTP_BAD_REQUEST);
         }
 
         // Casting $request->action to variable
@@ -375,12 +389,12 @@ class LocumService
 
                 // Check to restrict if locums are being adding above the required quantity
                 if ($locumSession->locums()->count() === 1) {
-                    throw new \Exception(ResponseMessage::customMessage('Sorry seat for this session has been filled.'));
+                    throw new Exception(ResponseMessage::customMessage('Sorry seat for this session has been filled.'), Response::HTTP_CONFLICT);
                 }
 
                 // Check if the user already accepted the invitation
                 if ($sessionInvite->status === 2) {
-                    throw new \Exception(ResponseMessage::customMessage('You have already accepted this invitation'));
+                    throw new Exception(ResponseMessage::customMessage('You have already accepted this invitation'), Response::HTTP_CONFLICT);
                 }
 
                 // Add user to a locum session
@@ -419,7 +433,7 @@ class LocumService
 
                 // Check if the user already declined the invitation
                 if ($sessionInvite->status === 3) {
-                    throw new \Exception(ResponseMessage::customMessage('You have already declined this invitation'));
+                    throw new Exception(ResponseMessage::customMessage('You have already declined this invitation'), Response::HTTP_CONFLICT);
                 }
 
                 // Updated status of the invite
@@ -441,6 +455,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'session-invite' => $sessionInvite->where(['id' => $sessionInvite->id, 'locum' => $user->id])
                 ->with('session')
                 ->first(),
@@ -536,6 +551,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-invoices' => $filteredInvoices,
         ]);
     }
@@ -603,6 +619,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-invoices' => $filteredInvoices,
         ]);
     }
@@ -619,6 +636,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-invoice' => $locumInvoice,
         ]);
     }
@@ -631,11 +649,11 @@ class LocumService
 
         // Check if user is locum
         if (!$user->isLocum()) {
-            throw new \Exception(ResponseMessage::customMessage('User should be a locum'));
+            throw new Exception(ResponseMessage::customMessage('User should be a locum'), Response::HTTP_CONFLICT));
         }
 
         if ($user->is_blacklisted === 1) {
-            throw new \Exception(ResponseMessage::customMessage('User is already blacklisted'));
+            throw new Exception(ResponseMessage::customMessage('User is already blacklisted'), Response::HTTP_FORBIDDEN);
         }
 
         // Blacklist user
@@ -645,6 +663,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)
                 ->with([
                     'profile.applicant',
@@ -669,7 +688,7 @@ class LocumService
         $user = User::findOrFail($request->locum);
 
         if (!$user->is_blacklisted) {
-            throw new \Exception(ResponseMessage::customMessage('User is not blaclisted'));
+            throw new Exception(ResponseMessage::customMessage('User is not blaclisted'), Response::HTTP_FORBIDDEN);
         }
 
         // Blacklist user
@@ -679,6 +698,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)
                 ->with([
                     'profile.applicant',
@@ -704,7 +724,7 @@ class LocumService
 
         // Check if $locum->is_locum = true
         if (!$locum->is_locum) {
-            throw new \Exception(ResponseMessage::customMessage('User must be a locum'));
+            throw new Exception(ResponseMessage::customMessage('User must be a locum'), Response::HTTP_CONFLICT);
         }
 
         // Cast $request->notes to array
@@ -722,6 +742,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum' => $locum->where('id', $locum->id)
                 ->with([
                     'profile.applicant',
@@ -752,6 +773,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-note' => $locumNote,
         ]);
     }
@@ -767,6 +789,7 @@ class LocumService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-note' => $locumNote,
         ]);
     }

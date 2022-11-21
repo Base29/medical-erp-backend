@@ -8,8 +8,8 @@ use App\Http\Requests\Termination\CreateTerminationRequest;
 use App\Http\Requests\Termination\DeleteTerminationRequest;
 use App\Http\Requests\Termination\FetchTerminationRequest;
 use App\Http\Requests\Termination\UpdateTerminationRequest;
-use App\Models\Termination;
 use App\Services\Termination\TerminationService;
+use Exception;
 
 class TerminationController extends Controller
 {
@@ -31,9 +31,9 @@ class TerminationController extends Controller
             // Create termination
             return $this->terminationService->createTermination($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,9 +47,9 @@ class TerminationController extends Controller
             // Fetch termination
             return $this->terminationService->fetchTermination($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,9 +63,9 @@ class TerminationController extends Controller
             // Update termination
             return $this->terminationService->updateTermination($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -79,9 +79,9 @@ class TerminationController extends Controller
             // Delete
             return $this->terminationService->deleteTermination($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

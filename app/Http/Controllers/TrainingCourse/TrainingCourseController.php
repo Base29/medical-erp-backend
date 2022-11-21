@@ -15,6 +15,7 @@ use App\Http\Requests\TrainingCourse\UnassignUserFromTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UnassignUsersFromCourseRequest;
 use App\Http\Requests\TrainingCourse\UpdateTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
+use Exception;
 
 class TrainingCourseController extends Controller
 {
@@ -35,9 +36,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->createTrainingCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -50,9 +51,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->createCourseModule($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -65,9 +66,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->createModuleLesson($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -80,9 +81,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->fetchAllTrainingCourses();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,9 +96,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->fetchSingleTrainingCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -110,9 +111,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->deleteTrainingCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -125,9 +126,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->updateTrainingCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -140,9 +141,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->enrollUserToCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -155,9 +156,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->unrollUserFromCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -170,9 +171,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->assignCourseToUsers($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -185,9 +186,9 @@ class TrainingCourseController extends Controller
             // Logic here
             return $this->trainingCourseService->unassignUsersFromCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

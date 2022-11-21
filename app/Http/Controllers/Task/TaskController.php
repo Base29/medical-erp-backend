@@ -6,8 +6,8 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Task\CreateTaskRequest;
 use App\Http\Requests\Task\UpdateTaskRequest;
-use App\Models\Task;
 use App\Services\Task\TaskService;
+use Exception;
 
 class TaskController extends Controller
 {
@@ -30,10 +30,10 @@ class TaskController extends Controller
             // Create task
             return $this->taskService->createTask($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -48,10 +48,10 @@ class TaskController extends Controller
             // Delete task
             return $this->taskService->deleteTask($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -65,10 +65,10 @@ class TaskController extends Controller
             // Update task service
             return $this->taskService->updateTask($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

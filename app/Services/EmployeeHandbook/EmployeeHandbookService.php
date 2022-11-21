@@ -24,6 +24,7 @@ class EmployeeHandbookService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employee-handbook' => $employeeHandbook->with('roles')->latest()->first(),
         ]);
     }
@@ -36,6 +37,7 @@ class EmployeeHandbookService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employee-handbooks' => $employeeHandbooks,
         ]);
     }
@@ -50,6 +52,7 @@ class EmployeeHandbookService
 
         // Return Response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employee-handbook' => $employeeHandbook,
         ]);
     }
@@ -64,6 +67,7 @@ class EmployeeHandbookService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employee-handbook' => $employeeHandbook,
         ]);
     }
@@ -81,6 +85,7 @@ class EmployeeHandbookService
 
         // Return response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employee-handbook' => $employeeHandbook->where('id', $employeeHandbook->id)
                 ->with('signatures.profile')
                 ->firstOrFail(),

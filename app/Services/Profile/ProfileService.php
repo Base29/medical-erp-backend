@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Profile;
+use Exception;
 
 class ProfileService
 {
@@ -15,7 +16,7 @@ class ProfileService
         // Check $request route
         if (!$request->is('api/us/me/*')) {
             if (!$request->has('profile')) {
-                throw new \Exception(ResponseMessage::customMessage('Profile field is required.'));
+                throw new Exception(ResponseMessage::customMessage('Profile field is required.'), Response::HTTP_BAD_REQUEST);
             }
         }
         // Allowed fields when updating a task
@@ -42,7 +43,7 @@ class ProfileService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get authenticated user profile
@@ -59,11 +60,12 @@ class ProfileService
         $profileUpdated = UpdateService::updateModel($profile, $request->validated(), 'profile');
 
         if (!$profileUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update profile at this time'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update profile at this time'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return updated profile
         return Response::success([
+            'code' => Response::HTTP_OK,
             'profile' => $profile->latest('updated_at')->first(),
         ]);
     }

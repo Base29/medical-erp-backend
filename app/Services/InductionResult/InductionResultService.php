@@ -1,10 +1,12 @@
 <?php
 namespace App\Services\InductionResult;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\InductionChecklist;
 use App\Models\InductionResult;
 use App\Models\InductionSchedule;
+use Exception;
 
 class InductionResultService
 {
@@ -19,12 +21,12 @@ class InductionResultService
 
         // Check if the provided $inductionChecklist is a part of  $inductionSchedule
         if (!$inductionSchedule->belongsToSchedule($inductionChecklist->id)) {
-            throw new \Exception('Induction Checklist ' . $inductionChecklist->id . ' is not part of the induction schedule');
+            throw new Exception('Induction Checklist ' . $inductionChecklist->id . ' is not part of the induction schedule', Response::HTTP_CONFLICT);
         }
 
         // Check if the user has already completed the induction of $inductionChecklist
         if ($inductionChecklist->resultAlreadyGenerated($inductionSchedule->user_id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $inductionSchedule->user_id . ' already completed the induction for the checklist ' . $inductionChecklist->id));
+            throw new Exception(ResponseMessage::customMessage('User ' . $inductionSchedule->user_id . ' already completed the induction for the checklist ' . $inductionChecklist->id), Response::HTTP_CONFLICT);
         }
 
         // Initiate empty array for induction results
@@ -62,12 +64,12 @@ class InductionResultService
 
         // Check if the provided $inductionChecklist is a part of  $inductionSchedule
         if (!$inductionSchedule->belongsToSchedule($inductionChecklist->id)) {
-            throw new \Exception('Induction Checklist ' . $inductionChecklist->id . ' is not part of the induction schedule');
+            throw new Exception('Induction Checklist ' . $inductionChecklist->id . ' is not part of the induction schedule', Response::HTTP_CONFLICT);
         }
 
         // Check if the user has already completed the induction of $inductionChecklist
         if ($inductionChecklist->resultAlreadyGenerated($inductionSchedule->user_id)) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $inductionSchedule->user_id . ' already completed the induction for the checklist ' . $inductionChecklist->id));
+            throw new Exception(ResponseMessage::customMessage('User ' . $inductionSchedule->user_id . ' already completed the induction for the checklist ' . $inductionChecklist->id), Response::HTTP_CONFLICT);
         }
 
         // Instance of InductionResult model

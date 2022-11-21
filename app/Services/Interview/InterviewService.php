@@ -20,6 +20,7 @@ use App\Models\Practice;
 use App\Models\User;
 use App\Notifications\Interview\InviteAdditionalStaffNotification;
 use App\Notifications\Interview\InviteHQStaffNotification;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -93,6 +94,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interviews' => $interviewsWithCount,
         ]);
     }
@@ -141,6 +143,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-schedules' => $interviewSchedules,
         ]);
     }
@@ -156,13 +159,13 @@ class InterviewService
 
         // Check if $user has already 2 interviews
         if ($user->interviewSchedules->count() === 2) {
-            throw new \Exception(ResponseMessage::customMessage('User already have first and second interview'));
+            throw new Exception(ResponseMessage::customMessage('User already have first and second interview'), Response::HTTP_CONFLICT));
         }
 
         // Check if $user doesn't have any interviews. Creating a second interview should not be allowed
         if ($request->application_status === 'second-interview') {
             if ($user->interviewSchedules->isEmpty()) {
-                throw new \Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'));
+                throw new Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'), Response::HTTP_CONFLICT);
             }
         }
 
@@ -172,7 +175,7 @@ class InterviewService
             if (!$user->interviewSchedules->isEmpty()) {
 
                 if (isset($user->interviewSchedules[0])) {
-                    throw new \Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'));
+                    throw new Exception(ResponseMessage::customMessage('User already have a first interview. Please schedule a second interview.'), Response::HTTP_CONFLICT);
                 }
 
             }
@@ -182,7 +185,7 @@ class InterviewService
         if (isset($user->interviewSchedules[0])) {
 
             if (!$user->interviewSchedules[0]->is_completed) {
-                throw new \Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'));
+                throw new Exception(ResponseMessage::customMessage('First interview should be completed before creating second interview'), Response::HTTP_CONFLICT);
             }
         }
 
@@ -193,7 +196,7 @@ class InterviewService
         $interviewPolicy = InterviewPolicy::where('role_id', $user->roles[0]->id)->first();
 
         if (!$interviewPolicy) {
-            throw new \Exception(ResponseMessage::customMessage('No interview policy associated with role ' . $user->roles[0]->name));
+            throw new Exception(ResponseMessage::customMessage('No interview policy associated with role ' . $user->roles[0]->name), Response::HTTP_NOT_FOUND);
         }
 
         // Get department
@@ -273,12 +276,14 @@ class InterviewService
             $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
 
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'interview-schedule' => $secondInterviewScheduleWithAdditionalData,
             ]);
 
         else:
             // Incase of first interview
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'interview-schedule' => $interviewSchedule->with('practice', 'interviewPolicies.questions.options', 'hiringRequest', 'department.departmentHead.profile', 'user.profile')
                     ->latest()
                     ->first(),
@@ -306,6 +311,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview' => $interviewSchedule->with('practice', 'department.departmentHead.profile', 'user.profile', 'hiringRequest')
                 ->latest('updated_at')
                 ->first(),
@@ -323,7 +329,8 @@ class InterviewService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Interview Schedule'),
+            'code' => Response::HTTP_NO_CONTENT,
+            'interview' => $interviewSchedule,
         ]);
     }
 
@@ -372,6 +379,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview-schedules' => $interviewSchedules,
         ]);
     }
@@ -401,11 +409,11 @@ class InterviewService
         switch ($questionType) {
             case 'descriptive':
                 if (!$request->has('answer')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'));
+                    throw new Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'), Response::HTTP_CONFLICT);
                 }
 
                 if (Str::of($request->answer)->isEmpty) {
-                    throw new \Exception(ResponseMessage::customMessage('answer key should not be empty'));
+                    throw new Exception(ResponseMessage::customMessage('answer key should not be empty'), Response::HTTP_BAD_REQUEST);
                 }
 
                 // Initiate instance of InterviewAnswer model
@@ -418,13 +426,14 @@ class InterviewService
                 $interviewAnswer->save();
 
                 return Response::success([
-                    'message' => 'Answer Saved',
+                    'code' => Response::HTTP_CREATED,
+                    'answer' => $interviewAnswer,
                 ]);
 
                 break;
             case 'single-choice':
                 if (!$request->has('option')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
+                    throw new Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
                 }
 
                 // Initiate instance of InterviewAnswer model
@@ -437,13 +446,14 @@ class InterviewService
                 $interviewAnswer->save();
 
                 return Response::success([
-                    'message' => 'Answer Saved',
+                    'code' => Response::HTTP_CREATED,
+                    'answer' => $interviewAnswer,
                 ]);
 
                 break;
             case 'multi-choice':
                 if (!$request->has('options')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
+                    throw new Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
                 }
 
                 // Cast $request->options to $options
@@ -463,7 +473,8 @@ class InterviewService
                 }
 
                 return Response::success([
-                    'message' => 'Answer Saved',
+                    'code' => Response::HTTP_CREATED,
+                    'answer' => $interviewAnswer,
                 ]);
 
                 break;
@@ -491,6 +502,7 @@ class InterviewService
         }
 
         return Response::success([
+            'code' => Response::HTTP_CREATED
             'message' => ResponseMessage::customMessage('Adhoc Questions saved'),
         ]);
     }
@@ -515,6 +527,7 @@ class InterviewService
         }
 
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'message' => ResponseMessage::customMessage('Candidate Questions saved'),
         ]);
     }
@@ -568,11 +581,13 @@ class InterviewService
             $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
 
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'interview' => $secondInterviewScheduleWithAdditionalData,
             ]);
         else:
 
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'interview' => $interviewSchedule->where('id', $interviewSchedule->id)
                     ->with([
                         'user.profile',
@@ -605,6 +620,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP::OK,
             'adhoc-questions' => $adhocQuestions,
         ]);
     }
@@ -620,6 +636,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP::OK,
             'candidate-questions' => $candidateQuestions,
         ]);
     }
@@ -635,6 +652,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_NO_CONTENT,
             'adhoc-question' => $adhocQuestion,
         ]);
     }
@@ -650,6 +668,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_NO_CONTENT,
             'candidate-question' => $candidateQuestion,
         ]);
     }
@@ -681,6 +700,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'interview-misc-info' => $interviewMiscInfo,
         ]);
     }
@@ -710,6 +730,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'interview-score' => $interviewScore,
         ]);
     }
@@ -757,6 +778,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interviews' => $interviews,
         ]);
     }

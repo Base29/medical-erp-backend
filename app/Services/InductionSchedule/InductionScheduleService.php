@@ -7,6 +7,7 @@ use App\Helpers\UpdateService;
 use App\Models\InductionSchedule;
 use App\Models\Practice;
 use App\Models\User;
+use Exception;
 
 class InductionScheduleService
 {
@@ -34,7 +35,7 @@ class InductionScheduleService
 
         // Check if the $user already has a schedule
         if ($user->inductionAlreadyScheduled()) {
-            throw new \Exception(ResponseMessage::customMessage('User already has a schedule'));
+            throw new Exception(ResponseMessage::customMessage('User already has a schedule'), Response::HTTP_CONFLICT);
         }
 
         // Save induction Schedule
@@ -83,6 +84,7 @@ class InductionScheduleService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_NO_CONTENT,
             'induction-schedule' => $inductionSchedule,
         ]);
     }
@@ -97,6 +99,7 @@ class InductionScheduleService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user-induction' => $userInduction,
         ]);
     }
@@ -111,6 +114,7 @@ class InductionScheduleService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'induction' => $induction,
         ]);
     }
@@ -125,6 +129,7 @@ class InductionScheduleService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'interview' => $inductionSchedule->with('practice', 'user.profile')
                 ->latest('updated_at')
                 ->first(),

@@ -13,6 +13,7 @@ use App\Http\Requests\Appraisal\FetchSingleAppraisalRequest;
 use App\Http\Requests\Appraisal\FetchUpcomingAppraisalsRequest;
 use App\Http\Requests\Appraisal\UpdateAppraisalRequest;
 use App\Services\Appraisal\AppraisalService;
+use Exception;
 
 class AppraisalController extends Controller
 {
@@ -33,9 +34,9 @@ class AppraisalController extends Controller
             // Logic here
             return $this->appraisalService->createAppraisal($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -48,9 +49,9 @@ class AppraisalController extends Controller
             // Fetch practice interview
             return $this->appraisalService->fetchAllAppraisals($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,9 +64,9 @@ class AppraisalController extends Controller
             // Fetch practice interview schedules
             return $this->appraisalService->fetchUpcomingAppraisals($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -78,9 +79,9 @@ class AppraisalController extends Controller
             // Update appraisal
             return $this->appraisalService->updateAppraisal($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -93,9 +94,9 @@ class AppraisalController extends Controller
             // Delete appraisal
             return $this->appraisalService->deleteAppraisal($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -108,9 +109,9 @@ class AppraisalController extends Controller
             // Past appraisal service
             return $this->appraisalService->fetchCompletedAppraisals($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -123,9 +124,9 @@ class AppraisalController extends Controller
             // Store appraisal answer
             return $this->appraisalService->storeAppraisalAnswer($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -138,9 +139,9 @@ class AppraisalController extends Controller
             // Fetch single interview service
             return $this->appraisalService->fetchSingleAppraisal($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

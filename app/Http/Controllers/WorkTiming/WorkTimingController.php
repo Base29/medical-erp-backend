@@ -6,8 +6,8 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\WorkTiming\FetchWorkTimingRequest;
 use App\Http\Requests\WorkTiming\UpdateWorkTimingRequest;
-use App\Models\WorkTiming;
 use App\Services\WorkTiming\WorkTimingService;
+use Exception;
 
 class WorkTimingController extends Controller
 {
@@ -28,10 +28,10 @@ class WorkTimingController extends Controller
             // Update work timing
             return $this->workTimingService->updateWorkTiming($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -45,10 +45,10 @@ class WorkTimingController extends Controller
             // Fetch work timings
             return $this->workTimingService->fetchWorkTimings($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -22,8 +22,8 @@ use App\Http\Requests\User\LessonProgressRequest;
 use App\Http\Requests\User\ModuleProgressRequest;
 use App\Http\Requests\User\SearchCandidateProfilesRequest;
 use App\Http\Requests\User\UpdateUserRequest;
-use App\Models\User;
 use App\Services\User\UserService;
+use Exception;
 
 class UserController extends Controller
 {
@@ -45,10 +45,10 @@ class UserController extends Controller
             // Create user
             return $this->userService->createUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -62,10 +62,10 @@ class UserController extends Controller
             // Delete service
             return $this->userService->deleteUser($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -78,10 +78,10 @@ class UserController extends Controller
             // Fetch users
             return $this->userService->fetchUsers($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,10 +95,10 @@ class UserController extends Controller
             // Update user profile
             return $this->userService->updateUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -112,10 +112,10 @@ class UserController extends Controller
             // Fetch me
             return $this->userService->me();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -128,9 +128,9 @@ class UserController extends Controller
             // Fetch single user service
             return $this->userService->fetchSingleUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -143,9 +143,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->hireCandidate($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -157,9 +157,9 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->recordLessonProgress($request);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -173,9 +173,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserTrainingCourses();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -188,9 +188,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->recordModuleProgress($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -203,9 +203,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->recordCourseProgress($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -218,9 +218,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->createEndOfModuleExam($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -233,9 +233,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchSingleEnrolledCourse($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -248,9 +248,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchEmployees();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -263,9 +263,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->searchCandidateProfiles($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -278,9 +278,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->updateUserLocumStatus($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -292,9 +292,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->filterUsers($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -307,9 +307,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserSessionInvites($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -322,9 +322,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserSessions($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -337,9 +337,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserSessionsByMonth($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -352,9 +352,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserSessionsByDay($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -367,9 +367,9 @@ class UserController extends Controller
             // Logic here
             return $this->userService->getMySessionInvites($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

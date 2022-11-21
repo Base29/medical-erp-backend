@@ -28,17 +28,17 @@ class OfferService
 
         // Check if $user applicant_status = NULL
         if ($user->applicant_status === null) {
-            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Status of the applicant is not updated'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Status of the applicant is not updated'), Response::HTTP_CONFLICT);
         }
 
         // Check if $user applicant_status = 0
         if ($user->applicant_status === 0) {
-            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'), Response::HTTP_CONFLICT);
         }
 
         // Check if $user applicant_status = 2
         if ($user->applicant_status === 2) {
-            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'), Response::HTTP_CONFLICT);
         }
 
         //TODO: START-BLOCK - Logic in this code block for latest offer can be improved with the newly added is_active key in offers table
@@ -63,7 +63,7 @@ class OfferService
 
             // Check if $userLatestOffer is discarded
             if ($userLatestOffer['status'] !== 5) {
-                throw new Exception('Applicant already have a active offer.');
+                throw new Exception('Applicant already have a active offer.', Response::HTTP_CONFLICT);
             }
         }
 
@@ -94,6 +94,7 @@ class OfferService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'offer' => $offer->with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
                 ->latest()
                 ->first(),
@@ -112,7 +113,7 @@ class OfferService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get offer
@@ -125,11 +126,12 @@ class OfferService
         $offerUpdated = UpdateService::updateModel($offer, $request->validated(), 'offer');
 
         if (!$offerUpdated) {
-            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while updating offer ' . $offer->id), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'offer' => $offer->with('practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings')
                 ->latest('updated_at')
                 ->first(),
@@ -148,7 +150,8 @@ class OfferService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Offer ' . $offer->id),
+            'code' => Response::HTTP_OK,
+            'offer' => $offer,
         ]);
     }
 
@@ -161,6 +164,7 @@ class OfferService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'offer' => $offer,
         ]);
 
@@ -174,7 +178,7 @@ class OfferService
 
         // Check if $offer is discarded (status = 5)
         if ($offer->status === 5) {
-            throw new Exception(ResponseMessage::customMessage('Cannot create amendment for Offer. The offer is discarded (status = 5).'));
+            throw new Exception(ResponseMessage::customMessage('Cannot create amendment for Offer. The offer is discarded (status = 5).'), Response::HTTP_FORBIDDEN);
         }
 
         // Get all amendments of $offer
@@ -187,12 +191,12 @@ class OfferService
             if ($latestAmendment !== false) {
                 // Check if the previous amendment is accepted
                 if ($latestAmendment['status'] === 1) {
-                    throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'));
+                    throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'), Response::HTTP_FORBIDDEN);
                 }
 
                 // Check if previous amendment has been rejected/declined
                 if ($latestAmendment['status'] !== 0) {
-                    throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'));
+                    throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'), Response::HTTP_FORBIDDEN);
                 }
             }
         }
@@ -211,6 +215,7 @@ class OfferService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'offer' => $offer->where('id', $offer->id)->with('amendments')->first(),
         ]);
 
@@ -233,6 +238,7 @@ class OfferService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'offer-amendment' => $offerAmendment->latest('updated_at')->first(),
         ]);
     }

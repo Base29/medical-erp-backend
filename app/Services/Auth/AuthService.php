@@ -6,8 +6,10 @@
 
 namespace App\Services\Auth;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
@@ -26,16 +28,16 @@ class AuthService
 
         // Check if the user is active
         if (!$user->is_active) {
-            throw new \Exception(ResponseMessage::userNotActive($user->email));
+            throw new Exception(ResponseMessage::userNotActive($user->email), Response::HTTP_FORBIDDEN);
         }
 
         // Check if $user is blacklisted
         if ($user->is_blacklisted) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $user->email . ' is blacklisted. Please contact HQ.'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $user->email . ' is blacklisted. Please contact HQ.'), Response::HTTP_FORBIDDEN);
         }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
-            throw new \Exception(ResponseMessage::invalidCredentials());
+            throw new Exception(ResponseMessage::invalidCredentials(), Response::HTTP_UNAUTHORIZED);
         }
 
         // Generating JWT token from provided credentials
@@ -71,7 +73,7 @@ class AuthService
 
         // Check if the provided reset token or user is valid
         if ($status === Password::INVALID_TOKEN || $status === Password::INVALID_USER) {
-            throw new \Exception(ResponseMessage::invalidToken());
+            throw new Exception(ResponseMessage::invalidToken(), Response::HTTP_UNAUTHORIZED);
         }
     }
 

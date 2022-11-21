@@ -8,8 +8,8 @@ use App\Http\Requests\Reference\CreateReferenceRequest;
 use App\Http\Requests\Reference\DeleteReferenceRequest;
 use App\Http\Requests\Reference\FetchReferenceRequest;
 use App\Http\Requests\Reference\UpdateReferenceRequest;
-use App\Models\Reference;
 use App\Services\Reference\ReferenceService;
+use Exception;
 
 class ReferenceController extends Controller
 {
@@ -31,9 +31,9 @@ class ReferenceController extends Controller
             // Create reference service
             return $this->referenceService->createReference($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,9 +47,9 @@ class ReferenceController extends Controller
             // Fetch references
             return $this->referenceService->fetchReferences($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,9 +63,9 @@ class ReferenceController extends Controller
             // Delete reference
             return $this->referenceService->deleteReference($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -79,9 +79,9 @@ class ReferenceController extends Controller
             // Update reference
             return $this->referenceService->updateReference($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

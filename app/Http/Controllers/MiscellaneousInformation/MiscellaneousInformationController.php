@@ -9,8 +9,8 @@ use App\Http\Requests\MiscellaneousInformation\CreateMiscellaneousInformationReq
 use App\Http\Requests\MiscellaneousInformation\DeleteMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\FetchMiscellaneousInformationRequest;
 use App\Http\Requests\MiscellaneousInformation\UpdateMiscellaneousInformationRequest;
-use App\Models\MiscellaneousInformation;
 use App\Services\MiscInfo\MiscInfoService;
+use Exception;
 
 class MiscellaneousInformationController extends Controller
 {
@@ -33,13 +33,14 @@ class MiscellaneousInformationController extends Controller
             $miscInfo = $this->miscInfoService->createMiscInfo($request);
 
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,12 +56,13 @@ class MiscellaneousInformationController extends Controller
 
             // Return response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,12 +78,13 @@ class MiscellaneousInformationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Misc Info'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -97,12 +100,13 @@ class MiscellaneousInformationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'misc-info' => $miscInfo,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

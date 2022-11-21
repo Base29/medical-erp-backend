@@ -23,6 +23,7 @@ use App\Http\Requests\Locum\UpdateEsmStatusRequest;
 use App\Http\Requests\Locum\UpdateLocumNoteRequest;
 use App\Http\Requests\Locum\UploadSessionInvoiceRequest;
 use App\Services\Locum\LocumService;
+use Exception;
 
 class LocumController extends Controller
 {
@@ -44,9 +45,9 @@ class LocumController extends Controller
             // Create locum session service
             return $this->locumService->createLocumSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -60,9 +61,9 @@ class LocumController extends Controller
             // Assign user to session service
             return $this->locumService->addLocumToSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -75,9 +76,9 @@ class LocumController extends Controller
             // Remove user from session service
             return $this->locumService->removeLocumFromSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -90,9 +91,9 @@ class LocumController extends Controller
             // Fetch all locum session service
             return $this->locumService->fetchAllSessions($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -105,9 +106,9 @@ class LocumController extends Controller
             // Fetch single locum session service
             return $this->locumService->fetchSingleLocumSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -119,9 +120,9 @@ class LocumController extends Controller
             // Delete locum session service
             return $this->locumService->deleteLocumSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -134,9 +135,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->fetchSessionsByMonth($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -149,9 +150,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->fetchSessionsByDay($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -164,9 +165,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->inviteUsersToLocumSession($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -179,9 +180,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->sessionInvitationAction($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -194,9 +195,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->uploadSessionInvoice($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -209,9 +210,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->fetchUserInvoices($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -224,9 +225,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->updateEsmStatus($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -239,9 +240,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->fetchAllLocumBilling($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -254,9 +255,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->addLocumToBlacklist($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -269,9 +270,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->removeLocumFromBlacklist($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -284,9 +285,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->createLocumNote($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -299,9 +300,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->updateLocumNote($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -314,9 +315,9 @@ class LocumController extends Controller
             // Logic here
             return $this->locumService->deleteLocumNote($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

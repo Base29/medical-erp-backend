@@ -11,7 +11,7 @@ use App\Http\Requests\Permission\CreatePermissionRequest;
 use App\Http\Requests\Permission\RevokePermissionForRoleRequest;
 use App\Http\Requests\Permission\RevokePermissionForUserRequest;
 use App\Services\Permission\PermissionService;
-use Spatie\Permission\Models\Permission;
+use Exception;
 
 class PermissionController extends Controller
 {
@@ -36,10 +36,10 @@ class PermissionController extends Controller
             // Return success response
             return Response::success(['permission' => $permission]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,10 +55,10 @@ class PermissionController extends Controller
 
             return Response::success(['message' => ResponseMessage::deleteSuccess('Permission')]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,10 +77,10 @@ class PermissionController extends Controller
             // Return success response
             return Response::success(['permissions' => $permissions]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -94,10 +94,10 @@ class PermissionController extends Controller
             // Assign to role
             return $this->permissionService->assignPermissionToRole($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -111,10 +111,10 @@ class PermissionController extends Controller
             // Assign permission to user
             return $this->permissionService->assignPermissionToUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -130,10 +130,10 @@ class PermissionController extends Controller
             // Revoke permission for role
             return $this->permissionService->revokePermissionForRole($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -148,10 +148,10 @@ class PermissionController extends Controller
             // Revoke permission for user
             return $this->permissionService->revokePermissionForUser($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

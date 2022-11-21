@@ -11,6 +11,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\ContractSummary;
 use App\Models\User;
+use Exception;
 
 class ContractSummaryService
 {
@@ -64,18 +65,20 @@ class ContractSummaryService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if the contract summary exists
         $contractSummary = ContractSummary::findOrFail($request->contract_summary);
 
         if (!$contractSummary) {
-            throw new \Exception(ResponseMessage::notFound(
+            throw new Exception(ResponseMessage::notFound(
                 'Contract Summary',
                 $request->contract_summary,
                 false
-            ));
+            ),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         // Update contract summary
@@ -103,7 +106,7 @@ class ContractSummaryService
         $contractSummary = ContractSummary::findOrFail($id);
 
         if (!$contractSummary) {
-            throw new \Exception(ResponseMessage::notFound('Contract Summary', $id, false));
+            throw new Exception(ResponseMessage::notFound('Contract Summary', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         $contractSummary->delete();
@@ -121,7 +124,7 @@ class ContractSummaryService
 
         // Check if $contractSummary is already signed
         if ($contractSummary->is_signed) {
-            throw new \Exception(ResponseMessage::customMessage('Contract summary ' . $contractSummary->id . ' already signed'));
+            throw new Exception(ResponseMessage::customMessage('Contract summary ' . $contractSummary->id . ' already signed'), Response::HTTP_CONFLICT);
         }
 
         // Update the is_signed column
@@ -130,6 +133,7 @@ class ContractSummaryService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $authenticatedUser,
         ]);
     }

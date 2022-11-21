@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Policy;
 use App\Models\Practice;
+use Exception;
 
 class PolicyService
 {
@@ -28,7 +29,7 @@ class PolicyService
 
         // If upload fails
         if (!$attachmentUrl) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong while uploading document'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong while uploading document'), Response::HTTP_BAD_REQUEST);
         }
 
         // Create Policy
@@ -54,6 +55,7 @@ class PolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'policy' => $policy->with(['roles'])->latest()->first(),
         ]);
     }
@@ -64,7 +66,10 @@ class PolicyService
         // Fetching policies
         $policies = Policy::with('signatures.user')->latest()->get();
 
-        return Response::success(['policies' => $policies]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'policies' => $policies,
+        ]);
     }
 
     // Delete policy
@@ -74,12 +79,15 @@ class PolicyService
         $policy = Policy::findOrFail($id);
 
         if (!$policy) {
-            throw new \Exception(ResponseMessage::notFound('Policy', $id, false));
+            throw new Exception(ResponseMessage::notFound('Policy', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Deleting practice
         $policy->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Policy')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'policy' => $policy,
+        ]);
     }
 }

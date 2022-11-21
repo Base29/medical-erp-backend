@@ -8,14 +8,21 @@
 namespace App\Helpers;
 
 use App\Exceptions\ResponseException;
+use Illuminate\Http\Response as HttpResponse;
 use Illuminate\Support\Arr;
 
-class Response
+class Response extends HttpResponse
 {
+
     // Send Success Response
     public static function success($args)
     {
-        return response(self::responseData($args, 'success'), 200);
+        // Checking if the required args (message & code) are passed where the Response::fail() method is used
+        if (!Arr::has($args, 'code')) {
+            throw new ResponseException('Argument code is missing for the Response::success() method.');
+        }
+
+        return response(self::responseData($args, 'success'), $args['code']);
     }
 
     // Send Failed Response

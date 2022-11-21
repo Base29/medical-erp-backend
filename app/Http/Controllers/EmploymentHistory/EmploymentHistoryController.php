@@ -10,8 +10,8 @@ use App\Http\Requests\EmploymentHistory\DeleteEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\FetchEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\FetchSingleEmploymentHistoryRequest;
 use App\Http\Requests\EmploymentHistory\UpdateEmploymentHistoryRequest;
-use App\Models\EmploymentHistory;
 use App\Services\EmploymentHistory\EmploymentHistoryService;
+use Exception;
 
 class EmploymentHistoryController extends Controller
 {
@@ -36,13 +36,14 @@ class EmploymentHistoryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'employment-history' => $employmentHistory,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -58,12 +59,13 @@ class EmploymentHistoryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-history' => $employmentHistory,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -79,12 +81,13 @@ class EmploymentHistoryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Employment History'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -100,13 +103,14 @@ class EmploymentHistoryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-histories' => $employmentHistories,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -122,12 +126,13 @@ class EmploymentHistoryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-history' => $employmentHistory,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

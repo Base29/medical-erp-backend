@@ -9,8 +9,8 @@ use App\Http\Requests\EmergencyContact\CreateEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\DeleteEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\FetchEmergencyContactRequest;
 use App\Http\Requests\EmergencyContact\UpdateEmergencyContactRequest;
-use App\Models\EmergencyContact;
 use App\Services\EmergencyContact\EmergencyContactService;
+use Exception;
 
 class EmergencyContactController extends Controller
 {
@@ -34,12 +34,13 @@ class EmergencyContactController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'emergency-contact' => $emergencyContact,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,11 +56,12 @@ class EmergencyContactController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'emergency-contacts' => $emergencyContacts,
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -75,12 +77,13 @@ class EmergencyContactController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Emergency Contact'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,12 +98,13 @@ class EmergencyContactController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'emergency-contact' => $emergencyContact,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

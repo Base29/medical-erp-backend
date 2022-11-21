@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\InductionResult\CreateInductionResultSingleRequest;
 use App\Services\InductionResult\InductionResultService;
+use Exception;
 
 class InductionResultController extends Controller
 {
@@ -30,12 +31,13 @@ class InductionResultController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'induction-results' => $inductionResults,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

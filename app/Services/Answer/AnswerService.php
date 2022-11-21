@@ -6,9 +6,11 @@
 
 namespace App\Services\Answer;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Answer;
 use App\Models\Post;
+use Exception;
 
 class AnswerService
 {
@@ -48,7 +50,7 @@ class AnswerService
         $ownedByUser = $answer->ownedBy(auth()->user());
 
         if (!$ownedByUser) {
-            throw new \Exception(ResponseMessage::notAllowedToUpdate('answer'));
+            throw new Exception(ResponseMessage::notAllowedToUpdate('answer'), Response::HTTP_FORBIDDEN);
         }
 
         // Update answer
@@ -64,14 +66,14 @@ class AnswerService
         $answer = Answer::findOrFail($id);
 
         if (!$answer) {
-            throw new \Exception(ResponseMessage::notFound('Answer', $id, false));
+            throw new Exception(ResponseMessage::notFound('Answer', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Check if the user updating the answer is the author of the answer
         $ownedByUser = $answer->ownedBy(auth()->user());
 
         if (!$ownedByUser) {
-            throw new \Exception(ResponseMessage::notAllowedToDelete('answer'));
+            throw new Exception(ResponseMessage::notAllowedToDelete('answer'));
         }
 
         // Delete the answer

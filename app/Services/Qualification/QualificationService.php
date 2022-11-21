@@ -28,6 +28,7 @@ class QualificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'user' => $user->where('id', $user->id)
                 ->with([
                     'profile.applicant',
@@ -57,6 +58,7 @@ class QualificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'qualification' => $qualification,
         ]);
 
@@ -73,6 +75,7 @@ class QualificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'qualification' => $qualification,
         ]);
     }

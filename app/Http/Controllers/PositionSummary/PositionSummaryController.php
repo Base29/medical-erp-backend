@@ -7,8 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\PositionSummary\CreatePositionSummaryRequest;
 use App\Http\Requests\PositionSummary\FetchSinglePositionSummaryRequest;
 use App\Http\Requests\PositionSummary\UpdatePositionSummaryRequest;
-use App\Models\PositionSummary;
 use App\Services\PositionSummary\PositionSummaryService;
+use Exception;
 
 class PositionSummaryController extends Controller
 {
@@ -30,10 +30,10 @@ class PositionSummaryController extends Controller
             // Create position summary
             return $this->positionSummaryService->createPositionSummary($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -47,10 +47,10 @@ class PositionSummaryController extends Controller
             // Update position summary
             return $this->positionSummaryService->updatePositionSummary($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -64,10 +64,10 @@ class PositionSummaryController extends Controller
             // Fetch single position summary
             return $this->positionSummaryService->fetchSinglePositionSummary($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -81,10 +81,10 @@ class PositionSummaryController extends Controller
             // Delete position summary
             return $this->positionSummaryService->deletePositionSummary($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

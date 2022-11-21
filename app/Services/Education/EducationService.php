@@ -2,10 +2,12 @@
 namespace App\Services\Education;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Education;
 use App\Models\User;
+use Exception;
 
 class EducationService
 {
@@ -81,7 +83,7 @@ class EducationService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get education
@@ -103,7 +105,7 @@ class EducationService
         $educationUpdated = UpdateService::updateModel($education, $updateRequestData, 'education');
 
         if (!$educationUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Education at this moment'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Education at this moment'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response

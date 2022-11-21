@@ -9,6 +9,7 @@ use App\Http\Requests\ItPolicy\DeleteItPolicyRequest;
 use App\Http\Requests\ItPolicy\FetchSingleItPolicyRequest;
 use App\Http\Requests\ItPolicy\SignItPolicyRequest;
 use App\Services\ItPolicy\ItPolicyService;
+use Exception;
 
 class ItPolicyController extends Controller
 {
@@ -29,9 +30,9 @@ class ItPolicyController extends Controller
             // Logic here
             return $this->itPolicyService->createItPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -44,9 +45,9 @@ class ItPolicyController extends Controller
             // Logic here
             return $this->itPolicyService->fetchItPolicies();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -59,9 +60,9 @@ class ItPolicyController extends Controller
             // Logic here
             return $this->itPolicyService->deleteItPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -74,9 +75,9 @@ class ItPolicyController extends Controller
             // Logic here
             return $this->itPolicyService->fetchSingleItPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -89,9 +90,9 @@ class ItPolicyController extends Controller
             // Logic here
             return $this->itPolicyService->signItPolicies($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

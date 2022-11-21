@@ -36,6 +36,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'training-course' => $trainingCourse->with('modules.lessons', 'roles', 'enrolledUsers.profile')->latest()->first(),
         ]);
     }
@@ -61,6 +62,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'course-module' => $courseModule,
         ]);
     }
@@ -85,6 +87,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'lesson' => $lesson,
         ]);
     }
@@ -101,6 +104,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'training-courses' => $trainingCourses,
         ]);
     }
@@ -118,6 +122,7 @@ class TrainingCourseService
 
         // Return success request
         return Response::success([
+            'code' => Response::HTTP_OK,
             'training-course' => $trainingCourse,
         ]);
     }
@@ -133,6 +138,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'training-course' => $trainingCourse,
         ]);
     }
@@ -148,6 +154,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'training-course' => $trainingCourse->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
                 $q->withCount('lessons');
             }])
@@ -203,6 +210,7 @@ class TrainingCourseService
 
         // Return success
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
         ]);
     }
@@ -224,6 +232,7 @@ class TrainingCourseService
 
         // Return success
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)->with('profile', 'courses.modules.lessons')->first(),
         ]);
     }
@@ -274,6 +283,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
         ]);
     }
@@ -293,6 +303,7 @@ class TrainingCourseService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
         ]);
     }

@@ -9,8 +9,8 @@ use App\Http\Requests\Education\CreateEducationRequest;
 use App\Http\Requests\Education\DeleteEducationRequest;
 use App\Http\Requests\Education\FetchEducationRequest;
 use App\Http\Requests\Education\UpdateEducationRequest;
-use App\Models\Education;
 use App\Services\Education\EducationService;
+use Exception;
 
 class EducationController extends Controller
 {
@@ -34,12 +34,13 @@ class EducationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'education' => $education,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,13 +56,14 @@ class EducationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'education' => $education,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,12 +79,13 @@ class EducationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Education'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -98,12 +101,13 @@ class EducationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'education' => $education,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

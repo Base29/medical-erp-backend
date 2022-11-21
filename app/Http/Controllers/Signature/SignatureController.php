@@ -4,8 +4,8 @@ namespace App\Http\Controllers\Signature;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
-use App\Models\Signature;
 use App\Services\Signature\SignatureService;
+use Exception;
 use Illuminate\Http\Request;
 
 class SignatureController extends Controller
@@ -27,10 +27,10 @@ class SignatureController extends Controller
             // Sign policy
             return $this->signatureService->createSignature($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -44,10 +44,10 @@ class SignatureController extends Controller
             // Fetch signatures
             return $this->signatureService->fetchSignatures();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

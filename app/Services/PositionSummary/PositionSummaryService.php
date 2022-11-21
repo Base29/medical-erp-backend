@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\PositionSummary;
 use App\Models\User;
+use Exception;
 
 class PositionSummaryService
 {
@@ -27,6 +28,7 @@ class PositionSummaryService
 
         // Return created Position Summary
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'position-summary' => $positionSummary->with('user.profile')->latest()->first(),
         ]);
     }
@@ -46,7 +48,7 @@ class PositionSummaryService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Fetch position summary
@@ -56,6 +58,7 @@ class PositionSummaryService
         UpdateService::updateModel($positionSummary, $request->validated(), 'position_summary');
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'position_summary' => $positionSummary->with('user.profile')->latest('updated_at')->first(),
         ]);
 
@@ -69,6 +72,7 @@ class PositionSummaryService
 
         // Return response with the Contract Summary
         return Response::success([
+            'code' => Response::HTTP_OK,
             'position_summary' => $positionSummary,
         ]);
     }
@@ -80,13 +84,13 @@ class PositionSummaryService
         $positionSummary = PositionSummary::findOrFail($id);
 
         if (!$positionSummary) {
-            throw new \Exception(ResponseMessage::notFound('Position Summary', $id, false));
+            throw new Exception(ResponseMessage::notFound('Position Summary', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         $positionSummary->delete();
 
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Position Summary'),
+            'position-summary' => $positionSummary,
         ]);
     }
 }

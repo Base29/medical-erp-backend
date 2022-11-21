@@ -9,6 +9,7 @@ use App\Http\Requests\Comment\CreateCommentRequest;
 use App\Http\Requests\Comment\FetchCommentRequest;
 use App\Http\Requests\Comment\UpdateCommentRequest;
 use App\Services\Comment\CommentService;
+use Exception;
 
 class CommentController extends Controller
 {
@@ -33,12 +34,15 @@ class CommentController extends Controller
             $comment = $this->commentService->createComment($request);
 
             // Return success response
-            return Response::success(['comment' => $comment]);
+            return Response::success([
+                'code' => Response::HTTP_CREATED,
+                'comment' => $comment,
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -54,12 +58,15 @@ class CommentController extends Controller
             $comments = $this->commentService->fetchComments($request);
 
             // Return success response
-            return Response::success(['post_comments' => $comments]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'post_comments' => $comments,
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -75,13 +82,14 @@ class CommentController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'comment' => $comment,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,12 +103,15 @@ class CommentController extends Controller
             $this->commentService->deleteComment($id);
 
             // Return success response
-            return Response::success(['message' => ResponseMessage::deleteSuccess('Comment')]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'message' => ResponseMessage::deleteSuccess('Comment'),
+            ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -20,6 +20,7 @@ use App\Http\Requests\Interview\FetchInterviewSchedulesRequest;
 use App\Http\Requests\Interview\FetchInterviewsRequest;
 use App\Http\Requests\Interview\FetchSingleInterviewRequest;
 use App\Services\Interview\InterviewService;
+use Exception;
 
 class InterviewController extends Controller
 {
@@ -40,9 +41,9 @@ class InterviewController extends Controller
             // Fetch practice interview
             return $this->interviewService->fetchAllInterviews($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,9 +56,9 @@ class InterviewController extends Controller
             // Fetch practice interview schedules
             return $this->interviewService->fetchUpcomingInterviewSchedules($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -70,9 +71,9 @@ class InterviewController extends Controller
             // Create interview schedule service
             return $this->interviewService->createInterviewSchedule($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -85,9 +86,9 @@ class InterviewController extends Controller
             // Update interview schedule
             return $this->interviewService->updateInterviewSchedule($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -99,9 +100,9 @@ class InterviewController extends Controller
         try {
             // Delete interview service
             return $this->interviewService->deleteInterviewSchedule($request);
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -114,9 +115,9 @@ class InterviewController extends Controller
             // Past interview service
             return $this->interviewService->fetchPastInterviews($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -129,9 +130,9 @@ class InterviewController extends Controller
             // Store interview answers
             return $this->interviewService->storeInterviewAnswer($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -144,9 +145,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->createAdhocQuestions($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -159,9 +160,9 @@ class InterviewController extends Controller
             // Create candidate questions
             return $this->interviewService->createCandidateQuestions($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -174,9 +175,9 @@ class InterviewController extends Controller
             // Fetch single interview service
             return $this->interviewService->fetchSingleInterview($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -189,9 +190,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->fetchAdhocQuestions($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -204,9 +205,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->fetchCandidateQuestions($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -219,9 +220,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->deleteAdhocQuestion($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -234,9 +235,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->deleteCandidateQuestion($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -249,9 +250,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->addMiscInfo($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -264,9 +265,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->createInterviewScore($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -279,9 +280,9 @@ class InterviewController extends Controller
             // Logic here
             return $this->interviewService->getAllInterviews($request);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

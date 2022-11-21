@@ -9,8 +9,8 @@ use App\Http\Requests\EmploymentCheck\CreateEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\DeleteEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\FetchSingleEmploymentCheckRequest;
 use App\Http\Requests\EmploymentCheck\UpdateEmploymentCheckRequest;
-use App\Models\EmploymentCheck;
 use App\Services\EmploymentCheck\EmploymentCheckService;
+use Exception;
 
 class EmploymentCheckController extends Controller
 {
@@ -35,13 +35,14 @@ class EmploymentCheckController extends Controller
 
             // Return response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'employment_check' => $employmentCheck,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -57,13 +58,14 @@ class EmploymentCheckController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment_check' => $employmentCheck->latest('updated_at')->first(),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -79,12 +81,13 @@ class EmploymentCheckController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Employment Check'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -100,12 +103,13 @@ class EmploymentCheckController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-check' => $employmentCheck,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

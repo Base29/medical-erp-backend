@@ -9,8 +9,8 @@ use App\Http\Requests\EmploymentPolicy\CreateEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\DeleteEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\FetchEmploymentPolicyRequest;
 use App\Http\Requests\EmploymentPolicy\UpdateEmploymentPolicyRequest;
-use App\Models\EmploymentPolicy;
 use App\Services\EmploymentPolicy\EmploymentPolicyService;
+use Exception;
 
 class EmploymentPolicyController extends Controller
 {
@@ -35,13 +35,14 @@ class EmploymentPolicyController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'employment-policy' => $employmentPolicy,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -57,12 +58,13 @@ class EmploymentPolicyController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-policy' => $employmentPolicy,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -78,12 +80,13 @@ class EmploymentPolicyController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Employment Policies'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -99,12 +102,13 @@ class EmploymentPolicyController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'employment-policies' => $employmentPolicies,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

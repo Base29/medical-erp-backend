@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Reference;
 use App\Models\User;
+use Exception;
 
 class ReferenceService
 {
@@ -45,6 +46,7 @@ class ReferenceService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'reference' => $reference,
         ]);
     }
@@ -60,6 +62,7 @@ class ReferenceService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'references' => $references,
         ]);
     }
@@ -75,7 +78,8 @@ class ReferenceService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Reference'),
+            'code' => Response::HTTP_OK,
+            'reference' => $reference,
         ]);
     }
 
@@ -99,7 +103,7 @@ class ReferenceService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get Reference
@@ -129,11 +133,12 @@ class ReferenceService
 
         if (!$referenceUpdated) {
 
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Reference'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Reference'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'reference' => $reference->latest('updated_at')->first(),
         ]);
     }

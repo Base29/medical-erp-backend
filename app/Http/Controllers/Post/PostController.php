@@ -9,9 +9,9 @@ use App\Http\Requests\Post\FetchOwnPostRequest;
 use App\Http\Requests\Post\FetchSinglePostRequest;
 use App\Http\Requests\Post\RecordPostViewRequest;
 use App\Http\Requests\Post\UpdatePostRequest;
-use App\Models\Post;
 use App\Models\PostView;
 use App\Services\Post\PostService;
+use Exception;
 
 class PostController extends Controller
 {
@@ -32,10 +32,10 @@ class PostController extends Controller
             // Create post
             return $this->postService->createPost($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -49,10 +49,10 @@ class PostController extends Controller
             // Fetch posts
             return $this->postService->fetchPosts();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -66,10 +66,10 @@ class PostController extends Controller
             // Fetch auth()->user() posts
             return $this->postService->fetchUserPosts($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -83,10 +83,10 @@ class PostController extends Controller
             // Update Post
             return $this->postService->updatePost($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -99,10 +99,10 @@ class PostController extends Controller
             // Delete post
             return $this->postService->deletePost($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -115,9 +115,9 @@ class PostController extends Controller
             // Fetch single post
             return $this->postService->fetchSinglePost($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -132,10 +132,10 @@ class PostController extends Controller
             // Record post view
             return $this->postService->recordPostViews($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

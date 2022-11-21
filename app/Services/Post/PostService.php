@@ -9,6 +9,7 @@ use App\Models\Post;
 use App\Models\PostAttachment;
 use App\Models\PostView;
 use App\Models\Practice;
+use Exception;
 
 class PostService
 {
@@ -22,7 +23,7 @@ class PostService
         $userBelongsToPractice = auth()->user()->practices->contains('id', $practice->id);
 
         if (!$userBelongsToPractice) {
-            throw new \Exception(ResponseMessage::notBelongTo(auth()->user()->email, $practice->practice_name));
+            throw new Exception(ResponseMessage::notBelongTo(auth()->user()->email, $practice->practice_name), Response::HTTP_CONFLICT);
         }
 
         // Create Post
@@ -49,7 +50,10 @@ class PostService
             }
         }
 
-        return Response::success(['post' => $post->with('postAttachments')->latest()->first()]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'post' => $post->with('postAttachments')->latest()->first(),
+        ]);
     }
 
     // Fetch Posts
@@ -60,7 +64,10 @@ class PostService
             ->latest()
             ->paginate(10);
 
-        return Response::success(['posts' => $posts]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'posts' => $posts,
+        ]);
     }
 
     // Fetch user's own posts
@@ -73,7 +80,10 @@ class PostService
             ->latest()
             ->paginate(10);
 
-        return Response::success(['posts' => $posts]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'posts' => $posts,
+        ]);
     }
 
     // Update post
@@ -91,7 +101,7 @@ class PostService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Check if the post exist
@@ -99,13 +109,16 @@ class PostService
 
         // Check if user own's the post
         if (!$post->ownedBy(auth()->user())) {
-            throw new \Exception(ResponseMessage::notAllowedToUpdate('post'));
+            throw new Exception(ResponseMessage::notAllowedToUpdate('post'), Response::HTTP_FORBIDDEN);
         }
 
         // Update task's fields with the ones provided in the $request
         UpdateService::updateModel($post, $request->validated(), 'post');
 
-        return Response::success(['post' => $post->with('user')->latest('updated_at')->first()]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'post' => $post->with('user')->latest('updated_at')->first(),
+        ]);
 
     }
 
@@ -116,18 +129,21 @@ class PostService
         $post = Post::findOrFail($id);
 
         if (!$post) {
-            throw new \Exception(ResponseMessage::notFound('Post', $id, false));
+            throw new Exception(ResponseMessage::notFound('Post', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Check if user own's the post
         if (!$post->ownedBy(auth()->user())) {
-            throw new \Exception(ResponseMessage::notAllowedToDelete('post'));
+            throw new Exception(ResponseMessage::notAllowedToDelete('post'), Response::HTTP_FORBIDDEN);
         }
 
         // Delete post
         $post->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Post')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'post' => $post,
+        ]);
     }
 
     // Fetch single post
@@ -143,13 +159,13 @@ class PostService
         $visibility = $post->is_public;
 
         if (!$visibility) {
-            return Response::fail([
-                'message' => ResponseMessage::notPublic('Post'),
-                'code' => 400,
-            ]);
+            throw new Exception(ResponseMessage::notPublic('Post'), Response::HTTP_FORBIDDEN);
         }
 
-        return Response::success(['post' => $post]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'post' => $post,
+        ]);
     }
 
     // Record views on posts

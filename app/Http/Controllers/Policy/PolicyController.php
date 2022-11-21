@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Policy;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Policy\CreatePolicyRequest;
-use App\Models\Policy;
 use App\Services\Policy\PolicyService;
+use Exception;
 
 class PolicyController extends Controller
 {
@@ -28,10 +28,10 @@ class PolicyController extends Controller
             // Fetch policies
             return $this->policyService->fetchPolicies();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -44,10 +44,10 @@ class PolicyController extends Controller
             // Create policy
             return $this->policyService->createPolicy($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -61,10 +61,10 @@ class PolicyController extends Controller
             // Delete policy
             return $this->policyService->deletePolicy($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

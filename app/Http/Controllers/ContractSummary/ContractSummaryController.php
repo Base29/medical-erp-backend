@@ -8,8 +8,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ContractSummary\CreateContractSummaryRequest;
 use App\Http\Requests\ContractSummary\FetchSingleContractSummaryRequest;
 use App\Http\Requests\ContractSummary\UpdateContractSummaryRequest;
-use App\Models\ContractSummary;
 use App\Services\ContractSummary\ContractSummaryService;
+use Exception;
 
 class ContractSummaryController extends Controller
 {
@@ -34,13 +34,14 @@ class ContractSummaryController extends Controller
 
             // Return created contract summary
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'contract_summary' => $contractSummary,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,13 +56,14 @@ class ContractSummaryController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'contract-summary' => $contractSummary,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -77,13 +79,14 @@ class ContractSummaryController extends Controller
 
             // Return response with the Contract Summary
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'contract_summary' => $contractSummary,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -98,13 +101,14 @@ class ContractSummaryController extends Controller
             $this->contractSummaryService->deleteContractSummary($id);
 
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Contract Summary'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -117,9 +121,9 @@ class ContractSummaryController extends Controller
             // Logic here
             return $this->contractSummaryService->signContractSummary();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Reason;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Reason\CreateReasonRequest;
-use App\Models\Reason;
 use App\Services\Reason\ReasonService;
+use Exception;
 
 class ReasonController extends Controller
 {
@@ -29,10 +29,10 @@ class ReasonController extends Controller
             // Create reason
             return $this->reasonService->createReason($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -46,10 +46,10 @@ class ReasonController extends Controller
             // Fetch reasons
             return $this->reasonService->fetchReasons();
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -63,10 +63,10 @@ class ReasonController extends Controller
             // Delete reason
             return $this->reasonService->deleteReason($id);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -14,6 +14,7 @@ use App\Models\Department;
 use App\Models\Practice;
 use App\Models\Role;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
 
@@ -30,7 +31,10 @@ class AppraisalService
         $appraisalPolicy = AppraisalPolicy::where('role', $user->roles[0]->id)->first();
 
         if (!$appraisalPolicy) {
-            throw new \Exception(ResponseMessage::customMessage('No appraisal policy associated with role ' . $user->roles[0]->name));
+            throw new Exception(
+                ResponseMessage::customMessage('No appraisal policy associated with role ' . $user->roles[0]->name),
+                Response::HTTP_NOT_FOUND
+            );
         }
 
         // Get department
@@ -57,6 +61,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'appraisal' => $appraisal->with('practice', 'appraisalPolicies.questions.options', 'department.departmentHead.profile', 'user.profile')
                 ->latest()
                 ->first(),
@@ -70,7 +75,10 @@ class AppraisalService
         $role = Role::findOrFail($request->role);
 
         if ($role->hasAppraisalPolicy()) {
-            throw new \Exception(ResponseMessage::customMessage('Role ' . $role->name . ' already have a appraisal policy'));
+            throw new Exception(
+                ResponseMessage::customMessage('Role ' . $role->name . ' already have a appraisal policy'),
+                Response::HTTP_CONFLICT
+            );
         }
 
         // Instance of AppraisalPolicy
@@ -84,6 +92,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'appraisal-policy' => $appraisalPolicy->with('questions.options')
                 ->latest()
                 ->first(),
@@ -161,6 +170,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal-policies' => $appraisalPolicies,
         ]);
     }
@@ -175,6 +185,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal-policy' => $appraisalPolicy,
         ]);
     }
@@ -190,7 +201,8 @@ class AppraisalService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Appraisal Policy'),
+            'code' => Response::HTTP_OK,
+            'appraisal-policy' => $appraisalPolicy,
         ]);
     }
 
@@ -206,7 +218,7 @@ class AppraisalService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields));
         }
 
         // Get interview policy
@@ -217,11 +229,15 @@ class AppraisalService
 
         // Return response if update fails
         if (!$appraisalPolicyUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Appraisal Policy'));
+            throw new Exception(
+                ResponseMessage::customMessage('Something went wrong. Cannot update Appraisal Policy'),
+                Response::HTTP_BAD_REQUEST
+            );
         }
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal-policy' => $appraisalPolicy->with('role', 'questions.options')
                 ->latest('updated_at')
                 ->first(),
@@ -240,7 +256,7 @@ class AppraisalService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields));
         }
 
         // Get interview question
@@ -283,7 +299,10 @@ class AppraisalService
 
             // Check if the practice id is provided
             if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
+                throw new Exception(
+                    ResponseMessage::customMessage('practice field is required.'),
+                    Response::HTTP_BAD_REQUEST
+                );
             }
 
             // Get practice
@@ -304,6 +323,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisals' => $appraisals,
         ]);
     }
@@ -314,7 +334,10 @@ class AppraisalService
         if (!$request->is('api/hq/*')) {
             // Check if the practice id is provided
             if (!$request->has('practice')) {
-                throw new \Exception(ResponseMessage::customMessage('practice field is required.'));
+                throw new Exception(
+                    ResponseMessage::customMessage('practice field is required.'),
+                    Response::HTTP_BAD_REQUEST
+                );
             }
 
             // Get practice
@@ -336,6 +359,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'upcoming-appraisals' => $appraisals,
         ]);
     }
@@ -350,6 +374,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal' => $appraisal->with('practice', 'department.departmentHead.profile', 'user.profile')
                 ->latest('updated_at')
                 ->first(),
@@ -367,6 +392,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal' => $appraisal,
         ]);
     }
@@ -383,6 +409,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'completed-appraisals' => $appraisals,
         ]);
     }
@@ -412,11 +439,17 @@ class AppraisalService
         switch ($questionType) {
             case 'descriptive':
                 if (!$request->has('answer')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'));
+                    throw new Exception(
+                        ResponseMessage::customMessage('Answer to question type descriptive require answer key to be sent in request'),
+                        Response::HTTP_BAD_REQUEST
+                    );
                 }
 
                 if (Str::of($request->answer)->isEmpty) {
-                    throw new \Exception(ResponseMessage::customMessage('answer key should not be empty'));
+                    throw new Exception(
+                        ResponseMessage::customMessage('answer key should not be empty'),
+                        Response::HTTP_BAD_REQUEST
+                    );
                 }
 
                 // Initiate instance of InterviewAnswer model
@@ -428,13 +461,17 @@ class AppraisalService
                 $appraisalAnswer->save();
 
                 return Response::success([
+                    'code' => Response::HTTP_CREATED,
                     'answer' => $appraisalAnswer,
                 ]);
 
                 break;
             case 'single-choice':
                 if (!$request->has('option')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
+                    throw new Exception(
+                        ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'),
+                        Response::HTTP_BAD_REQUEST
+                    );
                 }
 
                 // Initiate instance of InterviewAnswer model
@@ -452,7 +489,10 @@ class AppraisalService
                 break;
             case 'multi-choice':
                 if (!$request->has('options')) {
-                    throw new \Exception(ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'));
+                    throw new Exception(
+                        ResponseMessage::customMessage('Answer to question type multi-choice require options array key to be sent in request'),
+                        Response::HTTP_BAD_REQUEST
+                    );
                 }
 
                 // Cast $request->options to $options
@@ -471,6 +511,7 @@ class AppraisalService
                 }
 
                 return Response::success([
+                    'code' => Response::HTTP_CREATED,
                     'answer' => $appraisalAnswer,
                 ]);
 
@@ -496,6 +537,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal' => $appraisal,
         ]);
     }
@@ -513,6 +555,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal-policy' => $appraisalPolicy,
         ]);
 

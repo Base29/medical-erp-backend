@@ -2,10 +2,12 @@
 namespace App\Services\EmploymentCheck;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\EmploymentCheck;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class EmploymentCheckService
@@ -108,7 +110,7 @@ class EmploymentCheckService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get employment check
@@ -177,7 +179,7 @@ class EmploymentCheckService
         $employmentCheckUpdated = UpdateService::updateModel($employmentCheck, $updateRequestData, 'employment_check');
 
         if (!$employmentCheckUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Employment Check at this moment.'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Employment Check at this moment.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response

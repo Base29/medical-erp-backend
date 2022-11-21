@@ -4,6 +4,7 @@ namespace App\Services\Reason;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Reason;
+use Exception;
 
 class ReasonService
 {
@@ -15,7 +16,10 @@ class ReasonService
         $reason->reason = $request->reason;
         $reason->save();
 
-        return Response::success(['reason' => $reason]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'reason' => $reason,
+        ]);
     }
 
     // Fetch reason
@@ -24,7 +28,10 @@ class ReasonService
         // Reasons
         $reasons = Reason::latest()->paginate(10);
 
-        return Response(['reasons' => $reasons]);
+        return Response([
+            'code' => Response::HTTP_OK,
+            'reasons' => $reasons,
+        ]);
     }
 
     // Delete reason
@@ -34,12 +41,15 @@ class ReasonService
         $reason = Reason::findOrFail($id);
 
         if (!$reason) {
-            throw new \Exception(ResponseMessage::notFound('Reason', $id, false));
+            throw new Exception(ResponseMessage::notFound('Reason', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Delete reason
         $reason->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Reason')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'reason' => $reason,
+        ]);
     }
 }

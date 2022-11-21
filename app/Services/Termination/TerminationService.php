@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Termination;
 use App\Models\User;
+use Exception;
 
 class TerminationService
 {
@@ -27,6 +28,7 @@ class TerminationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'termination' => $termination,
         ]);
     }
@@ -42,6 +44,7 @@ class TerminationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'termination' => $termination,
         ]);
     }
@@ -59,7 +62,7 @@ class TerminationService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get termination
@@ -70,11 +73,12 @@ class TerminationService
 
         // Return fail response in-case model is not updated
         if (!$terminationUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Termination'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Termination'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'termination' => $termination->latest('updated_at')->first(),
         ]);
     }
@@ -90,7 +94,8 @@ class TerminationService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Termination'),
+            'code' => Response::HTTP_OK,
+            'termination' => $termination,
         ]);
     }
 }

@@ -9,8 +9,8 @@ use App\Http\Requests\JobSpecification\CreateJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\DeleteJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\FetchJobSpecificationRequest;
 use App\Http\Requests\JobSpecification\FetchSingleJobSpecificationRequest;
-use App\Models\JobSpecification;
 use App\Services\JobSpecification\JobSpecificationService;
+use Exception;
 
 class JobSpecificationController extends Controller
 {
@@ -38,9 +38,9 @@ class JobSpecificationController extends Controller
                 'job-specification' => $jobSpecification,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -59,9 +59,9 @@ class JobSpecificationController extends Controller
                 'job-specifications' => $jobSpecifications,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -80,9 +80,9 @@ class JobSpecificationController extends Controller
                 'message' => ResponseMessage::deleteSuccess('Job Specification'),
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -95,9 +95,9 @@ class JobSpecificationController extends Controller
             // Single job specification
             return $this->jobSpecificationService->fetchSingleJobSpecification($request);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

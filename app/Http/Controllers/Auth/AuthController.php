@@ -9,6 +9,7 @@ use App\Http\Requests\Auth\AuthenticateUserRequest;
 use App\Http\Requests\Auth\ResetPasswordLinkRequest;
 use App\Http\Requests\Auth\ResetPasswordRequest;
 use App\Services\Auth\AuthService;
+use Exception;
 
 class AuthController extends Controller
 {
@@ -30,11 +31,15 @@ class AuthController extends Controller
             $user = $this->authService->authenticate($request);
 
             // Return response
-            return Response::success(['user' => $user]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'user' => $user,
+            ]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
+
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -45,7 +50,10 @@ class AuthController extends Controller
     {
         // Logout service
         $this->authService->logout();
-        return Response::success(['message' => ResponseMessage::logout()]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::logout(),
+        ]);
     }
 
     // Method for resetting password
@@ -56,12 +64,15 @@ class AuthController extends Controller
             // Reset password service
             $this->authService->resetPassword($request);
 
-            return Response::success(['message' => ResponseMessage::passwordResetSuccess()]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'message' => ResponseMessage::passwordResetSuccess(),
+            ]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -75,12 +86,15 @@ class AuthController extends Controller
             // Reset password link service
             $this->authService->resetPasswordLink($request);
 
-            return Response::success(['message' => ResponseMessage::passwordResetLink($request->email)]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'message' => ResponseMessage::passwordResetLink($request->email),
+            ]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -94,12 +108,15 @@ class AuthController extends Controller
             // Verify token service
             $userWithToken = $this->authService->verifyToken();
 
-            return Response::success(['user' => $userWithToken]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'user' => $userWithToken,
+            ]);
 
-        } catch (\Exception$e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

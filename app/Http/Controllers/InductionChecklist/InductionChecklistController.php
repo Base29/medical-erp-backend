@@ -11,6 +11,7 @@ use App\Http\Requests\InductionChecklist\FetchInductionChecklistRequest;
 use App\Http\Requests\InductionChecklist\FetchSingleInductionChecklistRequest;
 use App\Http\Requests\InductionChecklist\UpdateInductionChecklistRequest;
 use App\Services\InductionChecklist\InductionChecklistService;
+use Exception;
 
 class InductionChecklistController extends Controller
 {
@@ -34,12 +35,13 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'induction-checklist' => $inductionChecklist,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -55,12 +57,13 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'induction-checklists' => $inductionChecklists,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -76,12 +79,13 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'induction-checklist' => $inductionChecklist,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -97,11 +101,12 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Induction Checklist'),
             ]);
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
@@ -116,12 +121,13 @@ class InductionChecklistController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'induction-checklist' => $inductionChecklist,
             ]);
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }

@@ -4,6 +4,7 @@ namespace App\Services\Permission;
 use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\User;
+use Exception;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
 
@@ -29,7 +30,7 @@ class PermissionService
 
         // Check if permission exists
         if (!$permission) {
-            throw new \Exception(ResponseMessage::notFound('Permission', $id, false));
+            throw new Exception(ResponseMessage::notFound('Permission', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Delete permission
@@ -52,7 +53,7 @@ class PermissionService
         $alreadyHasPermission = $role->hasPermissionTo($request->permission);
 
         if ($alreadyHasPermission) {
-            throw new \Exception(ResponseMessage::alreadyAssigned($request->permission, $role->name));
+            throw new Exception(ResponseMessage::alreadyAssigned($request->permission, $role->name), Response::HTTP_CONFLICT);
         }
 
         // Check if the permission exists
@@ -61,7 +62,10 @@ class PermissionService
         // Assigning permission to the role
         $role->givePermissionTo($permission->name);
 
-        return Response::success(['message' => ResponseMessage::assigned($permission->name, $role->name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::assigned($permission->name, $role->name),
+        ]);
     }
 
     // Assign permission to user
@@ -74,7 +78,7 @@ class PermissionService
         $alreadyHasPermission = $user->hasPermissionTo($request->permission);
 
         if ($alreadyHasPermission) {
-            throw new \Exception(ResponseMessage::alreadyAssigned($request->permission, $user->name));
+            throw new Exception(ResponseMessage::alreadyAssigned($request->permission, $user->name), Response::HTTP_CONFLICT);
         }
 
         // Check if the permission exists
@@ -83,7 +87,10 @@ class PermissionService
         // Assigning permission to the user
         $user->givePermissionTo($permission->name);
 
-        return Response::success(['message' => ResponseMessage::assigned($permission->name, $user->email)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::assigned($permission->name, $user->email),
+        ]);
     }
 
     // Revoke permission for user
@@ -99,13 +106,16 @@ class PermissionService
         $userHasPermission = $user->hasPermissionTo($permission->name);
 
         if (!$userHasPermission) {
-            throw new \Exception(ResponseMessage::notAssigned($permission->name, $user->name));
+            throw new Exception(ResponseMessage::notAssigned($permission->name, $user->name), Response::HTTP_CONFLICT);
         }
 
         // Revoke permission for the provided user
         $user->revokePermissionTo($permission->name);
 
-        return Response::success(['message' => ResponseMessage::revoked($permission->name, $user->name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::revoked($permission->name, $user->name),
+        ]);
     }
 
     // Revoke permission for role
@@ -121,12 +131,15 @@ class PermissionService
         $roleHasPermission = $role->hasPermissionTo($permission->name);
 
         if (!$roleHasPermission) {
-            throw new \Exception(ResponseMessage::notAssigned($permission->name, $role->name));
+            throw new Exception(ResponseMessage::notAssigned($permission->name, $role->name), Response::HTTP_CONFLICT);
         }
 
         // Revoke permission for the provided role
         $role->revokePermissionTo($permission->name);
 
-        return Response::success(['message' => ResponseMessage::revoked($permission->name, $role->name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::revoked($permission->name, $role->name),
+        ]);
     }
 }

@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Practice;
 use App\Models\User;
+use Exception;
 
 class PracticeService
 {
@@ -21,6 +22,7 @@ class PracticeService
         $practice->save();
 
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'practice' => $practice->with('practiceManager')
                 ->latest()
                 ->first(),
@@ -34,13 +36,16 @@ class PracticeService
         $practice = Practice::findOrFail($id);
 
         if (!$practice) {
-            throw new \Exception(ResponseMessage::notFound('Practice', $id, false));
+            throw new Exception(ResponseMessage::notFound('Practice', $id, false), Response::HTTP_BAD_REQUEST);
         }
 
         // Deleting practice
         $practice->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Practice')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'practice' => $practice,
+        ]);
     }
 
     // Fetch practices
@@ -55,7 +60,10 @@ class PracticeService
             $practices = Practice::with('policies', 'users.profile', 'practiceManager.profile')->latest()->get();
         endif;
 
-        return Response::success(['practices' => $practices]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'practices' => $practices,
+        ]);
     }
 
     // Assign user to practice
@@ -71,13 +79,13 @@ class PracticeService
         $userAlreadyAssignedToPractice = $user->practices->contains('id', $practice->id);
 
         if ($userAlreadyAssignedToPractice) {
-            throw new \Exception(ResponseMessage::alreadyAssigned($user->email, $practice->practice_name));
+            throw new Exception(ResponseMessage::alreadyAssigned($user->email, $practice->practice_name), Response::HTTP_CONFLICT);
         }
 
         // // Check if $request has type === 'practice_manager
         // if ($request->type === 'practice-manager') {
         //     if ($practice->hasManager()) {
-        //         throw new \Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
+        //         throw new Exception(ResponseMessage::customMessage('Practice ' . $practice->practice_name . ' already have a practice manager assigned to it'));
         //     }
         // }
 
@@ -86,7 +94,10 @@ class PracticeService
             'type' => 'user',
         ]);
 
-        return Response::success(['message' => ResponseMessage::assigned($user->email, $practice->practice_name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::assigned($user->email, $practice->practice_name),
+        ]);
     }
 
     // Revoke user from practice
@@ -102,12 +113,15 @@ class PracticeService
         $associatedToPractice = $user->practices->contains('id', $practice->id);
 
         if (!$associatedToPractice) {
-            throw new \Exception(ResponseMessage::notBelongTo($user->email, $practice->practice_name));
+            throw new Exception(ResponseMessage::notBelongTo($user->email, $practice->practice_name), Response::HTTP_CONFLICT);
         }
 
         // Revoke user from practice
         $user->practices()->detach($practice->id);
 
-        return Response::success(['message' => ResponseMessage::revoked($user->email, $practice->practice_name)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::revoked($user->email, $practice->practice_name),
+        ]);
     }
 }

@@ -2,7 +2,6 @@
 namespace App\Services\PersonSpecification;
 
 use App\Helpers\Response;
-use App\Helpers\ResponseMessage;
 use App\Models\PersonSpecification;
 use App\Models\PersonSpecificationAttribute;
 use App\Models\Practice;
@@ -36,6 +35,7 @@ class PersonSpecificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'person-specification' => $personSpecification->with('personSpecificationAttributes', 'practice')
                 ->latest()
                 ->first(),
@@ -56,6 +56,7 @@ class PersonSpecificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'person-specifications' => $personSpecifications,
         ]);
     }
@@ -71,7 +72,8 @@ class PersonSpecificationService
 
         // Return success response
         return Response::success([
-            'message' => ResponseMessage::deleteSuccess('Person Specification'),
+            'code' => Response::HTTP_OK,
+            'person-specification' => $personSpecification,
         ]);
     }
 
@@ -85,6 +87,7 @@ class PersonSpecificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'person-specification' => $personSpecification,
         ]);
     }
