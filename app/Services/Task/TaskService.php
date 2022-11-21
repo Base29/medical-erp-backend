@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CheckList;
 use App\Models\Task;
+use Exception;
 use Illuminate\Support\Carbon;
 
 class TaskService
@@ -20,7 +21,7 @@ class TaskService
         $taskAlreadyExist = $checklist->tasks->contains('name', $request->name);
 
         if ($taskAlreadyExist) {
-            throw new \Exception(ResponseMessage::alreadyExists($request->name));
+            throw new Exception(ResponseMessage::alreadyExists($request->name), Response::HTTP_CONFLICT);
         }
 
         // Create task
@@ -30,7 +31,10 @@ class TaskService
         $task->frequency = $request->frequency;
         $task->save();
 
-        return Response::success(['task' => $task]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'task' => $task,
+        ]);
     }
 
     // Delete task
@@ -40,7 +44,7 @@ class TaskService
         $task = Task::findOrFail($id);
 
         if (!$task) {
-            throw new \Exception(ResponseMessage::notFound('Task', $id, false));
+            throw new Exception(ResponseMessage::notFound('Task', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Delete task
@@ -64,7 +68,7 @@ class TaskService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get Task
@@ -108,7 +112,10 @@ class TaskService
         UpdateService::updateModel($task, $request->validated(), 'task');
 
         // Return success response
-        return Response::success(['task' => $task->latest('updated_at')->first()]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'task' => $task->latest('updated_at')->first(),
+        ]);
 
     }
 }
