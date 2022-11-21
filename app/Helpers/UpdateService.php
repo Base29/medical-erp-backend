@@ -5,6 +5,8 @@
 
 namespace App\Helpers;
 
+use Exception;
+
 class UpdateService
 {
 
@@ -20,10 +22,10 @@ class UpdateService
             $model->save();
             return true;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => 500,
                 'message' => $e->getMessage(),
             ]);
         }
