@@ -1,12 +1,14 @@
 <?php
 namespace App\Services\InductionChecklist;
 
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\InductionChecklist;
 use App\Models\InductionQuestion;
 use App\Models\Practice;
 use App\Models\Role;
+use Exception;
 use Illuminate\Support\Arr;
 use Spatie\Permission\Models\Role as ModelsRole;
 
@@ -109,7 +111,7 @@ class InductionChecklistService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get induction checklist
@@ -125,7 +127,7 @@ class InductionChecklistService
 
         // Return response if update fails
         if (!$inductionChecklistUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong cannot update Induction Checklist'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong cannot update Induction Checklist'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
@@ -147,7 +149,7 @@ class InductionChecklistService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!Arr::hasAny($question, $allowedFields)) {
-                throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+                throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
             }
 
             // Get model depending on provided $tag gmc or nmc
