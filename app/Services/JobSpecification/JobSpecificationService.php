@@ -64,6 +64,7 @@ class JobSpecificationService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'job-specification' => $jobSpecification,
         ]);
     }
