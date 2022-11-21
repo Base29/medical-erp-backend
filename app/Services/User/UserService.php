@@ -26,6 +26,7 @@ use App\Models\TrainingCourse;
 use App\Models\User;
 use App\Notifications\Locum\ChangeLocumStatusNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
+use Exception;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -49,7 +50,10 @@ class UserService
             ];
 
             if (!$request->hasAny($requiredFields)) {
-                throw new \Exception(ResponseMessage::customMessage('Candidate must have all the required fields ' . implode(' | ', $requiredFields)));
+                throw new Exception(
+                    ResponseMessage::customMessage('Candidate must have all the required fields ' . implode(' | ', $requiredFields)),
+                    Response::HTTP_BAD_REQUEST
+                );
             }
 
             // Get hiring request
@@ -61,7 +65,7 @@ class UserService
 
         // Check if the user is not a candidate so the password field is required
         if (!$request->is_candidate && (!$request->has('password') || !$request->has('password_confirmation'))) {
-            throw new \Exception(ResponseMessage::customMessage('The password and password_confirmation fields are required'));
+            throw new Exception(ResponseMessage::customMessage('The password and password_confirmation fields are required'), Response::HTTP_BAD_REQUEST);
         }
 
         // // Initiating a null variable for profile image
@@ -167,6 +171,7 @@ class UserService
         }
 
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'user' => $user
                 ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices')
                 ->latest()
@@ -181,13 +186,16 @@ class UserService
         $user = User::findOrFail($id);
 
         if (!$user) {
-            throw new \Exception(ResponseMessage::notFound('User', $id, false));
+            throw new Exception(ResponseMessage::notFound('User', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Delete user with the provided $id
         $user->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('User')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'user' => $user,
+        ]);
     }
 
     // Fetch users
@@ -213,7 +221,7 @@ class UserService
             $filterIsAllowed = in_array($request->filter, $allowedFilters);
 
             if (!$filterIsAllowed) {
-                throw new \Exception(ResponseMessage::allowedFilters($allowedFilters));
+                throw new Exception(ResponseMessage::allowedFilters($allowedFilters), Response::HTTP_BAD_REQUEST);
             }
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
@@ -300,7 +308,10 @@ class UserService
                 ->paginate($request->per_page ? $request->per_page : 10);
         }
 
-        return Response::success(['users' => $users]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'users' => $users,
+        ]);
     }
 
     // Update user
@@ -325,7 +336,7 @@ class UserService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Fetch User
@@ -337,6 +348,7 @@ class UserService
         UpdateService::updateModel($profile, $request->validated(), 'user');
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $profile::with('user', 'user.positionSummary', 'user.contractSummary', 'user.roles', 'user.practices', 'user.workPatterns.workTimings', 'user.locumNotes', 'user.qualifications')
                 ->latest('updated_at')
                 ->first(),
@@ -357,6 +369,7 @@ class UserService
 
         // Return details of the user
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user,
         ]);
     }
@@ -382,6 +395,7 @@ class UserService
 
         // Return details of the user
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user,
         ]);
     }
@@ -396,12 +410,12 @@ class UserService
 
         // Check if candidate is hired
         if (!$candidate->is_candidate) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is not a candidate'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is not a candidate'), Response::HTTP_FORBIDDEN);
         }
 
         // Check if $candidate is already hired
         if ($candidate->is_hired) {
-            throw new \Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'));
+            throw new Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'), Response::HTTP_CONFLICT);
         }
 
         // Fetch hiring request
@@ -436,6 +450,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'candidate' => $candidate,
         ]);
     }
@@ -457,7 +472,7 @@ class UserService
         $lessonProgress = new LessonProgress();
 
         if ($lessonProgress->alreadyRecordedProgress($lesson->id, $authenticatedUser->id)) {
-            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this lesson'));
+            throw new Exception(ResponseMessage::customMessage('You have already recorded progress for this lesson'), Response::HTTP_CONFLICT);
         }
 
         // Lesson completion evidence folder path on S3
@@ -476,6 +491,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'lesson-progress' => $lessonProgress,
         ]);
     }
@@ -494,6 +510,7 @@ class UserService
         }])->withCount('modules')->paginate(10);
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user-courses' => $userCourses,
         ]);
     }
@@ -511,7 +528,7 @@ class UserService
         $moduleProgress = new ModuleProgress();
 
         if ($moduleProgress->alreadyRecordedProgress($module->id, $authenticatedUser->id)) {
-            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this module'));
+            throw new Exception(ResponseMessage::customMessage('You have already recorded progress for this module'), Response::HTTP_CONFLICT);
         }
 
         // Module completion evidence folder path on S3
@@ -530,6 +547,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'module-progress' => $moduleProgress,
         ]);
     }
@@ -547,7 +565,7 @@ class UserService
         $courseProgress = new CourseProgress();
 
         if ($courseProgress->alreadyRecordedProgress($course->id, $authenticatedUser->id)) {
-            throw new \Exception(ResponseMessage::customMessage('You have already recorded progress for this course'));
+            throw new Exception(ResponseMessage::customMessage('You have already recorded progress for this course'), Response::HTTP_CONFLICT);
         }
 
         // Module completion evidence folder path on S3
@@ -566,6 +584,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'module-progress' => $courseProgress,
         ]);
     }
@@ -600,6 +619,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'module-exam' => $moduleExam,
         ]);
     }
@@ -613,7 +633,7 @@ class UserService
         $isUserEnrolledToCourse = $authenticatedUser->courses->contains($request->course);
 
         if (!$isUserEnrolledToCourse) {
-            throw new \Exception(ResponseMessage::customMessage('User is not enrolled to the provided course'));
+            throw new Exception(ResponseMessage::customMessage('User is not enrolled to the provided course'), Response::HTTP_BAD_REQUEST);
         }
 
         // Get user courses
@@ -631,6 +651,7 @@ class UserService
             ->firstOrFail();
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user-course' => $userCourse,
         ]);
     }
@@ -651,6 +672,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'employees' => $employees,
         ]);
     }
@@ -662,7 +684,7 @@ class UserService
 
             // Check if value is being sent
             if (!$request->has('value')) {
-                throw new \Exception(ResponseMessage::customMessage('Field value is required'));
+                throw new Exception(ResponseMessage::customMessage('Field value is required'), Response::HTTP_BAD_REQUEST);
             }
 
             /**
@@ -698,7 +720,7 @@ class UserService
 
                 // Check the type of $request->value is integer
                 if ($valueType !== 'integer') {
-                    throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type integer'));
+                    throw new Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type integer'), Response::HTTP_CONFLICT);
                 }
 
                 switch ($filter) {
@@ -772,7 +794,7 @@ class UserService
 
                 // Check the type of $request->value is string
                 if ($valueType !== 'string') {
-                    throw new \Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type string'));
+                    throw new Exception(ResponseMessage::customMessage('The value for the filter "' . $filter . '" should be of type string'), Response::HTTP_CONFLICT);
                 }
 
                 switch ($filter) {
@@ -859,6 +881,7 @@ class UserService
 
         // Return response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'filtered-candidates' => $filteredCandidates,
         ]);
 
@@ -876,12 +899,12 @@ class UserService
 
                 // Check if the user already a locum
                 if ($user->isLocum()) {
-                    throw new \Exception(ResponseMessage::customMessage('User is already a locum'));
+                    throw new Exception(ResponseMessage::customMessage('User is already a locum'), Response::HTTP_CONFLICT);
                 }
 
                 // Check if user is active and is a candidate and is hired
                 if (!$user->is_active || !$user->is_candidate || !$user->is_hired) {
-                    throw new \Exception(ResponseMessage::customMessage('User must be active, must be a candidate and must be hired.'));
+                    throw new Exception(ResponseMessage::customMessage('User must be active, must be a candidate and must be hired.'), Response::HTTP_CONFLICT);
                 }
 
                 // Make user as locum
@@ -893,7 +916,7 @@ class UserService
             case 0:
                 // Check if the user already a locum
                 if (!$user->isLocum()) {
-                    throw new \Exception(ResponseMessage::customMessage('User is not a locum'));
+                    throw new Exception(ResponseMessage::customMessage('User is not a locum'), Response::HTTP_CONFLICT);
                 }
 
                 // Make user as locum
@@ -910,6 +933,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)
                 ->with([
                     'profile.applicant',
@@ -960,7 +984,7 @@ class UserService
         if ($request->has('role')) {
 
             if ($request->has('roles')) {
-                throw new \Exception(ResponseMessage::customMessage('You can either search by roles or role separately'));
+                throw new Exception(ResponseMessage::customMessage('You can either search by roles or role separately'), Response::HTTP_CONFLICT);
             }
 
             $usersQuery = $usersQuery->whereHas('roles', function ($q) use ($request) {
@@ -991,7 +1015,7 @@ class UserService
         if ($request->has('location')) {
 
             if ($request->has('locations')) {
-                throw new \Exception(ResponseMessage::customMessage('You can either search by locations or location separately'));
+                throw new Exception(ResponseMessage::customMessage('You can either search by locations or location separately'), Response::HTTP_CONFLICT);
             }
 
             $usersQuery = $usersQuery->whereHas('practices', function ($q) use ($request) {
@@ -1002,7 +1026,7 @@ class UserService
         if ($request->has('roles')) {
 
             if ($request->has('role')) {
-                throw new \Exception(ResponseMessage::customMessage('You can either search by roles or role separately'));
+                throw new Exception(ResponseMessage::customMessage('You can either search by roles or role separately'), Response::HTTP_CONFLICT);
             }
 
             $usersQuery = $usersQuery->whereHas('roles', function ($q) use ($request) {
@@ -1013,7 +1037,7 @@ class UserService
         if ($request->has('locations')) {
 
             if ($request->has('location')) {
-                throw new \Exception(ResponseMessage::customMessage('You can either search by locations or location separately'));
+                throw new Exception(ResponseMessage::customMessage('You can either search by locations or location separately'), Response::HTTP_CONFLICT);
             }
 
             $usersQuery = $usersQuery->whereHas('practices', function ($q) use ($request) {
@@ -1060,6 +1084,7 @@ class UserService
 
         // Return response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'users' => $filteredUsers,
         ]);
     }
@@ -1077,6 +1102,7 @@ class UserService
 
         // Return response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'session-invites' => $sessionInvites,
         ]);
     }
@@ -1153,6 +1179,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'locum-sessions' => $filteredLocumSessions,
         ]);
     }
@@ -1191,6 +1218,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'sessions-by-month' => $sessionsByMonthFiltered,
         ]);
 
@@ -1221,6 +1249,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'sessions-by-day' => $sessionsByDay,
         ]);
 
@@ -1249,6 +1278,7 @@ class UserService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'session-invites' => $invites,
         ]);
     }
