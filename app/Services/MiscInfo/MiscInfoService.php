@@ -2,12 +2,14 @@
 namespace App\Services\MiscInfo;
 
 use App\Helpers\FileUploadService;
+use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Equipment;
 use App\Models\JobSpecification;
 use App\Models\MiscellaneousInformation;
 use App\Models\User;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class MiscInfoService
@@ -143,7 +145,7 @@ class MiscInfoService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get Miscellaneous Information
@@ -197,7 +199,7 @@ class MiscInfoService
         $miscInfoUpdated = UpdateService::updateModel($miscInfo, $updateRequestData, 'misc_info');
 
         if (!$miscInfoUpdated) {
-            throw new \Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Misc Info at this time.'));
+            throw new Exception(ResponseMessage::customMessage('Something went wrong. Cannot update Misc Info at this time.'), Response::HTTP_BAD_REQUEST);
         }
 
         // Return success response
