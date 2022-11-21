@@ -34,7 +34,10 @@ class SignatureService
         $signature->save();
 
         // Returning response if the policy is successfully signed by the currently logged in user
-        return Response::success(['signature' => $signature->with('policy')->latest()->firstOrFail()]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'signature' => $signature->with('policy')->latest()->firstOrFail(),
+        ]);
     }
 
     // Fetch signature
@@ -44,6 +47,7 @@ class SignatureService
         $signatures = Signature::with('user', 'policy.practice')->latest()->paginate(10);
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'signatures' => $signatures,
         ]);
     }
