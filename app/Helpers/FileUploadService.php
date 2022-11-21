@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use App\Helpers\Response;
+use Exception;
 use Illuminate\Support\Facades\Storage;
 
 class FileUploadService
@@ -29,10 +30,10 @@ class FileUploadService
 
             return $file_url;
 
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 400,
+                'code' => 500,
                 'message' => $e->getMessage(),
             ]);
         }

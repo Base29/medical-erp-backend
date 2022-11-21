@@ -11,6 +11,7 @@ use App\Models\Practice;
 use App\Models\User;
 use App\Models\WorkPattern;
 use Exception;
+use Illuminate\Support\Carbon;
 
 class OfferService
 {
@@ -69,6 +70,14 @@ class OfferService
 
         //TODO: END-BLOCK
 
+        // Check if $request has joining_date
+        if ($request->has('joining_date')) {
+            // Check if joining_date is in the past.
+            if (Carbon::createFromFormat('Y-m-d', $request->joining_date)->isPast()) {
+                throw new Exception('Joining date is in the past.', Response::HTTP_BAD_REQUEST);
+            }
+        }
+
         // Instance of Offer
         $offer = new Offer();
         $offer->practice_id = $practice->id;
@@ -77,6 +86,7 @@ class OfferService
         $offer->status = 2;
         $offer->is_active = 1;
         $offer->amount = $request->amount;
+        $offer->joining_date = $request->joining_date;
 
         // Save offer
         $hiringRequest->offers()->save($offer);
@@ -201,12 +211,22 @@ class OfferService
             }
         }
 
+        // Check if $request has joining_date
+        if ($request->has('joining_date')) {
+            // Check if the joining_date is the past.
+            if (Carbon::createFromFormat('Y-m-d', $request->joining_date)->isPast()) {
+                throw new Exception(ResponseMessage::customMessage('Joining date is in the past.'), Response::HTTP_BAD_REQUEST);
+            }
+        }
+
         // Create amendment for $offer
         $offerAmendment = new OfferAmendment();
         $offerAmendment->offer = $offer->id;
         $offerAmendment->work_pattern = $offer->work_pattern_id;
         $offerAmendment->amount = $request->amount;
         $offerAmendment->status = 2;
+        $offerAmendment->is_active = 1;
+        $offerAmendment->joining_date = $request->has('joining_date') ? $request->joining_date : $offer->joining_date;
         $offerAmendment->save();
 
         // Change te status of the original offer to "revised"
@@ -229,12 +249,18 @@ class OfferService
 
         // Update status of the offer amendment
         $offerAmendment->status = $request->status;
+        $offerAmendment->is_active = $request->status === 0 ? 0 : 1;
         $offerAmendment->save();
 
-        // Update status of $offerAmendment->offer to accepted if the $offerAmendment if accepted
-        $offer = Offer::findOrFail($offerAmendment->offer);
-        $offer->status = 1;
-        $offer->save();
+        // Check if $offerAmendment has been accepted
+        if ($offerAmendment->status === 1) {
+
+            // Update status of offer to accepted if the $offerAmendment if accepted
+            $offer = Offer::findOrFail($offerAmendment->offer);
+            $offer->status = 1;
+            $offer->save();
+
+        }
 
         // Return success response
         return Response::success([

@@ -43,6 +43,7 @@ class CreateOfferRequest extends FormRequest
                 ]),
             ],
             'amount' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'joining_date' => 'required|date|date_format:Y-m-d',
         ];
     }
 

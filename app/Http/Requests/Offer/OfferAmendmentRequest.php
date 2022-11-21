@@ -30,8 +30,8 @@ class OfferAmendmentRequest extends FormRequest
             'offer' => 'required|numeric|exists:offers,id',
             'hiring_request' => 'nullable|numeric|exists:hiring_requests,id',
             'work_pattern' => 'nullable|numeric|exists:work_patterns,id',
-            'user' => 'nullable|numeric|exists:users,id',
-            'amount' => 'required|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'amount' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'joining_date' => 'nullable|date|date_format:Y-m-d',
         ];
     }
 
