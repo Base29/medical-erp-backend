@@ -16,7 +16,10 @@ class ReasonService
         $reason->reason = $request->reason;
         $reason->save();
 
-        return Response::success(['reason' => $reason]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'reason' => $reason,
+        ]);
     }
 
     // Fetch reason
@@ -25,7 +28,10 @@ class ReasonService
         // Reasons
         $reasons = Reason::latest()->paginate(10);
 
-        return Response(['reasons' => $reasons]);
+        return Response([
+            'code' => Response::HTTP_OK,
+            'reasons' => $reasons,
+        ]);
     }
 
     // Delete reason
