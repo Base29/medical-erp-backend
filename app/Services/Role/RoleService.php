@@ -5,6 +5,7 @@ use App\Helpers\Response;
 use App\Helpers\ResponseMessage;
 use App\Models\Role;
 use App\Models\User;
+use Exception;
 
 class RoleService
 {
@@ -17,7 +18,10 @@ class RoleService
         $role->name = $request->name;
         $role->save();
 
-        return Response::success(['role' => $role->name]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'role' => $role->name,
+        ]);
     }
 
     // Delete role
@@ -27,13 +31,13 @@ class RoleService
         $role = Role::findOrFail($id);
 
         if (!$role) {
-            throw new \Exception(ResponseMessage::notFound('Role', $id, false));
+            throw new Exception(ResponseMessage::notFound('Role', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         // Delete user with the provided $id
         $role->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Role')]);
+        return Response::success(['role' => $role]);
     }
 
     // Fetch roles
@@ -53,13 +57,16 @@ class RoleService
 
         // Check if the user has assigned the provided role
         if ($user->hasRole($request->role)) {
-            throw new \Exception(ResponseMessage::alreadyAssigned($request->role, $user->email));
+            throw new Exception(ResponseMessage::alreadyAssigned($request->role, $user->email), Response::HTTP_CONFLICT);
         }
 
         // Assigning role to the user
         $user->assignRole($request->role);
 
-        return Response::success(['message' => ResponseMessage::assigned($request->role, $user->email)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::assigned($request->role, $user->email),
+        ]);
     }
 
     // Revoke role for user
@@ -73,12 +80,15 @@ class RoleService
 
         // Check if the user has assigned the provided role
         if (!$user->hasRole($role->name)) {
-            throw new \Exception(ResponseMessage::notAssigned($role->name, $user->email));
+            throw new Exception(ResponseMessage::notAssigned($role->name, $user->email), Response::HTTP_CONFLICT);
         }
 
         // Revoking role
         $user->removeRole($role->name);
 
-        return Response::success(['message' => ResponseMessage::revoked($role->name, $user->email)]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => ResponseMessage::revoked($role->name, $user->email),
+        ]);
     }
 }
