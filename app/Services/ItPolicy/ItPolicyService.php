@@ -24,6 +24,7 @@ class ItPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_CREATED,
             'it-policy' => $itPolicy->with('roles')->latest()->first(),
         ]);
     }
@@ -36,6 +37,7 @@ class ItPolicyService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'it-policies' => $itPolicies,
         ]);
     }
@@ -50,6 +52,7 @@ class ItPolicyService
 
         // Return Response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'it-policy' => $itPolicy,
         ]);
     }
@@ -64,6 +67,7 @@ class ItPolicyService
 
         // Return response
         return Response::success([
+            'case' => Response::HTTP_OK,
             'it-policy' => $itPolicy,
         ]);
     }
@@ -86,6 +90,7 @@ class ItPolicyService
         }
 
         return Response::success([
+            'code' => Response::HTTP_OK,
             'user' => $user->where('id', $user->id)->with('signedItPolicies')->firstOrFail(),
         ]);
     }
