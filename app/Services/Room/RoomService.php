@@ -6,6 +6,7 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\Practice;
 use App\Models\Room;
+use Exception;
 
 class RoomService
 {
@@ -19,7 +20,7 @@ class RoomService
         $roomExists = $practice->rooms->contains('name', $request->name);
 
         if ($roomExists) {
-            throw new \Exception(ResponseMessage::alreadyExists($request->name));
+            throw new Exception(ResponseMessage::alreadyExists($request->name), Response::HTTP_CONFLICT);
         }
 
         // Create room
@@ -29,7 +30,10 @@ class RoomService
         $room->icon = $request->icon;
         $room->save();
 
-        return Response::success(['room' => $room->with('practice')->latest()->firstOrFail()]);
+        return Response::success([
+            'code' => Response::HTTP_CREATED,
+            'room' => $room->with('practice')->latest()->firstOrFail(),
+        ]);
     }
 
     // Delete room
@@ -39,12 +43,15 @@ class RoomService
         $room = Room::findOrFail($id);
 
         if (!$room) {
-            throw new \Exception(ResponseMessage::notFound('Room', $id, false));
+            throw new Exception(ResponseMessage::notFound('Room', $id, false), Response::HTTP_NOT_FOUND);
         }
 
         $room->delete();
 
-        return Response::success(['message' => ResponseMessage::deleteSuccess('Room')]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'room' => $room,
+        ]);
     }
 
     // Fetch rooms
@@ -59,24 +66,30 @@ class RoomService
             $belongsToPractice = $practice->users->contains('id', auth()->user()->id);
 
             if (!$belongsToPractice) {
-                throw new \Exception(ResponseMessage::customMessage('You cannot view the rooms of the practice ' . $practice->practice_name));
+                throw new Exception(ResponseMessage::customMessage('You cannot view the rooms of the practice ' . $practice->practice_name), Response::HTTP_FORBIDDEN);
             }
 
             // Get rooms for the practice
             $rooms = Room::where('practice_id', $request->practice)->with('checklists')->latest()->paginate(10);
 
-            return Response::success(['rooms' => $rooms]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'rooms' => $rooms,
+            ]);
         }
 
         // Check if the current user has super_admin role
         if (!auth()->user()->isSuperAdmin()) {
-            throw new \Exception(ResponseMessage::customMessage('Only super_admin is allowed to view all rooms'));
+            throw new Exception(ResponseMessage::customMessage('Only super_admin is allowed to view all rooms'), Response::HTTP_FORBIDDEN);
         }
 
         // Return all rooms
         $rooms = Room::with('checklists')->latest()->paginate(10);
 
-        return Response::success(['rooms' => $rooms]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'rooms' => $rooms,
+        ]);
     }
 
     // Update room
@@ -90,7 +103,7 @@ class RoomService
 
         // Checking if the $request doesn't contain any of the allowed fields
         if (!$request->hasAny($allowedFields)) {
-            throw new \Exception(ResponseMessage::allowedFields($allowedFields));
+            throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
         }
 
         // Get Room
@@ -100,7 +113,10 @@ class RoomService
         UpdateService::updateModel($room, $request->validated(), 'room');
 
         // Return success response
-        return Response::success(['room' => $room]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'room' => $room,
+        ]);
 
     }
 }
