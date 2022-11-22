@@ -168,6 +168,11 @@ class InterviewService
             if ($user->interviewSchedules->isEmpty()) {
                 throw new Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'), Response::HTTP_CONFLICT);
             }
+
+            // Check if the applicant has been rejected in the first interview.
+            if ($user->interviewSchedules[0]->applicant_status === 0) {
+                throw new Exception(ResponseMessage::customMessage('The applicant is not eligible for a second interview. The applicant has been rejected in the first interview.'), Response::HTTP_CONFLICT);
+            }
         }
 
         // Check if the users has a first interview
