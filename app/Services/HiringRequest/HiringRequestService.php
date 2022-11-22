@@ -430,7 +430,7 @@ class HiringRequestService
 
         // Return success response
         return Response::success([
-            'code' => Respoonse::HTTP_CREATED,
+            'code' => Response::HTTP_CREATED,
             'postings' => $hiringRequestPosting,
         ]);
     }
