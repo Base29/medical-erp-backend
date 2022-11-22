@@ -626,7 +626,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
-            'code' => Response::HTTP::OK,
+            'code' => Response::HTTP_OK,
             'adhoc-questions' => $adhocQuestions,
         ]);
     }
@@ -642,7 +642,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
-            'code' => Response::HTTP::OK,
+            'code' => Response::HTTP_OK,
             'candidate-questions' => $candidateQuestions,
         ]);
     }
