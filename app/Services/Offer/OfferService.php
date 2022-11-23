@@ -119,6 +119,7 @@ class OfferService
             'status',
             'amount',
             'work_pattern_id',
+            'reason',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -250,6 +251,7 @@ class OfferService
         // Update status of the offer amendment
         $offerAmendment->status = $request->status;
         $offerAmendment->is_active = $request->status === 0 ? 0 : 1;
+        $offerAmendment->reason = $request->reason ? $request->reason : null;
         $offerAmendment->save();
 
         // Check if $offerAmendment has been accepted
