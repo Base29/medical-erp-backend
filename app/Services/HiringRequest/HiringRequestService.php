@@ -141,9 +141,9 @@ class HiringRequestService
     {
         // Get hiring request
         return HiringRequest::where('id', $request->hiring_request)
-            ->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
-                $q->orderBy('id', 'desc')->limit(1);
-            }, 'hiringRequestPostings'])
+            ->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers' => function ($q) {
+                $q->where('is_active', 1);
+            }, 'applicants.offers.amendments', 'hiringRequestPostings'])
             ->get();
     }
 
@@ -327,9 +327,7 @@ class HiringRequestService
         }
 
         // Cast $hiringRequestQuery to $hiringRequests
-        $hiringRequests = $hiringRequestQuery->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {
-            $q->orderBy('id', 'desc')->limit(1);
-        }, 'hiringRequestPostings'])
+        $hiringRequests = $hiringRequestQuery->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments', 'hiringRequestPostings'])
             ->latest()
             ->paginate(10);
 
