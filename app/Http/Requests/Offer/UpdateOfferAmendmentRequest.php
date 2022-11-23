@@ -35,6 +35,7 @@ class UpdateOfferAmendmentRequest extends FormRequest
                     1, // Accepted
                 ]),
             ],
+            'reason' => 'nullable|string|max:1000',
         ];
     }
 
