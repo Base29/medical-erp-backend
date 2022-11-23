@@ -41,6 +41,7 @@ class UpdateOfferRequest extends FormRequest
             ],
             'amount' => 'nullable|string|max:10',
             'work_pattern_id' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
+            'reason' => 'nullable|string|max:1000',
         ];
     }
 
