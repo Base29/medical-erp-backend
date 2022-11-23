@@ -32,6 +32,7 @@ class OfferAmendmentRequest extends FormRequest
             'work_pattern' => 'nullable|numeric|exists:work_patterns,id',
             'amount' => 'nullable|numeric|regex:/^\d+(\.\d{1,2})?$/',
             'joining_date' => 'nullable|date|date_format:Y-m-d',
+            'reason' => 'nullable|string|max:1000',
         ];
     }
 

@@ -33,6 +33,7 @@ class OfferController extends Controller
             return $this->offerService->createOffer($request);
 
         } catch (Exception $e) {
+
             return Response::fail([
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),

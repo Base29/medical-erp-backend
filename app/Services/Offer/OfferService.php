@@ -119,6 +119,7 @@ class OfferService
             'status',
             'amount',
             'work_pattern_id',
+            'reason',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields

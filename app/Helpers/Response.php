@@ -33,7 +33,7 @@ class Response extends HttpResponse
             throw new ResponseException('Arguments `message` and `code` are missing for the Response::fail() method.');
         }
 
-        return response(self::responseData($args, 'fail'), $args['code']);
+        return response(self::responseData($args, 'fail'), (int) $args['code'] < 100 || (int) $args['code'] >= 600 ? 500 : $args['code']);
     }
 
     // Building response array with the fields provided
