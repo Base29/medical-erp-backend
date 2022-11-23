@@ -130,6 +130,14 @@ class OfferService
         // Get offer
         $offer = Offer::findOrFail($request->offer);
 
+        // Check if $request->status = 0
+        if ($request->status === 0) {
+            // Check if $offer->status = 0
+            if ($offer->status === 3) {
+                throw new Exception(ResponseMessage::customMessage('Cannot decline offer. Offer is currently under revision.'), Response::HTTP_CONFLICT);
+            }
+        }
+
         // // Get work pattern
         // $workPattern = WorkPattern::findOrFail($request->work_pattern_id);
 
