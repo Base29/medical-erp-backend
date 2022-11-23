@@ -14,6 +14,7 @@ use App\Models\InterviewAnswer;
 use App\Models\InterviewMiscInfo;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewQuestion;
+use App\Models\InterviewQuestionOption;
 use App\Models\InterviewSchedule;
 use App\Models\InterviewScore;
 use App\Models\Practice;
@@ -167,6 +168,11 @@ class InterviewService
         if ($request->application_status === 'second-interview') {
             if ($user->interviewSchedules->isEmpty()) {
                 throw new Exception(ResponseMessage::customMessage('First interview should be conducted before creating the second interview'), Response::HTTP_CONFLICT);
+            }
+
+            // Check if the applicant has been rejected in the first interview.
+            if ($user->interviewSchedules[0]->applicant_status === 0) {
+                throw new Exception(ResponseMessage::customMessage('The applicant is not eligible for a second interview. The applicant has been rejected in the first interview.'), Response::HTTP_CONFLICT);
             }
         }
 
@@ -428,7 +434,7 @@ class InterviewService
 
                 return Response::success([
                     'code' => Response::HTTP_CREATED,
-                    'answer' => $interviewAnswer,
+                    'question' => $interviewQuestion->where('id', $interviewQuestion->id)->with('interviewAnswers')->first(),
                 ]);
 
                 break;
@@ -437,6 +443,9 @@ class InterviewService
                     throw new Exception(ResponseMessage::customMessage('Answer to question type single-choice require option key to be sent in request'));
                 }
 
+                // Fetch the answer string for the option id
+                $questionOption = InterviewQuestionOption::findOrFail($request->option);
+
                 // Initiate instance of InterviewAnswer model
                 $interviewAnswer = new InterviewAnswer();
 
@@ -444,11 +453,12 @@ class InterviewService
                 $interviewAnswer->user = $interviewSchedule->user_id;
                 $interviewAnswer->question = $interviewQuestion->id;
                 $interviewAnswer->option = $request->option;
+                $interviewAnswer->answer = $questionOption->option;
                 $interviewAnswer->save();
 
                 return Response::success([
                     'code' => Response::HTTP_CREATED,
-                    'answer' => $interviewAnswer,
+                    'question' => $interviewQuestion->where('id', $interviewQuestion->id)->with('interviewAnswers')->first(),
                 ]);
 
                 break;
@@ -463,6 +473,9 @@ class InterviewService
                 // Loop through $request->assert_options
                 foreach ($options as $option) {
 
+                    // Fetch the answer string for the option id
+                    $questionOption = InterviewQuestionOption::findOrFail($option);
+
                     // Initiate instance of InterviewAnswer model
                     $interviewAnswer = new InterviewAnswer();
 
@@ -470,12 +483,14 @@ class InterviewService
                     $interviewAnswer->user = $interviewSchedule->user_id;
                     $interviewAnswer->question = $interviewQuestion->id;
                     $interviewAnswer->option = $option;
+                    $interviewAnswer->answer = $questionOption->option;
                     $interviewAnswer->save();
                 }
 
+                // Return success response
                 return Response::success([
                     'code' => Response::HTTP_CREATED,
-                    'answer' => $interviewAnswer,
+                    'question' => $interviewQuestion->where('id', $interviewQuestion->id)->with('interviewAnswers')->first(),
                 ]);
 
                 break;
@@ -621,7 +636,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
-            'code' => Response::HTTP::OK,
+            'code' => Response::HTTP_OK,
             'adhoc-questions' => $adhocQuestions,
         ]);
     }
@@ -637,7 +652,7 @@ class InterviewService
 
         // Return success response
         return Response::success([
-            'code' => Response::HTTP::OK,
+            'code' => Response::HTTP_OK,
             'candidate-questions' => $candidateQuestions,
         ]);
     }

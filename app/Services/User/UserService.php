@@ -390,6 +390,7 @@ class UserService
                 'courses.modules.lessons',
                 'locumNotes',
                 'qualifications',
+                'interviewSchedules.interviewScore',
             ])
             ->firstOrFail();
 
