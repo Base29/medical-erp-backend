@@ -120,6 +120,7 @@ class OfferService
             'amount',
             'work_pattern_id',
             'reason',
+            'is_active',
         ];
 
         // Checking if the $request doesn't contain any of the allowed fields
@@ -210,12 +211,12 @@ class OfferService
             if ($latestAmendment !== false) {
                 // Check if the previous amendment is accepted
                 if ($latestAmendment['status'] === 1) {
-                    throw new Exception(ResponseMessage::customMessage('The status of the previous amendment is "Accepted". No more amendments can be created for this offer'), Response::HTTP_FORBIDDEN);
+                    throw new Exception(ResponseMessage::customMessage('The status of the current amendment is "Accepted". No more amendments can be created for this offer'), Response::HTTP_FORBIDDEN);
                 }
 
                 // Check if previous amendment has been rejected/declined
                 if ($latestAmendment['status'] !== 0) {
-                    throw new Exception(ResponseMessage::customMessage('The status of previous amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'), Response::HTTP_FORBIDDEN);
+                    throw new Exception(ResponseMessage::customMessage('The status of current amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'), Response::HTTP_FORBIDDEN);
                 }
             }
         }

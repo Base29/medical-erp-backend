@@ -53,6 +53,19 @@ class UpdateOfferRequest extends FormRequest
         ];
     }
 
+    public function validated($key = null, $default = null)
+    {
+        if (request()->has('status')):
+            if (request()->status === 5):
+                return array_merge(parent::validated(), [
+                    'is_active' => 0,
+                ]);
+            else:
+                return parent::validated($key, $default);
+            endif;
+        endif;
+    }
+
     public function failedValidation($validator)
     {
         throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
