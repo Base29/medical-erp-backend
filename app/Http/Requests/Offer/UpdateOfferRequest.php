@@ -58,7 +58,7 @@ class UpdateOfferRequest extends FormRequest
         /**
          * Adding is_active key when the status in the request is being sent as 5 (discarded).
          *
-         * This will automate the update od the is_active key to 0 (false).
+         * This will automate the update od the is_active key to 0 (false). This is required to make the offer with the status 5 to be in active.
          */
         if (request()->has('status')):
             if (request()->status === 5):
