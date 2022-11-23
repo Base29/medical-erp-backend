@@ -55,6 +55,11 @@ class UpdateOfferRequest extends FormRequest
 
     public function validated($key = null, $default = null)
     {
+        /**
+         * Adding is_active key when the status in the request is being sent as 5 (discarded).
+         *
+         * This will automate the update od the is_active key to 0 (false).
+         */
         if (request()->has('status')):
             if (request()->status === 5):
                 return array_merge(parent::validated(), [
