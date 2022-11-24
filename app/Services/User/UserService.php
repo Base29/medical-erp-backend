@@ -25,6 +25,7 @@ use App\Models\Role;
 use App\Models\TrainingCourse;
 use App\Models\User;
 use App\Notifications\Locum\ChangeLocumStatusNotification;
+use App\Notifications\User\CandidateHiredNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Exception;
 use Illuminate\Support\Carbon;
@@ -419,8 +420,16 @@ class UserService
             throw new Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is already hired'), Response::HTTP_CONFLICT);
         }
 
+        // Check applicant status
+        if ($candidate->applicant_status === 0 || $candidate->applicant_status === null) {
+            throw new Exception(ResponseMessage::customMessage('Candidate cannot be hired. The candidate have not cleared the interview process.'), Response::HTTP_CONFLICT);
+        }
+
         // Fetch hiring request
         $hiringRequest = HiringRequest::where('id', $candidate->profile->hiring_request_id)->firstOrFail();
+
+        // Hiring Manager
+        $hiringManager = User::where('id', $hiringRequest->notifiable)->firstOrFail();
 
         // Generate password
         $password = Str::random(16);
@@ -448,6 +457,11 @@ class UserService
         ];
 
         $candidate->notify(new WelcomeNewEmployeeNotification($credentials));
+        $hiringManager->notify(new CandidateHiredNotification(
+            $hiringRequest,
+            $hiringManager,
+            $candidate
+        ));
 
         // Return success response
         return Response::success([
