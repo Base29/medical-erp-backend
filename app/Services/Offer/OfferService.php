@@ -10,6 +10,8 @@ use App\Models\OfferAmendment;
 use App\Models\Practice;
 use App\Models\User;
 use App\Models\WorkPattern;
+use App\Notifications\Offer\NewOfferCreatedCandidateNotification;
+use App\Notifications\Offer\NewOfferCreatedHQNotification;
 use Exception;
 use Illuminate\Support\Carbon;
 
@@ -101,6 +103,28 @@ class OfferService
             $oldOffer->save();
 
         }
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewOfferCreatedHQNotification(
+                $hqUser,
+                $user,
+                $hiringRequest,
+                $offer
+            ));
+        endforeach;
+
+        // Notify candidate regarding the new offer
+        $user->notify(new NewOfferCreatedCandidateNotification(
+            $user,
+            $offer,
+            $hiringRequest
+        ));
 
         // Return success response
         return Response::success([
