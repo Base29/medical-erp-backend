@@ -236,7 +236,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualification'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
@@ -255,7 +257,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualifications'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);
@@ -272,7 +276,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualifications'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->whereHas('roles', function ($q) use ($request) {
                         $valueType = gettype($request->value);
@@ -410,6 +416,9 @@ class UserService
             ->with('profile')
             ->firstOrFail();
 
+        // Get Applicant
+        $applicant = Applicant::where('user_id', $candidate->id)->firstOrFail();
+
         // Check if candidate is hired
         if (!$candidate->is_candidate) {
             throw new Exception(ResponseMessage::customMessage('User ' . $candidate->id . ' is not a candidate'), Response::HTTP_FORBIDDEN);
@@ -440,12 +449,18 @@ class UserService
         $candidate->is_active = 1;
         $candidate->save();
 
+        // Update status in applicants table
+        $applicant->status = 1;
+        $applicant->save();
+
+        // Assign permissions
         $candidate->givePermissionTo([
             'can_manage_own_profile',
             'can_manage_own_trainings',
             'can_manage_own_locum_sessions',
         ]);
 
+        // Assign work pattern
         $candidate->workPatterns()->attach($hiringRequest->workPatterns[0]->id);
         $candidate->practices()->attach($hiringRequest->practice->id, [
             'type' => 'user',

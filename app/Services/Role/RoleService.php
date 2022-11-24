@@ -46,7 +46,10 @@ class RoleService
         // Fetching roles
         $roles = Role::with('users', 'itPolicies', 'handbooks', 'inductionChecklists')->latest()->get();
 
-        return Response::success(['roles' => $roles]);
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'roles' => $roles,
+        ]);
     }
 
     // Assign role to user
