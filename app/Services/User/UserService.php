@@ -235,7 +235,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualification'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
@@ -254,7 +256,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualifications'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);
@@ -271,7 +275,9 @@ class UserService
                     'employmentCheck',
                     'workPatterns.workTimings',
                     'locumNotes',
-                    'qualifications'
+                    'qualifications',
+                    'interviewSchedules.interviewMiscInfo',
+                    'interviewSchedules.interviewScore'
                 )
                     ->whereHas('roles', function ($q) use ($request) {
                         $valueType = gettype($request->value);
