@@ -19,13 +19,14 @@ class UpdateService
                     $model->$field = $value;
                 }
             }
-            $model->save();
+
+            $model->update();
             return true;
 
         } catch (Exception $e) {
 
             return Response::fail([
-                'code' => 500,
+                'code' => Response::HTTP_INTERNAL_SERVER_ERROR,
                 'message' => $e->getMessage(),
             ]);
         }
