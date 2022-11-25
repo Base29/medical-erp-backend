@@ -6,6 +6,7 @@ use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\User;
 use App\Notifications\Offer\OfferAcceptedCandidateNotification;
+use App\Notifications\Offer\OfferDeclinedCandidateNotification;
 use Illuminate\Support\Facades\Config;
 
 class OfferObserver
@@ -40,6 +41,13 @@ class OfferObserver
             // Notify the candidate when the offer is accepted
             case Config::get('constants.OFFER.ACCEPTED'):
                 $notifiable->notify(new OfferAcceptedCandidateNotification(
+                    $offer,
+                    $notifiable,
+                    $hiringRequest
+                ));
+                break;
+            case Config::get('constants.OFFER.DECLINED'):
+                $notifiable->notify(new OfferDeclinedCandidateNotification(
                     $offer,
                     $notifiable,
                     $hiringRequest

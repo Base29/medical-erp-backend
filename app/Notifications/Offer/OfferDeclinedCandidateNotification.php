@@ -11,10 +11,9 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\BroadcastMessage;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\HtmlString;
 
-class OfferAcceptedCandidateNotification extends Notification implements ShouldQueue, ShouldBroadcast
+class OfferDeclinedCandidateNotification extends Notification implements ShouldQueue, ShouldBroadcast
 {
     use Queueable;
     public $offer;
@@ -31,7 +30,6 @@ class OfferAcceptedCandidateNotification extends Notification implements ShouldQ
         $this->offer = $offer;
         $this->candidate = $candidate;
         $this->hiringRequest = $hiringRequest;
-
     }
 
     /**
@@ -54,13 +52,11 @@ class OfferAcceptedCandidateNotification extends Notification implements ShouldQ
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->subject('Congratulations')
+            ->subject('Offer Declined')
             ->greeting('Hello! ' . $notifiable->profile->first_name . ' ' . $notifiable->profile->last_name)
-            ->line('Offer has been been accepted for ' . $this->hiringRequest->job_title)
+            ->line('Offer has been been declined for ' . $this->hiringRequest->job_title)
             ->line(new HtmlString('<b>Job Title: ' . $this->hiringRequest->job_title . '</b>'))
             ->line(new HtmlString('<b>Job Contract Type: ' . $this->hiringRequest->contract_type . '</b>'))
-            ->line(new HtmlString('<b>Your Joining Date: ' . Carbon::createFromFormat('Y-m-d', $this->offer->joining_date)->toFormattedDateString() . '</b>'))
-            ->line(new HtmlString('<b>Offered Amount: &#8356;' . $this->offer->amount . '/hr</b>'))
             ->line(new HtmlString('<br />'))
             ->line('Thank you for using our application!');
     }
