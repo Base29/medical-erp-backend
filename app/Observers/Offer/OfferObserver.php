@@ -2,7 +2,11 @@
 
 namespace App\Observers\Offer;
 
+use App\Models\HiringRequest;
 use App\Models\Offer;
+use App\Models\User;
+use App\Notifications\Offer\OfferAcceptedCandidateNotification;
+use Illuminate\Support\Facades\Config;
 
 class OfferObserver
 {
@@ -25,7 +29,24 @@ class OfferObserver
      */
     public function updated(Offer $offer)
     {
-        //
+        // Get the candidate to be notified of the offer
+        $notifiable = User::findOrFail($offer->user_id);
+
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($offer->hiring_request_id);
+
+        // Check status of the offer
+        switch ($offer->status) {
+            // Notify the candidate when the offer is accepted
+            case Config::get('constants.OFFER.ACCEPTED'):
+                $notifiable->notify(new OfferAcceptedCandidateNotification(
+                    $offer,
+                    $notifiable,
+                    $hiringRequest
+                ));
+                break;
+        }
+
     }
 
     /**
