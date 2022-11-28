@@ -599,7 +599,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [HiringRequestController::class, 'fetch'])
                 ->middleware(['permission:can_fetch_hiring_request|can_manage_hiring_requests']);
 
-            Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
+            Route::patch('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
                 ->middleware(['permission:can_process_hiring_request|can_manage_hiring_requests']);
 
             Route::post('search', [HeadQuarterController::class, 'search'])
@@ -830,7 +830,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [HeadQuarterController::class, 'fetchOffers'])
                 ->middleware(['permission:can_fetch_offers|can_manage_offers']);
 
-            Route::post('update', [OfferController::class, 'update'])
+            Route::patch('update', [OfferController::class, 'update'])
                 ->middleware(['permission:can_update_offer|can_manage_offers']);
 
             Route::post('delete', [OfferController::class, 'delete'])

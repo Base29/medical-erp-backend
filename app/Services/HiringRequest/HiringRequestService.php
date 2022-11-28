@@ -20,7 +20,6 @@ use App\Models\Role;
 use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
-use App\Notifications\HiringRequest\NewHiringRequestNotification;
 use Exception;
 
 class HiringRequestService
@@ -55,11 +54,6 @@ class HiringRequestService
 
         // Get current authenticated user
         $authenticatedUser = auth()->user();
-
-        // Get users with HQ role
-        $hqUsers = User::whereHas('roles', function ($q) {
-            $q->where('name', 'hq')->orWhere('name', 'headquarter');
-        })->get();
 
         // If $workPattern is false
         if (!$workPattern) {
@@ -117,15 +111,6 @@ class HiringRequestService
 
         // Attach work pattern with the hiring request
         $hiringRequest->workPatterns()->attach($workPatternId);
-
-        // Looping through $hqUsers and sending notification of new $hiringRequest
-        foreach ($hqUsers as $hqUser):
-            $hqUser->notify(new NewHiringRequestNotification(
-                $hqUser,
-                $hiringRequest,
-                $authenticatedUser
-            ));
-        endforeach;
 
         // Return newly created $hiringRequest
         return $hiringRequest->with(['applicationManager.profile', 'practice', 'workPatterns.workTimings', 'jobSpecification.responsibilities', 'personSpecification.personSpecificationAttributes', 'profiles', 'department', 'applicants.profile', 'applicants.offers.amendments' => function ($q) {

@@ -4,30 +4,14 @@ namespace App\Services\HeadQuarter;
 use App\Helpers\Response;
 use App\Models\HiringRequest;
 use App\Models\Offer;
-use App\Models\User;
-use App\Notifications\HiringRequest\ApproveHiringRequestNotification;
-use App\Notifications\HiringRequest\EscalateHiringRequestNotification;
-use App\Notifications\HiringRequest\NotifyHiringRequestManagerNotification;
 
 class HeadQuarterService
 {
     // Process hiring request
     public function processHiringRequest($request)
     {
-        // Fetch users with the role recruiter
-        $recruiters = User::whereHas('roles', function ($q) {
-            $q->where('name', 'recruiter')->orWhere('name', 're');
-        })
-            ->get();
-
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($request->hiring_request);
-
-        // Fetch $hiringRequest manager
-        $manager = User::findOrFail($hiringRequest->notifiable);
-
-        // HQ User
-        $hqUser = auth()->user();
 
         // Update $hiringRequest
         $hiringRequest->status = $request->status;
@@ -36,39 +20,7 @@ class HeadQuarterService
         $hiringRequest->progress = $this->setProgress($request->status);
 
         // Save changes
-        $hiringRequest->save();
-
-        // Looping through $recruiters
-        foreach ($recruiters as $recruiter):
-            // Send Notifications according to $request->gc_status
-            switch ($request->status) {
-                case 'approved':
-
-                    // Notify $recruiter that the $hiringRequest has been approved
-                    $recruiter->notify(new ApproveHiringRequestNotification(
-                        $hqUser,
-                        $hiringRequest,
-                        $recruiter
-                    ));
-
-                    break;
-
-                case 'escalated':
-                    $recruiter->notify(new EscalateHiringRequestNotification(
-                        $hqUser,
-                        $hiringRequest,
-                        $recruiter
-                    ));
-                    break;
-            }
-        endforeach;
-
-        // Notify $manager regarding the action taken by HQ on the $hiringRequest
-        $manager->notify(new NotifyHiringRequestManagerNotification(
-            $manager,
-            $hiringRequest,
-            $hqUser
-        ));
+        $hiringRequest->update();
 
         // Return success response
         return $hiringRequest->with('workPatterns.workTimings', 'practice')

@@ -12,6 +12,7 @@ use App\Models\User;
 use App\Models\WorkPattern;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class OfferService
 {
@@ -33,12 +34,12 @@ class OfferService
         }
 
         // Check if $user applicant_status = 0
-        if ($user->applicant_status === 0) {
+        if ($user->applicant_status === Config::get('constants.APPLICANT_STATUS.REJECTED')) {
             throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been rejected in interview process.'), Response::HTTP_CONFLICT);
         }
 
         // Check if $user applicant_status = 2
-        if ($user->applicant_status === 2) {
+        if ($user->applicant_status === Config::get('constants.APPLICANT_STATUS.REFERRED')) {
             throw new Exception(ResponseMessage::customMessage('Cannot create offer for applicant. Applicant has been referred for a second interview.'), Response::HTTP_CONFLICT);
         }
 
@@ -63,7 +64,7 @@ class OfferService
             $currentOfferId = $userLatestOffer['id'];
 
             // Check if $userLatestOffer is discarded
-            if ($userLatestOffer['status'] !== 5) {
+            if ($userLatestOffer['status'] !== Config::get('constants.OFFER.DISCARDED')) {
                 throw new Exception('Applicant already have a active offer.', Response::HTTP_CONFLICT);
             }
         }
@@ -83,8 +84,8 @@ class OfferService
         $offer->practice_id = $practice->id;
         $offer->user_id = $user->id;
         $offer->work_pattern_id = $workPattern->id;
-        $offer->status = 2;
-        $offer->is_active = 1;
+        $offer->status = Config::get('constants.OFFER.MADE');
+        $offer->is_active = Config::get('constants.OFFER.ACTIVE');
         $offer->amount = $request->amount;
         $offer->joining_date = $request->joining_date;
 
@@ -97,8 +98,8 @@ class OfferService
             $oldOffer = Offer::findOrFail($currentOfferId);
 
             // Change is_active
-            $oldOffer->is_active = 0;
-            $oldOffer->save();
+            $oldOffer->is_active = Config::get('constants.OFFER.INACTIVE');
+            $oldOffer->update();
 
         }
 
@@ -132,9 +133,9 @@ class OfferService
         $offer = Offer::findOrFail($request->offer);
 
         // Check if $request->status = 0
-        if ($request->status === 0) {
-            // Check if $offer->status = 0
-            if ($offer->status === 3) {
+        if ($request->status === Config::get('constants.OFFER.DECLINED')) {
+            // Check if $offer->status = 3
+            if ($offer->status === Config::get('constants.OFFER.REVISED')) {
                 throw new Exception(ResponseMessage::customMessage('Cannot decline offer. Offer is currently under revision.'), Response::HTTP_CONFLICT);
             }
         }
@@ -197,7 +198,7 @@ class OfferService
         $offer = Offer::findOrFail($request->offer);
 
         // Check if $offer is discarded (status = 5)
-        if ($offer->status === 5) {
+        if ($offer->status === Config::get('constants.OFFER.DISCARDED')) {
             throw new Exception(ResponseMessage::customMessage('Cannot create amendment for Offer. The offer is discarded (status = 5).'), Response::HTTP_FORBIDDEN);
         }
 
@@ -210,12 +211,12 @@ class OfferService
 
             if ($latestAmendment !== false) {
                 // Check if the previous amendment is accepted
-                if ($latestAmendment['status'] === 1) {
+                if ($latestAmendment['status'] === Config::get('constants.OFFER.AMENDMENT.ACCEPTED')) {
                     throw new Exception(ResponseMessage::customMessage('The status of the current amendment is "Accepted". No more amendments can be created for this offer'), Response::HTTP_FORBIDDEN);
                 }
 
                 // Check if previous amendment has been rejected/declined
-                if ($latestAmendment['status'] !== 0) {
+                if ($latestAmendment['status'] !== Config::get('constants.OFFER.AMENDMENT.DECLINED')) {
                     throw new Exception(ResponseMessage::customMessage('The status of current amendment is "Negotiating". Please Reject/Decline the previous amendment in order to create a new one.'), Response::HTTP_FORBIDDEN);
                 }
             }
@@ -234,14 +235,14 @@ class OfferService
         $offerAmendment->offer = $offer->id;
         $offerAmendment->work_pattern = $offer->work_pattern_id;
         $offerAmendment->amount = $request->amount;
-        $offerAmendment->status = 2;
-        $offerAmendment->is_active = 1;
+        $offerAmendment->status = Config::get('constants.OFFER.AMENDMENT.NEGOTIATING');
+        $offerAmendment->is_active = Config::get('constants.OFFER.AMENDMENT.ACTIVE');
         $offerAmendment->joining_date = $request->has('joining_date') ? $request->joining_date : $offer->joining_date;
         $offerAmendment->save();
 
         // Change te status of the original offer to "revised"
-        $offer->status = 3;
-        $offer->save();
+        $offer->status = Config::get('constants.OFFER.REVISED');
+        $offer->update();
 
         // Return success response
         return Response::success([
@@ -259,17 +260,17 @@ class OfferService
 
         // Update status of the offer amendment
         $offerAmendment->status = $request->status;
-        $offerAmendment->is_active = $request->status === 0 ? 0 : 1;
+        $offerAmendment->is_active = $request->status === Config::get('constants.OFFER.AMENDMENT.INACTIVE') ? Config::get('constants.OFFER.AMENDMENT.INACTIVE') : Config::get('constants.OFFER.AMENDMENT.ACTIVE');
         $offerAmendment->reason = $request->reason ? $request->reason : null;
         $offerAmendment->save();
 
         // Check if $offerAmendment has been accepted
-        if ($offerAmendment->status === 1) {
+        if ($offerAmendment->status === Config::get('constants.OFFER.AMENDMENT.ACCEPTED')) {
 
             // Update status of offer to accepted if the $offerAmendment if accepted
             $offer = Offer::findOrFail($offerAmendment->offer);
-            $offer->status = 1;
-            $offer->save();
+            $offer->status = Config::get('constants.OFFER.ACCEPTED');
+            $offer->update();
 
         }
 
