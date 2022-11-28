@@ -266,7 +266,7 @@ class OfferService
 
         // Change te status of the original offer to "revised"
         $offer->status = Config::get('constants.OFFER.REVISED');
-        $offer->save();
+        $offer->update();
 
         // Return success response
         return Response::success([
@@ -294,7 +294,7 @@ class OfferService
             // Update status of offer to accepted if the $offerAmendment if accepted
             $offer = Offer::findOrFail($offerAmendment->offer);
             $offer->status = Config::get('constants.OFFER.ACCEPTED');
-            $offer->save();
+            $offer->update();
 
         }
 

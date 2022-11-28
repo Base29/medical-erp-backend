@@ -47,4 +47,9 @@ class Offer extends Model
     {
         return $this->hasMany(OfferAmendment::class, 'offer', 'id');
     }
+
+    public function activeAmendment()
+    {
+        return $this->amendments()->where('is_active', 1)->first();
+    }
 }

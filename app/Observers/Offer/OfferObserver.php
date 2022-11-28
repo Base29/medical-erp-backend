@@ -7,6 +7,7 @@ use App\Models\Offer;
 use App\Models\User;
 use App\Notifications\Offer\OfferAcceptedCandidateNotification;
 use App\Notifications\Offer\OfferDeclinedCandidateNotification;
+use App\Notifications\Offer\OfferRevisedCandidateNotification;
 use Illuminate\Support\Facades\Config;
 
 class OfferObserver
@@ -36,6 +37,9 @@ class OfferObserver
         // Get hiring request
         $hiringRequest = HiringRequest::findOrFail($offer->hiring_request_id);
 
+        // Offer Amendments
+        $activeAmendment = $offer->activeAmendment();
+
         // Check status of the offer
         switch ($offer->status) {
             // Notify the candidate when the offer is accepted
@@ -51,6 +55,14 @@ class OfferObserver
                     $offer,
                     $notifiable,
                     $hiringRequest
+                ));
+                break;
+            case Config::get('constants.OFFER.REVISED'):
+                $notifiable->notify(new OfferRevisedCandidateNotification(
+                    $offer,
+                    $hiringRequest,
+                    $notifiable,
+                    $activeAmendment
                 ));
                 break;
         }
