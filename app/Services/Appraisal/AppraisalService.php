@@ -484,6 +484,7 @@ class AppraisalService
                 $appraisalAnswer->save();
 
                 return Response::success([
+                    'code' => Response::HTTP_CREATED,
                     'answer' => $appraisalAnswer,
                 ]);
 
