@@ -3,10 +3,12 @@
 namespace App\Providers;
 
 use App\Models\EmployeeHandbook;
+use App\Models\HiringRequest;
 use App\Models\ItPolicy;
 use App\Models\Offer;
 use App\Models\Practice;
 use App\Observers\EmployeeHandbook\EmployeeHandbookObserver;
+use App\Observers\HiringRequest\HiringRequestObserver;
 use App\Observers\ItPolicy\ItPolicyObserver;
 use App\Observers\Offer\OfferObserver;
 use App\Observers\Practice\PracticeObserver;
@@ -39,5 +41,6 @@ class EventServiceProvider extends ServiceProvider
         EmployeeHandbook::observe(EmployeeHandbookObserver::class);
         ItPolicy::observe(ItPolicyObserver::class);
         Offer::observe(OfferObserver::class);
+        HiringRequest::observe(HiringRequestObserver::class);
     }
 }

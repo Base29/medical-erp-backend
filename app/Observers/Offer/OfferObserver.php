@@ -5,6 +5,8 @@ namespace App\Observers\Offer;
 use App\Models\HiringRequest;
 use App\Models\Offer;
 use App\Models\User;
+use App\Notifications\Offer\NewOfferCreatedCandidateNotification;
+use App\Notifications\Offer\NewOfferCreatedHQNotification;
 use App\Notifications\Offer\OfferAcceptedCandidateNotification;
 use App\Notifications\Offer\OfferDeclinedCandidateNotification;
 use App\Notifications\Offer\OfferRevisedCandidateNotification;
@@ -20,7 +22,33 @@ class OfferObserver
      */
     public function created(Offer $offer)
     {
-        //
+        // Get user
+        $candidate = User::findOrFail($offer->user_id);
+
+        // Get hiring request
+        $hiringRequest = HiringRequest::findOrFail($offer->hiring_request_id);
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewOfferCreatedHQNotification(
+                $hqUser,
+                $$candidate,
+                $hiringRequest,
+                $offer
+            ));
+        endforeach;
+
+        // Notify candidate regarding the new offer
+        $candidate->notify(new NewOfferCreatedCandidateNotification(
+            $candidate,
+            $offer,
+            $hiringRequest
+        ));
     }
 
     /**

@@ -599,7 +599,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [HiringRequestController::class, 'fetch'])
                 ->middleware(['permission:can_fetch_hiring_request|can_manage_hiring_requests']);
 
-            Route::post('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
+            Route::patch('process-hiring-request', [HeadQuarterController::class, 'processHiringRequest'])
                 ->middleware(['permission:can_process_hiring_request|can_manage_hiring_requests']);
 
             Route::post('search', [HeadQuarterController::class, 'search'])
