@@ -122,7 +122,7 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('/', [UserController::class, 'fetch']);
 
-            Route::post('update', [UserController::class, 'update']);
+            Route::patch('update', [UserController::class, 'update']);
 
             Route::post('user', [UserController::class, 'fetchSingle']);
 
@@ -181,7 +181,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::delete('delete/{id}', [RoomController::class, 'delete'])
             ->middleware(['permission:can_delete_room|can_manage_rooms']);
 
-        Route::post('update', [RoomController::class, 'update'])
+        Route::patch('update', [RoomController::class, 'update'])
             ->middleware(['permission:can_update_room|can_manage_rooms']);
     });
 
@@ -208,7 +208,7 @@ Route::middleware(['auth:api'])->group(function () {
 
     // Endpoints for Task operations
     Route::prefix('tasks')->group(function () {
-        Route::post('update', [TaskController::class, 'update'])
+        Route::patch('update', [TaskController::class, 'update'])
             ->middleware(['permission:can_update_task|can_manage_tasks']);
 
         Route::post('create', [TaskController::class, 'create'])
@@ -232,7 +232,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::delete('delete/{id}', [PostController::class, 'delete'])
             ->middleware(['permission:can_delete_own_post|can_manage_posts']);
 
-        Route::post('update', [PostController::class, 'update'])
+        Route::patch('update', [PostController::class, 'update'])
             ->middleware(['permission:can_update_post|can_manage_posts']);
 
         Route::post('post', [PostController::class, 'fetchSinglePost'])
@@ -247,7 +247,7 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::post('/', [AnswerController::class, 'fetch']);
 
-            Route::post('update', [AnswerController::class, 'update'])
+            Route::patch('update', [AnswerController::class, 'update'])
                 ->middleware(['permission:can_update_answer|can_manage_answers']);
 
             Route::delete('delete/{id}', [AnswerController::class, 'delete'])
@@ -259,7 +259,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [CommentController::class, 'create'])
                 ->middleware(['permission:can_create_comment|can_manage_comments']);
 
-            Route::post('update', [CommentController::class, 'update'])
+            Route::patch('update', [CommentController::class, 'update'])
                 ->middleware(['permission:can_update_comment|can_manage_comments']);
 
             Route::delete('delete/{id}', [CommentController::class, 'delete'])
@@ -278,7 +278,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [ContractSummaryController::class, 'create'])
             ->middleware(['permission:can_create_contract_summary|can_manage_contract_summaries']);
 
-        Route::post('update', [ContractSummaryController::class, 'update'])
+        Route::patch('update', [ContractSummaryController::class, 'update'])
             ->middleware(['permission:can_update_contract_summary|can_manage_contract_summaries']);
 
         Route::post('contract-summary', [ContractSummaryController::class, 'fetchSingle'])
@@ -293,7 +293,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [PositionSummaryController::class, 'create'])
             ->middleware(['permission:can_create_position_summary|can_manage_position_summaries']);
 
-        Route::post('update', [PositionSummaryController::class, 'update'])
+        Route::patch('update', [PositionSummaryController::class, 'update'])
             ->middleware(['permission:can_update_position_summary|can_manage_position_summaries']);
 
         Route::post('position-summary', [PositionSummaryController::class, 'fetchSingle'])->middleware(['permission:can_fetch_single_position_summary|can_manage_position_summaries']);
@@ -315,7 +315,7 @@ Route::middleware(['auth:api'])->group(function () {
     });
 
     Route::prefix('work-timings')->group(function () {
-        Route::post('update', [WorkTimingController::class, 'update'])
+        Route::patch('update', [WorkTimingController::class, 'update'])
             ->middleware(['permission:can_update_work_timing|can_manage_work_patterns']);
 
         Route::post('/', [WorkTimingController::class, 'fetch'])
@@ -326,7 +326,7 @@ Route::middleware(['auth:api'])->group(function () {
     // Routes for profile
     Route::prefix('profiles')->group(function () {
 
-        Route::post('update', [ProfileController::class, 'update'])
+        Route::patch('update', [ProfileController::class, 'update'])
             ->middleware(['permission:can_update_profile|can_manage_profiles']);
     });
 
@@ -340,7 +340,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
             ->middleware(['permission:can_delete_misc_info|can_manage_misc_info']);
 
-        Route::post('update', [MiscellaneousInformationController::class, 'update'])
+        Route::patch('update', [MiscellaneousInformationController::class, 'update'])
             ->middleware(['permission:can_update_misc_info|can_manage_misc_info']);
     });
 
@@ -349,7 +349,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [EmploymentCheckController::class, 'create'])
             ->middleware(['permission:can_create_employment_check|can_manage_employment_checks']);
 
-        Route::post('update', [EmploymentCheckController::class, 'update'])
+        Route::patch('update', [EmploymentCheckController::class, 'update'])
             ->middleware(['permission:can_update_employment_check|can_manage_employment_checks']);
 
         Route::post('delete', [EmploymentCheckController::class, 'delete'])
@@ -364,7 +364,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [EmploymentPolicyController::class, 'create'])
             ->middleware(['permission:can_create_employment_policy|can_manage_employment_policies']);
 
-        Route::post('update', [EmploymentPolicyController::class, 'update'])
+        Route::patch('update', [EmploymentPolicyController::class, 'update'])
             ->middleware(['permission:can_update_employment_policy|can_manage_employment_policies']);
 
         Route::post('delete', [EmploymentPolicyController::class, 'delete'])
@@ -379,7 +379,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('create', [EmploymentHistoryController::class, 'create'])
             ->middleware(['permission:can_create_employment_history|can_manage_employment_histories']);
 
-        Route::post('update', [EmploymentHistoryController::class, 'update'])
+        Route::patch('update', [EmploymentHistoryController::class, 'update'])
             ->middleware(['permission:can_update_employment_history|can_manage_employment_histories']);
 
         Route::post('delete', [EmploymentHistoryController::class, 'delete'])
@@ -403,7 +403,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [ReferenceController::class, 'delete'])
             ->middleware(['permission:can_delete_reference|can_manage_references']);
 
-        Route::post('update', [ReferenceController::class, 'update'])
+        Route::patch('update', [ReferenceController::class, 'update'])
             ->middleware(['permission:can_update_reference|can_manage_references']);
     });
 
@@ -418,7 +418,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [EducationController::class, 'delete'])
             ->middleware(['permission:can_delete_education|can_manage_education']);
 
-        Route::post('update', [EducationController::class, 'update'])
+        Route::patch('update', [EducationController::class, 'update'])
             ->middleware(['permission:can_update_education|can_manage_education']);
     });
 
@@ -433,7 +433,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [LegalController::class, 'delete'])
             ->middleware(['permission:can_delete_legal|can_manage_legal']);
 
-        Route::post('update', [LegalController::class, 'update'])
+        Route::patch('update', [LegalController::class, 'update'])
             ->middleware(['permission:can_update_legal|can_manage_legal']);
     });
 
@@ -445,7 +445,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/', [EmergencyContactController::class, 'fetch'])
             ->middleware(['permission:can_fetch_emergency_contact|can_manage_emergency_contacts']);
 
-        Route::post('update', [EmergencyContactController::class, 'update'])
+        Route::patch('update', [EmergencyContactController::class, 'update'])
             ->middleware(['permission:can_update_emergency_contact|can_manage_emergency_contacts']);
 
         Route::post('delete', [EmergencyContactController::class, 'delete'])
@@ -460,7 +460,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('/', [TerminationController::class, 'fetch'])
             ->middleware(['permission:can_fetch_termination|can_manage_terminations']);
 
-        Route::post('update', [TerminationController::class, 'update'])
+        Route::patch('update', [TerminationController::class, 'update'])
             ->middleware(['permission:can_update_termination|can_manage_terminations']);
 
         Route::post('delete', [TerminationController::class, 'delete'])
@@ -475,7 +475,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('hiring-request', [HiringRequestController::class, 'fetchSingle'])
             ->middleware(['permission:can_fetch_single_hiring_request|can_manage_hiring_requests']);
 
-        Route::post('update', [HiringRequestController::class, 'update'])
+        Route::patch('update', [HiringRequestController::class, 'update'])
             ->middleware(['permission:can_update_hiring_request|can_manage_hiring_requests']);
 
         Route::post('delete', [HiringRequestController::class, 'delete'])
@@ -514,7 +514,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [InductionChecklistController::class, 'delete'])
             ->middleware(['permission:can_delete_induction_checklist|can_manage_inductions']);
 
-        Route::post('update', [InductionChecklistController::class, 'update'])
+        Route::patch('update', [InductionChecklistController::class, 'update'])
             ->middleware(['permission:can_update_induction_checklist|can_manage_inductions']);
     });
 
@@ -532,7 +532,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('induction', [InductionScheduleController::class, 'singleInduction'])
             ->middleware(['permission:can_manage_inductions']);
 
-        Route::post('update', [InductionScheduleController::class, 'update'])
+        Route::patch('update', [InductionScheduleController::class, 'update'])
             ->middleware(['permission:can_manage_inductions']);
 
         Route::post('delete', [InductionScheduleController::class, 'delete'])
@@ -634,7 +634,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [InterviewController::class, 'upcomingInterviews'])
                 ->middleware(['permission:can_fetch_interviews|can_manage_interview']);
 
-            Route::post('update', [InterviewController::class, 'update'])
+            Route::patch('update', [InterviewController::class, 'update'])
                 ->middleware(['permission:can_update_interview|can_manage_interview']);
 
             Route::post('delete', [InterviewController::class, 'delete'])
@@ -672,7 +672,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('policy', [InterviewPolicyController::class, 'fetchSingle'])
                     ->middleware(['permission:can_fetch_single_interview_policy|can_manage_interview_policy']);
 
-                Route::post('update', [InterviewPolicyController::class, 'update'])
+                Route::patch('update', [InterviewPolicyController::class, 'update'])
                     ->middleware(['permission:can_update_interview_policy|can_manage_interview_policy']);
 
                 Route::post('update-question', [InterviewPolicyController::class, 'updateInterviewQuestion'])
@@ -843,7 +843,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('create', [OfferController::class, 'amendOffer'])
                     ->middleware(['permission:can_manage_offer']);
 
-                Route::post('update', [OfferController::class, 'updateAmendment'])
+                Route::patch('update', [OfferController::class, 'updateAmendment'])
                     ->middleware(['permission:can_manage_offer']);
             });
         });
@@ -896,7 +896,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('/', [AppraisalController::class, 'upcomingAppraisals'])
                 ->middleware(['permission:can_manage_appraisal']);
 
-            Route::post('update', [AppraisalController::class, 'update'])
+            Route::patch('update', [AppraisalController::class, 'update'])
                 ->middleware(['permission:can_manage_appraisal']);
 
             Route::post('delete', [AppraisalController::class, 'delete'])
@@ -925,7 +925,7 @@ Route::middleware(['auth:api'])->group(function () {
                 Route::post('policy', [AppraisalPolicyController::class, 'fetchSingle'])
                     ->middleware(['permission:can_manage_appraisal_policy']);
 
-                Route::post('update', [AppraisalPolicyController::class, 'update'])
+                Route::patch('update', [AppraisalPolicyController::class, 'update'])
                     ->middleware(['permission:can_manage_appraisal_policy']);
 
                 Route::post('update-question', [AppraisalPolicyController::class, 'updateAppraisalQuestion'])
@@ -954,7 +954,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('delete', [TrainingCourseController::class, 'delete'])
                 ->middleware(['permission:can_manage_training_course']);
 
-            Route::post('update', [TrainingCourseController::class, 'updateCourse'])
+            Route::patch('update', [TrainingCourseController::class, 'updateCourse'])
                 ->middleware(['permission:can_manage_training_course']);
 
             Route::post('enroll-user', [TrainingCourseController::class, 'enrollCourse'])

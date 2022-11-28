@@ -282,7 +282,7 @@ class InterviewService
 
             // Update $user applicant_status according to $interviewSchedule' applicant_status
             $user->applicant_status = $request->applicant_status;
-            $user->save();
+            $user->update();
         }
 
         UpdateService::updateModel($interviewSchedule, $request->validated(), 'interview');

@@ -769,7 +769,7 @@ class LocumService
 
         // Update note
         $locumNote->note = $request->note;
-        $locumNote->save();
+        $locumNote->update();
 
         // Return success response
         return Response::success([
