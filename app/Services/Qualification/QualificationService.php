@@ -54,7 +54,7 @@ class QualificationService
 
         // Update $qualification
         $qualification->qualification = $request->skill;
-        $qualification->save();
+        $qualification->update();
 
         // Return success response
         return Response::success([
