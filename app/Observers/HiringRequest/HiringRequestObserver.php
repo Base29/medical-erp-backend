@@ -6,6 +6,7 @@ use App\Models\HiringRequest;
 use App\Models\User;
 use App\Notifications\HiringRequest\ApproveHiringRequestNotification;
 use App\Notifications\HiringRequest\EscalateHiringRequestNotification;
+use App\Notifications\HiringRequest\NewHiringRequestNotification;
 use App\Notifications\HiringRequest\NotifyHiringRequestManagerNotification;
 
 class HiringRequestObserver
@@ -18,7 +19,22 @@ class HiringRequestObserver
      */
     public function created(HiringRequest $hiringRequest)
     {
-        //
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        // Get users with HQ role
+        $hqUsers = User::whereHas('roles', function ($q) {
+            $q->where('name', 'hq')->orWhere('name', 'headquarter');
+        })->get();
+
+        // Looping through $hqUsers and sending notification of new $hiringRequest
+        foreach ($hqUsers as $hqUser):
+            $hqUser->notify(new NewHiringRequestNotification(
+                $hqUser,
+                $hiringRequest,
+                $authenticatedUser
+            ));
+        endforeach;
     }
 
     /**
