@@ -151,6 +151,7 @@ class AppraisalService
 
         // Return success response
         return Response::success([
+            'code' => Response::HTTP_OK,
             'appraisal-policies' => $appraisalPolicies,
         ]);
 
