@@ -30,50 +30,53 @@ class HiringRequestObserver
     public function updated(HiringRequest $hiringRequest)
     {
 
-        dd('UPDATE HIRING REQUEST');
-        // Fetch $hiringRequest manager
-        $manager = User::findOrFail($hiringRequest->notifiable);
+        // Check origin oof request
+        if (request()->is('api/hq/hiring-requests/process-hiring-request')) {
+            // Fetch $hiringRequest manager
+            $manager = User::findOrFail($hiringRequest->notifiable);
 
-        // HQ User
-        $hqUser = auth()->user();
+            // HQ User
+            $hqUser = auth()->user();
 
-        // Fetch users with the role recruiter
-        $recruiters = User::whereHas('roles', function ($q) {
-            $q->where('name', 'recruiter')->orWhere('name', 're');
-        })
-            ->get();
+            // Fetch users with the role recruiter
+            $recruiters = User::whereHas('roles', function ($q) {
+                $q->where('name', 'recruiter')->orWhere('name', 're');
+            })
+                ->get();
 
-        // Looping through $recruiters
-        foreach ($recruiters as $recruiter):
-            // Send Notifications according to $request->gc_status
-            switch (request()->status) {
-                case 'approved':
+            // Looping through $recruiters
+            foreach ($recruiters as $recruiter):
+                // Send Notifications according to $request->gc_status
+                switch (request()->status) {
+                    case 'approved':
 
-                    // Notify $recruiter that the $hiringRequest has been approved
-                    $recruiter->notify(new ApproveHiringRequestNotification(
-                        $hqUser,
-                        $hiringRequest,
-                        $recruiter
-                    ));
+                        // Notify $recruiter that the $hiringRequest has been approved
+                        $recruiter->notify(new ApproveHiringRequestNotification(
+                            $hqUser,
+                            $hiringRequest,
+                            $recruiter
+                        ));
 
-                    break;
+                        break;
 
-                case 'escalated':
-                    $recruiter->notify(new EscalateHiringRequestNotification(
-                        $hqUser,
-                        $hiringRequest,
-                        $recruiter
-                    ));
-                    break;
-            }
-        endforeach;
+                    case 'escalated':
+                        $recruiter->notify(new EscalateHiringRequestNotification(
+                            $hqUser,
+                            $hiringRequest,
+                            $recruiter
+                        ));
+                        break;
+                }
+            endforeach;
 
-        // Notify $manager regarding the action taken by HQ on the $hiringRequest
-        $manager->notify(new NotifyHiringRequestManagerNotification(
-            $manager,
-            $hiringRequest,
-            $hqUser
-        ));
+            // Notify $manager regarding the action taken by HQ on the $hiringRequest
+            $manager->notify(new NotifyHiringRequestManagerNotification(
+                $manager,
+                $hiringRequest,
+                $hqUser
+            ));
+        }
+
     }
 
     /**
