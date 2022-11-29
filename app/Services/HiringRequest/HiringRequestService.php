@@ -21,6 +21,7 @@ use App\Models\User;
 use App\Models\WorkPattern;
 use App\Models\WorkTiming;
 use Exception;
+use Illuminate\Support\Facades\Config;
 
 class HiringRequestService
 {
@@ -102,7 +103,7 @@ class HiringRequestService
         $hiringRequest->starting_salary = $request->starting_salary;
         $hiringRequest->reason_for_recruitment = $request->reason_for_recruitment;
         $hiringRequest->comment = $request->comment;
-        $hiringRequest->status = 'pending';
+        $hiringRequest->status = Config::get('constants.HIRING_REQUEST.PENDING');
         $hiringRequest->job_specification_id = $jobSpecification->id;
         $hiringRequest->person_specification_id = $personSpecification->id;
         $hiringRequest->application_manager = auth()->user()->id;
@@ -324,32 +325,32 @@ class HiringRequestService
          */
 
         // Getting count of pending hiring requests
-        $pending = $this->processCount('status', 'pending', $request);
+        $pending = $this->processCount('status', Config::get('constants.HIRING_REQUEST.PENDING'), $request);
 
         // Getting count of approved hiring requests
-        $approved = $this->processCount('status', 'approved', $request);
+        $approved = $this->processCount('status', Config::get('constants.HIRING_REQUEST.APPROVED'), $request);
 
         // Getting count of declined hiring requests
-        $declined = $this->processCount('status', 'declined', $request);
+        $declined = $this->processCount('status', Config::get('constants.HIRING_REQUEST.DECLINED'), $request);
 
         // Getting count of escalated hiring requests
-        $escalated = $this->processCount('status', 'escalated', $request);
+        $escalated = $this->processCount('status', Config::get('constants.HIRING_REQUEST.ESCALATED'), $request);
 
         /**
          * Count according to contract type
          */
 
         // Getting count of permanent contract
-        $permanent = $this->processCount('contract_type', 'permanent', $request);
+        $permanent = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.PERMANENT'), $request);
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount('contract_type', 'fixed-term', $request);
+        $fixedTerm = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.FIXED_TERM'), $request);
 
         // Getting count of casual contract
-        $casual = $this->processCount('contract_type', 'casual', $request);
+        $casual = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.CASUAL'), $request);
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount('contract_type', 'zero-hour', $request);
+        $zeroHour = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.ZERO_HOUR'), $request);
 
         // Adding extra meta to response $results
         $results['count']['pending'] = $pending;

@@ -21,6 +21,7 @@ use App\Models\Practice;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class InterviewService
@@ -71,16 +72,16 @@ class InterviewService
          */
 
         // Getting count of permanent contract
-        $permanent = $this->processCount('contract_type', 'permanent');
+        $permanent = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.PERMANENT'));
 
         // Getting count of fixed term contract
-        $fixedTerm = $this->processCount('contract_type', 'fixed-term');
+        $fixedTerm = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.FIXED_TERM'));
 
         // Getting count of casual contract
-        $casual = $this->processCount('contract_type', 'casual');
+        $casual = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.CASUAL'));
 
         // Getting count of zero hour contract
-        $zeroHour = $this->processCount('contract_type', 'zero-hour');
+        $zeroHour = $this->processCount('contract_type', Config::get('constants.HIRING_REQUEST.CONTRACT_TYPE.ZERO_HOUR'));
 
         $countByContractType = collect(['count' => [
             'permanent' => $permanent,
