@@ -1313,4 +1313,10 @@ class UserService
             'session-invites' => $invites,
         ]);
     }
+
+    // Fetch hired users
+    public function fetchHiredUsers($request)
+    {
+        return 'FETCH HIRED USERS';
+    }
 }
