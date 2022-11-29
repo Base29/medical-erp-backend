@@ -56,4 +56,11 @@ return [
             'REFERRED' => 2,
         ],
     ],
+    // Constants for interview
+    'INTERVIEW' => [
+        'TYPE' => [
+            'FIRST_INTERVIEW' => 'first-interview',
+            'SECOND_INTERVIEW' => 'second-interview',
+        ],
+    ],
 ];

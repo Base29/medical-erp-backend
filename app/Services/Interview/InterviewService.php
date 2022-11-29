@@ -528,19 +528,27 @@ class InterviewService
 
         // Return success response
         // In case of 2nd interview
-        if ($interviewSchedule->application_status === 'second-interview'):
+        if ($interviewSchedule->application_status === Config::get('constants.INTERVIEW.TYPE.SECOND_INTERVIEW')):
 
             // Get user
             $user = User::findOrFail($interviewSchedule->user_id);
 
             // Get the id of the first interview
-            $firstInterview = $user->interviewSchedules[0]->id;
+            $firstInterviewId = $user->interviewSchedules[0]->id;
 
-            // Get misc info first interview
-            $firstInterviewMiscInfo = InterviewMiscInfo::where('interview', $firstInterview)->firstOrFail();
-
-            // Get first interview score
-            $firstInterviewScore = InterviewScore::where('interview', $firstInterview)->firstOrFail();
+            // Get first interview
+            $firstInterview = InterviewSchedule::where('id', $firstInterviewId)
+                ->with([
+                    'interviewPolicies.questions.options',
+                    'interviewPolicies.questions.interviewAnswers' => function ($q) use ($firstInterviewId) {
+                        $q->where('interview', $firstInterviewId);
+                    },
+                    'candidateQuestions',
+                    'adhocQuestions',
+                    'interviewMiscInfo',
+                    'interviewScore',
+                ])
+                ->first();
 
             // Cast $interviewSchedule to $secondInterviewSchedule variable
             $secondInterviewSchedule = $interviewSchedule->where('id', $interviewSchedule->id)
@@ -565,8 +573,8 @@ class InterviewService
             $secondInterviewScheduleWithAdditionalData = $secondInterviewSchedule->toArray();
 
             // Inserting additional data from the first interview
-            $secondInterviewScheduleWithAdditionalData['first_interview_data']['misc_info'] = $firstInterviewMiscInfo;
-            $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
+            $secondInterviewScheduleWithAdditionalData['first_interview_data'] = $firstInterview;
+            // $secondInterviewScheduleWithAdditionalData['first_interview_data']['score'] = $firstInterviewScore;
 
             return Response::success([
                 'code' => Response::HTTP_OK,
