@@ -29,6 +29,7 @@ use App\Notifications\User\CandidateHiredNotification;
 use App\Notifications\WelcomeNewEmployeeNotification;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 
@@ -88,8 +89,8 @@ class UserService
         $user = new User();
         $user->email = $request->email;
         $user->password = Hash::make($request->is_candidate ? $random : $request->password);
-        $user->is_active = $request->is_candidate ? 0 : 1;
-        $user->is_candidate = $request->is_candidate ? $request->is_candidate : 0;
+        $user->is_active = $request->is_candidate ? Config::get('constants.USER.INACTIVE') : Config::get('constants.USER.ACTIVE');
+        $user->is_candidate = $request->is_candidate ? Config::get('constants.USER.CANDIDATE') : Config::get('constants.USER.NOT_CANDIDATE');
         $user->department_id = $request->is_candidate ? $department->id : null;
         $user->generic_user = $request->generic_user ? $request->generic_user : null;
         $user->save();
@@ -445,12 +446,12 @@ class UserService
 
         // Save user pass and make user active
         $candidate->password = Hash::make($password);
-        $candidate->is_hired = 1;
-        $candidate->is_active = 1;
-        $candidate->save();
+        $candidate->is_hired = Config::get('constants.USER.HIRED');
+        $candidate->is_active = Config::get('constants.USER.ACTIVE');
+        $candidate->update();
 
         // Update status in applicants table
-        $applicant->status = 1;
+        $applicant->status = Config::get('constants.USER.APPLICANT_STATUS.ACCEPTED');
         $applicant->save();
 
         // Assign permissions
@@ -870,7 +871,7 @@ class UserService
                         $filteredCandidates = User::whereHas('profile', function ($q) use ($request) {
                             $q->where('last_name', 'like', '%' . $request->value . '%');
                         })
-                            ->where('is_candidate', 1)
+                            ->where('is_candidate', Config::get('constants.USER.CANDIDATE'))
                             ->with([
                                 'profile.hiringRequest',
                                 'positionSummary',
@@ -893,7 +894,7 @@ class UserService
             endif;
         else:
             // Fetch all Candidates
-            $filteredCandidates = User::where('is_candidate', 1)
+            $filteredCandidates = User::where('is_candidate', Config::get('constants.USER.CANDIDATE'))
                 ->with([
                     'profile.hiringRequest',
                     'positionSummary',
@@ -938,8 +939,8 @@ class UserService
                 }
 
                 // Make user as locum
-                $user->is_locum = 1;
-                $user->save();
+                $user->is_locum = Config::get('constants.USER.LOCUM');
+                $user->update();
 
                 break;
 
@@ -950,8 +951,8 @@ class UserService
                 }
 
                 // Make user as locum
-                $user->is_locum = 0;
-                $user->save();
+                $user->is_locum = Config::get('constants.USER.NOT_LOCUM');
+                $user->update();
 
                 break;
 
