@@ -381,7 +381,7 @@ class UserController extends Controller
     {
         try {
             // Logic here
-            return $this->userService->fetchHiredUsers($request);
+            return $this->userService->fetchHiredWithNoInductionUsers($request);
 
         } catch (Exception $e) {
             return Response::fail([

@@ -1315,7 +1315,7 @@ class UserService
     }
 
     // Fetch hired users
-    public function fetchHiredUsers($request)
+    public function fetchHiredWithNoInductionUsers($request)
     {
         // Get practice
         $practice = Practice::findOrFail($request->practice);
