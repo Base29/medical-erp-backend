@@ -35,7 +35,7 @@ class CreateAppraisalRequest extends FormRequest
             'location' => 'nullable|string|max:500',
             'type' => [
                 'required',
-                Rule::in(['internal', 'external', 'follow-up']),
+                Rule::in(['new', 'follow-up']),
             ],
             'status' => [
                 'nullable',
@@ -51,7 +51,7 @@ class CreateAppraisalRequest extends FormRequest
     {
         return [
             'status.in' => 'The status is invalid. It should be one of first|second|final',
-            'type.in' => 'The type is invalid. It should be one of internal|external|follow-up',
+            'type.in' => 'The type is invalid. It should be one of new|follow-up',
         ];
     }
 
