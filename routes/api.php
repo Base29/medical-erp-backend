@@ -983,6 +983,9 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('employees')->group(function () {
             Route::get('/', [UserController::class, 'employees'])
                 ->middleware(['permission:can_manage_employees']);
+
+            Route::post('hired', [UserController::class, 'fetchHired'])
+                ->middleware(['permission:can_manage_employees']);
         });
     });
 

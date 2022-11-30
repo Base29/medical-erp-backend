@@ -50,6 +50,8 @@ return [
         'NOT_CANDIDATE' => 0,
         'LOCUM' => 1,
         'NOT_LOCUM' => 0,
+        'BLACKLISTED' => 1,
+        'NOT_BLACKLISTED' => 0,
         'APPLICANT_STATUS' => [
             'REJECTED' => 0,
             'ACCEPTED' => 1,
@@ -62,5 +64,11 @@ return [
             'FIRST_INTERVIEW' => 'first-interview',
             'SECOND_INTERVIEW' => 'second-interview',
         ],
+    ],
+
+    // Constants for Induction
+    'INDUCTION' => [
+        'COMPLETED' => 1,
+        'INCOMPLETE' => 0,
     ],
 ];

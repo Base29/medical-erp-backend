@@ -11,6 +11,7 @@ use App\Http\Requests\Locum\UpdateUserLocumStatusRequest;
 use App\Http\Requests\User\CourseProgressRequest;
 use App\Http\Requests\User\CreateEndOfModuleExamRequest;
 use App\Http\Requests\User\CreateUserRequest;
+use App\Http\Requests\User\FetchHiredUsersRequest;
 use App\Http\Requests\User\FetchSingleEnrolledCourseRequest;
 use App\Http\Requests\User\FetchSingleUserRequest;
 use App\Http\Requests\User\FetchUserSessionInvitesByMonthRequest;
@@ -366,6 +367,21 @@ class UserController extends Controller
         try {
             // Logic here
             return $this->userService->getMySessionInvites($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch hired users
+    public function fetchHired(FetchHiredUsersRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchHiredWithNoInductionUsers($request);
 
         } catch (Exception $e) {
             return Response::fail([
