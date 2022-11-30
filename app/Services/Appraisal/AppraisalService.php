@@ -475,12 +475,16 @@ class AppraisalService
                     );
                 }
 
+                // Fetch the answer string for the option id
+                $questionOption = AppraisalQuestionOption::findOrFail($request->option);
+
                 // Initiate instance of InterviewAnswer model
                 $appraisalAnswer = new AppraisalAnswer();
 
                 $appraisalAnswer->appraisal = $appraisal->id;
                 $appraisalAnswer->question = $appraisalQuestion->id;
                 $appraisalAnswer->option = $request->option;
+                $appraisalAnswer->answer = $questionOption->option;
                 $appraisalAnswer->save();
 
                 return Response::success([
@@ -503,12 +507,16 @@ class AppraisalService
                 // Loop through $request->assert_options
                 foreach ($options as $option) {
 
+                    // Fetch the answer string for the option id
+                    $questionOption = AppraisalQuestionOption::findOrFail($request->option);
+
                     // Initiate instance of InterviewAnswer model
                     $appraisalAnswer = new AppraisalAnswer();
 
                     $appraisalAnswer->appraisal = $appraisal->id;
                     $appraisalAnswer->question = $appraisalQuestion->id;
                     $appraisalAnswer->option = $option;
+                    $appraisalAnswer->answer = $questionOption->option;
                     $appraisalAnswer->save();
                 }
 
