@@ -1317,6 +1317,45 @@ class UserService
     // Fetch hired users
     public function fetchHiredUsers($request)
     {
-        return 'FETCH HIRED USERS';
+        // Get practice
+        $practice = Practice::findOrFail($request->practice);
+
+        // Get hired users for the practice
+        $hiredUsers = User::whereHas('practices', function ($q) use ($practice) {
+            $q->where('practice_id', $practice->id);
+        })
+            ->whereDoesntHave('inductionSchedule')
+            ->where([
+                'is_hired' => Config::get('constants.USER.HIRED'),
+            ])->with([
+            'profile.applicant',
+            'positionSummary',
+            'contractSummary',
+            'roles',
+            'practices',
+            'employmentCheck',
+            'workPatterns.workTimings',
+            'courses.modules.lessons',
+            'locumNotes',
+            'qualifications',
+            'locumSessions' => function ($q) {
+                $q->latest();
+            },
+            'interviewSchedules.interviewMiscInfo',
+            'interviewSchedules.interviewScore',
+            'offers' => function ($q) {
+                $q->orderBy('id', 'desc')->limit(1);
+            },
+            'offers.amendments',
+            'inductionSchedule',
+        ])
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'hired-users' => $hiredUsers,
+        ]);
     }
 }
