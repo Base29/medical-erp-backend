@@ -58,6 +58,7 @@ class FilterUsersRequest extends FormRequest
                     5, // Discarded
                 ]),
             ],
+            'induction_status' => 'nullable|boolean',
         ];
     }
 

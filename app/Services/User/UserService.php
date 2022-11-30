@@ -1089,6 +1089,14 @@ class UserService
             });
         }
 
+        // If $request has induction_status
+        if ($request->has('induction_status')) {
+            // Filter users by induction status
+            $usersQuery = $usersQuery->whereHas('inductionSchedule', function ($q) use ($request) {
+                $q->where('is_completed', $request->induction_status);
+            });
+        }
+
         $filteredUsers = $usersQuery->with([
             'profile.applicant',
             'positionSummary',

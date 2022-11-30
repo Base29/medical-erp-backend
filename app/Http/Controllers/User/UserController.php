@@ -385,7 +385,7 @@ class UserController extends Controller
 
         } catch (Exception $e) {
             return Response::fail([
-                'code' => 400,
+                'code' => $e->getCode(),
                 'message' => $e->getMessage(),
             ]);
         }
