@@ -78,5 +78,9 @@ return [
         'INCOMPLETE' => 0,
         'APPROVED' => 1,
         'DECLINED' => 0,
+        'TYPE' => [
+            'NEW' => 'new',
+            'FOLLOW_UP' => 'follow-up',
+        ],
     ],
 ];

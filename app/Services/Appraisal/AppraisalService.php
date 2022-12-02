@@ -598,4 +598,33 @@ class AppraisalService
         ]);
 
     }
+
+    // Appraisal conclusion
+    public function appraisalConclusion($request)
+    {
+        // Get appraisal
+        $appraisal = Appraisal::findOrFail($request->appraisal);
+
+        // Update Conclusion
+        $appraisal->is_approved = $request->is_approved;
+        $appraisal->remarks = $request->remarks;
+        $appraisal->update();
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'appraisal' => $appraisal->with([
+                'user.profile',
+                'user.workPatterns.workTimings',
+                'user.department.departmentHead.profile',
+                'appraisalPolicies.questions.options',
+                'appraisalPolicies.questions.appraisalAnswers' => function ($q) use ($request) {
+                    $q->where('appraisal', $request->appraisal);
+                },
+                'practice.practiceManager.profile',
+            ])
+                ->latest('updated_at')
+                ->first(),
+        ]);
+    }
 }
