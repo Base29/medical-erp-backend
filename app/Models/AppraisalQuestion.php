@@ -31,4 +31,20 @@ class AppraisalQuestion extends Model
     {
         return $this->hasMany(AppraisalAnswer::class, 'question', 'id');
     }
+
+    public function optionNotAssociatedWithQuestion($incomingOptions, $case)
+    {
+        switch ($case) {
+            case 'single-choice':
+                $options = $this->options()->pluck('id');
+                $invalidOption = in_array($incomingOptions, $options->toArray());
+                return $invalidOption;
+                break;
+            case 'multi-choice':
+                $options = $this->options()->pluck('id');
+                $invalidOption = array_diff($incomingOptions, $options->toArray());
+                return !empty($invalidOption) ? $invalidOption : null;
+                break;
+        }
+    }
 }

@@ -475,6 +475,11 @@ class AppraisalService
                     );
                 }
 
+                // Check if $options array contains non associated option
+                if (!$appraisalQuestion->optionNotAssociatedWithQuestion($request->option, $appraisalQuestion->type)) {
+                    throw new Exception(ResponseMessage::customMessage('The option ' . $request->option . ' is not associated with question ' . $appraisalQuestion->id));
+                }
+
                 // Fetch the answer string for the option id
                 $questionOption = AppraisalQuestionOption::findOrFail($request->option);
 
@@ -504,11 +509,28 @@ class AppraisalService
                 // Cast $request->options to $options
                 $options = $request->options;
 
+                // Cast output of method optionNotAssociatedWithQuestion to variable
+                $optionNotAssociatedWithQuestion = $appraisalQuestion->optionNotAssociatedWithQuestion($options, $appraisalQuestion->type);
+
+                // Check if $options array contains non associated option
+                if (!is_null($optionNotAssociatedWithQuestion)) {
+                    // Casting to variable
+                    $nonAssociatedOption = implode(', ', $optionNotAssociatedWithQuestion);
+
+                    // Getting count of the invalid options
+                    $optionCount = count(explode(', ', $nonAssociatedOption));
+
+                    // Building test according the $optionCount
+                    $optionText = $optionCount > 1 ? 'options ' . $nonAssociatedOption . ' are' : 'option ' . $nonAssociatedOption . ' is';
+
+                    throw new Exception(ResponseMessage::customMessage('The ' . $optionText . ' not associated with question ' . $appraisalQuestion->id));
+                }
+
                 // Loop through $request->assert_options
                 foreach ($options as $option) {
 
                     // Fetch the answer string for the option id
-                    $questionOption = AppraisalQuestionOption::findOrFail($request->option);
+                    $questionOption = AppraisalQuestionOption::findOrFail($option);
 
                     // Initiate instance of InterviewAnswer model
                     $appraisalAnswer = new AppraisalAnswer();
