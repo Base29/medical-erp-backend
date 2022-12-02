@@ -459,6 +459,7 @@ class AppraisalService
                 $appraisalAnswer->appraisal = $appraisal->id;
                 $appraisalAnswer->question = $appraisalQuestion->id;
                 $appraisalAnswer->answer = $request->answer;
+                $appraisalAnswer->user = $appraisal->user;
                 $appraisalAnswer->save();
 
                 return Response::success([
@@ -490,6 +491,7 @@ class AppraisalService
                 $appraisalAnswer->question = $appraisalQuestion->id;
                 $appraisalAnswer->option = $request->option;
                 $appraisalAnswer->answer = $questionOption->option;
+                $appraisalAnswer->user = $appraisal->user;
                 $appraisalAnswer->save();
 
                 return Response::success([
@@ -539,6 +541,7 @@ class AppraisalService
                     $appraisalAnswer->question = $appraisalQuestion->id;
                     $appraisalAnswer->option = $option;
                     $appraisalAnswer->answer = $questionOption->option;
+                    $appraisalAnswer->user = $appraisal->user;
                     $appraisalAnswer->save();
                 }
 
@@ -558,13 +561,16 @@ class AppraisalService
     {
         // Get interview schedule
         $appraisal = Appraisal::where('id', $request->appraisal)
-            ->with(
+            ->with([
                 'user.profile',
                 'user.workPatterns.workTimings',
                 'user.department.departmentHead.profile',
                 'appraisalPolicies.questions.options',
-                'practice.practiceManager.profile'
-            )
+                'appraisalPolicies.questions.appraisalAnswers' => function ($q) use ($request) {
+                    $q->where('appraisal', $request->appraisal);
+                },
+                'practice.practiceManager.profile',
+            ])
             ->firstOrFail();
 
         // Return success response
