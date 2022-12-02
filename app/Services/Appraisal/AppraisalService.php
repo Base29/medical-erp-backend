@@ -459,6 +459,7 @@ class AppraisalService
                 $appraisalAnswer->appraisal = $appraisal->id;
                 $appraisalAnswer->question = $appraisalQuestion->id;
                 $appraisalAnswer->answer = $request->answer;
+                $appraisalAnswer->user = $appraisal->user;
                 $appraisalAnswer->save();
 
                 return Response::success([
@@ -475,6 +476,11 @@ class AppraisalService
                     );
                 }
 
+                // Check if $options array contains non associated option
+                if (!$appraisalQuestion->optionNotAssociatedWithQuestion($request->option, $appraisalQuestion->type)) {
+                    throw new Exception(ResponseMessage::customMessage('The option ' . $request->option . ' is not associated with question ' . $appraisalQuestion->id));
+                }
+
                 // Fetch the answer string for the option id
                 $questionOption = AppraisalQuestionOption::findOrFail($request->option);
 
@@ -485,6 +491,7 @@ class AppraisalService
                 $appraisalAnswer->question = $appraisalQuestion->id;
                 $appraisalAnswer->option = $request->option;
                 $appraisalAnswer->answer = $questionOption->option;
+                $appraisalAnswer->user = $appraisal->user;
                 $appraisalAnswer->save();
 
                 return Response::success([
@@ -504,11 +511,28 @@ class AppraisalService
                 // Cast $request->options to $options
                 $options = $request->options;
 
+                // Cast output of method optionNotAssociatedWithQuestion to variable
+                $optionNotAssociatedWithQuestion = $appraisalQuestion->optionNotAssociatedWithQuestion($options, $appraisalQuestion->type);
+
+                // Check if $options array contains non associated option
+                if (!is_null($optionNotAssociatedWithQuestion)) {
+                    // Casting to variable
+                    $nonAssociatedOption = implode(', ', $optionNotAssociatedWithQuestion);
+
+                    // Getting count of the invalid options
+                    $optionCount = count(explode(', ', $nonAssociatedOption));
+
+                    // Building test according the $optionCount
+                    $optionText = $optionCount > 1 ? 'options ' . $nonAssociatedOption . ' are' : 'option ' . $nonAssociatedOption . ' is';
+
+                    throw new Exception(ResponseMessage::customMessage('The ' . $optionText . ' not associated with question ' . $appraisalQuestion->id));
+                }
+
                 // Loop through $request->assert_options
                 foreach ($options as $option) {
 
                     // Fetch the answer string for the option id
-                    $questionOption = AppraisalQuestionOption::findOrFail($request->option);
+                    $questionOption = AppraisalQuestionOption::findOrFail($option);
 
                     // Initiate instance of InterviewAnswer model
                     $appraisalAnswer = new AppraisalAnswer();
@@ -517,6 +541,7 @@ class AppraisalService
                     $appraisalAnswer->question = $appraisalQuestion->id;
                     $appraisalAnswer->option = $option;
                     $appraisalAnswer->answer = $questionOption->option;
+                    $appraisalAnswer->user = $appraisal->user;
                     $appraisalAnswer->save();
                 }
 
@@ -536,13 +561,16 @@ class AppraisalService
     {
         // Get interview schedule
         $appraisal = Appraisal::where('id', $request->appraisal)
-            ->with(
+            ->with([
                 'user.profile',
                 'user.workPatterns.workTimings',
                 'user.department.departmentHead.profile',
                 'appraisalPolicies.questions.options',
-                'practice.practiceManager.profile'
-            )
+                'appraisalPolicies.questions.appraisalAnswers' => function ($q) use ($request) {
+                    $q->where('appraisal', $request->appraisal);
+                },
+                'practice.practiceManager.profile',
+            ])
             ->firstOrFail();
 
         // Return success response

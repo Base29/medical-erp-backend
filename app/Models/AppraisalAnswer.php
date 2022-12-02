@@ -28,4 +28,9 @@ class AppraisalAnswer extends Model
     {
         return $this->belongsTo(AppraisalQuestion::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }
