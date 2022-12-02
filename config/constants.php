@@ -71,4 +71,16 @@ return [
         'COMPLETED' => 1,
         'INCOMPLETE' => 0,
     ],
+
+    // Constants for Appraisal
+    'APPRAISAL' => [
+        'COMPLETED' => 1,
+        'INCOMPLETE' => 0,
+        'APPROVED' => 1,
+        'DECLINED' => 0,
+        'TYPE' => [
+            'NEW' => 'new',
+            'FOLLOW_UP' => 'follow-up',
+        ],
+    ],
 ];

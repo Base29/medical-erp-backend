@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Appraisal;
 
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Appraisal\ConcludeAppraisalRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalAnswerRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalRequest;
 use App\Http\Requests\Appraisal\DeleteAppraisalRequest;
@@ -138,6 +139,21 @@ class AppraisalController extends Controller
         try {
             // Fetch single interview service
             return $this->appraisalService->fetchSingleAppraisal($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Conclude appraisal
+    public function concludeAppraisal(ConcludeAppraisalRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->appraisalConclusion($request);
 
         } catch (Exception $e) {
             return Response::fail([

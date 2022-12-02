@@ -914,6 +914,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('appraisal', [AppraisalController::class, 'singleAppraisal'])
                 ->middleware(['permission:can_manage_appraisal']);
 
+            Route::patch('conclude-appraisal', [AppraisalController::class, 'concludeAppraisal'])
+                ->middleware(['permission:can_manage_appraisal']);
+
             // Routes for Appraisal policies
             Route::prefix('policies')->group(function () {
                 Route::post('create', [AppraisalPolicyController::class, 'create'])
