@@ -31,7 +31,7 @@ class FetchAllAppraisalsRequest extends FormRequest
     }
 
     public function failedValidation($validator)
-        {
-            throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
-        }\
+    {
+        throw new ValidationException($validator, CustomValidationService::error_messages($this->rules(), $validator));
+    }
 }
