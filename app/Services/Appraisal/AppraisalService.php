@@ -16,6 +16,7 @@ use App\Models\Role;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Str;
 
 class AppraisalService
@@ -51,6 +52,7 @@ class AppraisalService
         $appraisal->type = $request->type;
         $appraisal->status = $request->status;
         $appraisal->additional_staff = $request->additional_staff;
+        $appraisal->is_completed = Config::get('constants.APPRAISAL.INCOMPLETE');
         $appraisal->hq_staff = $request->hq_staff;
 
         // Save Appraisal schedule
@@ -296,31 +298,23 @@ class AppraisalService
     // Fetch all of practice's appraisals
     public function fetchAllAppraisals($request)
     {
-        if (!$request->is('api/hq/*')) {
+        // Query builder for appraisals
+        $appraisalsQuery = Appraisal::query();
 
-            // Check if the practice id is provided
-            if (!$request->has('practice')) {
-                throw new Exception(
-                    ResponseMessage::customMessage('practice field is required.'),
-                    Response::HTTP_BAD_REQUEST
-                );
-            }
-
-            // Get practice
-            $practice = Practice::findOrFail($request->practice);
-
-            // Get $practice appraisals
-            $appraisals = Appraisal::where('practice', $practice->id)
-                ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
-                ->latest()
-                ->paginate(10);
-
-        } else {
-            // Get $practice appraisals
-            $appraisals = Appraisal::with('practice', 'appraisalPolicies.questions.options', 'user.profile')
-                ->latest()
-                ->paginate(10);
+        // If $request has practice
+        if ($request->has('practice')) {
+            $appraisalsQuery = $appraisalsQuery->where('practice', $request->practice);
         }
+
+        // If $request has is_completed
+        if ($request->has('is_completed')) {
+            $appraisalsQuery = $appraisalsQuery->where('is_completed', $request->is_completed);
+        }
+
+        // Return appraisals
+        $appraisals = $appraisalsQuery->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
+            ->latest()
+            ->paginate(10);
 
         // Return success response
         return Response::success([

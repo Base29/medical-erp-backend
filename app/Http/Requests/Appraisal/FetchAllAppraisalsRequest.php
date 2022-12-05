@@ -27,6 +27,7 @@ class FetchAllAppraisalsRequest extends FormRequest
     {
         return [
             'practice' => 'nullable|numeric|exists:practices,id',
+            'is_completed' => 'nullable|boolean',
         ];
     }
 
