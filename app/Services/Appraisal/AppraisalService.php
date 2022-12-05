@@ -621,4 +621,29 @@ class AppraisalService
                 ->first(),
         ]);
     }
+
+    // Fetch overdue appraisals
+    public function fetchOverdueAppraisals($request)
+    {
+        // Query builder for appraisals
+        $overdueAppraisalsQuery = Appraisal::query();
+
+        // if $request has practice
+        if ($request->has('practice')) {
+            $overdueAppraisalsQuery = $overdueAppraisalsQuery->where('practice', $request->practice);
+        }
+
+        // Fetch overdue appraisals
+        $overdueAppraisals = $overdueAppraisalsQuery->where('date', '<', Carbon::now())
+            ->where('is_completed', 0)
+            ->orWhere('is_completed', null)
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'overdue-appraisals' => $overdueAppraisals,
+        ]);
+    }
 }
