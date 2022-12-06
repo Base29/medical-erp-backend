@@ -39,8 +39,4 @@ class Appraisal extends Model
         return $this->hasMany(AppraisalAnswer::class);
     }
 
-    public function userObjectives()
-    {
-        return $this->hasManyThrough(UserObjective::class, User::class);
-    }
 }

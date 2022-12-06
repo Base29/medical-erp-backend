@@ -958,6 +958,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('delete', [UserObjectiveController::class, 'delete'])
                     ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
+
+                Route::post('/', [UserObjectiveController::class, 'fetch'])
+                    ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
             });
 
         });

@@ -4,6 +4,7 @@ namespace App\Services\UserObjective;
 use App\Helpers\Response;
 use App\Helpers\UpdateService;
 use App\Models\Appraisal;
+use App\Models\User;
 use App\Models\UserObjective;
 use Illuminate\Support\Facades\Config;
 
@@ -79,5 +80,30 @@ class UserObjectiveService
             'code' => Response::HTTP_OK,
             'user-objective' => $userObjective,
         ]);
+    }
+
+    // Fetch user objectives
+    public function fetchUserObjectives($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        // Build query for user objectives
+        $userObjectivesQuery = UserObjective::query();
+
+        // If $request has status
+        if ($request->has('status')) {
+            $userObjectivesQuery = $userObjectivesQuery->where('status', $request->status);
+        }
+
+        // Filtered user objectives
+        $filteredUserObjectives = $userObjectivesQuery->where('user', $user->id)->latest()->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'user-objectives' => $filteredUserObjectives,
+        ]);
+
     }
 }

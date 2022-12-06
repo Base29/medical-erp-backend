@@ -6,6 +6,7 @@ use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UserObjective\CreateUserObjectiveRequest;
 use App\Http\Requests\UserObjective\DeleteUserObjectiveRequest;
+use App\Http\Requests\UserObjective\FetchUserObjectivesRequest;
 use App\Http\Requests\UserObjective\UpdateUserObjectiveRequest;
 use App\Services\UserObjective\UserObjectiveService;
 use Exception;
@@ -59,6 +60,21 @@ class UserObjectiveController extends Controller
         try {
             // Logic here
             return $this->userObjectiveService->deleteUserObjective($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch
+    public function fetch(FetchUserObjectivesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userObjectiveService->fetchUserObjectives($request);
 
         } catch (Exception $e) {
             return Response::fail([
