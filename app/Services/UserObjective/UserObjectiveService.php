@@ -2,6 +2,7 @@
 namespace App\Services\UserObjective;
 
 use App\Helpers\Response;
+use App\Helpers\UpdateService;
 use App\Models\Appraisal;
 use App\Models\UserObjective;
 use Illuminate\Support\Facades\Config;
@@ -46,5 +47,37 @@ class UserObjectiveService
             'user-objectives' => $objectivesCollection,
         ]);
 
+    }
+
+    // Update user objective
+    public function updateUserObjective($request)
+    {
+        // Get user objective
+        $userObjective = UserObjective::findOrFail($request->user_objective);
+
+        // Update user objective
+        UpdateService::updateModel($userObjective, $request->validated(), 'user_objective');
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'user-objective' => $userObjective->latest('updated_at')->first(),
+        ]);
+    }
+
+    // Delete user objective
+    public function deleteUserObjective($request)
+    {
+        // Get user objective
+        $userObjective = UserObjective::findOrFail($request->user_objective);
+
+        // Delete user objective
+        $userObjective->delete();
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'user-objective' => $userObjective,
+        ]);
     }
 }

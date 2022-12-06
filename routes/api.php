@@ -952,6 +952,12 @@ Route::middleware(['auth:api'])->group(function () {
             Route::prefix('user-objectives')->group(function () {
                 Route::post('create', [UserObjectiveController::class, 'create'])
                     ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
+
+                Route::patch('update', [UserObjectiveController::class, 'update'])
+                    ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
+
+                Route::post('delete', [UserObjectiveController::class, 'delete'])
+                    ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
             });
 
         });
