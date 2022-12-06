@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('user_objectives', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user')->references('id')->on('user')->constrained()->cascadeOnDelete();
+            $table->foreignId('user')->references('id')->on('users')->constrained()->cascadeOnDelete();
             $table->string('objective')->nullable();
             $table->date('due_date')->nullable();
             $table->integer('status')->nullable();

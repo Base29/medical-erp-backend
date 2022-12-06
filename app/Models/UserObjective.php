@@ -11,7 +11,6 @@ class UserObjective extends Model
     use HasFactory, SoftDeletes;
 
     protected $fillable = [
-        'appraisal',
         'user',
         'objective',
         'due_date',

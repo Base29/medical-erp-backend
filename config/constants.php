@@ -83,4 +83,10 @@ return [
             'FOLLOW_UP' => 'follow-up',
         ],
     ],
+
+    // Constants for User Objective
+    'USER_OBJECTIVE' => [
+        'COMPLETE' => 1,
+        'INCOMPLETE' => 0,
+    ],
 ];

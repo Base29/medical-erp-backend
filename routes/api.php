@@ -43,6 +43,7 @@ use App\Http\Controllers\Signature\SignatureController;
 use App\Http\Controllers\Task\TaskController;
 use App\Http\Controllers\Termination\TerminationController;
 use App\Http\Controllers\TrainingCourse\TrainingCourseController;
+use App\Http\Controllers\UserObjective\UserObjectiveController;
 use App\Http\Controllers\User\UserController;
 use App\Http\Controllers\WorkPattern\WorkPatternController;
 use App\Http\Controllers\WorkTiming\WorkTimingController;
@@ -945,6 +946,12 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('role', [AppraisalPolicyController::class, 'fetchRolePolicy'])
                     ->middleware(['permission:can_manage_appraisal_policy']);
+            });
+
+            // Route for user objective
+            Route::prefix('user-objectives')->group(function () {
+                Route::post('create', [UserObjectiveController::class, 'create'])
+                    ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
             });
 
         });
