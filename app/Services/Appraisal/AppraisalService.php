@@ -559,6 +559,7 @@ class AppraisalService
                 'user.profile',
                 'user.workPatterns.workTimings',
                 'user.department.departmentHead.profile',
+                'user.objectives',
                 'appraisalPolicies.questions.options',
                 'appraisalPolicies.questions.appraisalAnswers' => function ($q) use ($request) {
                     $q->where('appraisal', $request->appraisal);

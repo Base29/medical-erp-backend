@@ -38,4 +38,5 @@ class Appraisal extends Model
     {
         return $this->hasMany(AppraisalAnswer::class);
     }
+
 }
