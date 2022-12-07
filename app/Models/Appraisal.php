@@ -39,4 +39,9 @@ class Appraisal extends Model
         return $this->hasMany(AppraisalAnswer::class);
     }
 
+    public function reschedules()
+    {
+        return $this->hasMany(AppraisalReschedule::class, 'appraisal', 'id');
+    }
+
 }
