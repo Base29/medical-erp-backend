@@ -82,6 +82,7 @@ return [
             'NEW' => 'new',
             'FOLLOW_UP' => 'follow-up',
         ],
+        'RESCHEDULED' => 1,
     ],
 
     // Constants for User Objective

@@ -10,6 +10,7 @@ use App\Models\AppraisalAnswer;
 use App\Models\AppraisalPolicy;
 use App\Models\AppraisalQuestion;
 use App\Models\AppraisalQuestionOption;
+use App\Models\AppraisalReschedule;
 use App\Models\Department;
 use App\Models\Practice;
 use App\Models\Role;
@@ -645,6 +646,35 @@ class AppraisalService
         return Response::success([
             'code' => Response::HTTP_OK,
             'overdue-appraisals' => $overdueAppraisals,
+        ]);
+    }
+
+    /* ---------------------------------- Appraisal Reschedule ---------------------------------- */
+
+    // Create appraisal reschedule
+    public function createAppraisalReschedule($request)
+    {
+        // Get appraisal
+        $appraisal = Appraisal::findOrFail($request->appraisal);
+
+        // Instance of AppraisalReschedule
+        $appraisalReschedule = new AppraisalReschedule();
+        $appraisalReschedule->appraisal = $appraisal->id;
+        $appraisalReschedule->reason = $request->reason;
+        $appraisalReschedule->date = $request->date;
+        $appraisalReschedule->time = $request->time;
+        $appraisalReschedule->duration = $request->duration;
+        $appraisalReschedule->location = $request->location;
+        $appraisalReschedule->save();
+
+        // Change the status of the parent appraisal
+        $appraisal->is_rescheduled = Config::get('constants.APPRAISAL.RESCHEDULED');
+        $appraisal->update();
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'appraisal-reschedule' => $appraisalReschedule,
         ]);
     }
 }
