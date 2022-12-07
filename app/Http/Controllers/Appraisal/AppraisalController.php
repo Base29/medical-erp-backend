@@ -7,8 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Appraisal\ConcludeAppraisalRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalAnswerRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalRequest;
+use App\Http\Requests\Appraisal\CreateAppraisalRescheduleRequest;
 use App\Http\Requests\Appraisal\DeleteAppraisalRequest;
+use App\Http\Requests\Appraisal\DeleteAppraisalReschedulesRequest;
 use App\Http\Requests\Appraisal\FetchAllAppraisalsRequest;
+use App\Http\Requests\Appraisal\FetchAppraisalReschedulesRequest;
 use App\Http\Requests\Appraisal\FetchCompletedAppraisalsRequest;
 use App\Http\Requests\Appraisal\FetchOverdueAppraisalsRequest;
 use App\Http\Requests\Appraisal\FetchSingleAppraisalRequest;
@@ -170,6 +173,53 @@ class AppraisalController extends Controller
         try {
             // Logic here
             return $this->appraisalService->fetchOverdueAppraisals($request);
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    /* ---------------------------------- Appraisal Reschedule ---------------------------------- */
+
+    // Create reschedule
+    public function appraisalReschedule(CreateAppraisalRescheduleRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->createAppraisalReschedule($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Fetch reschedules
+    public function fetchReschedules(FetchAppraisalReschedulesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->fetchAppraisalReschedules($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete appraisal reschedule
+    public function deleteReschedule(DeleteAppraisalReschedulesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->deleteAppraisalReschedule($request);
+
         } catch (Exception $e) {
             return Response::fail([
                 'code' => $e->getCode(),

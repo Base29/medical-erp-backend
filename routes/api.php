@@ -963,6 +963,18 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_manage_user_objective|can_manage_appraisal']);
             });
 
+            // Route for appraisal reschedule
+            Route::prefix('reschedules')->group(function () {
+                Route::post('create', [AppraisalController::class, 'appraisalReschedule'])
+                    ->middleware(['permission:can_manage_appraisal']);
+
+                Route::post('/', [AppraisalController::class, 'fetchReschedules'])
+                    ->middleware(['permission:can_manage_appraisal']);
+
+                Route::post('delete', [AppraisalController::class, 'deleteReschedule'])
+                    ->middleware(['permission:can_manage_appraisal']);
+            });
+
         });
 
         // Routes for training courses
