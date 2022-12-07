@@ -20,6 +20,6 @@ class AppraisalReschedule extends Model
 
     public function appraisal()
     {
-        return $this->belongsTo(Appraisal::class);
+        return $this->belongsTo(Appraisal::class, 'appraisal', 'id');
     }
 }

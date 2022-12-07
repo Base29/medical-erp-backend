@@ -677,4 +677,25 @@ class AppraisalService
             'appraisal-reschedule' => $appraisalReschedule,
         ]);
     }
+
+    // Fetch appraisal reschedules
+    public function fetchAppraisalReschedules($request)
+    {
+        // Get practice
+        $practice = Practice::findOrFail($request->practice);
+
+        // Build query for appraisal reschedules
+        $appraisalReschedulesQuery = AppraisalReschedule::query();
+
+        // Filtered reschedules
+        $filteredReschedules = $appraisalReschedulesQuery->whereHas('appraisal', function ($q) use ($practice) {
+            $q->where('practice', $practice->id);
+        })->latest()->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'appraisal-reschedules' => $filteredReschedules,
+        ]);
+    }
 }

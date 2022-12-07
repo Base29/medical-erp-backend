@@ -967,6 +967,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::prefix('reschedules')->group(function () {
                 Route::post('create', [AppraisalController::class, 'appraisalReschedule'])
                     ->middleware(['permission:can_manage_appraisal']);
+
+                Route::post('/', [AppraisalController::class, 'fetchReschedules'])
+                    ->middleware(['permission:can_manage_appraisal']);
             });
 
         });
