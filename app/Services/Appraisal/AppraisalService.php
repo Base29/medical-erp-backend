@@ -639,6 +639,7 @@ class AppraisalService
         $overdueAppraisals = $overdueAppraisalsQuery->where('date', '<', Carbon::now())
             ->where('is_completed', 0)
             ->orWhere('is_completed', null)
+            ->with('practice', 'appraisalPolicies.questions.options', 'user.profile')
             ->latest()
             ->paginate(10);
 
