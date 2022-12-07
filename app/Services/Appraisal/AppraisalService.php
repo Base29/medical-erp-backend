@@ -698,4 +698,20 @@ class AppraisalService
             'appraisal-reschedules' => $filteredReschedules,
         ]);
     }
+
+    // Delete reschedule
+    public function deleteAppraisalReschedule($request)
+    {
+        // Get reschedule
+        $appraisalReschedule = AppraisalReschedule::findOrFail($request->appraisal_reschedule);
+
+        // Delete reschedule
+        $appraisalReschedule->delete();
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'appraisal-reschedule' => $appraisalReschedule,
+        ]);
+    }
 }

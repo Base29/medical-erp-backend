@@ -970,6 +970,9 @@ Route::middleware(['auth:api'])->group(function () {
 
                 Route::post('/', [AppraisalController::class, 'fetchReschedules'])
                     ->middleware(['permission:can_manage_appraisal']);
+
+                Route::post('delete', [AppraisalController::class, 'deleteReschedule'])
+                    ->middleware(['permission:can_manage_appraisal']);
             });
 
         });

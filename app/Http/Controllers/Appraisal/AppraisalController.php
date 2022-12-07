@@ -9,6 +9,7 @@ use App\Http\Requests\Appraisal\CreateAppraisalAnswerRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalRequest;
 use App\Http\Requests\Appraisal\CreateAppraisalRescheduleRequest;
 use App\Http\Requests\Appraisal\DeleteAppraisalRequest;
+use App\Http\Requests\Appraisal\DeleteAppraisalReschedulesRequest;
 use App\Http\Requests\Appraisal\FetchAllAppraisalsRequest;
 use App\Http\Requests\Appraisal\FetchAppraisalReschedulesRequest;
 use App\Http\Requests\Appraisal\FetchCompletedAppraisalsRequest;
@@ -203,6 +204,21 @@ class AppraisalController extends Controller
         try {
             // Logic here
             return $this->appraisalService->fetchAppraisalReschedules($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Delete appraisal reschedule
+    public function deleteReschedule(DeleteAppraisalReschedulesRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->appraisalService->deleteAppraisalReschedule($request);
 
         } catch (Exception $e) {
             return Response::fail([
