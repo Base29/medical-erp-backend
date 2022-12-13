@@ -1006,6 +1006,9 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('unassign-users', [TrainingCourseController::class, 'unassignUsers'])
                 ->middleware(['permission:can_manage_training_course']);
 
+            Route::post('assign-to-course', [TrainingCourseController::class, 'assignUsersToCourse'])
+                ->middleware(['permission:can_manage_training_course']);
+
             Route::prefix('modules')->group(function () {
                 Route::post('create', [TrainingCourseController::class, 'createModule'])
                     ->middleware(['permission:can_manage_training_course']);

@@ -3,11 +3,14 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
 use App\Models\TrainingCourse;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Carbon;
 
 class TrainingCourseService
 {
@@ -306,5 +309,52 @@ class TrainingCourseService
             'code' => Response::HTTP_OK,
             'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
         ]);
+    }
+
+    // Assign user to course
+    public function assignUsersToCourse($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $users = $request->users;
+
+        // Cast $course->alreadyAssignedToCourse($users) to variable
+        $usersAlreadyEnrolled = $course->alreadyAssignedToCourse($users);
+
+        // Check if any of the user in $users is already enrolled to the $course
+        if ($usersAlreadyEnrolled !== false) {
+            // Casting to variable
+            $alreadyEnrolledUsers = implode(', ', $usersAlreadyEnrolled);
+
+            // Getting count of the invalid options
+            $usersCount = count(explode(', ', $alreadyEnrolledUsers));
+
+            // Building test according the $optionCount
+            $enrolledUserText = $usersCount > 1 ? 'Users ' . $alreadyEnrolledUsers . ' are' : 'User ' . $alreadyEnrolledUsers . ' is';
+
+            throw new Exception(ResponseMessage::customMessage($enrolledUserText . ' already enrolled in course ' . $course->id));
+        }
+
+        // Start date
+        $startDate = Carbon::now();
+
+        // Loop through $users array
+        foreach ($users as $user):
+            $course->enrolledUsers()->attach($user['user'], [
+                'start_date' => $startDate->format('Y-m-d'),
+                'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+            ]);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile', 'enrolledUsers' => function ($q) {
+                $q->withPivot('start_date', 'due_date');
+            }])->first(),
+        ]);
+
     }
 }

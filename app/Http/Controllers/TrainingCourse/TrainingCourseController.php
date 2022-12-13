@@ -193,4 +193,19 @@ class TrainingCourseController extends Controller
             ]);
         }
     }
+
+    // Assign users to course
+    public function assignUsersToCourse(AssignCourseToUsersRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->assignUsersToCourse($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

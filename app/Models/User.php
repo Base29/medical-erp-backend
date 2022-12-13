@@ -58,7 +58,6 @@ class User extends Authenticatable implements JWTSubject
     protected $hidden = [
         'password',
         'remember_token',
-        'pivot',
     ];
 
     /**
@@ -266,7 +265,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function courses()
     {
-        return $this->belongsToMany(TrainingCourse::class);
+        return $this->belongsToMany(TrainingCourse::class)->withPivot(['start_date', 'due_date']);
     }
 
     public function courseProgress()
