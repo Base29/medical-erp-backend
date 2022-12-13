@@ -17,6 +17,9 @@ class TrainingCourseService
     // Create training course
     public function createTrainingCourse($request)
     {
+        // Cast $request->roles to variable
+        $roles = $request->roles;
+
         // Initiate instance of TrainingCourse model
         $trainingCourse = new TrainingCourse();
         $trainingCourse->name = $request->name;
@@ -29,12 +32,15 @@ class TrainingCourseService
          * Attach course to a role
          */
 
-        // Cast $request->roles to variable
-        $roles = $request->roles;
-
         // Loop through $roles array
         foreach ($roles as $role):
             $trainingCourse->roles()->attach($role['role']);
+        endforeach;
+
+        $attachedRoles = $trainingCourse->roles;
+
+        foreach ($attachedRoles as $attachedRole):
+            $this->attachCourseWithUsers($attachedRole, $trainingCourse);
         endforeach;
 
         // Return success response
@@ -103,6 +109,7 @@ class TrainingCourseService
             $q->withCount('lessons');
         }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
+            ->latest()
             ->paginate(10);
 
         // Return success response
@@ -356,5 +363,22 @@ class TrainingCourseService
             }])->first(),
         ]);
 
+    }
+
+    // Get user for the roles and attach the course to those users
+    private function attachCourseWithUsers($role, $course)
+    {
+        $usersByRole = User::whereHas('roles', function ($q) use ($role) {
+            $q->where('role_id', $role->id);
+        })->get();
+
+        foreach ($usersByRole as $userByRole):
+            // Start date
+            $startDate = Carbon::now();
+            $userByRole->courses()->attach($course->id, [
+                'start_date' => $startDate->format('Y-m-d'),
+                'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+            ]);
+        endforeach;
     }
 }

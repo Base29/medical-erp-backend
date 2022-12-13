@@ -14,7 +14,7 @@ class TrainingCourseObserver
      */
     public function created(TrainingCourse $trainingCourse)
     {
-        //
+        // dd($trainingCourse->roles);
     }
 
     /**
