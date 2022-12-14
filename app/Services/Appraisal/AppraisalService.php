@@ -309,7 +309,7 @@ class AppraisalService
 
         // If $request has is_completed
         if ($request->has('is_completed')) {
-            $appraisalsQuery = $appraisalsQuery->where('is_completed', $request->is_completed);
+            $appraisalsQuery = $appraisalsQuery->where('is_completed', $request->is_completed)->orWhere('is_completed', null);
         }
 
         // Return appraisals

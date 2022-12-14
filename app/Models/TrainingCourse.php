@@ -22,9 +22,9 @@ class TrainingCourse extends Model
         'type',
     ];
 
-    protected $hidden = [
-        'pivot',
-    ];
+    // protected $hidden = [
+    //     'pivot',
+    // ];
 
     public function modules()
     {
@@ -33,7 +33,7 @@ class TrainingCourse extends Model
 
     public function enrolledUsers()
     {
-        return $this->belongsToMany(User::class);
+        return $this->belongsToMany(User::class)->withPivot(['start_date', 'due_date']);
     }
 
     public function courseProgress()
@@ -46,10 +46,13 @@ class TrainingCourse extends Model
         return $this->belongsToMany(Role::class);
     }
 
-    public function alreadyAssignedToCourse($user)
+    public function alreadyAssignedToCourse($users)
     {
-        dd($user);
-        return in_array($user, $this->enrolledUsers->toArray());
-        // return $this->enrolledUsers->toArray();
+        $usersCollection = collect($users);
+        $usersBeingEnrolled = $usersCollection->pluck('user');
+        $enrolledUsers = $this->enrolledUsers()->pluck('user_id');
+        $usersAlreadyEnrolled = array_intersect($usersBeingEnrolled->toArray(), $enrolledUsers->toArray());
+        return !empty($usersAlreadyEnrolled) ? $usersAlreadyEnrolled : false;
+
     }
 }

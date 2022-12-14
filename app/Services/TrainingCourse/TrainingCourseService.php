@@ -3,17 +3,23 @@
 namespace App\Services\TrainingCourse;
 
 use App\Helpers\Response;
+use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
 use App\Models\TrainingCourse;
 use App\Models\User;
+use Exception;
+use Illuminate\Support\Carbon;
 
 class TrainingCourseService
 {
     // Create training course
     public function createTrainingCourse($request)
     {
+        // Cast $request->roles to variable
+        $roles = $request->roles;
+
         // Initiate instance of TrainingCourse model
         $trainingCourse = new TrainingCourse();
         $trainingCourse->name = $request->name;
@@ -26,12 +32,15 @@ class TrainingCourseService
          * Attach course to a role
          */
 
-        // Cast $request->roles to variable
-        $roles = $request->roles;
-
         // Loop through $roles array
         foreach ($roles as $role):
             $trainingCourse->roles()->attach($role['role']);
+        endforeach;
+
+        $attachedRoles = $trainingCourse->roles;
+
+        foreach ($attachedRoles as $attachedRole):
+            $this->attachCourseWithUsers($attachedRole, $trainingCourse);
         endforeach;
 
         // Return success response
@@ -100,6 +109,7 @@ class TrainingCourseService
             $q->withCount('lessons');
         }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
+            ->latest()
             ->paginate(10);
 
         // Return success response
@@ -305,6 +315,88 @@ class TrainingCourseService
         return Response::success([
             'code' => Response::HTTP_OK,
             'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile'])->first(),
+        ]);
+    }
+
+    // Assign user to course
+    public function assignUsersToCourse($request)
+    {
+        // Get course
+        $course = TrainingCourse::findOrFail($request->course);
+
+        // Cast $request->users array to variable
+        $users = $request->users;
+
+        // Cast $course->alreadyAssignedToCourse($users) to variable
+        $usersAlreadyEnrolled = $course->alreadyAssignedToCourse($users);
+
+        // Check if any of the user in $users is already enrolled to the $course
+        if ($usersAlreadyEnrolled !== false) {
+            // Casting to variable
+            $alreadyEnrolledUsers = implode(', ', $usersAlreadyEnrolled);
+
+            // Getting count of the invalid options
+            $usersCount = count(explode(', ', $alreadyEnrolledUsers));
+
+            // Building test according the $optionCount
+            $enrolledUserText = $usersCount > 1 ? 'Users ' . $alreadyEnrolledUsers . ' are' : 'User ' . $alreadyEnrolledUsers . ' is';
+
+            throw new Exception(ResponseMessage::customMessage($enrolledUserText . ' already enrolled in course ' . $course->id));
+        }
+
+        // Start date
+        $startDate = Carbon::now();
+
+        // Loop through $users array
+        foreach ($users as $user):
+            $course->enrolledUsers()->attach($user['user'], [
+                'start_date' => $startDate->format('Y-m-d'),
+                'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+            ]);
+        endforeach;
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'course' => $course->where('id', $course->id)->with(['modules.lessons', 'enrolledUsers.profile', 'enrolledUsers' => function ($q) {
+                $q->withPivot('start_date', 'due_date');
+            }])->first(),
+        ]);
+
+    }
+
+    // Get user for the roles and attach the course to those users
+    private function attachCourseWithUsers($role, $course)
+    {
+        $usersByRole = User::whereHas('roles', function ($q) use ($role) {
+            $q->where('role_id', $role->id);
+        })->get();
+
+        foreach ($usersByRole as $userByRole):
+            // Start date
+            $startDate = Carbon::now();
+
+            $userByRole->courses()->attach($course->id, [
+                'start_date' => $startDate->format('Y-m-d'),
+                'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+            ]);
+        endforeach;
+    }
+
+    // Update/Edit course start and due date for a user
+    public function updateDatesForCourse($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        $user->courses()
+            ->newPivotStatementForId($request->course)
+            ->update($request->dates[0]);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => 'Dates updated',
         ]);
     }
 }
