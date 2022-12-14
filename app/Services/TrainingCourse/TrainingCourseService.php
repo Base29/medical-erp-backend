@@ -382,4 +382,21 @@ class TrainingCourseService
             ]);
         endforeach;
     }
+
+    // Update/Edit course start and due date for a user
+    public function updateDatesForCourse($request)
+    {
+        // Get user
+        $user = User::findOrFail($request->user);
+
+        $user->courses()
+            ->newPivotStatementForId($request->course)
+            ->update($request->dates[0]);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'message' => 'Dates updated',
+        ]);
+    }
 }

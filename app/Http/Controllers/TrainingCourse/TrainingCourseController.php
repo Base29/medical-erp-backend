@@ -13,6 +13,7 @@ use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UnassignUserFromTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UnassignUsersFromCourseRequest;
+use App\Http\Requests\TrainingCourse\UpdateTrainingCourseDateRequest;
 use App\Http\Requests\TrainingCourse\UpdateTrainingCourseRequest;
 use App\Services\TrainingCourse\TrainingCourseService;
 use Exception;
@@ -200,6 +201,21 @@ class TrainingCourseController extends Controller
         try {
             // Logic here
             return $this->trainingCourseService->assignUsersToCourse($request);
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Update course date for user
+    public function updateCourseDates(UpdateTrainingCourseDateRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->trainingCourseService->updateDatesForCourse($request);
 
         } catch (Exception $e) {
             return Response::fail([
