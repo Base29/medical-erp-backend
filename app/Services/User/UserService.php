@@ -467,6 +467,9 @@ class UserService
             'type' => 'user',
         ]);
 
+        // Assign courses as per $hiringRequest->role
+        $this->assignCoursesToCandidateWhenHired($hiringRequest->role, $candidate);
+
         $credentials = [
             'email' => $candidate->email,
             'password' => $password,
@@ -1365,5 +1368,25 @@ class UserService
             'code' => Response::HTTP_OK,
             'hired-users' => $hiredUsers,
         ]);
+    }
+
+    // Assign courses to candidate when hired
+    private function assignCoursesToCandidateWhenHired($roleID, $candidate)
+    {
+        // Get courses by $roleID
+        $coursesByRole = TrainingCourse::whereHas('roles', function ($q) use ($roleID) {
+            $q->where('role_id', $roleID);
+        })->get();
+
+        // Loop through $coursesByRole and attach with $candidate
+        foreach ($coursesByRole as $courseByRole):
+            // Start date
+            $startDate = Carbon::now();
+
+            $candidate->courses()->attach($courseByRole->id, [
+                'start_date' => $startDate->format('Y-m-d'),
+                'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+            ]);
+        endforeach;
     }
 }

@@ -375,6 +375,7 @@ class TrainingCourseService
         foreach ($usersByRole as $userByRole):
             // Start date
             $startDate = Carbon::now();
+
             $userByRole->courses()->attach($course->id, [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
