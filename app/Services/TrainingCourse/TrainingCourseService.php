@@ -7,10 +7,12 @@ use App\Helpers\ResponseMessage;
 use App\Helpers\UpdateService;
 use App\Models\CourseModule;
 use App\Models\ModuleLesson;
+use App\Models\Role;
 use App\Models\TrainingCourse;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class TrainingCourseService
 {
@@ -102,10 +104,74 @@ class TrainingCourseService
     }
 
     // Fetch Training Courses
-    public function fetchAllTrainingCourses()
+    public function fetchAllTrainingCourses($request)
     {
+
+        // Query Instance for TrainingCurse
+        $trainingCoursesQuery = TrainingCourse::query();
+
+        // If $request has first_name
+        if ($request->has('first_name')) {
+            $trainingCoursesQuery = $trainingCoursesQuery->whereHas('enrolledUsers', function ($q) use ($request) {
+                $q->whereHas('profile', function ($q) use ($request) {
+                    $q->where('first_name', $request->first_name);
+                });
+            });
+        }
+
+        // If $request has last_name
+        if ($request->has('last_name')) {
+            $trainingCoursesQuery = $trainingCoursesQuery->whereHas('enrolledUsers', function ($q) use ($request) {
+                $q->whereHas('profile', function ($q) use ($request) {
+                    $q->where('last_name', $request->last_name);
+                });
+            });
+        }
+
+        // If $request has start_date
+        if ($request->has('start_date')) {
+            $trainingCoursesQuery = $trainingCoursesQuery->whereHas('enrolledUsers', function ($q) use ($request) {
+                $q->where('start_date', $request->start_date);
+            });
+        }
+
+        // If $request has due_date
+        if ($request->has('due_date')) {
+            $trainingCoursesQuery = $trainingCoursesQuery->whereHas('enrolledUsers', function ($q) use ($request) {
+                $q->where('due_date', $request->due_date);
+            });
+        }
+
+        // If $request has job_role
+        if ($request->has('job_role')) {
+            // Get role
+            $role = Role::findOrFail($request->job_role);
+
+            $trainingCoursesQuery = $trainingCoursesQuery->whereHas('roles', function ($q) use ($role) {
+                $q->where('role_id', $role->id);
+            });
+        }
+
+        /**
+         * The status filter will be useful when we are searching through the users not through the course itself
+         */
+        // If $request has status
+        if ($request->has('status')) {
+            $status = $request->status;
+            switch ($status) {
+                case 'completed':
+                    break;
+
+                case 'in-progress':
+                    break;
+
+                case 'overdue':
+                    break;
+            }
+        }
+
         // Get training courses
-        $trainingCourses = TrainingCourse::with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
+        $trainingCourses = $trainingCoursesQuery->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
             $q->withCount('lessons');
         }, 'enrolledUsers.department'])
             ->withCount('enrolledUsers', 'modules')
@@ -127,7 +193,9 @@ class TrainingCourseService
             ->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
                 $q->withCount('lessons');
             }, 'enrolledUsers.department'])
-            ->withCount('enrolledUsers', 'modules')
+            ->withCount(['enrolledUsers', 'modules', 'courseProgress' => function ($q) {
+                $q->where('is_completed', Config::get('constants.TRAINING_COURSE.COMPLETED'));
+            }])
             ->firstOrFail();
 
         // Return success request

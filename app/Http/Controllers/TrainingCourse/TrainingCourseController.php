@@ -11,6 +11,7 @@ use App\Http\Requests\TrainingCourse\CreateModuleLessonRequest;
 use App\Http\Requests\TrainingCourse\CreateTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\DeleteTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\FetchSingleTrainingCourseRequest;
+use App\Http\Requests\TrainingCourse\FetchTrainingCoursesRequest;
 use App\Http\Requests\TrainingCourse\UnassignUserFromTrainingCourseRequest;
 use App\Http\Requests\TrainingCourse\UnassignUsersFromCourseRequest;
 use App\Http\Requests\TrainingCourse\UpdateTrainingCourseDateRequest;
@@ -76,11 +77,11 @@ class TrainingCourseController extends Controller
     }
 
     // Fetch All Training Courses
-    public function fetch()
+    public function fetch(FetchTrainingCoursesRequest $request)
     {
         try {
             // Logic here
-            return $this->trainingCourseService->fetchAllTrainingCourses();
+            return $this->trainingCourseService->fetchAllTrainingCourses($request);
 
         } catch (Exception $e) {
             return Response::fail([

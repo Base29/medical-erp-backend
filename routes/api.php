@@ -982,7 +982,7 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('create', [TrainingCourseController::class, 'create'])
                 ->middleware(['permission:can_manage_training_course']);
 
-            Route::get('/', [TrainingCourseController::class, 'fetch'])
+            Route::post('/', [TrainingCourseController::class, 'fetch'])
                 ->middleware(['permission:can_manage_training_course']);
 
             Route::post('training-course', [TrainingCourseController::class, 'singleCourse'])
