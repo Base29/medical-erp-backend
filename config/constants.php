@@ -90,4 +90,9 @@ return [
         'COMPLETE' => 1,
         'INCOMPLETE' => 0,
     ],
+
+    // Constants for training course
+    'TRAINING_COURSE' => [
+        'COMPLETED' => 1,
+    ],
 ];

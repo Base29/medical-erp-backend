@@ -12,6 +12,7 @@ use App\Models\TrainingCourse;
 use App\Models\User;
 use Exception;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 
 class TrainingCourseService
 {
@@ -151,6 +152,24 @@ class TrainingCourseService
             });
         }
 
+        /**
+         * The status filter will be useful when we are searching through the users not through the course itself
+         */
+        // If $request has status
+        if ($request->has('status')) {
+            $status = $request->status;
+            switch ($status) {
+                case 'completed':
+                    break;
+
+                case 'in-progress':
+                    break;
+
+                case 'overdue':
+                    break;
+            }
+        }
+
         // Get training courses
         $trainingCourses = $trainingCoursesQuery->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
             $q->withCount('lessons');
@@ -174,7 +193,9 @@ class TrainingCourseService
             ->with(['modules.lessons', 'roles', 'enrolledUsers.profile', 'modules' => function ($q) {
                 $q->withCount('lessons');
             }, 'enrolledUsers.department'])
-            ->withCount('enrolledUsers', 'modules')
+            ->withCount(['enrolledUsers', 'modules', 'courseProgress' => function ($q) {
+                $q->where('is_completed', Config::get('constants.TRAINING_COURSE.COMPLETED'));
+            }])
             ->firstOrFail();
 
         // Return success request

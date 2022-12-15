@@ -4,6 +4,7 @@ namespace App\Http\Requests\TrainingCourse;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
 class FetchTrainingCoursesRequest extends FormRequest
@@ -31,6 +32,15 @@ class FetchTrainingCoursesRequest extends FormRequest
             'start_date' => 'nullable|date|date_format:Y-m-d',
             'due_date' => 'nullable|date|date_format:Y-m-d',
             'job_role' => 'nullable|numeric|exists:roles,id',
+            'status' => [
+                'nullable',
+                'string',
+                Rule::in([
+                    'completed',
+                    'in-progress',
+                    'overdue',
+                ]),
+            ],
         ];
     }
 
