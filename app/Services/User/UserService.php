@@ -602,6 +602,11 @@ class UserService
             throw new Exception(ResponseMessage::customMessage('You have already recorded progress for this course'), Response::HTTP_CONFLICT);
         }
 
+        // Check if $course is assigned to user
+        if (!$course->isAssignedToCourse($authenticatedUser->id)) {
+            throw new Exception(ResponseMessage::customMessage('You are not allowed to record progress for this course.'));
+        }
+
         // Module completion evidence folder path on S3
         $folderPath = 'user-' . $authenticatedUser->id . '/trainings/course-' . $course->id;
 

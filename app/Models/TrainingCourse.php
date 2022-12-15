@@ -55,4 +55,11 @@ class TrainingCourse extends Model
         return !empty($usersAlreadyEnrolled) ? $usersAlreadyEnrolled : false;
 
     }
+
+    public function isAssignedToCourse($userID)
+    {
+        $enrolledUsers = $this->enrolledUsers()->pluck('user_id');
+        $userAssignedToCourse = in_array($userID, $enrolledUsers->toArray());
+        return $userAssignedToCourse;
+    }
 }
