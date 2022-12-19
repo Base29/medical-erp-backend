@@ -94,5 +94,7 @@ return [
     // Constants for training course
     'TRAINING_COURSE' => [
         'COMPLETED' => 1,
+        'IN_PROGRESS' => 1,
+        'NOT_IN_PROGRESS' => 0,
     ],
 ];
