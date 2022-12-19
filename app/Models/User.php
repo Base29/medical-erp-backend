@@ -33,6 +33,8 @@ use App\Notifications\ResetPasswordNotification;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Config;
 use Spatie\Permission\Traits\HasRoles;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 
@@ -270,7 +272,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function courseProgress()
     {
-        return $this->hasMany(CourseProgress::class);
+        return $this->hasMany(CourseProgress::class, 'user', 'id');
     }
 
     public function moduleProgress()
@@ -345,5 +347,23 @@ class User extends Authenticatable implements JWTSubject
     public function objectives()
     {
         return $this->hasMany(UserObjective::class, 'user', 'id');
+    }
+
+    public function overdueCourses()
+    {
+        return $this->courses()->whereHas('courseProgress', function ($q) {
+            $q->where('is_completed', 0);
+        })->wherePivot('due_date', '<', Carbon::now());
+    }
+
+    public function completedCourses()
+    {
+        return $this->courseProgress()->where('is_completed', 1);
+    }
+
+    public function inProgressCourses()
+    {
+        return $this->courses()->wherePivot('in_progress', null)
+            ->orWherePivot('in_progress', Config::get('constants.TRAINING_COURSE.IN_PROGRESS'));
     }
 }

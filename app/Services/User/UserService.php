@@ -536,12 +536,19 @@ class UserService
         // Get user
         $authenticatedUser = auth()->user()->id;
 
-        // Get user courses
-        $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
-            $q->where('user_id', $authenticatedUser);
-        })->with(['modules.lessons', 'modules' => function ($q) {
-            $q->withCount('lessons');
-        }])->withCount('modules')->paginate(10);
+        // // Get user courses
+        // $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
+        //     $q->where('user_id', $authenticatedUser);
+        // })->with(['modules.lessons', 'modules' => function ($q) {
+        //     $q->withCount('lessons');
+        // }, 'enrolledUsers' => function ($q) use ($authenticatedUser) {
+        //     $q->where('user_id', $authenticatedUser)->withCount('courses');
+        // }])->withCount('modules')->paginate(10);
+
+        $userCourses = User::where('id', $authenticatedUser)
+            ->with(['profile', 'courses'])
+            ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
+            ->paginate(10);
 
         return Response::success([
             'code' => Response::HTTP_OK,
@@ -620,6 +627,9 @@ class UserService
         $courseProgress->is_completed = $request->is_completed;
         $courseProgress->completion_evidence = $completionEvidenceUrl;
         $courseProgress->save();
+
+        // Change in progress status in training_course_user pivot table
+        $this->updateInProgressStatusForCourse($authenticatedUser, $course);
 
         // Return success response
         return Response::success([
@@ -1391,7 +1401,14 @@ class UserService
             $candidate->courses()->attach($courseByRole->id, [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+                'inProgress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
+    }
+
+    // Update course in progress status in training_course_user pivot table
+    private function updateInProgressStatusForCourse($user, $course)
+    {
+        $user->courses()->updateExistingPivot($course->id, ['in_progress' => 0]);
     }
 }

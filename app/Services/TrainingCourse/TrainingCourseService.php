@@ -420,6 +420,7 @@ class TrainingCourseService
             $course->enrolledUsers()->attach($user['user'], [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+                'in_progress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
 
@@ -447,6 +448,7 @@ class TrainingCourseService
             $userByRole->courses()->attach($course->id, [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
+                'in_progress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
     }
