@@ -90,4 +90,17 @@ class PolicyService
             'policy' => $policy,
         ]);
     }
+
+    // Fetch Single policy
+    public function fetchSinglePolicy($request)
+    {
+        // Fetch policy
+        $policy = Policy::where('id', $request->policy)->first();
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'policy' => $policy,
+        ]);
+    }
 }

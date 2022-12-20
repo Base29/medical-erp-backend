@@ -18,6 +18,7 @@ use App\Models\LocumSessionInvite;
 use App\Models\MiscellaneousInformation;
 use App\Models\ModuleLesson;
 use App\Models\ModuleProgress;
+use App\Models\Policy;
 use App\Models\PositionSummary;
 use App\Models\Practice;
 use App\Models\Profile;
@@ -372,7 +373,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualification')
+            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications')
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
@@ -1398,6 +1399,30 @@ class UserService
                 'inProgress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
+    }
+
+    // Fetch user's policies
+    public function fetchUserPolicies()
+    {
+        // Get authenticated user
+        $authenticatedUser = auth()->user();
+
+        $user = User::findOrFail($authenticatedUser->id);
+
+        $userRole = $user->roles[0]->id;
+
+        // Get policies for user attached via role
+        $policies = Policy::whereHas('roles', function ($q) use ($userRole) {
+            $q->where('role_id', $userRole);
+        })
+            ->latest()
+            ->paginate(10);
+
+        // Return success response
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'policies' => $policies,
+        ]);
     }
 
     // Update course in progress status in training_course_user pivot table

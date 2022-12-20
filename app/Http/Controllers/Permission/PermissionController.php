@@ -34,7 +34,10 @@ class PermissionController extends Controller
             $permission = $this->permissionService->createPermission($request);
 
             // Return success response
-            return Response::success(['permission' => $permission]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'permission' => $permission,
+            ]);
 
         } catch (Exception $e) {
 
@@ -53,7 +56,10 @@ class PermissionController extends Controller
             // Delete permission
             $this->permissionService->deletePermission($id);
 
-            return Response::success(['message' => ResponseMessage::deleteSuccess('Permission')]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'message' => ResponseMessage::deleteSuccess('Permission'),
+            ]);
 
         } catch (Exception $e) {
 
@@ -75,7 +81,10 @@ class PermissionController extends Controller
             $permissions = $this->permissionService->fetchPermissions();
 
             // Return success response
-            return Response::success(['permissions' => $permissions]);
+            return Response::success([
+                'code' => Response::HTTP_OK,
+                'permissions' => $permissions,
+            ]);
 
         } catch (Exception $e) {
 
