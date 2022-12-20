@@ -373,6 +373,7 @@ class UserService
         // Get user from database
         $user = User::where('id', $authenticatedUser)
             ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualification')
+            ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
         // Return details of the user
@@ -400,6 +401,7 @@ class UserService
                 'qualifications',
                 'interviewSchedules.interviewScore',
             ])
+            ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
         // Return details of the user
@@ -536,15 +538,7 @@ class UserService
         // Get user
         $authenticatedUser = auth()->user()->id;
 
-        // // Get user courses
-        // $userCourses = TrainingCourse::whereHas('enrolledUsers', function ($q) use ($authenticatedUser) {
-        //     $q->where('user_id', $authenticatedUser);
-        // })->with(['modules.lessons', 'modules' => function ($q) {
-        //     $q->withCount('lessons');
-        // }, 'enrolledUsers' => function ($q) use ($authenticatedUser) {
-        //     $q->where('user_id', $authenticatedUser)->withCount('courses');
-        // }])->withCount('modules')->paginate(10);
-
+        // Get user courses
         $userCourses = User::where('id', $authenticatedUser)
             ->with(['profile', 'courses'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
