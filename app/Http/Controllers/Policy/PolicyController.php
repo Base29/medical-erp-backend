@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Policy;
 use App\Helpers\Response;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Policy\CreatePolicyRequest;
+use App\Http\Requests\Policy\FetchSinglePolicyRequest;
 use App\Services\Policy\PolicyService;
 use Exception;
 
@@ -63,6 +64,21 @@ class PolicyController extends Controller
 
         } catch (Exception $e) {
 
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Single policy
+    public function single(FetchSinglePolicyRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->policyService->fetchSinglePolicy($request);
+
+        } catch (Exception $e) {
             return Response::fail([
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),
