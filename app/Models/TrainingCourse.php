@@ -33,7 +33,7 @@ class TrainingCourse extends Model
 
     public function enrolledUsers()
     {
-        return $this->belongsToMany(User::class)->withPivot(['start_date', 'due_date']);
+        return $this->belongsToMany(User::class)->withPivot(['start_date', 'due_date', 'in_progress']);
     }
 
     public function courseProgress()
