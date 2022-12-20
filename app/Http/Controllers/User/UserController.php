@@ -390,4 +390,19 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch user's policy
+    public function fetchPolicies()
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserPolicies();
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

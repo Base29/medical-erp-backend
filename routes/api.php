@@ -892,6 +892,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Routes for user policies
         Route::prefix('policies')->middleware(['permission:can_manage_own_policies'])->group(function () {
             Route::post('policy', [PolicyController::class, 'single']);
+            Route::get('/', [UserController::class, 'fetchPolicies']);
         });
     });
 
