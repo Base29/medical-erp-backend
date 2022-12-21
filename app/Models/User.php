@@ -267,7 +267,7 @@ class User extends Authenticatable implements JWTSubject
 
     public function courses()
     {
-        return $this->belongsToMany(TrainingCourse::class)->withPivot(['start_date', 'due_date']);
+        return $this->belongsToMany(TrainingCourse::class)->withPivot(['start_date', 'due_date', 'in_progress']);
     }
 
     public function courseProgress()
