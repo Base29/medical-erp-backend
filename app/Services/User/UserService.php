@@ -229,19 +229,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with(
-                    'profile',
-                    'positionSummary',
-                    'contractSummary',
-                    'roles',
-                    'practices',
-                    'employmentCheck',
-                    'workPatterns.workTimings',
-                    'locumNotes',
-                    'qualifications',
-                    'interviewSchedules.interviewMiscInfo',
-                    'interviewSchedules.interviewScore'
-                )
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -250,38 +238,14 @@ class UserService
 
             } elseif ($request->filter === 'email' || $request->filter === 'is_active' || $request->filter === 'is_candidate' || $request->filter === 'is_hired' || $request->filter === 'is_locum') {
                 // Filter users by email
-                $users = User::where($request->filter, $request->value)->with(
-                    'profile',
-                    'positionSummary',
-                    'contractSummary',
-                    'roles',
-                    'practices',
-                    'employmentCheck',
-                    'workPatterns.workTimings',
-                    'locumNotes',
-                    'qualifications',
-                    'interviewSchedules.interviewMiscInfo',
-                    'interviewSchedules.interviewScore'
-                )
+                $users = User::where($request->filter, $request->value)->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->latest()
                     ->paginate($request->per_page ? $request->per_page : 10);
 
             } elseif ($request->filter === 'role') {
 
                 // Filter users by role
-                $users = User::with(
-                    'profile',
-                    'positionSummary',
-                    'contractSummary',
-                    'roles',
-                    'practices',
-                    'employmentCheck',
-                    'workPatterns.workTimings',
-                    'locumNotes',
-                    'qualifications',
-                    'interviewSchedules.interviewMiscInfo',
-                    'interviewSchedules.interviewScore'
-                )
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('roles', function ($q) use ($request) {
                         $valueType = gettype($request->value);
 
@@ -300,19 +264,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with(
-                'profile',
-                'positionSummary',
-                'contractSummary',
-                'roles',
-                'practices',
-                'employmentCheck',
-                'workPatterns.workTimings',
-                'locumNotes',
-                'qualifications',
-                'interviewSchedules.interviewMiscInfo',
-                'interviewSchedules.interviewScore'
-            )
+            $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                 ->latest()
                 ->paginate($request->per_page ? $request->per_page : 10);
         }
@@ -373,7 +325,7 @@ class UserService
 
         // Get user from database
         $user = User::where('id', $authenticatedUser)
-            ->with('profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications')
+            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
@@ -389,19 +341,7 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with([
-                'profile.applicant',
-                'positionSummary',
-                'contractSummary',
-                'roles',
-                'practices',
-                'employmentCheck',
-                'workPatterns.workTimings',
-                'courses.modules.lessons',
-                'locumNotes',
-                'qualifications',
-                'interviewSchedules.interviewScore',
-            ])
+            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
@@ -462,6 +402,7 @@ class UserService
             'can_manage_own_profile',
             'can_manage_own_trainings',
             'can_manage_own_locum_sessions',
+            'can_manage_own_policies',
         ]);
 
         // Assign work pattern
