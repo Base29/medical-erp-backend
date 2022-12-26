@@ -649,7 +649,7 @@ class LocumService
 
         // Check if user is locum
         if (!$user->isLocum()) {
-            throw new Exception(ResponseMessage::customMessage('User should be a locum'), Response::HTTP_CONFLICT));
+            throw new Exception(ResponseMessage::customMessage('User should be a locum'), Response::HTTP_CONFLICT);
         }
 
         if ($user->is_blacklisted === 1) {

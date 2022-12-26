@@ -216,7 +216,7 @@ class LegalService
 
             // Checking if the $request doesn't contain any of the allowed fields
             if (!Arr::hasAny($subItem, $allowedFields)) {
-                throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST));
+                throw new Exception(ResponseMessage::allowedFields($allowedFields), Response::HTTP_BAD_REQUEST);
             }
 
             // Get model depending on provided $tag gmc or nmc
