@@ -4,6 +4,7 @@ namespace App\Services\HeadQuarter;
 use App\Helpers\Response;
 use App\Models\HiringRequest;
 use App\Models\Offer;
+use Illuminate\Support\Facades\Config;
 
 class HeadQuarterService
 {
@@ -32,7 +33,8 @@ class HeadQuarterService
     public function fetchAllOffers()
     {
         // Get Offers
-        $offers = Offer::with(['practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings'])
+        $offers = Offer::where('is_active', Config::get('constants.OFFER.ACTIVE'))
+            ->with(['practice', 'hiringRequest', 'user.profile', 'workPattern.workTimings'])
             ->latest()
             ->paginate(10);
 
