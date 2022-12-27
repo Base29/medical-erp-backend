@@ -35,6 +35,7 @@ class JobSpecificationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_CREATED,
                 'job-specification' => $jobSpecification,
             ]);
 
@@ -56,6 +57,7 @@ class JobSpecificationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'job-specifications' => $jobSpecifications,
             ]);
 
@@ -77,6 +79,7 @@ class JobSpecificationController extends Controller
 
             // Return success response
             return Response::success([
+                'code' => Response::HTTP_OK,
                 'message' => ResponseMessage::deleteSuccess('Job Specification'),
             ]);
 
