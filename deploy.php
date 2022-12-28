@@ -32,9 +32,11 @@ add('rsync', [
 ]);
 
 // Hosts
-host('3.232.244.22')
+// Development Server
+host('DevServer')
+    ->setHostname('apidev.eharleystreetadmin.com')
     ->setRemoteUser('ubuntu') // SSH user
-    ->setIdentityFile('~/.ssh/ESM_TESTVM_New.pem')
+    ->setIdentityFile('~/.ssh/ESM-Dev-VM.pem')
     ->set('writable_use_sudo', true)
     ->set('branch', 'main')
     ->setDeployPath('/var/www/esm/backend');
