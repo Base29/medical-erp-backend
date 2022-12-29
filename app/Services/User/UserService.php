@@ -341,7 +341,7 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal', 'courses'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
