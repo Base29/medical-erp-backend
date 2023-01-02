@@ -341,7 +341,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
             ->middleware(['permission:can_delete_misc_info|can_manage_misc_info']);
 
-        Route::patch('update', [MiscellaneousInformationController::class, 'update'])
+        Route::post('update', [MiscellaneousInformationController::class, 'update'])
             ->middleware(['permission:can_update_misc_info|can_manage_misc_info']);
     });
 
