@@ -41,6 +41,15 @@ host('DevServer')
     ->set('branch', 'DEVELOPMENT')
     ->setDeployPath('/var/www/esm/backend');
 
+// Testing Server
+host('TestServer')
+    ->setHostname('apitest.eharleystreetadmin.com')
+    ->setRemoteUser('ubuntu') // SSH user
+    ->setIdentityFile('~/.ssh/ESM-Test-VM.pem')
+    ->set('writable_use_sudo', true)
+    ->set('branch', 'TESTING')
+    ->setDeployPath('/var/www/esm/backend');
+
 after('deploy:failed', 'deploy:unlock'); // In case your deployment goes wrong
 
 desc('Deploy the application');
