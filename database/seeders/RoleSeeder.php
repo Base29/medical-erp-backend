@@ -34,6 +34,8 @@ class RoleSeeder extends Seeder
             'receptionist',
             'guest',
             'manager',
+            'recruiter',
+            're',
         ];
 
         foreach ($roles as $role) {
