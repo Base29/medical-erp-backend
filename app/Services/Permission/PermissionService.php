@@ -142,4 +142,5 @@ class PermissionService
             'message' => ResponseMessage::revoked($permission->name, $role->name),
         ]);
     }
+
 }

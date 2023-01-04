@@ -708,7 +708,7 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
 
                 Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
-                    ->middleware(['permission:can_delete_candidate_question']);
+                    ->middleware(['permission:can_delete_candidate_question|can_manage_interview']);
             });
         });
 
@@ -842,10 +842,10 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::prefix('amendments')->group(function () {
                 Route::post('create', [OfferController::class, 'amendOffer'])
-                    ->middleware(['permission:can_manage_offer']);
+                    ->middleware(['permission:can_manage_offers']);
 
                 Route::patch('update', [OfferController::class, 'updateAmendment'])
-                    ->middleware(['permission:can_manage_offer']);
+                    ->middleware(['permission:can_manage_offers']);
             });
         });
 
