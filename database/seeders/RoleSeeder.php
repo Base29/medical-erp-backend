@@ -14,30 +14,6 @@ class RoleSeeder extends Seeder
      */
     public function run()
     {
-        // Roles
-        $roles = [
-            'super_admin',
-            'admin',
-            'headquarter',
-            'hq',
-            'gp',
-            'general_practitioner',
-            'nurse',
-            'cleaner',
-            'global_accountant',
-            'local_accountant',
-            'supervisor',
-            'lead_safeguarding',
-            'local_safeguarding',
-            'anp',
-            'advanced_nurse_practitioner',
-            'receptionist',
-            'guest',
-            'manager',
-            'recruiter',
-            're',
-            'ma',
-        ];
 
         // Permissions for HQ
         $permissionsForHq = [
@@ -97,6 +73,26 @@ class RoleSeeder extends Seeder
             'can_manage_user_objective',
         ];
 
+        // Roles
+        $roles = [
+            'super_admin',
+            'admin',
+            'hq',
+            'general_practitioner',
+            'nurse',
+            'cleaner',
+            'global_accountant',
+            'local_accountant',
+            'supervisor',
+            'lead_safeguarding',
+            'local_safeguarding',
+            'advanced_nurse_practitioner',
+            'receptionist',
+            'guest',
+            'manager',
+            'recruiter',
+        ];
+
         foreach ($roles as $role) {
             $createdRole = Role::create([
                 'name' => $role,
@@ -108,18 +104,18 @@ class RoleSeeder extends Seeder
              */
 
             // Assign permissions to hq, headquarter role
-            if ($createdRole === 'hq' || $createdRole === 'headquarter') {
-                $createdRole->givePermissionTo($permissionsForHq);
+            if ($createdRole->name === 'hq') {
+                $createdRole->syncPermissions($permissionsForHq);
             }
 
             // Assign permissions to re, recruiter role
-            if ($createdRole === 'recruiter' || $createdRole === 're') {
-                $createdRole->givePermissionTo($permissionsForRecruiter);
+            if ($createdRole->name === 'recruiter') {
+                $createdRole->syncPermissions($permissionsForRecruiter);
             }
 
             // Assign permission to ma, manager role
-            if ($createdRole === 'manager' || $createdRole === 'ma') {
-                $createdRole->givePermissionTo($permissionsForManager);
+            if ($createdRole->name === 'manager') {
+                $createdRole->syncPermissions($permissionsForManager);
             }
         }
     }
