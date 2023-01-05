@@ -31,10 +31,12 @@ class PracticeSeeder extends Seeder
 
         // Create practices and seed database
         foreach ($practices as $practice):
-            Practice::create([
+            $createdPractice = Practice::create([
                 'practice_manager' => $practiceManager->id,
                 'practice_name' => $practice,
             ]);
+
+            $practiceManager->practices()->attach($createdPractice->id, ['type' => 'practice_manager']);
         endforeach;
     }
 }
