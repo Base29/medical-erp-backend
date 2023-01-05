@@ -71,6 +71,8 @@ class RoleSeeder extends Seeder
             'can_manage_inductions',
             'can_manage_departments',
             'can_manage_user_objective',
+            'can_fetch_interviews',
+            'can_manage_role',
         ];
 
         // Roles
