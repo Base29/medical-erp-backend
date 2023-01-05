@@ -18,6 +18,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             SuperAdminSeeder::class,
             ServiceUserSeeder::class,
+            PracticeSeeder::class,
+            ProfileSeeder::class,
         ]);
     }
 }
