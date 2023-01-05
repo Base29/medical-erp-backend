@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ServiceUserSeeder::class,
             PracticeSeeder::class,
             ProfileSeeder::class,
+            DepartmentSeeder::class,
         ]);
     }
 }
