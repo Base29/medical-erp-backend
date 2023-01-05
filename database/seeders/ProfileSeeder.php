@@ -19,6 +19,7 @@ class ProfileSeeder extends Seeder
             'first_name' => 'User',
             'last_name' => 'Manager',
             'primary_role' => 'manager',
+            'profile_image' => 'https://i.imgur.com/sj6jKyB.png',
         ]);
 
         Profile::create([
@@ -26,6 +27,7 @@ class ProfileSeeder extends Seeder
             'first_name' => 'User',
             'last_name' => 'Recruiter',
             'primary_role' => 'recruiter',
+            'profile_image' => 'https://i.imgur.com/sj6jKyB.png',
         ]);
 
         Profile::create([
@@ -33,6 +35,7 @@ class ProfileSeeder extends Seeder
             'first_name' => 'User',
             'last_name' => 'HQ',
             'primary_role' => 'hq',
+            'profile_image' => 'https://i.imgur.com/9os1M6v.jpeg',
         ]);
     }
 }
