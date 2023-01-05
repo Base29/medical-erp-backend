@@ -73,6 +73,8 @@ class RoleSeeder extends Seeder
             'can_manage_user_objective',
             'can_fetch_interviews',
             'can_manage_role',
+            'can_fetch_job_specification',
+            'can_fetch_person_specification',
         ];
 
         // Roles
