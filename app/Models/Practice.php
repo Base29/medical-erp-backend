@@ -11,7 +11,6 @@ use App\Models\Interview;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewSchedule;
 use App\Models\Offer;
-use App\Models\PersonSpecification;
 use App\Models\Policy;
 use App\Models\Post;
 use App\Models\Room;
@@ -56,11 +55,6 @@ class Practice extends Model
     public function equipment()
     {
         return $this->hasMany(Equipment::class);
-    }
-
-    public function personSpecifications()
-    {
-        return $this->hasMany(PersonSpecification::class);
     }
 
     public function hiringRequests()
