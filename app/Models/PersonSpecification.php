@@ -4,7 +4,6 @@ namespace App\Models;
 
 use App\Models\HiringRequest;
 use App\Models\PersonSpecificationAttribute;
-use App\Models\Practice;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -21,11 +20,6 @@ class PersonSpecification extends Model
     public function personSpecificationAttributes()
     {
         return $this->hasMany(PersonSpecificationAttribute::class);
-    }
-
-    public function practice()
-    {
-        return $this->belongsTo(Practice::class);
     }
 
     public function hiringRequests()

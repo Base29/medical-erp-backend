@@ -26,7 +26,6 @@ class CreateJobSpecificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
             'title' => 'required|string|max:100',
             'salary_grade' => 'nullable|string|max:100',
             'location' => 'nullable|string|max:100',

@@ -26,7 +26,6 @@ class CreatePersonSpecificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
             'name' => 'required|string|max:50',
             'person_attributes' => 'required|array',
         ];
