@@ -10,7 +10,6 @@ use App\Models\InductionSchedule;
 use App\Models\Interview;
 use App\Models\InterviewPolicy;
 use App\Models\InterviewSchedule;
-use App\Models\JobSpecification;
 use App\Models\Offer;
 use App\Models\PersonSpecification;
 use App\Models\Policy;
@@ -82,11 +81,6 @@ class Practice extends Model
     public function departments()
     {
         return $this->hasMany(Department::class);
-    }
-
-    public function jobSpecifications()
-    {
-        return $this->hasMany(JobSpecification::class);
     }
 
     public function interviews()
