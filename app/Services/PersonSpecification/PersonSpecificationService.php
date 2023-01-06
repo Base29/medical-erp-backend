@@ -46,8 +46,7 @@ class PersonSpecificationService
         $practice = Practice::findOrFail($request->practice);
 
         // Get person specifications for $practice
-        $personSpecifications = PersonSpecification::where('practice_id', $practice->id)
-            ->with('personSpecificationAttributes')
+        $personSpecifications = PersonSpecification::with('personSpecificationAttributes')
             ->latest()
             ->get();
 
