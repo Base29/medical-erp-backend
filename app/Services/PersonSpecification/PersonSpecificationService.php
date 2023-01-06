@@ -11,14 +11,11 @@ class PersonSpecificationService
     // Create person specification
     public function createPersonSpecification($request)
     {
-        // Get practice
-        $practice = Practice::findOrFail($request->practice);
-
         // Instance of PersonSpecification model
         $personSpecification = new PersonSpecification();
         $personSpecification->name = $request->name;
         // Save Person Specifications
-        $practice->personSpecifications()->save($personSpecification);
+        $personSpecification->save();
 
         // Save attributes
 
@@ -36,7 +33,7 @@ class PersonSpecificationService
         // Return success response
         return Response::success([
             'code' => Response::HTTP_CREATED,
-            'person-specification' => $personSpecification->with('personSpecificationAttributes', 'practice')
+            'person-specification' => $personSpecification->with('personSpecificationAttributes')
                 ->latest()
                 ->first(),
         ]);
@@ -50,7 +47,7 @@ class PersonSpecificationService
 
         // Get person specifications for $practice
         $personSpecifications = PersonSpecification::where('practice_id', $practice->id)
-            ->with('personSpecificationAttributes', 'practice')
+            ->with('personSpecificationAttributes')
             ->latest()
             ->get();
 
@@ -82,7 +79,7 @@ class PersonSpecificationService
     {
         // Get job specification
         $personSpecification = PersonSpecification::where('id', $request->person_specification)
-            ->with('practice', 'personSpecificationAttributes')
+            ->with('personSpecificationAttributes')
             ->firstOrFail();
 
         // Return success response

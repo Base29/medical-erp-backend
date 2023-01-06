@@ -26,7 +26,7 @@ class FetchPersonSpecificationRequest extends FormRequest
     public function rules()
     {
         return [
-            'practice' => 'required|numeric|exists:practices,id',
+            'practice' => 'nullable|numeric|exists:practices,id',
         ];
     }
 
