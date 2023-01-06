@@ -48,6 +48,12 @@ class RoleSeeder extends Seeder
             'can_manage_job_specifications',
             'can_manage_person_specifications',
             'can_manage_offers',
+            'can_manage_role',
+            'can_fetch_department',
+            'can_view_practices',
+            'can_manage_user',
+            'can_fetch_single_job_specification',
+            'can_fetch_single_person_specification',
         ];
 
         // Permissions for manager
@@ -75,6 +81,8 @@ class RoleSeeder extends Seeder
             'can_manage_role',
             'can_fetch_job_specification',
             'can_fetch_person_specification',
+            'can_fetch_single_job_specification',
+            'can_fetch_single_person_specification',
         ];
 
         // Roles
