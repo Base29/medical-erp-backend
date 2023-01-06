@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             PracticeSeeder::class,
             ProfileSeeder::class,
             DepartmentSeeder::class,
+            JobSpecificationSeeder::class,
         ]);
     }
 }
