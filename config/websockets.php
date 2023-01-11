@@ -31,9 +31,6 @@ return [
             'capacity' => null,
             'enable_client_messages' => false,
             'enable_statistics' => true,
-            'allowed_origins' => [
-                'localhost',
-            ],
         ],
     ],
 
@@ -87,7 +84,7 @@ return [
      * Leave this empty if you want to accept requests from all hosts.
      */
     'allowed_origins' => [
-        //
+        'localhost',
     ],
 
     /*
