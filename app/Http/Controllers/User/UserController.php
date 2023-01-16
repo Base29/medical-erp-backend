@@ -405,4 +405,19 @@ class UserController extends Controller
             ]);
         }
     }
+
+    // Fetch notifications
+    public function fetchNotifications()
+    {
+        try {
+            // Logic here
+            return $this->userService->fetchUserNotifications();
+
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
 }

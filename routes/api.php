@@ -894,6 +894,11 @@ Route::middleware(['auth:api'])->group(function () {
             Route::post('policy', [PolicyController::class, 'single']);
             Route::get('/', [UserController::class, 'fetchPolicies']);
         });
+
+        // Routes for notifications
+        Route::prefix('notifications')->middleware(['permission:can_manage_own_notifications'])->group(function () {
+            Route::get('/', [UserController::class, 'fetchNotifications']);
+        });
     });
 
     // Endpoints for Manager
