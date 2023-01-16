@@ -1383,4 +1383,23 @@ class UserService
             'notifications' => $notifications->sortByDesc('created_at'),
         ]);
     }
+
+    // Mark notification as read
+    public function markNotificationAsRead($request)
+    {
+        // User notifications
+        $notifications = auth()->user()->notifications;
+
+        // Mark notification as read
+        foreach ($notifications as $notification):
+            if ($notification['id'] === $request->notification) {
+                $notification->markAsRead();
+
+                return Response::success([
+                    'code' => Response::HTTP_OK,
+                    'notification' => $notification,
+                ]);
+            }
+        endforeach;
+    }
 }

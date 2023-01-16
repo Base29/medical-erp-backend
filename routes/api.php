@@ -898,6 +898,7 @@ Route::middleware(['auth:api'])->group(function () {
         // Routes for notifications
         Route::prefix('notifications')->middleware(['permission:can_manage_own_notifications'])->group(function () {
             Route::get('/', [UserController::class, 'fetchNotifications']);
+            Route::post('read', [UserController::class, 'markAsRead']);
         });
     });
 

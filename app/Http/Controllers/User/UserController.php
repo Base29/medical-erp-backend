@@ -20,6 +20,7 @@ use App\Http\Requests\User\FetchUsersRequest;
 use App\Http\Requests\User\FilterUsersRequest;
 use App\Http\Requests\User\HireCandidateRequest;
 use App\Http\Requests\User\LessonProgressRequest;
+use App\Http\Requests\User\MarkNotificationAsReadRequest;
 use App\Http\Requests\User\ModuleProgressRequest;
 use App\Http\Requests\User\SearchCandidateProfilesRequest;
 use App\Http\Requests\User\UpdateUserRequest;
@@ -413,6 +414,20 @@ class UserController extends Controller
             // Logic here
             return $this->userService->fetchUserNotifications();
 
+        } catch (Exception $e) {
+            return Response::fail([
+                'code' => $e->getCode(),
+                'message' => $e->getMessage(),
+            ]);
+        }
+    }
+
+    // Mark notification as read
+    public function markAsRead(MarkNotificationAsReadRequest $request)
+    {
+        try {
+            // Logic here
+            return $this->userService->markNotificationAsRead($request);
         } catch (Exception $e) {
             return Response::fail([
                 'code' => $e->getCode(),
