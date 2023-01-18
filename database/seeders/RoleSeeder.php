@@ -20,6 +20,7 @@ class RoleSeeder extends Seeder
             'can_manage_hiring_requests',
             'can_manage_interview',
             'can_manage_offers',
+            'can_fetch_department',
         ];
 
         // Permissions for recruiter
@@ -54,6 +55,7 @@ class RoleSeeder extends Seeder
             'can_manage_user',
             'can_fetch_single_job_specification',
             'can_fetch_single_person_specification',
+            'can_manage_postings',
         ];
 
         // Permissions for manager
@@ -83,6 +85,7 @@ class RoleSeeder extends Seeder
             'can_fetch_person_specification',
             'can_fetch_single_job_specification',
             'can_fetch_single_person_specification',
+            'can_manage_user',
         ];
 
         // Roles
