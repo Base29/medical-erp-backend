@@ -185,6 +185,7 @@ class PermissionSeeder extends Seeder
             'can_manage_inductions',
             'can_manage_departments',
             'can_manage_user_objective',
+            'can_manage_postings',
         ];
 
         foreach ($permissions as $permission) {

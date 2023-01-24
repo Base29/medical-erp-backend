@@ -403,6 +403,7 @@ class UserService
             'can_manage_own_trainings',
             'can_manage_own_locum_sessions',
             'can_manage_own_policies',
+            'can_manage_own_notifications',
         ]);
 
         // Assign work pattern
@@ -1370,5 +1371,35 @@ class UserService
     private function updateInProgressStatusForCourse($user, $course)
     {
         $user->courses()->updateExistingPivot($course->id, ['in_progress' => 0]);
+    }
+
+    // Fetch user notifications
+    public function fetchUserNotifications()
+    {
+        $notifications = collect(auth()->user()->notifications);
+
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'notifications' => $notifications->sortByDesc('created_at'),
+        ]);
+    }
+
+    // Mark notification as read
+    public function markNotificationAsRead($request)
+    {
+        // User notifications
+        $notifications = auth()->user()->notifications;
+
+        // Mark notification as read
+        foreach ($notifications as $notification):
+            if ($notification['id'] === $request->notification) {
+                $notification->markAsRead();
+
+                return Response::success([
+                    'code' => Response::HTTP_OK,
+                    'notification' => $notification,
+                ]);
+            }
+        endforeach;
     }
 }

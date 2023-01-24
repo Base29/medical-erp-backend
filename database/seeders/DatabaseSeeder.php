@@ -23,6 +23,7 @@ class DatabaseSeeder extends Seeder
             DepartmentSeeder::class,
             JobSpecificationSeeder::class,
             PersonSpecificationSeeder::class,
+            AppraisalPolicySeeder::class,
         ]);
     }
 }
