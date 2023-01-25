@@ -229,7 +229,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -245,7 +245,7 @@ class UserService
             } elseif ($request->filter === 'role') {
 
                 // Filter users by role
-                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('roles', function ($q) use ($request) {
                         $valueType = gettype($request->value);
 
@@ -264,7 +264,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+            $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                 ->latest()
                 ->paginate($request->per_page ? $request->per_page : 10);
         }
@@ -341,7 +341,7 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal', 'courses'])
+            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal', 'courses'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
@@ -1056,7 +1056,8 @@ class UserService
             'profile.applicant',
             'positionSummary',
             'contractSummary',
-            'roles',
+            'roles.permissions',
+            'permissions',
             'practices',
             'employmentCheck',
             'workPatterns.workTimings',
