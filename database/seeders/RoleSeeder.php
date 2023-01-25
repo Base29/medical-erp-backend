@@ -22,6 +22,7 @@ class RoleSeeder extends Seeder
             'can_manage_offers',
             'can_fetch_department',
             'can_manage_departments',
+            'can_fetch_single_department',
         ];
 
         // Permissions for recruiter
