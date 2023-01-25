@@ -24,6 +24,7 @@ class DatabaseSeeder extends Seeder
             JobSpecificationSeeder::class,
             PersonSpecificationSeeder::class,
             AppraisalPolicySeeder::class,
+            WorkPatternSeeder::class,
         ]);
     }
 }
