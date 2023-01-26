@@ -186,6 +186,11 @@ class PermissionSeeder extends Seeder
             'can_manage_departments',
             'can_manage_user_objective',
             'can_manage_postings',
+            'can_manage_own_profile',
+            'can_manage_own_trainings',
+            'can_manage_own_locum_sessions',
+            'can_manage_own_policies',
+            'can_manage_own_notifications',
         ];
 
         foreach ($permissions as $permission) {
