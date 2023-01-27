@@ -84,15 +84,15 @@ class OfferService
         $offer->practice_id = $practice->id;
         $offer->user_id = $user->id;
         $offer->work_pattern_id = $workPattern->id;
-        $offer->status = 1;
-        $offer->is_active = 1;
+        $offer->status = Config::get('constants.OFFER.MADE');
+        $offer->is_active = Config::get('constants.OFFER.ACTIVE');
         $offer->amount = $request->amount;
         $offer->joining_date = $request->joining_date;
 
         // Save offer
         $hiringRequest->offers()->save($offer);
 
-        dd($offer);
+        lad($offer);
 
         // Change the is_active status of the user's old offer
         if (isset($currentOfferId)) {
