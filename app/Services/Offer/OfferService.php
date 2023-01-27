@@ -92,8 +92,6 @@ class OfferService
         // Save offer
         $hiringRequest->offers()->save($offer);
 
-        lad($offer);
-
         // Change the is_active status of the user's old offer
         if (isset($currentOfferId)) {
             // Get the old offer
