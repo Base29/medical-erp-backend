@@ -37,6 +37,7 @@ class OfferController extends Controller
             return Response::fail([
                 'code' => $e->getCode(),
                 'message' => $e->getMessage(),
+                'trace' => $e->getTrace(),
             ]);
         }
     }

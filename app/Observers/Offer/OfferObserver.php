@@ -37,7 +37,7 @@ class OfferObserver
         foreach ($hqUsers as $hqUser):
             $hqUser->notify(new NewOfferCreatedHQNotification(
                 $hqUser,
-                $$candidate,
+                $candidate,
                 $hiringRequest,
                 $offer
             ));
