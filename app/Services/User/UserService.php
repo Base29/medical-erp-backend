@@ -1339,7 +1339,7 @@ class UserService
             $candidate->courses()->attach($courseByRole->id, [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
-                'inProgress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
+                'in_progress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
     }
