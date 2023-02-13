@@ -341,7 +341,7 @@ Route::middleware(['auth:api'])->group(function () {
         Route::post('delete', [MiscellaneousInformationController::class, 'delete'])
             ->middleware(['permission:can_delete_misc_info|can_manage_misc_info']);
 
-        Route::patch('update', [MiscellaneousInformationController::class, 'update'])
+        Route::post('update', [MiscellaneousInformationController::class, 'update'])
             ->middleware(['permission:can_update_misc_info|can_manage_misc_info']);
     });
 
@@ -708,7 +708,7 @@ Route::middleware(['auth:api'])->group(function () {
                     ->middleware(['permission:can_fetch_candidate_questions|can_manage_interview']);
 
                 Route::post('delete', [InterviewController::class, 'deleteCandidateQuestion'])
-                    ->middleware(['permission:can_delete_candidate_question']);
+                    ->middleware(['permission:can_delete_candidate_question|can_manage_interview']);
             });
         });
 
@@ -842,10 +842,10 @@ Route::middleware(['auth:api'])->group(function () {
 
             Route::prefix('amendments')->group(function () {
                 Route::post('create', [OfferController::class, 'amendOffer'])
-                    ->middleware(['permission:can_manage_offer']);
+                    ->middleware(['permission:can_manage_offers']);
 
                 Route::patch('update', [OfferController::class, 'updateAmendment'])
-                    ->middleware(['permission:can_manage_offer']);
+                    ->middleware(['permission:can_manage_offers']);
             });
         });
 
@@ -893,6 +893,12 @@ Route::middleware(['auth:api'])->group(function () {
         Route::prefix('policies')->middleware(['permission:can_manage_own_policies'])->group(function () {
             Route::post('policy', [PolicyController::class, 'single']);
             Route::get('/', [UserController::class, 'fetchPolicies']);
+        });
+
+        // Routes for notifications
+        Route::prefix('notifications')->middleware(['permission:can_manage_own_notifications'])->group(function () {
+            Route::get('/', [UserController::class, 'fetchNotifications']);
+            Route::post('read', [UserController::class, 'markAsRead']);
         });
     });
 

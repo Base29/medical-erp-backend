@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\PersonSpecification;
+namespace App\Http\Requests\User;
 
 use App\Helpers\CustomValidationService;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
 
-class CreatePersonSpecificationRequest extends FormRequest
+class MarkNotificationAsReadRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -21,13 +21,12 @@ class CreatePersonSpecificationRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
-     * @return array
+     * @return array<string, mixed>
      */
     public function rules()
     {
         return [
-            'name' => 'required|string|max:50',
-            'person_attributes' => 'required|array',
+            'notification' => 'required|string|exists:notifications,id',
         ];
     }
 

@@ -229,7 +229,7 @@ class UserService
 
             if ($request->filter === 'mobile_phone' || $request->filter === 'last_name') {
                 // Filter users by mobile_phone or last_name
-                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('profile', function ($q) {
                         $q->where(request()->filter, request()->value);
                     })
@@ -245,7 +245,7 @@ class UserService
             } elseif ($request->filter === 'role') {
 
                 // Filter users by role
-                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+                $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                     ->whereHas('roles', function ($q) use ($request) {
                         $valueType = gettype($request->value);
 
@@ -264,7 +264,7 @@ class UserService
 
         } else {
             // Fetching all the users from database
-            $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+            $users = User::with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
                 ->latest()
                 ->paginate($request->per_page ? $request->per_page : 10);
         }
@@ -341,7 +341,7 @@ class UserService
     {
         // Get user from database
         $user = User::where('id', $request->user)
-            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal'])
+            ->with(['profile.hiringRequest', 'positionSummary', 'contractSummary', 'roles.permissions', 'permissions', 'practices', 'employmentCheck', 'workPatterns.workTimings', 'locumNotes', 'qualifications', 'miscInfo', 'education', 'employmentHistories', 'references', 'legal', 'courses'])
             ->withCount(['courses', 'overdueCourses', 'completedCourses', 'inProgressCourses'])
             ->firstOrFail();
 
@@ -403,6 +403,7 @@ class UserService
             'can_manage_own_trainings',
             'can_manage_own_locum_sessions',
             'can_manage_own_policies',
+            'can_manage_own_notifications',
         ]);
 
         // Assign work pattern
@@ -1055,7 +1056,8 @@ class UserService
             'profile.applicant',
             'positionSummary',
             'contractSummary',
-            'roles',
+            'roles.permissions',
+            'permissions',
             'practices',
             'employmentCheck',
             'workPatterns.workTimings',
@@ -1337,7 +1339,7 @@ class UserService
             $candidate->courses()->attach($courseByRole->id, [
                 'start_date' => $startDate->format('Y-m-d'),
                 'due_date' => $startDate->addMonths(3)->format('Y-m-d'),
-                'inProgress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
+                'in_progress' => Config::get('constants.TRAINING_COURSE.IN_PROGRESS'),
             ]);
         endforeach;
     }
@@ -1370,5 +1372,35 @@ class UserService
     private function updateInProgressStatusForCourse($user, $course)
     {
         $user->courses()->updateExistingPivot($course->id, ['in_progress' => 0]);
+    }
+
+    // Fetch user notifications
+    public function fetchUserNotifications()
+    {
+        $notifications = collect(auth()->user()->notifications);
+
+        return Response::success([
+            'code' => Response::HTTP_OK,
+            'notifications' => $notifications->sortByDesc('created_at'),
+        ]);
+    }
+
+    // Mark notification as read
+    public function markNotificationAsRead($request)
+    {
+        // User notifications
+        $notifications = auth()->user()->notifications;
+
+        // Mark notification as read
+        foreach ($notifications as $notification):
+            if ($notification['id'] === $request->notification) {
+                $notification->markAsRead();
+
+                return Response::success([
+                    'code' => Response::HTTP_OK,
+                    'notification' => $notification,
+                ]);
+            }
+        endforeach;
     }
 }

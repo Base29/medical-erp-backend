@@ -34,6 +34,42 @@ return [
         ],
     ],
 
+    'replication' => [
+        'mode' => env('WEBSOCKETS_REPLICATION_MODE', 'redis'),
+        'modes' => [
+            'redis' => [
+
+                'connection' => env('WEBSOCKETS_REDIS_REPLICATION_CONNECTION', 'websocket'),
+
+                /*
+                |--------------------------------------------------------------------------
+                | Channel Manager
+                |--------------------------------------------------------------------------
+                |
+                | The channel manager is responsible for storing, tracking and retrieving
+                | the channels as long as their members and connections.
+                |
+                 */
+
+                'channel_manager' => \BeyondCode\LaravelWebSockets\ChannelManagers\RedisChannelManager::class,
+
+                /*
+                |--------------------------------------------------------------------------
+                | Statistics Collector
+                |--------------------------------------------------------------------------
+                |
+                | The Statistics Collector will, by default, handle the incoming statistics,
+                | storing them until they will become dumped into another database, usually
+                | a MySQL database or a time-series database.
+                |
+                 */
+
+                'collector' => \BeyondCode\LaravelWebSockets\Statistics\Collectors\RedisCollector::class,
+
+            ],
+        ],
+    ],
+
     /*
      * This class is responsible for finding the apps. The default provider
      * will use the apps defined in this config file.
@@ -48,7 +84,7 @@ return [
      * Leave this empty if you want to accept requests from all hosts.
      */
     'allowed_origins' => [
-        //
+        'localhost',
     ],
 
     /*
